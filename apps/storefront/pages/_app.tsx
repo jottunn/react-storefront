@@ -6,11 +6,10 @@ import { AppProps } from "next/app";
 import NextNProgress from "nextjs-progressbar";
 import React, { ReactElement, ReactNode } from "react";
 
-import { DemoBanner } from "@/components/DemoBanner";
 import { RegionsProvider } from "@/components/RegionsProvider";
 import { BaseSeo } from "@/components/seo/BaseSeo";
 import typePolicies from "@/lib/auth/typePolicies";
-import { API_URI, DEMO_MODE } from "@/lib/const";
+import { API_URI } from "@/lib/const";
 import { CheckoutProvider } from "@/lib/providers/CheckoutProvider";
 import { SaleorAuthProvider, useAuthChange, useSaleorAuthClient } from "@saleor/auth-sdk/react";
 import { useAuthenticatedApolloClient } from "@saleor/auth-sdk/react/apollo";
@@ -50,8 +49,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
         <CheckoutProvider>
           <RegionsProvider>
             <BaseSeo />
-            <NextNProgress color="#5B68E4" options={{ showSpinner: false }} />
-            {DEMO_MODE && <DemoBanner />}
+            <NextNProgress color="#41cc1d" options={{ showSpinner: false }} />
             {getLayout(<Component {...pageProps} />)}
           </RegionsProvider>
         </CheckoutProvider>

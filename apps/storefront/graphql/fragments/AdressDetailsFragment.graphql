@@ -3,7 +3,9 @@ fragment AddressDetailsFragment on Address {
   phone
   firstName
   lastName
+  companyName
   streetAddress1
+  streetAddress2
   city
   postalCode
   isDefaultBillingAddress

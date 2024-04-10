@@ -1,8 +1,14 @@
 import clsx from "clsx";
 import React from "react";
-
+import { useIntl } from "react-intl";
+import { messages } from "../translations";
 import { Spinner } from "@/components";
-import { AddressDetailsFragment, CheckoutError, useCurrentUserAddressesQuery } from "@/saleor/api";
+import {
+  AddressDetailsFragment,
+  CheckoutError,
+  CountryCode,
+  useCurrentUserAddressesQuery,
+} from "@/saleor/api";
 
 import { AddressFormData } from "./AddressForm";
 
@@ -16,7 +22,7 @@ export function SavedAddressSelectionList({
   const { loading, error, data } = useCurrentUserAddressesQuery();
   const [selectedSavedAddress, setSelectedSavedAddress] =
     React.useState<AddressDetailsFragment | null>();
-
+  const t = useIntl();
   if (loading) {
     return <Spinner />;
   }
@@ -37,40 +43,45 @@ export function SavedAddressSelectionList({
       firstName: address?.firstName,
       lastName: address?.lastName,
       phone: address?.phone || "",
-      country: "PL",
+      country: address?.country?.code as CountryCode,
+      companyName: address?.companyName,
       streetAddress1: address.streetAddress1,
+      streetAddress2: address.streetAddress2 || "",
       city: address.city,
       postalCode: address.postalCode,
     });
   };
 
   return (
-    <div className="grid grid-cols-2 mb-2">
-      {addresses.map((address) => (
-        <div
-          role="radio"
-          aria-checked={address?.id === selectedSavedAddress?.id}
-          tabIndex={-1}
-          onClick={() => address && onSelectSavedAddress(address)}
-          onKeyDown={(e) => {
-            if (address && e.key === "Enter") {
-              return onSelectSavedAddress(address);
-            }
-          }}
-          className={clsx(
-            "border-2 p-3 mr-2 rounded-md",
-            address?.id === selectedSavedAddress?.id && "border-blue-500"
-          )}
-          key={address?.id}
-        >
-          <p>{`${address?.firstName} ${address?.lastName}`}</p>
-          <p className="text-gray-600 text-sm">{address?.streetAddress1}</p>
-          <p className="text-gray-600 text-sm">
-            {`${address?.postalCode} ${address?.city}, ${address?.country.country}`}
-          </p>
-        </div>
-      ))}
-    </div>
+    <>
+      {addresses.length > 0 && <p className="mb-2">{t.formatMessage(messages.addressSelect)}</p>}
+      <div className="grid grid-cols-2 mb-2">
+        {addresses.map((address) => (
+          <div
+            role="radio"
+            aria-checked={address?.id === selectedSavedAddress?.id}
+            tabIndex={-1}
+            onClick={() => address && onSelectSavedAddress(address)}
+            onKeyDown={(e) => {
+              if (address && e.key === "Enter") {
+                return onSelectSavedAddress(address);
+              }
+            }}
+            className={clsx(
+              "border-2 p-3 mr-2 rounded-md cursor-pointer hover:border-action-3",
+              address?.id === selectedSavedAddress?.id && "border-action-1"
+            )}
+            key={address?.id}
+          >
+            <p>{`${address?.firstName} ${address?.lastName}`}</p>
+            <p className="text-gray-600 text-sm">{address?.streetAddress1}</p>
+            <p className="text-gray-600 text-sm">
+              {`${address?.postalCode} ${address?.city}, ${address?.country.country}`}
+            </p>
+          </div>
+        ))}
+      </div>
+    </>
   );
 }
 

@@ -1,10 +1,13 @@
 import { NextRouter } from "next/router";
 
 import {
+  Product,
   ProductDetailsFragment,
+  ProductVariant,
   ProductVariantDetailsFragment,
   SelectedAttributeDetailsFragment,
 } from "@/saleor/api";
+// import { translate } from "./translations";
 /**
  * When a variant is selected, the variant attributes are shown together with
  * the attributes of the product. Otherwise, only the product
@@ -16,7 +19,7 @@ import {
 
 export const getProductAttributes = (
   product: ProductDetailsFragment,
-  selectedVariant?: ProductVariantDetailsFragment
+  selectedVariant?: ProductVariantDetailsFragment | null
 ): SelectedAttributeDetailsFragment[] => {
   if (selectedVariant) return product.attributes.concat(selectedVariant.attributes);
   return product.attributes;
@@ -36,4 +39,50 @@ export const getSelectedVariantID = (product: ProductDetailsFragment, router?: N
   }
   // there are multiple variants and user has not chosen any
   return undefined;
+};
+
+function groupVariantsByColor(variants: ProductVariantDetailsFragment[]) {
+  const map = new Map<string, ProductVariantDetailsFragment[]>();
+
+  variants.forEach((variant) => {
+    const colorValue =
+      variant.attributes.find((attr) => attr.attribute.slug === "culoare")?.values[0]?.name ||
+      "No Color";
+
+    if (!map.has(colorValue)) {
+      map.set(colorValue, []);
+    }
+    map.get(colorValue)!.push(variant);
+  });
+
+  return map; // Map with key as color or "No Color", and value as array of variants
+}
+
+export interface GroupedProduct extends Product {
+  colorGroup?: string;
+}
+
+export const groupProductsByColor = (products: Product[]): GroupedProduct[] => {
+  const groupedProducts: GroupedProduct[] = [];
+  products.forEach((product) => {
+    // Check if the product has variants
+    if (product.variants && product.variants.length > 0) {
+      // Group variants by color
+      const colorGroups = groupVariantsByColor(product.variants);
+      // For each color group, create a new product entry
+      colorGroups.forEach((variants, color) => {
+        const newProduct = {
+          ...product,
+          variants: variants as ProductVariant[],
+          colorGroup: color, // Adding colorGroup to easily identify this in the output
+        };
+        groupedProducts.push(newProduct);
+      });
+    } else {
+      // If no variants, push the original product
+      groupedProducts.push(product);
+    }
+  });
+
+  return groupedProducts;
 };

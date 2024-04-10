@@ -1,11 +1,13 @@
 fragment SelectedAttributeDetailsFragment on SelectedAttribute {
   attribute {
     id
+    slug
     name
     translation(languageCode: $locale) {
       id
       name
     }
+    inputType
     type
     unit
   }
@@ -17,6 +19,8 @@ fragment SelectedAttributeDetailsFragment on SelectedAttribute {
       name
       richText
     }
+    slug
     value
+    reference
   }
 }

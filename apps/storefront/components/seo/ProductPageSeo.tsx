@@ -28,7 +28,7 @@ export function ProductPageSeo({ product }: ProductPageSeoProps) {
             alt: thumbnailAlt,
           },
         ],
-        site_name: "Saleor Tutorial",
+        site_name: STOREFRONT_NAME,
       }}
     />
   );

@@ -6,4 +6,17 @@ fragment CategoryBasicFragment on Category {
     id
     name
   }
+  ancestors(first:5) {
+    edges {
+      node {
+        id
+        name
+        slug
+         translation(languageCode: $locale) {
+          id
+          name
+        }
+      }
+    }
+  }
 }

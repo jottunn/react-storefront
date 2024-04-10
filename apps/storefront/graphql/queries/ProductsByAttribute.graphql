@@ -1,0 +1,10 @@
+query ProductsByAttribute( $filter: ProductFilterInput, $channel: String, $locale: LanguageCodeEnum!) {
+  products( filter:  $filter, channel: $channel, first: 10) {
+   edges {
+    cursor
+      node {
+        ...ProductCardFragment
+      }
+    }
+  }
+}

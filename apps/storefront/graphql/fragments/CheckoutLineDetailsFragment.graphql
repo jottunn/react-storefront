@@ -7,6 +7,7 @@ fragment CheckoutLineDetailsFragment on CheckoutLine {
   }
   variant {
     id
+    quantityAvailable
     product {
       id
       name
@@ -15,9 +16,16 @@ fragment CheckoutLineDetailsFragment on CheckoutLine {
         name
       }
       slug
-      thumbnail {
+      thumbnail(size: 128, format: WEBP) {
         ...ImageFragment
       }
+      isAvailableForPurchase
+    }
+    media {
+      ...ProductMediaFragment
+    }
+    attributes {
+      ...SelectedAttributeDetailsFragment
     }
     pricing {
       price {

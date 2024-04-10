@@ -17,6 +17,10 @@ export const getSortingOptions = (chosenSorting: UrlSorting | null) => {
     { label: "Popularity", chosen: false },
     { label: "Name ascending", field: "NAME", direction: "ASC", chosen: false },
     { label: "Name descending", field: "NAME", direction: "DESC", chosen: false },
+    { label: "Price ascending", field: "PRICE", direction: "ASC", chosen: false },
+    { label: "Price descending", field: "PRICE", direction: "DESC", chosen: false },
+    { label: "Oldest", field: "DATE", direction: "ASC", chosen: false },
+    { label: "Latest", field: "DATE", direction: "DESC", chosen: false },
   ];
 
   let isChosenSet = false;

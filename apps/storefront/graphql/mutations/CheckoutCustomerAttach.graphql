@@ -1,0 +1,12 @@
+mutation checkoutCustomerAttach($checkoutId: ID!, $locale: LanguageCodeEnum!) {
+	checkoutCustomerAttach(id: $checkoutId) {
+		errors {
+            message
+            field
+            code
+		}
+		checkout {
+			...CheckoutDetailsFragment
+		}
+	}
+}

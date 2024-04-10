@@ -12,6 +12,10 @@ fragment CheckoutDetailsFragment on Checkout {
     ...DeliveryMethodFragment
   }
   isShippingRequired
+  user {
+		id
+		email
+	}
   availableShippingMethods {
     ...DeliveryMethodFragment
   }
@@ -29,6 +33,7 @@ fragment CheckoutDetailsFragment on Checkout {
   discount {
     ...PriceFragment
   }
+  voucherCode
   discountName
   subtotalPrice {
     net {

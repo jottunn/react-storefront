@@ -2,20 +2,16 @@ import clsx from "clsx";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-
 import { usePaths } from "@/lib/paths";
-import { useCheckout } from "@/lib/providers/CheckoutProvider";
-import { CheckoutLineDetailsFragment } from "@/saleor/api";
-
 import { BurgerMenu } from "../BurgerMenu";
 import { Menu } from "./Menu";
 import styles from "./Navbar.module.css";
 import NavIconButton from "./NavIconButton";
-import Stamp from "./Stamp";
 import UserMenu from "./UserMenu";
-import { useRegions } from "@/components/RegionsProvider";
-import { invariant } from "@apollo/client/utilities/globals";
 import { useUser } from "@/lib/useUser";
+import Image from "next/image";
+import CartModal from "../cart/CartModal";
+import { SearchBar } from "./SearchBar";
 
 export function Navbar() {
   const paths = usePaths();
@@ -24,32 +20,11 @@ export function Navbar() {
   const [isBurgerOpen, setBurgerOpen] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
   const { authenticated: actuallyAuthenticated } = useUser();
-  const { checkout } = useCheckout();
-  const { currentLocale, currentChannel } = useRegions();
 
   // Avoid hydration warning by setting authenticated state in useEffect
   useEffect(() => {
     setAuthenticated(actuallyAuthenticated);
   }, [actuallyAuthenticated]);
-
-  const saleorApiUrl = process.env.NEXT_PUBLIC_API_URI;
-  invariant(saleorApiUrl, "Missing NEXT_PUBLIC_API_URI");
-  const domain = new URL(saleorApiUrl).hostname;
-
-  const checkoutParams = checkout
-    ? new URLSearchParams({
-        checkout: checkout.id,
-        locale: currentLocale,
-        channel: currentChannel.slug,
-        saleorApiUrl,
-        // @todo remove `domain`
-        // https://github.com/saleor/saleor-dashboard/issues/2387
-        // https://github.com/saleor/saleor-app-sdk/issues/87
-        domain,
-      })
-    : new URLSearchParams();
-
-  const externalCheckoutUrl = checkout ? `/checkout/?${checkoutParams.toString()}` : "#";
 
   useEffect(() => {
     // Close side menu after changing the page
@@ -60,28 +35,26 @@ export function Navbar() {
     });
   });
 
-  const counter =
-    checkout?.lines?.reduce(
-      (amount: number, line?: CheckoutLineDetailsFragment | null) =>
-        line ? amount + line.quantity : amount,
-      0
-    ) || 0;
-
   return (
     <>
       <div className={clsx(styles.navbar)}>
-        <div className={clsx(styles.inner)}>
-          <div className="flex-1 h-full hidden xs:flex">
-            <Menu />
-          </div>
-          <div className="flex-1 flex xs:justify-center">
-            <Link href={paths.$url()} passHref legacyBehavior>
-              <a href="pass" className={styles.logo}>
-                <Stamp />
-              </a>
-            </Link>
-          </div>
-          <div className="flex-1 flex justify-end">
+        <div className="container w-full flex py-4 md:pb-0 items-center	">
+          <Link href={paths.$url()} passHref legacyBehavior>
+            <a href="pass" className={styles.logo}>
+              <Image
+                src="/logo-surmont.png"
+                alt="Surmont - The bike shop logo"
+                className="pl-4"
+                width="200"
+                height="31"
+                priority={true}
+              />
+            </a>
+          </Link>
+          <div className="ml-auto flex items-center justify-center gap-4 whitespace-nowrap lg:gap-6">
+            <div className="hidden md:flex">
+              <SearchBar />
+            </div>
             {!authenticated ? (
               <Link href={paths.account.login.$url()} passHref legacyBehavior>
                 <a href="pass" data-testid="userIcon">
@@ -91,19 +64,24 @@ export function Navbar() {
             ) : (
               <UserMenu />
             )}
-            <a href={externalCheckoutUrl} className="ml-2 hidden xs:flex" data-testid="cartIcon">
-              <NavIconButton isButton={false} icon="bag" aria-hidden="true" counter={counter} />
-            </a>
-            <Link href={paths.search.$url()} passHref legacyBehavior>
+
+            {router.route !== "/checkout" && <CartModal />}
+
+            {/* <Link href={paths.search.$url()} passHref legacyBehavior>
               <a href="pass" className="hidden lg:flex ml-2" data-testid="searchIcon">
                 <NavIconButton isButton={false} icon="spyglass" />
               </a>
-            </Link>
+            </Link> */}
             <NavIconButton
               icon="menu"
               className="ml-2 lg:hidden"
               onClick={() => setBurgerOpen(true)}
             />
+          </div>
+        </div>
+        <div className={clsx(styles.inner)}>
+          <div className="md:flex-1 md:h-full">
+            <Menu />
           </div>
         </div>
       </div>

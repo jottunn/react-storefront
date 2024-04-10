@@ -99,6 +99,8 @@ export function DummyCreditCardSection({ checkout }: DummyCreditCardSectionInter
       return redirectToOrderDetailsPage();
     } else {
       console.error("Order was not created");
+      setIsPaymentProcessing(false);
+      return;
     }
   });
 

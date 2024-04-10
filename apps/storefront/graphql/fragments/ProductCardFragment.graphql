@@ -6,6 +6,9 @@ fragment ProductCardFragment on Product {
     id
     name
   }
+  isAvailable
+  isAvailableForPurchase
+  availableForPurchaseAt
   thumbnail {
     ...ImageFragment
   }
@@ -22,12 +25,38 @@ fragment ProductCardFragment on Product {
     alt
     type
   }
+  pricing {
+    onSale
+    priceRangeUndiscounted {
+      start {
+        gross {
+          amount
+        }
+      }
+      stop {
+        gross {
+          amount
+        }
+      }
+    }
+    priceRange {
+      start {
+        gross {
+          amount
+        }
+      }
+      stop {
+        gross {
+          amount
+        }
+      }
+    }
+  }
+  
   attributes {
-    attribute {
-      slug
-    }
-    values {
-      name
-    }
+    ...SelectedAttributeDetailsFragment
+  }
+  variants {
+    ...ProductVariantDetailsFragment
   }
 }

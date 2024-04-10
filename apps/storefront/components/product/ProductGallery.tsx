@@ -1,100 +1,149 @@
 import { PlayIcon } from "@heroicons/react/outline";
 import clsx from "clsx";
-import Image from "next/legacy/image";
-import { useState } from "react";
+import Image from "next/image";
+import { useState, useEffect } from "react";
+import { getGalleryMedia, getYouTubeIDFromURL } from "@/lib/media";
+import { ProductDetailsFragment, ProductVariantDetailsFragment } from "@/saleor/api";
 
-import { ImageExpand } from "@/components/product/ImageExpand";
-import { VideoExpand } from "@/components/product/VideoExpand";
-import { getGalleryMedia, getVideoThumbnail } from "@/lib/media";
-import {
-  ProductDetailsFragment,
-  ProductMediaFragment,
-  ProductVariantDetailsFragment,
-} from "@/saleor/api";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Scrollbar } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/scrollbar";
+import MediaModal from "./MediaModal";
 
 export interface ProductGalleryProps {
   product: ProductDetailsFragment;
-  selectedVariant?: ProductVariantDetailsFragment;
+  selectedVariant?: ProductVariantDetailsFragment | null;
+  placeholder?: string | null;
 }
 
-export function ProductGallery({ product, selectedVariant }: ProductGalleryProps) {
-  const [expandedImage, setExpandedImage] = useState<ProductMediaFragment | undefined>(undefined);
-  const [videoToPlay, setVideoToPlay] = useState<ProductMediaFragment | undefined>(undefined);
-
+export function ProductGallery({ product, selectedVariant, placeholder }: ProductGalleryProps) {
   const galleryMedia = getGalleryMedia({ product, selectedVariant });
+  const [isMobile, setIsMobile] = useState(true);
+  const [currentIndex, setCurrentIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    // Update the state based on viewport width
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    // Set the initial value
+    handleResize();
+    // Add event listener
+    window.addEventListener("resize", handleResize);
+    // Clean up
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const handleImageClick = (index: number) => {
+    setCurrentIndex(index);
+  };
+
+  const closeModal = () => {
+    setCurrentIndex(null);
+  };
+  console.log(galleryMedia);
 
   return (
     <>
-      <div
-        className={clsx(
-          "mt-1 mb-2 w-full max-h-screen grid grid-cols-1 gap-2 md:h-full h-96 overflow-scroll scrollbar-hide",
-          galleryMedia.length > 1 && "md:grid-cols-2 md:col-span-2"
-        )}
-        style={{
-          scrollSnapType: "both mandatory",
-        }}
-      >
-        {galleryMedia?.map((media: ProductMediaFragment) => {
-          const videoThumbnailUrl = getVideoThumbnail(media.url);
-          return (
+      {isMobile ? (
+        <div className="md:hidden" style={{ height: "400px", minWidth: "400px" }}>
+          <Swiper slidesPerView={1} modules={[Scrollbar]} scrollbar={{ draggable: true }}>
+            {galleryMedia.map((media, index) => (
+              <SwiperSlide key={index}>
+                {media.type === "IMAGE" && (
+                  <Image
+                    className="m-auto"
+                    src={media.url}
+                    alt={`Image ${index}`}
+                    width={400}
+                    height={400}
+                    priority={index === 0}
+                    loading={index < 1 ? "eager" : "lazy"}
+                  />
+                )}
+
+                {media.type === "VIDEO" && (
+                  <div className="aspect-w-16 aspect-h-9">
+                    <iframe
+                      title={media.alt || "Video"}
+                      src={`https://www.youtube.com/embed/${
+                        getYouTubeIDFromURL(media.url) as string
+                      }`}
+                      className="w-full h-full"
+                      loading="lazy"
+                      allowFullScreen
+                    />
+                  </div>
+                )}
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
+      ) : (
+        <div
+          className={clsx(
+            "mb-2 w-full max-h-screen grid grid-cols-1 gap-6 md:h-full h-[38rem] overflow-scroll scrollbar-hide",
+            galleryMedia.length > 1 && "md:grid-cols-1 md:col-span-1"
+          )}
+          style={{
+            scrollSnapType: "both mandatory",
+          }}
+        >
+          {galleryMedia?.map((media, index) => (
             <div
               key={media.url}
-              className="aspect-w-1 aspect-h-1"
-              style={{
-                scrollSnapAlign: "start",
-              }}
+              className="aspect-w-1 aspect-h-1 border"
+              style={{ scrollSnapAlign: "start" }}
+              onClick={() => handleImageClick(index)}
             >
               {media.type === "IMAGE" && (
                 <Image
-                  onClick={() => setExpandedImage(media)}
                   src={media.url}
                   alt={media.alt}
-                  layout="fill"
-                  objectFit="cover"
+                  width={700}
+                  height={700}
+                  style={{ objectFit: "contain" }}
                   role="button"
                   tabIndex={-2}
-                  priority
+                  priority={index === 0}
+                  loading={index < 3 ? "eager" : "lazy"}
+                  {...(placeholder !== null
+                    ? { placeholder: "blur", blurDataURL: placeholder }
+                    : {})}
                 />
               )}
               {media.type === "VIDEO" && (
-                <div
-                  role="button"
-                  tabIndex={-2}
-                  onClick={() => {
-                    setVideoToPlay(media);
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      setVideoToPlay(media);
-                    }
-                  }}
-                >
-                  {videoThumbnailUrl && (
+                <div role="button" tabIndex={-2}>
+                  {
                     <Image
-                      src={videoThumbnailUrl}
+                      src={media.thumbnailUrl || ""}
                       alt={media.alt}
-                      layout="fill"
-                      objectFit="cover"
+                      fill={true}
+                      style={{ objectFit: "cover" }}
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      unoptimized
                     />
-                  )}
+                  }
+
                   <div className="transition duration-500 ease-in-out transform hover:-translate-y-1 hover:scale-110 absolute w-full h-full flex justify-center items-center bg-transparent">
                     <PlayIcon className="h-12 w-12" />
                   </div>
                 </div>
               )}
             </div>
-          );
-        })}
-      </div>
-      {expandedImage && (
-        <div className="absolute min-h-screen min-w-screen h-full w-full top-0 bottom-0 left-0 right-0 z-40">
-          <ImageExpand image={expandedImage} onRemoveExpand={() => setExpandedImage(undefined)} />
+          ))}
         </div>
       )}
 
-      {videoToPlay && (
-        <div className="absolute min-h-screen min-w-screen top-0 bottom-0 left-0 right-0 z-40">
-          <VideoExpand video={videoToPlay} onRemoveExpand={() => setVideoToPlay(undefined)} />
+      {currentIndex !== null && (
+        <div className="fixed bg-black bg-opacity-70 overlow-hidden min-h-screen min-w-screen h-full w-full top-0 bottom-0 left-0 right-0 z-50">
+          <MediaModal
+            currentIndex={currentIndex}
+            galleryMedia={galleryMedia}
+            closeModal={closeModal}
+            placeholder={placeholder}
+          />
         </div>
       )}
     </>

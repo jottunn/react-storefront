@@ -22,30 +22,31 @@ module.exports = {
         center: true,
         padding: "1.6rem",
         screens: {
-          "2xl": "1348px",
+          "2xl": "1440px",
         },
       },
       colors: {
         action: {
-          1: "#5B68E4",
-          2: "rgba(91, 104, 228, 0.8)",
-          3: "rgba(91, 104, 228, 0.6)",
-          4: "rgba(91, 104, 228, 0.4)",
-          5: "rgba(91, 104, 228, 0.2)",
+          1: "#0b9446",
+          2: "rgba(11, 148, 70, 0.8)",
+          3: "rgba(11, 148, 70, 0.6)",
+          4: "rgba(11, 148, 70, 0.4)",
+          5: "rgba(11, 148, 70, 0.2)",
         },
         disabled: {
-          DEFAULT: "#C2D1E4",
+          DEFAULT: "#B2CCC0",
         },
         brand: {
-          DEFAULT: "#5B68E4",
+          DEFAULT: "#0b9446",
         },
         main: {
-          DEFAULT: "#394052",
-          1: "#4F5460",
+          DEFAULT: "#000000",
+          1: "#394052",
           2: "#8A919F",
           3: "#B9C1CF",
           4: "rgba(57, 64, 82, 0.15)",
           5: "#EEF1F7",
+          6: "rgb(240,240,240)",
         },
       },
       spacing: {
@@ -56,7 +57,7 @@ module.exports = {
         DEFAULT: "1px",
       },
       fontFamily: {
-        sans: ["Inconsolata"],
+        sans: ["Open Sans"],
       },
       fontWeight: {
         normal: 400,
@@ -65,10 +66,10 @@ module.exports = {
         bold: 800,
       },
       fontSize: {
-        xs: ["1.1rem", "1.6rem"],
-        sm: ["1.2rem", "2.1rem"],
-        base: ["1.4rem", "2.1rem"],
-        md: ["1.6rem", "1.9rem"],
+        xs: ["1.2rem", "1.6rem"],
+        sm: ["1.3rem", "2.1rem"],
+        base: ["1.5rem", "2rem"],
+        md: ["1.6rem", "2.5rem"],
         lg: ["2.4rem", "3.2rem"],
         xl: ["3.2rem", "4.6rem"],
       },

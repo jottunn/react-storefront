@@ -7,8 +7,16 @@
   "typescript.tsdk": "node_modules/typescript/lib",
   "eslint.run": "onSave",
   "editor.codeActionsOnSave": {
-    "source.fixAll": true
+    "source.fixAll": "explicit"
   },
   "css.validate": true,
-  "editor.quickSuggestions": { "strings": true }
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  }
 }

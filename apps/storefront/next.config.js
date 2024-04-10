@@ -11,13 +11,18 @@ const allowedImageDomains = process.env.NEXT_PUBLIC_ALLOWED_IMAGE_DOMAINS
 const checkoutEmbededInStorefrontPath = "/saleor-app-checkout";
 
 module.exports = withBundleAnalyzer({
-  reactStrictMode: true,
+  reactStrictMode: false,
   swcMinify: true,
   images: {
     domains: [apiURL.hostname, ...allowedImageDomains],
     formats: ["image/avif", "image/webp"],
   },
   trailingSlash: true,
+  i18n: {
+    locales: ["en", "ro"],
+    defaultLocale: "ro",
+    localeDetection: false,
+  },
   webpack(config) {
     config.module.rules.push({
       test: /\.svg$/i,
@@ -27,6 +32,7 @@ module.exports = withBundleAnalyzer({
 
     return config;
   },
+
   async headers() {
     return [
       {
@@ -64,8 +70,6 @@ module.exports = withBundleAnalyzer({
     ];
   },
   async rewrites() {
-    const cloudDeploymentUrl = process.env.CLOUD_DEPLOYMENT_URL;
-
     return [
       {
         source: "/checkout/",
@@ -92,56 +96,16 @@ module.exports = withBundleAnalyzer({
         source: "/api/install",
         destination: `${process.env.NEXT_PUBLIC_CHECKOUT_APP_URL}/api/install`,
       },
-      ...(cloudDeploymentUrl
-        ? [
-            {
-              source: "/media/:match*",
-              destination: `${cloudDeploymentUrl}/media/:match*`,
-            },
-            {
-              source: "/dashboard/:match*",
-              destination: `${cloudDeploymentUrl}/dashboard/:match*`,
-            },
-            {
-              source: "/graphql/:match*",
-              destination: `${cloudDeploymentUrl}/graphql/:match*`,
-            },
-            {
-              source: "/graphql/",
-              destination: `${cloudDeploymentUrl}/graphql/`,
-            },
-            {
-              source: "/plugins/:match*",
-              destination: `${cloudDeploymentUrl}/plugins/:match*`,
-            },
-            {
-              source: "/digital-download/:match*",
-              destination: `${cloudDeploymentUrl}/digital-download/:match*`,
-            },
-            {
-              source: "/thumbnail/:instance/:size/:format/",
-              destination: `${cloudDeploymentUrl}/thumbnail/:instance/:size/:format/`,
-            },
-            {
-              source: "/thumbnail/:instance/:size/",
-              destination: `${cloudDeploymentUrl}/thumbnail/:instance/:size/`,
-            },
-            {
-              source: "/.well-known/jwks.json",
-              destination: `${cloudDeploymentUrl}/.well-known/jwks.json`,
-            },
-          ]
-        : []),
     ];
   },
-  async redirects() {
-    return [
-      {
-        source: "/:channel/:locale/account/",
-        destination: "/[channel]/[locale]/account/preferences",
-        permanent: true,
-      },
-    ];
-  },
+  // async redirects() {
+  //   return [
+  //     {
+  //       source: "/:channel/:locale/account/",
+  //       destination: "/[channel]/[locale]/account/preferences",
+  //       permanent: true,
+  //     },
+  //   ];
+  // },
   experimental: {},
 });

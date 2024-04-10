@@ -43,12 +43,12 @@ export function PaymentSection({ checkout, active }: PaymentSectionProps) {
                   <label className="inline-flex items-center" htmlFor={gateway.id}>
                     <input
                       type="radio"
-                      className="form-radio"
+                      className="form-radio !opacity-100 w-4 h-4 text-action-1 bg-neutral-100 border-gray-300 focus:ring-action-2 dark:focus:ring-action-2 dark:ring-offset-gray-800 focus:ring-2 dark:bg-neutral-100 dark:border-gray-600"
                       name="radio"
                       value={gateway.id}
                       id={gateway.id}
                     />
-                    <span className="ml-2 text-base">{gateway.name}</span>
+                    <span className="ml-2 text-base pl-5">{gateway.name}</span>
                   </label>
                 </RadioGroup.Option>
               ))}

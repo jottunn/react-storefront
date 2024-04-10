@@ -19,7 +19,7 @@ export interface LocaleDropdownProps {
 
 export function LocaleDropdown({ horizontalAlignment }: LocaleDropdownProps) {
   const router = useRouter();
-  const { currentLocale, currentChannel } = useRegions();
+  const { currentLocale } = useRegions();
 
   const localeOptions: DropdownOption[] = LOCALES.map((loc) => ({
     label: loc.name,
@@ -33,14 +33,9 @@ export function LocaleDropdown({ horizontalAlignment }: LocaleDropdownProps) {
     }
 
     // Update current URL to use the chosen locale
-    void router.push({
-      pathname: router.pathname,
-      query: {
-        ...router.query,
-        channel: currentChannel.slug,
-        locale: localeSlug,
-      },
-    });
+    const { pathname, asPath, query } = router;
+    // change just the locale and maintain all other route information including urls query
+    void router.push({ pathname, query }, asPath, { locale: localeSlug });
   };
 
   return (

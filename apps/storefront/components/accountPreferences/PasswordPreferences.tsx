@@ -118,7 +118,7 @@ export function PasswordPreferences() {
         {!!successMessage && <p className="mt-2 text-sm text-green-600">{successMessage}</p>}
         <div>
           <button
-            className="mt-2 w-40 bg-green-500 hover:bg-green-400 text-white py-2 rounded-md transition duration-100"
+            className="mt-2 w-40 bg-main hover:bg-main-1 text-md text-white py-2 transition duration-100"
             onClick={() => onPasswordPreferenceSubmit()}
             type="submit"
           >

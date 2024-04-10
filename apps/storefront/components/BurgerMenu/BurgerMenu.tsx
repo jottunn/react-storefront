@@ -16,6 +16,7 @@ import { messages } from "../translations";
 import styles from "./BurgerMenu.module.css";
 import { CollapseMenu } from "./CollapseMenu";
 import { useUser } from "@/lib/useUser";
+import { SearchBar } from "../Navbar/SearchBar";
 
 export interface BurgerMenuProps {
   open?: boolean;
@@ -56,12 +57,14 @@ export function BurgerMenu({ open, onCloseClick }: BurgerMenuProps) {
     >
       <div className={styles.backdrop} aria-hidden="true" onClick={onCloseClick} />
       <div className={styles.body}>
-        <div className="flex justify-end w-full mb-5">
+        <div className="flex justify-start w-full mb-5">
           <NavIconButton icon="close" onClick={onCloseClick} />
         </div>
+
         {menu.map((item) => (
           <CollapseMenu menuItem={item} key={item.id} />
         ))}
+
         <div className="mt-auto pt-4">
           <div className="flex flex-col">
             {authenticated ? (
@@ -90,6 +93,9 @@ export function BurgerMenu({ open, onCloseClick }: BurgerMenuProps) {
                 {t.formatMessage(messages.logIn)}
               </button>
             )}
+          </div>
+          <div className="py-4">
+            <SearchBar />
           </div>
         </div>
         <div className="flex mt-4 gap-4">

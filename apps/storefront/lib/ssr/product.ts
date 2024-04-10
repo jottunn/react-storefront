@@ -14,7 +14,6 @@ export interface ProductPathArguments extends ParsedUrlQuery {
 
 export const productPaths = async () => {
   const paths: Path<ProductPathArguments>[] = [];
-
   for (const channel of CHANNELS) {
     const channelSlug = channel.slug;
     let hasNextPage = true;

@@ -5,6 +5,7 @@ import { useIntl } from "react-intl";
 import { notNullable } from "@/lib/util";
 import {
   CheckoutDetailsFragment,
+  ErrorDetailsFragment,
   ShippingMethod,
   useCheckoutShippingMethodUpdateMutation,
 } from "@/saleor/api";
@@ -26,6 +27,7 @@ export function ShippingMethodSection({ checkout, active }: ShippingMethodSectio
 
   const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState(checkout.shippingMethod);
   const [editing, setEditing] = useState(!checkout.shippingMethod);
+  const [errors, setErrors] = React.useState<ErrorDetailsFragment[] | null>(null);
 
   const [checkoutShippingMethodUpdate] = useCheckoutShippingMethodUpdateMutation({});
 
@@ -39,11 +41,12 @@ export function ShippingMethodSection({ checkout, active }: ShippingMethodSectio
     });
     if (data?.checkoutShippingMethodUpdate?.errors.length) {
       // todo: handle errors
-      console.error(data?.checkoutShippingMethodUpdate?.errors);
+      setErrors(data?.checkoutShippingMethodUpdate?.errors);
       return;
     }
     setSelectedDeliveryMethod(method);
     setEditing(false);
+    setErrors(null);
   };
 
   const availableShippingMethods = checkout.availableShippingMethods.filter(notNullable) || [];
@@ -56,10 +59,16 @@ export function ShippingMethodSection({ checkout, active }: ShippingMethodSectio
         >
           {t.formatMessage(messages.shippingMethodCardHeader)}
         </h2>
+        {errors &&
+          errors.map((error, index) => (
+            <p key={index} className="text-red-500 font-bold mt-2">
+              {error.message}
+            </p>
+          ))}
       </div>
       {active &&
         (editing ? (
-          <RadioGroup value={selectedDeliveryMethod} onChange={handleChange} className="py-8">
+          <RadioGroup value={selectedDeliveryMethod} onChange={handleChange} className="pb-4">
             <div className="mt-4 grid grid-cols-2 gap-2">
               {availableShippingMethods.map((method) => {
                 // todo: Investigate why filter did not excluded non existing methods
@@ -76,9 +85,10 @@ export function ShippingMethodSection({ checkout, active }: ShippingMethodSectio
               <ShippingMethodDisplay method={checkout.shippingMethod} />
             )}
             <div className="flex justify-between items-center">
-              <Button onClick={() => setEditing(true)}>
-                {t.formatMessage(messages.changeButton)}
-              </Button>
+              <Button
+                onClick={() => setEditing(true)}
+                label={t.formatMessage(messages.changeButton)}
+              />
             </div>
           </section>
         ))}

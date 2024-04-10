@@ -28,9 +28,13 @@ export function CollapseMenu({ menuItem }: CollapseMenuProps) {
             className={clsx(styles["collapse-main"], {
               [styles["collapse-main--active"]]: open,
             })}
+            aria-expanded={open}
             onClick={() => setOpen(!open)}
           >
             {translate(menuItem, "name")}
+            <span className={clsx(styles.icon, { [styles.rotated]: open })} aria-hidden="true">
+              +
+            </span>
           </button>
           {open && (
             <div>

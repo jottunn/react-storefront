@@ -1,0 +1,30 @@
+fragment PageFragment on Page {
+    id
+    title
+    translation(languageCode: $locale) {
+        id
+        title
+        content
+    }
+    seoTitle
+    seoDescription
+    slug
+    created
+    content
+    metadata {
+        key
+        value
+    }
+    attributes {
+        attribute {
+            name
+            inputType        
+        }
+        values {
+            name
+            value
+            reference
+            inputType
+        }
+    }
+}

@@ -15,7 +15,7 @@ const config = withTM({
     locales: ["en-US", "pl-PL", "fr-FR", "vi-VN", "ar-AE"],
     defaultLocale: "en-US",
   },
-  reactStrictMode: true,
+  reactStrictMode: false,
   productionBrowserSourceMaps: true,
   async redirects() {
     return [

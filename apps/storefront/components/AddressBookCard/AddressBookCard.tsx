@@ -48,9 +48,8 @@ export function AddressBookCard({ address, onRefreshBook }: AddressBookCardProps
               variables: { id: address.id, type: "BILLING" },
             })
           }
-        >
-          {t.formatMessage(messages.setDefaultBilling)}
-        </Button>
+          label={t.formatMessage(messages.setDefaultBilling)}
+        />
       )}
       {!address.isDefaultShippingAddress && (
         <Button
@@ -60,13 +59,14 @@ export function AddressBookCard({ address, onRefreshBook }: AddressBookCardProps
               variables: { id: address.id, type: "SHIPPING" },
             })
           }
-        >
-          {t.formatMessage(messages.setDefaultShipping)}
-        </Button>
+          label={t.formatMessage(messages.setDefaultShipping)}
+        />
       )}
-      <Button className="my-1" onClick={() => onDeleteAddress(address.id)}>
-        {t.formatMessage(messages.removeButton)}
-      </Button>
+      <Button
+        className="my-1"
+        onClick={() => onDeleteAddress(address.id)}
+        label={t.formatMessage(messages.removeButton)}
+      />
     </div>
   );
 }

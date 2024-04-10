@@ -16,10 +16,10 @@ export function SortingDropdown({ optionToggle, chosen }: SortingDropdownProps) 
   const options = getSortingOptions(chosen);
 
   return (
-    <Menu as="div" className="relative inline-block text-left">
+    <Menu as="div" className="relative inline-block text-left float-right right-20">
       <div>
         <Menu.Button
-          className="inline-flex w-full justify-left px-2 py-2 text-base font-medium  hover:bg-opacity-30 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
+          className="inline-flex w-full justify-left px-2 py-2 text-base font-medium  hover:bg-opacity-30 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 text-left"
           data-testid="sortBy"
         >
           Sort by
@@ -47,7 +47,7 @@ export function SortingDropdown({ optionToggle, chosen }: SortingDropdownProps) 
                   onClick={() => optionToggle(option.field, option.direction)}
                   className={clsx(
                     active ? "border-brand text-brand" : "border-transparent text-gray-900",
-                    "group flex w-full items-center px-2 py-2 text-base border-2"
+                    "group flex w-full items-center px-2 py-2 text-base border-2 text-left"
                   )}
                   data-testid={`sortByOption${option.label}`}
                 >

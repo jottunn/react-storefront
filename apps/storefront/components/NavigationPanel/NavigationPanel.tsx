@@ -10,7 +10,7 @@ export function NavigationPanel() {
   const t = useIntl();
 
   const linkClassname =
-    "flex p-4 items-center w-full rounded-md shadow-sm h-10 hover:text-blue-500";
+    "flex text-base p-4 items-center w-full rounded-md shadow-sm h-10 hover:text-brand";
   return (
     <div className="group w-full md:w-4/5 cursor-default rounded-md bg-white">
       <Link href={paths.account.preferences.$url()} passHref legacyBehavior>

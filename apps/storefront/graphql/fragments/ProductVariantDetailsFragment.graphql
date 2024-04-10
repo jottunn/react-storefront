@@ -10,9 +10,22 @@ fragment ProductVariantDetailsFragment on ProductVariant {
     ...SelectedAttributeDetailsFragment
   }
   media {
-    ...ProductMediaFragment
+    alt
+    type
+    url(size: 800, format: WEBP)
   }
   pricing {
+    onSale
+    priceUndiscounted {
+      gross {
+        ...PriceFragment
+      }
+    }
+    discount {
+      gross {
+        ...PriceFragment
+      }
+    }
     price {
       gross {
         ...PriceFragment

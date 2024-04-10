@@ -1,0 +1,37 @@
+query PageTypes($filter: PageFilterInput, $locale: LanguageCodeEnum!) {
+  pages(first: 20, filter: $filter) {
+    edges {
+      node {
+        pageType {
+          name
+          slug
+        }
+        metadata {
+          key 
+          value
+        }
+        slug
+        id
+        title
+        content 
+        translation(languageCode: $locale) {
+          id
+          title
+          content        
+        }
+        attributes {
+          attribute {
+            slug
+            inputType
+          }
+          values {
+            slug
+            value
+            name
+            inputType
+          }
+        }
+      }
+    }
+  }
+}

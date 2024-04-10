@@ -49,6 +49,6 @@ export const createGraphqlClient = (apiUrl: string, token: string | undefined) =
       }),
       multipartFetchExchange,
     ],
-    url: apiUrl,
+    url: "http://localhost:8000/graphql/",
   });
 };

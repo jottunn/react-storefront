@@ -1,6 +1,4 @@
-import { useRouter } from "next/router";
 import React from "react";
-
 import { useRegions } from "../RegionsProvider";
 import { BaseRegionsDropdown, HorizontalAlignment } from "./BaseRegionsDropdown";
 import { BaseRegionsDropdownItem } from "./BaseRegionsDropdownItem";
@@ -16,8 +14,7 @@ export interface ChannelDropdownProps {
 }
 
 export function ChannelDropdown({ horizontalAlignment }: ChannelDropdownProps) {
-  const router = useRouter();
-  const { channels, currentChannel, setCurrentChannel, currentLocale } = useRegions();
+  const { channels, currentChannel, setCurrentChannel } = useRegions();
 
   const channelOptions: DropdownOption[] = channels.map((ch) => ({
     label: ch.name,
@@ -30,16 +27,6 @@ export function ChannelDropdown({ horizontalAlignment }: ChannelDropdownProps) {
       return;
     }
     setCurrentChannel(channelSlug).catch(console.error);
-
-    // Update current URL to use the chosen channel
-    void router.push({
-      pathname: router.pathname,
-      query: {
-        ...router.query,
-        channel: channelSlug,
-        locale: currentLocale,
-      },
-    });
   };
 
   return (

@@ -1,0 +1,5 @@
+query PageById($id: ID!, $locale: LanguageCodeEnum!) {
+  page(id: $id) {
+    ...PageFragment
+  }
+}

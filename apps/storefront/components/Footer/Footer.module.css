@@ -3,7 +3,7 @@
 }
 
 .footer-inner {
-  @apply px-6 border-l-0 border-r-0 sm:border-l-2 sm:border-r-2;
+  @apply px-6;
 }
 
 @screen sm {
@@ -26,4 +26,14 @@
 
 .menu-link {
   @apply text-base cursor-pointer hover:underline;
+}
+
+@screen lg {
+  .footer-grid {
+    max-width: 100%;
+    display: grid;
+    grid-gap: 4rem;
+    text-align: left;
+    grid-template-columns: 1fr 1fr 2fr 2fr;
+  }
 }

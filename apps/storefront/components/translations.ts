@@ -41,20 +41,30 @@ export const messages = defineMessages({
     description: "Register form header",
     defaultMessage: "Create a new account",
   },
+  createNewAccountFromCheckoutHeader: {
+    id: "app.register.createNewAccountFromCheckoutHeader",
+    description: "Create new account while checkout",
+    defaultMessage: "I want to create an account",
+  },
   registerEmailFieldLabel: {
     id: "app.register.emailField",
     description: "Email field label",
-    defaultMessage: "Email",
+    defaultMessage: "Email*",
   },
   registerPasswordFieldLabel: {
     id: "app.register.passwordField",
     description: "Password field label",
-    defaultMessage: "Password",
+    defaultMessage: "Password (minimum 8 characters)*",
   },
   registerButton: {
     id: "app.register.registerButton",
     description: "Register account button label",
     defaultMessage: "Register",
+  },
+  registerSuccess: {
+    id: "app.register.registerSuccess",
+    description: "Account creation while checkout",
+    defaultMessage: "Your account has been created.",
   },
   backToLogin: {
     id: "app.register.backToLogin",
@@ -127,15 +137,25 @@ export const messages = defineMessages({
     description: "Message displayed during adding product to the cart.",
     defaultMessage: "Adding...",
   },
+  description: {
+    id: "app.product.description",
+    description: "Product Description",
+    defaultMessage: "Description",
+  },
   checkoutButton: {
     id: "app.checkout.checkoutButton",
     description: "Go to checkout button label.",
-    defaultMessage: "Checkout",
+    defaultMessage: "Proceed to Checkout",
   },
   cartPageHeader: {
     id: "app.checkout.pageHeader",
     description: "Header of the cart page.",
-    defaultMessage: "Your Cart",
+    defaultMessage: "Your Shopping Cart",
+  },
+  cartEmptyHeader: {
+    id: "app.checkout.cartEmptyHeader",
+    description: "Empty cart text",
+    defaultMessage: "Your cart is empty.",
   },
   discountCodeFieldLabel: {
     id: "app.checkout.discountCode",
@@ -162,6 +182,11 @@ export const messages = defineMessages({
     description: "Shipping table header at the checkout summary.",
     defaultMessage: "Shipping",
   },
+  shippingInfo: {
+    id: "app.checkout.shippingInfo",
+    description: "Text displayed on cart modal",
+    defaultMessage: "Calculated at checkout",
+  },
   tax: {
     id: "app.checkout.tax",
     description: "Tax table header at the checkout summary.",
@@ -170,7 +195,12 @@ export const messages = defineMessages({
   emailAddressCardHeader: {
     id: "app.checkout.emailAddressCardHeader",
     description: "Header of the email section.",
-    defaultMessage: "Email Address",
+    defaultMessage: "Contact details",
+  },
+  alreadyHaveAccountHeader: {
+    id: "app.checkout.alreadyHaveAccountHeader",
+    description: "Already have an account",
+    defaultMessage: "Already have an account?",
   },
   billingMethodCardHeader: {
     id: "app.checkout.billingMethodCardHeader",
@@ -181,6 +211,11 @@ export const messages = defineMessages({
     id: "app.checkout.billingAddressCardHeader",
     description: "Header of the billing address section.",
     defaultMessage: "Billing Address",
+  },
+  addressSelect: {
+    id: "app.checkout.addressSelect",
+    description: "Help text above existing addresses",
+    defaultMessage: "Click to select already existing addresses:",
   },
   shippingAddressCardHeader: {
     id: "app.checkout.shippingAddressCardHeader",
@@ -217,10 +252,20 @@ export const messages = defineMessages({
     description: "Last name field label.",
     defaultMessage: "Last name",
   },
+  companyNameField: {
+    id: "app.checkout.companyNameField",
+    description: "Company name field label.",
+    defaultMessage: "Company name",
+  },
   addressField: {
     id: "app.checkout.addressField",
     description: "Address field label.",
     defaultMessage: "Address",
+  },
+  countryField: {
+    id: "app.checkout.countryField",
+    description: "Country field label.",
+    defaultMessage: "Country",
   },
   cityField: {
     id: "app.checkout.cityField",
@@ -256,7 +301,7 @@ export const messages = defineMessages({
   sameAsBillingButton: {
     id: "app.checkout.sameAsBillingButton",
     description: "Use same address as billing button label.",
-    defaultMessage: "Use the same address as billing",
+    defaultMessage: "Use the same shipping address as billing",
   },
   orderSummary: {
     id: "app.checkout.orderSummary",
@@ -298,6 +343,11 @@ export const messages = defineMessages({
     description: "Save button label.",
     defaultMessage: "Save",
   },
+  closeButton: {
+    id: "app.ui.closeButton",
+    description: "Close button label.",
+    defaultMessage: "Close",
+  },
   paginationProductCounter: {
     id: "app.ui.productCounter",
     description: "Message with number of displayed products.",
@@ -306,7 +356,7 @@ export const messages = defineMessages({
   searchHeader: {
     id: "app.search.searchHeader",
     description: "Header of the search page.",
-    defaultMessage: "Search",
+    defaultMessage: "Search results for",
   },
   searchFieldPlaceholder: {
     id: "app.search.searchFieldPlaceholder",
@@ -334,7 +384,7 @@ export const messages = defineMessages({
     defaultMessage: "New password",
   },
   newPasswordRepeatedFieldLabel: {
-    id: "app.preferences.changePassword.header",
+    id: "app.preferences.newPassword.header",
     description: "Repeated new password field label",
     defaultMessage: "Repeat new password",
   },
@@ -367,6 +417,31 @@ export const messages = defineMessages({
     id: "app.preferences.addressbook.setDefaultBilling",
     description: "Set billing default button label",
     defaultMessage: "Set as billing default",
+  },
+  cancel: {
+    id: "app.buttons.cancel",
+    description: "Close active and return",
+    defaultMessage: "Cancel",
+  },
+  back: {
+    id: "app.buttons.back",
+    description: "Go back",
+    defaultMessage: "Back",
+  },
+  relatedProducts: {
+    id: "app.relatedProducts",
+    description: "Text to be displayed above related prods section",
+    defaultMessage: "We think you'll also like these",
+  },
+  newProducts: {
+    id: "app.newProducts",
+    description: "Text to be displayed above new prods section",
+    defaultMessage: "New Arrivals",
+  },
+  sizeGuide: {
+    id: "app.sizeGuide",
+    description: "Size Guide link text",
+    defaultMessage: "Size guide",
   },
 });
 

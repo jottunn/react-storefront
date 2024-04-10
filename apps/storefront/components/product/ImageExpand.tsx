@@ -1,5 +1,5 @@
 import { XIcon } from "@heroicons/react/outline";
-import Image from "next/legacy/image";
+import Image from "next/image";
 import React from "react";
 
 import { ProductMediaFragment } from "@/saleor/api";
@@ -24,7 +24,7 @@ export function ImageExpand({ image, onRemoveExpand }: ImageExpandProps) {
         <XIcon className="w-6 h-6" />
       </button>
       <div className="w-full h-full absolute md:mt-10">
-        <Image src={image.url} alt={image.alt} layout="fill" objectFit="scale-down" />
+        <Image src={image.url} alt={image.alt} fill={true} style={{ objectFit: "scale-down" }} />
       </div>
     </div>
   );

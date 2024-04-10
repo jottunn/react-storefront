@@ -1,7 +1,7 @@
 query FilteringAttributesQuery(
   $filter: AttributeFilterInput!
   $channel: String!
-  $locale: LanguageCodeEnum!
+  $locale: LanguageCodeEnum!,
 ) {
   attributes(filter: $filter, first: 100, channel: $channel) {
     totalCount

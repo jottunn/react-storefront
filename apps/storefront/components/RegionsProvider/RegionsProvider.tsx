@@ -1,19 +1,14 @@
 import { useRouter } from "next/router";
 import React, { ReactNode, useState } from "react";
 import { IntlProvider } from "react-intl";
-
 import { useCheckout } from "@/lib/providers/CheckoutProvider";
 import { Channel, CHANNELS, DEFAULT_CHANNEL, DEFAULT_LOCALE, localeToEnum } from "@/lib/regions";
 import createSafeContext from "@/lib/useSafeContext";
 import { formatAsMoney } from "@/lib/util";
 import { LanguageCodeEnum, PriceFragment } from "@/saleor/api";
-
-import * as sourceOfTruth from "../../locale/en-US.json";
-import * as fr from "../../locale/fr-FR.json";
-import * as pl from "../../locale/pl-PL.json";
-import * as vi from "../../locale/vi-VN.json";
-import * as ae from "../../locale/ar-AE.json";
-import { useApolloClient } from "@apollo/client";
+import * as sourceOfTruth from "../../locale/en.json";
+import * as ro from "../../locale/ro.json";
+import { setCookie } from "nookies";
 
 export interface RegionsConsumerProps {
   channels: Channel[];
@@ -34,16 +29,10 @@ export type LocaleMessages = typeof sourceOfTruth;
 export type LocaleKey = keyof LocaleMessages;
 export function importMessages(locale: string): LocaleMessages {
   switch (locale) {
-    case "en-US":
+    case "en":
       return sourceOfTruth;
-    case "pl-PL":
-      return pl;
-    case "fr-FR":
-      return fr;
-    case "vi-VN":
-      return vi;
-    case "ar-AE":
-      return ae;
+    case "ro":
+      return ro;
     default:
       return sourceOfTruth;
   }
@@ -55,24 +44,35 @@ export interface RegionsProviderProps {
 
 export function RegionsProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const apolloClient = useApolloClient();
   const { resetCheckoutToken } = useCheckout();
-
   const [currentChannelSlug, setCurrentChannelSlug] = useState(router.query.channel);
 
   const setCurrentChannel = async (channel: string) => {
     resetCheckoutToken();
     setCurrentChannelSlug(channel);
-    await apolloClient.resetStore();
+    //await apolloClient.resetStore();
+
+    // Set a cookie for the current channel
+    setCookie(null, "currentChannel", channel, {
+      maxAge: 1 * 24 * 60 * 60, // 1 days
+      path: "/",
+    });
   };
 
-  const locale = router.query.locale?.toString() || DEFAULT_LOCALE;
+  const locale = router.locale || DEFAULT_LOCALE;
 
   const currentChannel =
     CHANNELS.find(({ slug }) => slug === currentChannelSlug) || DEFAULT_CHANNEL;
 
-  const formatPrice = (price?: PriceFragment) =>
-    formatAsMoney(price?.amount || 0, price?.currency || currentChannel.currencyCode, locale);
+  const formatPrice = (price?: PriceFragment) => {
+    // console.log(formatPrice);
+    // console.log(price);
+    return formatAsMoney(
+      price?.amount || 0,
+      price?.currency || currentChannel.currencyCode,
+      locale
+    );
+  };
 
   const providerValues: RegionsConsumerProps = {
     channels: CHANNELS,
@@ -88,7 +88,7 @@ export function RegionsProvider({ children }: { children: ReactNode }) {
   };
 
   const msgs = importMessages(locale);
-
+  //console.log(providerValues);
   return (
     <Provider value={providerValues}>
       <IntlProvider messages={msgs} locale={locale} defaultLocale={DEFAULT_LOCALE}>

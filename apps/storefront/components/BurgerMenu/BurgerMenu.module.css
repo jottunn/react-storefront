@@ -30,7 +30,7 @@
 }
 
 .collapse-main {
-  @apply text-main text-lg leading-[1.2em] font-bold block w-full text-left;
+  @apply text-main uppercase text-md leading-[1.2em] font-medium flex justify-between	items-center w-full text-left;
 }
 
 .collapse-main--active {
@@ -38,7 +38,7 @@
 }
 
 .collapse-sub {
-  @apply text-main text-[2rem] leading-[1.2em] font-bold flex w-full;
+  @apply text-main text-[1.5rem] font-bold leading-[1.2em] flex w-full;
 }
 
 .collapse-sub svg {
@@ -51,4 +51,10 @@
 
 .menu-link {
   @apply block mt-3 text-main-2 text-base;
+}
+.icon {
+  @apply inline-flex ml-auto transition-transform duration-300 ease-in-out text-lg font-medium text-gray-500;
+}
+.rotated {
+  @apply rotate-45;
 }

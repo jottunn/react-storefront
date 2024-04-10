@@ -25,7 +25,7 @@ export function ShippingMethodOption({ method }: ShippingMethodOptionProps) {
         )
       }
     >
-      {({ checked, active }) => (
+      {() => (
         <>
           <div className="flex-1 flex">
             <div className="flex flex-col">
@@ -43,14 +43,6 @@ export function ShippingMethodOption({ method }: ShippingMethodOptionProps) {
               </RadioGroup.Description>
             </div>
           </div>
-          <div
-            className={clsx(
-              active ? "border" : "border-2",
-              checked ? "border-blue-500" : "border-transparent",
-              "absolute -inset-px rounded pointer-events-none"
-            )}
-            aria-hidden="true"
-          />
         </>
       )}
     </RadioGroup.Option>

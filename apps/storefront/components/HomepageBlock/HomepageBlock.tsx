@@ -1,53 +1,39 @@
+import usePaths from "@/lib/paths";
+import { CategoryDetailsFragment, CollectionDetailsFragment } from "@/saleor/api";
 import Link from "next/link";
-import React from "react";
-import { useIntl } from "react-intl";
-import { UrlObject } from "url";
-
-import { usePaths } from "@/lib/paths";
-import { translate } from "@/lib/translations";
-import { HomepageBlockFragment, ProductFilterInput } from "@/saleor/api";
-
-import { ProductCollection } from "../ProductCollection";
-import { RichText } from "../RichText";
-import { messages } from "../translations";
-
 export interface HomepageBlockProps {
-  menuItem: HomepageBlockFragment;
+  item: CategoryDetailsFragment | CollectionDetailsFragment;
+  type: string;
 }
 
-export function HomepageBlock({ menuItem }: HomepageBlockProps) {
+export function HomepageBlock({ item, type }: HomepageBlockProps) {
   const paths = usePaths();
-  const t = useIntl();
-  const filter: ProductFilterInput = {};
-  if (menuItem.page?.id) {
-    const content = translate(menuItem.page, "content");
-    return <div className="pb-10">{content && <RichText jsonStringData={content} />}</div>;
-  }
-  let link: UrlObject = {};
-  if (menuItem.category?.id) {
-    filter.categories = [menuItem.category?.id];
-    link = paths.category._slug(menuItem.category.slug).$url();
-  }
-  if (menuItem.collection?.id) {
-    filter.collections = [menuItem.collection?.id];
-    link = paths.collection._slug(menuItem.collection.slug).$url();
-  }
+  const jsonData = item.description ? JSON.parse(item.description) : "";
   return (
-    <div className="pb-8" data-testid="category">
-      <h1
-        className="text-3xl font-extrabold tracking-tight text-gray-900 pb-4"
-        data-testid={`categoryName${menuItem.name}`}
-      >
-        {translate(menuItem, "name")}
-      </h1>
-      <ProductCollection filter={filter} allowMore={false} />
-      <div className="flex flex-row-reverse p-4">
-        <Link href={link} passHref legacyBehavior>
-          <a href="pass">
-            <p className="text-base">{t.formatMessage(messages.more)}</p>
+    <div>
+      {type && (
+        <Link
+          href={
+            type === "category"
+              ? paths.category._slug(item.slug).$url()
+              : paths.collection._slug(item.slug).$url()
+          }
+          passHref
+          legacyBehavior
+        >
+          <a className="text-md mt-2 font-medium text-gray-600 cursor-pointer hover:text-gray-700">
+            <img
+              className="hover:brightness-125 hover:contrast-115 transition-all duration-30"
+              src={item?.backgroundImage?.url}
+              alt={item?.backgroundImage?.alt || ""}
+            />
+            <h3 className="text-lg uppercase mt-3">{item.name}</h3>
           </a>
         </Link>
-      </div>
+      )}
+      {jsonData && jsonData.blocks.length > 0 && jsonData.blocks[0].data && (
+        <p className="text-sm pt-2">{jsonData.blocks[0].data.text}</p>
+      )}
     </div>
   );
 }

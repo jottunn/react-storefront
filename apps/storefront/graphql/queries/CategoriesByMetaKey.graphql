@@ -1,0 +1,9 @@
+query CategoriesByMetaKey($filter: CategoryFilterInput, $locale: LanguageCodeEnum!) {
+  categories(first:4, filter: $filter) {
+    edges {
+        node {
+            ...CategoryDetailsFragment
+        }
+    }
+  }
+}

@@ -1,0 +1,28 @@
+query AvailableProductFilters( $filter: ProductFilterInput, $channel: String, $locale: LanguageCodeEnum!) {
+  products( filter:  $filter, channel: $channel, first: 100) {
+   edges {
+    cursor
+      node {
+       attributes {
+            attribute {                
+                id
+                slug
+                name
+                inputType
+            }
+            values {
+                id
+                name
+                slug
+            }
+        }
+        variants {
+            quantityAvailable,
+            attributes {
+             ...SelectedAttributeDetailsFragment
+            }
+        }
+      }
+    }
+  }
+}

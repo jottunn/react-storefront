@@ -1,5 +1,9 @@
 import { notNullable } from "@/lib/util";
-import { ProductDetailsFragment, ProductVariantDetailsFragment } from "@/saleor/api";
+import {
+  ProductDetailsFragment,
+  ProductMediaType,
+  ProductVariantDetailsFragment,
+} from "@/saleor/api";
 
 /**
  * If a variant has been selected by the user and this variant has media, return only those items.
@@ -8,16 +12,44 @@ import { ProductDetailsFragment, ProductVariantDetailsFragment } from "@/saleor/
  * @param selectedVariant   The selected variant object
  */
 
+interface ProductMedia {
+  __typename?: "ProductMedia";
+  alt: string;
+  type: ProductMediaType;
+  url: string;
+  // Include any other properties that ProductMedia has
+}
+
+export interface EnhancedProductMedia extends ProductMedia {
+  thumbnailUrl?: string | null;
+}
+
 export const getGalleryMedia = ({
   product,
   selectedVariant,
 }: {
   product: ProductDetailsFragment;
-  selectedVariant?: ProductVariantDetailsFragment;
-}) => {
-  if (selectedVariant && selectedVariant.media?.length !== 0)
-    return selectedVariant.media?.filter(notNullable) || [];
-  return product?.media?.filter(notNullable) || [];
+  selectedVariant?: ProductVariantDetailsFragment | null;
+}): EnhancedProductMedia[] => {
+  // Determine the source of the media items
+  const sourceMedia =
+    selectedVariant && selectedVariant.media?.length !== 0 ? selectedVariant.media : product.media;
+
+  // Ensure the media is not null or undefined before filtering
+  const filteredMedia = sourceMedia?.filter(notNullable) || [];
+
+  // Enhance media items with thumbnail URLs for videos
+  const enhancedMediaItems = filteredMedia.map((mediaItem): EnhancedProductMedia => {
+    if (mediaItem.type === "VIDEO") {
+      const thumbnailUrl = getVideoThumbnail(mediaItem.url);
+      // Include the thumbnail URL in the media item object
+      return { ...mediaItem, thumbnailUrl };
+    }
+    // Return unmodified media items if not a video
+    return mediaItem;
+  });
+
+  return enhancedMediaItems;
 };
 
 export const getYouTubeIDFromURL = (url: string) => {
