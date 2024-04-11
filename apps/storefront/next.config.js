@@ -70,6 +70,8 @@ module.exports = withBundleAnalyzer({
     ];
   },
   async rewrites() {
+    const cloudDeploymentUrl = process.env.CLOUD_DEPLOYMENT_URL;
+
     return [
       {
         source: "/checkout/",
@@ -96,6 +98,46 @@ module.exports = withBundleAnalyzer({
         source: "/api/install",
         destination: `${process.env.NEXT_PUBLIC_CHECKOUT_APP_URL}/api/install`,
       },
+      ...(cloudDeploymentUrl
+        ? [
+            {
+              source: "/media/:match*",
+              destination: `${cloudDeploymentUrl}/media/:match*`,
+            },
+            {
+              source: "/dashboard/:match*",
+              destination: `${cloudDeploymentUrl}/dashboard/:match*`,
+            },
+            {
+              source: "/graphql/:match*",
+              destination: `${cloudDeploymentUrl}/graphql/:match*`,
+            },
+            {
+              source: "/graphql/",
+              destination: `${cloudDeploymentUrl}/graphql/`,
+            },
+            {
+              source: "/plugins/:match*",
+              destination: `${cloudDeploymentUrl}/plugins/:match*`,
+            },
+            {
+              source: "/digital-download/:match*",
+              destination: `${cloudDeploymentUrl}/digital-download/:match*`,
+            },
+            {
+              source: "/thumbnail/:instance/:size/:format/",
+              destination: `${cloudDeploymentUrl}/thumbnail/:instance/:size/:format/`,
+            },
+            {
+              source: "/thumbnail/:instance/:size/",
+              destination: `${cloudDeploymentUrl}/thumbnail/:instance/:size/`,
+            },
+            {
+              source: "/.well-known/jwks.json",
+              destination: `${cloudDeploymentUrl}/.well-known/jwks.json`,
+            },
+          ]
+        : []),
     ];
   },
   // async redirects() {

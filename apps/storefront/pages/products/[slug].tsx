@@ -42,6 +42,7 @@ import { ProductCard } from "@/components/ProductCollection/ProductCard";
 import { GroupedProduct, groupProductsByColor } from "@/lib/product";
 import { XIcon } from "@heroicons/react/outline";
 import Image from "next/image";
+import { ATTR_BRAND_REF, ATTR_COLOR_COMMERCIAL_SLUG, ATTR_GHID_MARIMI } from "@/lib/const";
 
 export type OptionalQuery = {
   variant?: string;
@@ -134,8 +135,8 @@ export const getServerSideProps = async (
 
     return pageTabelMarimiResponse.data.page || ({} as PageFragment);
   };
-  const attrSizeGuideSlug = process.env.NEXT_PUBLIC_ATTR_GHID_MARIMI;
-  const attrBrandSlug = process.env.NEXT_PUBLIC_ATTR_BRAND_REF;
+  const attrSizeGuideSlug = ATTR_GHID_MARIMI;
+  const attrBrandSlug = ATTR_BRAND_REF;
   const sizeGuide = await getRefPage(attrSizeGuideSlug);
   const brandRefPage = await getRefPage(attrBrandSlug);
 
@@ -341,7 +342,7 @@ function ProductPage({
   const categoryAncestors = mapEdgesToItems(product.category?.ancestors);
   const brandAttribute = product.attributes.find((attr) => attr.attribute.slug === "brand");
   const commercialColorAttr = selectedVariant?.attributes.find(
-    (attr) => attr.attribute.slug === process.env.NEXT_PUBLIC_ATTR_COLOR_COMMERCIAL_SLUG
+    (attr) => attr.attribute.slug === ATTR_COLOR_COMMERCIAL_SLUG
   );
 
   return (

@@ -7,6 +7,7 @@ import { useRegions } from "../RegionsProvider";
 import { useState } from "react";
 import { getDiscountPercentage } from "@/lib/util";
 import { GroupedProduct } from "@/lib/product";
+import { ATTR_COLOR_COMMERCIAL_SLUG } from "@/lib/const";
 
 export interface ProductCardProps {
   product: GroupedProduct;
@@ -25,7 +26,7 @@ export function ProductCard({ product, loading, priority }: ProductCardProps) {
 
   const productName = translate(product, "name"); // This should always be a string
   const variantAttr = variant?.attributes.find(
-    (attr) => attr.attribute.slug === process.env.NEXT_PUBLIC_ATTR_COLOR_COMMERCIAL_SLUG
+    (attr) => attr.attribute.slug === ATTR_COLOR_COMMERCIAL_SLUG
   );
   const colorName = variantAttr?.values[0]?.name || ""; // Fallback to an empty string if color is undefined
 

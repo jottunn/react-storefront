@@ -16,7 +16,7 @@ function Dropdown({ menuItem }: DropdownProps) {
       <NavigationAnchor menuItem={menuItem} className={styles["dropdown-trigger"]} />
       {!!menuItem.children?.length && (
         <div className={styles["dropdown-menu"]}>
-          <div className="container">
+          <div className="container pl-7">
             <div className="grid grid-cols-7 gap-[2rem] mx-2">
               {menuItem.children?.map((item) => (
                 <div key={item?.id}>

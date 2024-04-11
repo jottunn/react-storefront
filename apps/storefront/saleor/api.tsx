@@ -2200,7 +2200,13 @@ export type AttributeTranslatableContent = Node & {
    * @deprecated This field will be removed in Saleor 4.0. Get model fields from the root level queries.
    */
   attribute?: Maybe<Attribute>;
-  /** The ID of the attribute. */
+  /**
+   * The ID of the attribute to translate.
+   *
+   * Added in Saleor 3.14.
+   */
+  attributeId: Scalars["ID"];
+  /** The ID of the attribute translatable content. */
   id: Scalars["ID"];
   /** Name of the attribute to translate. */
   name: Scalars["String"];
@@ -2238,6 +2244,12 @@ export type AttributeTranslation = Node & {
   language: LanguageDisplay;
   /** Translated attribute name. */
   name: Scalars["String"];
+  /**
+   * Represents the attribute fields to translate.
+   *
+   * Added in Saleor 3.14.
+   */
+  translatableContent?: Maybe<AttributeTranslatableContent>;
 };
 
 /** An enumeration. */
@@ -2665,6 +2677,12 @@ export type AttributeValueTranslatableContent = Node & {
    * @deprecated This field will be removed in Saleor 4.0. Get model fields from the root level queries.
    */
   attributeValue?: Maybe<AttributeValue>;
+  /**
+   * The ID of the attribute value to translate.
+   *
+   * Added in Saleor 3.14.
+   */
+  attributeValueId: Scalars["ID"];
   /** The ID of the attribute value translatable content. */
   id: Scalars["ID"];
   /** Name of the attribute value to translate. */
@@ -2723,6 +2741,12 @@ export type AttributeValueTranslation = Node & {
    * Rich text format. For reference see https://editorjs.io/
    */
   richText?: Maybe<Scalars["JSONString"]>;
+  /**
+   * Represents the attribute value fields to translate.
+   *
+   * Added in Saleor 3.14.
+   */
+  translatableContent?: Maybe<AttributeValueTranslatableContent>;
 };
 
 export type AttributeValueTranslationInput = {
@@ -3317,6 +3341,12 @@ export type CategoryTranslatableContent = Node & {
    */
   category?: Maybe<Category>;
   /**
+   * The ID of the category to translate.
+   *
+   * Added in Saleor 3.14.
+   */
+  categoryId: Scalars["ID"];
+  /**
    * Category description to translate.
    *
    * Rich text format. For reference see https://editorjs.io/
@@ -3385,6 +3415,12 @@ export type CategoryTranslation = Node & {
   seoDescription?: Maybe<Scalars["String"]>;
   /** Translated SEO title. */
   seoTitle?: Maybe<Scalars["String"]>;
+  /**
+   * Represents the category fields to translate.
+   *
+   * Added in Saleor 3.14.
+   */
+  translatableContent?: Maybe<CategoryTranslatableContent>;
 };
 
 /**
@@ -3556,6 +3592,12 @@ export type Channel = Node &
      * Requires one of the following permissions: AUTHENTICATED_APP, AUTHENTICATED_STAFF_USER.
      */
     stockSettings: StockSettings;
+    /**
+     * Channel specific tax configuration.
+     *
+     * Requires one of the following permissions: AUTHENTICATED_STAFF_USER, AUTHENTICATED_APP.
+     */
+    taxConfiguration: TaxConfiguration;
     /**
      * List of warehouses assigned to this channel.
      *
@@ -4493,7 +4535,7 @@ export type CheckoutCustomerDetach = {
 };
 
 /**
- * Updates the delivery method (shipping method or pick up point) of the checkout.
+ * Updates the delivery method (shipping method or pick up point) of the checkout. Updates the checkout shipping_address for click and collect delivery for a warehouse address.
  *
  * Added in Saleor 3.1.
  *
@@ -4563,6 +4605,7 @@ export type CheckoutErrorCode =
   | "QUANTITY_GREATER_THAN_LIMIT"
   | "REQUIRED"
   | "SHIPPING_ADDRESS_NOT_SET"
+  | "SHIPPING_CHANGE_FORBIDDEN"
   | "SHIPPING_METHOD_NOT_APPLICABLE"
   | "SHIPPING_METHOD_NOT_SET"
   | "SHIPPING_NOT_REQUIRED"
@@ -5602,6 +5645,12 @@ export type CollectionTranslatableContent = Node & {
    */
   collection?: Maybe<Collection>;
   /**
+   * The ID of the collection to translate.
+   *
+   * Added in Saleor 3.14.
+   */
+  collectionId: Scalars["ID"];
+  /**
    * Collection's description to translate.
    *
    * Rich text format. For reference see https://editorjs.io/
@@ -5670,6 +5719,12 @@ export type CollectionTranslation = Node & {
   seoDescription?: Maybe<Scalars["String"]>;
   /** Translated SEO title. */
   seoTitle?: Maybe<Scalars["String"]>;
+  /**
+   * Represents the collection fields to translate.
+   *
+   * Added in Saleor 3.14.
+   */
+  translatableContent?: Maybe<CollectionTranslatableContent>;
 };
 
 /**
@@ -10524,6 +10579,12 @@ export type MenuItemTranslatableContent = Node & {
    * @deprecated This field will be removed in Saleor 4.0. Get model fields from the root level queries.
    */
   menuItem?: Maybe<MenuItem>;
+  /**
+   * The ID of the menu item to translate.
+   *
+   * Added in Saleor 3.14.
+   */
+  menuItemId: Scalars["ID"];
   /** Name of the menu item to translate. */
   name: Scalars["String"];
   /** Returns translated menu item fields for the given language code. */
@@ -10557,6 +10618,12 @@ export type MenuItemTranslation = Node & {
   language: LanguageDisplay;
   /** Translated menu item name. */
   name: Scalars["String"];
+  /**
+   * Represents the menu item fields to translate.
+   *
+   * Added in Saleor 3.14.
+   */
+  translatableContent?: Maybe<MenuItemTranslatableContent>;
 };
 
 /**
@@ -11228,7 +11295,7 @@ export type Mutation = {
    */
   checkoutCustomerDetach?: Maybe<CheckoutCustomerDetach>;
   /**
-   * Updates the delivery method (shipping method or pick up point) of the checkout.
+   * Updates the delivery method (shipping method or pick up point) of the checkout. Updates the checkout shipping_address for click and collect delivery for a warehouse address.
    *
    * Added in Saleor 3.1.
    *
@@ -17720,6 +17787,12 @@ export type PageTranslatableContent = Node & {
    * @deprecated This field will be removed in Saleor 4.0. Get model fields from the root level queries.
    */
   page?: Maybe<Page>;
+  /**
+   * The ID of the page to translate.
+   *
+   * Added in Saleor 3.14.
+   */
+  pageId: Scalars["ID"];
   /** SEO description to translate. */
   seoDescription?: Maybe<Scalars["String"]>;
   /** SEO title to translate. */
@@ -17774,6 +17847,12 @@ export type PageTranslation = Node & {
   seoTitle?: Maybe<Scalars["String"]>;
   /** Translated page title. */
   title?: Maybe<Scalars["String"]>;
+  /**
+   * Represents the page fields to translate.
+   *
+   * Added in Saleor 3.14.
+   */
+  translatableContent?: Maybe<PageTranslatableContent>;
 };
 
 export type PageTranslationInput = {
@@ -20712,6 +20791,12 @@ export type ProductTranslatableContent = Node & {
    * @deprecated This field will be removed in Saleor 4.0. Get model fields from the root level queries.
    */
   product?: Maybe<Product>;
+  /**
+   * The ID of the product to translate.
+   *
+   * Added in Saleor 3.14.
+   */
+  productId: Scalars["ID"];
   /** SEO description to translate. */
   seoDescription?: Maybe<Scalars["String"]>;
   /** SEO title to translate. */
@@ -20767,6 +20852,12 @@ export type ProductTranslation = Node & {
   seoDescription?: Maybe<Scalars["String"]>;
   /** Translated SEO title. */
   seoTitle?: Maybe<Scalars["String"]>;
+  /**
+   * Represents the product fields to translate.
+   *
+   * Added in Saleor 3.14.
+   */
+  translatableContent?: Maybe<ProductTranslatableContent>;
 };
 
 /** Represents a type of product. It defines what attributes are available to products of this type. */
@@ -22054,6 +22145,12 @@ export type ProductVariantTranslatableContent = Node & {
    * @deprecated This field will be removed in Saleor 4.0. Get model fields from the root level queries.
    */
   productVariant?: Maybe<ProductVariant>;
+  /**
+   * The ID of the product variant to translate.
+   *
+   * Added in Saleor 3.14.
+   */
+  productVariantId: Scalars["ID"];
   /** Returns translated product variant fields for the given language code. */
   translation?: Maybe<ProductVariantTranslation>;
 };
@@ -22092,6 +22189,12 @@ export type ProductVariantTranslation = Node & {
   language: LanguageDisplay;
   /** Translated product variant name. */
   name: Scalars["String"];
+  /**
+   * Represents the product variant fields to translate.
+   *
+   * Added in Saleor 3.14.
+   */
+  translatableContent?: Maybe<ProductVariantTranslatableContent>;
 };
 
 /**
@@ -22973,6 +23076,12 @@ export type PromotionRuleTranslatableContent = Node & {
   id: Scalars["ID"];
   /** Name of the promotion rule. */
   name?: Maybe<Scalars["String"]>;
+  /**
+   * ID of the promotion rule to translate.
+   *
+   * Added in Saleor 3.14.
+   */
+  promotionRuleId: Scalars["ID"];
   /** Returns translated promotion rule fields for the given language code. */
   translation?: Maybe<PromotionRuleTranslation>;
 };
@@ -23018,6 +23127,12 @@ export type PromotionRuleTranslation = Node & {
   language: LanguageDisplay;
   /** Translated name of the promotion rule. */
   name?: Maybe<Scalars["String"]>;
+  /**
+   * Represents the promotion rule fields to translate.
+   *
+   * Added in Saleor 3.14.
+   */
+  translatableContent?: Maybe<PromotionRuleTranslatableContent>;
 };
 
 export type PromotionRuleTranslationInput = {
@@ -23251,6 +23366,8 @@ export type PromotionTranslatableContent = Node & {
   id: Scalars["ID"];
   /** Name of the promotion. */
   name: Scalars["String"];
+  /** ID of the promotion to translate. */
+  promotionId: Scalars["ID"];
   /** Returns translated promotion fields for the given language code. */
   translation?: Maybe<PromotionTranslation>;
 };
@@ -23296,6 +23413,12 @@ export type PromotionTranslation = Node & {
   language: LanguageDisplay;
   /** Translated name of the promotion. */
   name?: Maybe<Scalars["String"]>;
+  /**
+   * Represents the promotion fields to translate.
+   *
+   * Added in Saleor 3.14.
+   */
+  translatableContent?: Maybe<PromotionTranslatableContent>;
 };
 
 export type PromotionTranslationInput = {
@@ -24992,6 +25115,12 @@ export type SaleTranslatableContent = Node & {
    * @deprecated This field will be removed in Saleor 4.0. Get model fields from the root level queries.
    */
   sale?: Maybe<Sale>;
+  /**
+   * The ID of the sale to translate.
+   *
+   * Added in Saleor 3.14.
+   */
+  saleId: Scalars["ID"];
   /** Returns translated sale fields for the given language code. */
   translation?: Maybe<SaleTranslation>;
 };
@@ -25033,6 +25162,12 @@ export type SaleTranslation = Node & {
   language: LanguageDisplay;
   /** Translated name of sale. */
   name?: Maybe<Scalars["String"]>;
+  /**
+   * Represents the sale fields to translate.
+   *
+   * Added in Saleor 3.14.
+   */
+  translatableContent?: Maybe<SaleTranslatableContent>;
 };
 
 export type SaleType = "FIXED" | "PERCENTAGE";
@@ -25377,6 +25512,12 @@ export type ShippingMethodTranslatableContent = Node & {
    * @deprecated This field will be removed in Saleor 4.0. Get model fields from the root level queries.
    */
   shippingMethod?: Maybe<ShippingMethodType>;
+  /**
+   * The ID of the shipping method to translate.
+   *
+   * Added in Saleor 3.14.
+   */
+  shippingMethodId: Scalars["ID"];
   /** Returns translated shipping method fields for the given language code. */
   translation?: Maybe<ShippingMethodTranslation>;
 };
@@ -25401,6 +25542,12 @@ export type ShippingMethodTranslation = Node & {
   language: LanguageDisplay;
   /** Translated shipping method name. */
   name: Scalars["String"];
+  /**
+   * Represents the shipping method fields to translate.
+   *
+   * Added in Saleor 3.14.
+   */
+  translatableContent?: Maybe<ShippingMethodTranslatableContent>;
 };
 
 /** Shipping method are the methods you'll use to get customer's orders to them. They are directly exposed to the customers. */
@@ -27468,7 +27615,7 @@ export type TaxConfiguration = Node &
      */
     privateMetafields?: Maybe<Scalars["Metadata"]>;
     /**
-     * The tax app id that will be used to calculate the taxes for the given channel. Empty value for `TAX_APP` set as `taxCalculationStrategy` means that Saleor will iterate over all installed tax apps. If multiple tax apps exist with provided tax app id use the `App` with newest `created` date. Will become mandatory in 4.0 for `TAX_APP` `taxCalculationStrategy`.
+     * The tax app `App.identifier` that will be used to calculate the taxes for the given channel. Empty value for `TAX_APP` set as `taxCalculationStrategy` means that Saleor will iterate over all installed tax apps. If multiple tax apps exist with provided tax app id use the `App` with newest `created` date. Will become mandatory in 4.0 for `TAX_APP` `taxCalculationStrategy`.
      *
      * Added in Saleor 3.19.
      */
@@ -27549,7 +27696,7 @@ export type TaxConfigurationPerCountry = {
   /** Determines whether displayed prices should include taxes for this country. */
   displayGrossPrices: Scalars["Boolean"];
   /**
-   * The tax app id that will be used to calculate the taxes for the given channel and country. If not provided, use the value from the channel's tax configuration.
+   * The tax app `App.identifier` that will be used to calculate the taxes for the given channel and country. If not provided, use the value from the channel's tax configuration.
    *
    * Added in Saleor 3.19.
    */
@@ -27566,7 +27713,7 @@ export type TaxConfigurationPerCountryInput = {
   /** Determines whether displayed prices should include taxes for this country. */
   displayGrossPrices: Scalars["Boolean"];
   /**
-   * The tax app identifier that will be used to calculate the taxes for the given channel and country. If not provided, use the value from the channel's tax configuration.
+   * The tax app `App.identifier` that will be used to calculate the taxes for the given channel and country. If not provided, use the value from the channel's tax configuration.
    *
    * Added in Saleor 3.19.
    */
@@ -27617,7 +27764,7 @@ export type TaxConfigurationUpdateInput = {
   /** List of country codes for which to remove the tax configuration. */
   removeCountriesConfiguration?: InputMaybe<Array<CountryCode>>;
   /**
-   * The tax app id that will be used to calculate the taxes for the given channel. Empty value for `TAX_APP` set as `taxCalculationStrategy` means that Saleor will iterate over all installed tax apps. If multiple tax apps exist with provided tax app id use the `App` with newest `created` date. It's possible to set plugin by using prefix `plugin:` with `PLUGIN_ID` e.g. with Avalara `plugin:mirumee.taxes.avalara`.Will become mandatory in 4.0 for `TAX_APP` `taxCalculationStrategy`.
+   * The tax app `App.identifier` that will be used to calculate the taxes for the given channel. Empty value for `TAX_APP` set as `taxCalculationStrategy` means that Saleor will iterate over all installed tax apps. If multiple tax apps exist with provided tax app id use the `App` with newest `created` date. It's possible to set plugin by using prefix `plugin:` with `PLUGIN_ID` e.g. with Avalara `plugin:mirumee.taxes.avalara`.Will become mandatory in 4.0 for `TAX_APP` `taxCalculationStrategy`.
    *
    * Added in Saleor 3.19.
    */
@@ -29242,6 +29389,10 @@ export type UserCreateInput = {
    * User account is confirmed.
    *
    * Added in Saleor 3.15.
+   *
+   * DEPRECATED: this field will be removed in Saleor 4.0.
+   *
+   * The user will be always set as unconfirmed. The confirmation will take place when the user sets the password.
    */
   isConfirmed?: InputMaybe<Scalars["Boolean"]>;
   /** User language code. */
@@ -30072,6 +30223,12 @@ export type VoucherTranslatableContent = Node & {
    * @deprecated This field will be removed in Saleor 4.0. Get model fields from the root level queries.
    */
   voucher?: Maybe<Voucher>;
+  /**
+   * The ID of the voucher to translate.
+   *
+   * Added in Saleor 3.14.
+   */
+  voucherId: Scalars["ID"];
 };
 
 /** Represents voucher's original translatable fields and related translations. */
@@ -30101,6 +30258,12 @@ export type VoucherTranslation = Node & {
   language: LanguageDisplay;
   /** Translated voucher name. */
   name?: Maybe<Scalars["String"]>;
+  /**
+   * Represents the voucher fields to translate.
+   *
+   * Added in Saleor 3.14.
+   */
+  translatableContent?: Maybe<VoucherTranslatableContent>;
 };
 
 export type VoucherTypeEnum = "ENTIRE_ORDER" | "SHIPPING" | "SPECIFIC_PRODUCT";
@@ -35595,6 +35758,21 @@ export type PageTypesQuery = {
   } | null;
 };
 
+export type PageTypesBySlugQueryVariables = Exact<{
+  filter?: InputMaybe<PageTypeFilterInput>;
+}>;
+
+export type PageTypesBySlugQuery = {
+  __typename?: "Query";
+  pageTypes?: {
+    __typename?: "PageTypeCountableConnection";
+    edges: Array<{
+      __typename?: "PageTypeCountableEdge";
+      node: { __typename?: "PageType"; id: string; slug: string };
+    }>;
+  } | null;
+};
+
 export type ProductBySlugQueryVariables = Exact<{
   slug: Scalars["String"];
   channel: Scalars["String"];
@@ -39165,6 +39343,59 @@ export function usePageTypesLazyQuery(
 export type PageTypesQueryHookResult = ReturnType<typeof usePageTypesQuery>;
 export type PageTypesLazyQueryHookResult = ReturnType<typeof usePageTypesLazyQuery>;
 export type PageTypesQueryResult = Apollo.QueryResult<PageTypesQuery, PageTypesQueryVariables>;
+export const PageTypesBySlugDocument = gql`
+  query PageTypesBySlug($filter: PageTypeFilterInput) {
+    pageTypes(first: 10, filter: $filter) {
+      edges {
+        node {
+          id
+          slug
+        }
+      }
+    }
+  }
+`;
+
+/**
+ * __usePageTypesBySlugQuery__
+ *
+ * To run a query within a React component, call `usePageTypesBySlugQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePageTypesBySlugQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePageTypesBySlugQuery({
+ *   variables: {
+ *      filter: // value for 'filter'
+ *   },
+ * });
+ */
+export function usePageTypesBySlugQuery(
+  baseOptions?: Apollo.QueryHookOptions<PageTypesBySlugQuery, PageTypesBySlugQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<PageTypesBySlugQuery, PageTypesBySlugQueryVariables>(
+    PageTypesBySlugDocument,
+    options
+  );
+}
+export function usePageTypesBySlugLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<PageTypesBySlugQuery, PageTypesBySlugQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<PageTypesBySlugQuery, PageTypesBySlugQueryVariables>(
+    PageTypesBySlugDocument,
+    options
+  );
+}
+export type PageTypesBySlugQueryHookResult = ReturnType<typeof usePageTypesBySlugQuery>;
+export type PageTypesBySlugLazyQueryHookResult = ReturnType<typeof usePageTypesBySlugLazyQuery>;
+export type PageTypesBySlugQueryResult = Apollo.QueryResult<
+  PageTypesBySlugQuery,
+  PageTypesBySlugQueryVariables
+>;
 export const ProductBySlugDocument = gql`
   query ProductBySlug($slug: String!, $channel: String!, $locale: LanguageCodeEnum!) {
     product(slug: $slug, channel: $channel) {
@@ -40651,6 +40882,7 @@ export type AttributeReorderValuesFieldPolicy = {
 };
 export type AttributeTranslatableContentKeySpecifier = (
   | "attribute"
+  | "attributeId"
   | "id"
   | "name"
   | "translation"
@@ -40658,6 +40890,7 @@ export type AttributeTranslatableContentKeySpecifier = (
 )[];
 export type AttributeTranslatableContentFieldPolicy = {
   attribute?: FieldPolicy<any> | FieldReadFunction<any>;
+  attributeId?: FieldPolicy<any> | FieldReadFunction<any>;
   id?: FieldPolicy<any> | FieldReadFunction<any>;
   name?: FieldPolicy<any> | FieldReadFunction<any>;
   translation?: FieldPolicy<any> | FieldReadFunction<any>;
@@ -40677,12 +40910,14 @@ export type AttributeTranslationKeySpecifier = (
   | "id"
   | "language"
   | "name"
+  | "translatableContent"
   | AttributeTranslationKeySpecifier
 )[];
 export type AttributeTranslationFieldPolicy = {
   id?: FieldPolicy<any> | FieldReadFunction<any>;
   language?: FieldPolicy<any> | FieldReadFunction<any>;
   name?: FieldPolicy<any> | FieldReadFunction<any>;
+  translatableContent?: FieldPolicy<any> | FieldReadFunction<any>;
 };
 export type AttributeUpdateKeySpecifier = (
   | "attribute"
@@ -40864,6 +41099,7 @@ export type AttributeValueDeletedFieldPolicy = {
 export type AttributeValueTranslatableContentKeySpecifier = (
   | "attribute"
   | "attributeValue"
+  | "attributeValueId"
   | "id"
   | "name"
   | "plainText"
@@ -40874,6 +41110,7 @@ export type AttributeValueTranslatableContentKeySpecifier = (
 export type AttributeValueTranslatableContentFieldPolicy = {
   attribute?: FieldPolicy<any> | FieldReadFunction<any>;
   attributeValue?: FieldPolicy<any> | FieldReadFunction<any>;
+  attributeValueId?: FieldPolicy<any> | FieldReadFunction<any>;
   id?: FieldPolicy<any> | FieldReadFunction<any>;
   name?: FieldPolicy<any> | FieldReadFunction<any>;
   plainText?: FieldPolicy<any> | FieldReadFunction<any>;
@@ -40897,6 +41134,7 @@ export type AttributeValueTranslationKeySpecifier = (
   | "name"
   | "plainText"
   | "richText"
+  | "translatableContent"
   | AttributeValueTranslationKeySpecifier
 )[];
 export type AttributeValueTranslationFieldPolicy = {
@@ -40905,6 +41143,7 @@ export type AttributeValueTranslationFieldPolicy = {
   name?: FieldPolicy<any> | FieldReadFunction<any>;
   plainText?: FieldPolicy<any> | FieldReadFunction<any>;
   richText?: FieldPolicy<any> | FieldReadFunction<any>;
+  translatableContent?: FieldPolicy<any> | FieldReadFunction<any>;
 };
 export type AttributeValueUpdateKeySpecifier = (
   | "attribute"
@@ -41119,6 +41358,7 @@ export type CategoryDeletedFieldPolicy = {
 };
 export type CategoryTranslatableContentKeySpecifier = (
   | "category"
+  | "categoryId"
   | "description"
   | "descriptionJson"
   | "id"
@@ -41130,6 +41370,7 @@ export type CategoryTranslatableContentKeySpecifier = (
 )[];
 export type CategoryTranslatableContentFieldPolicy = {
   category?: FieldPolicy<any> | FieldReadFunction<any>;
+  categoryId?: FieldPolicy<any> | FieldReadFunction<any>;
   description?: FieldPolicy<any> | FieldReadFunction<any>;
   descriptionJson?: FieldPolicy<any> | FieldReadFunction<any>;
   id?: FieldPolicy<any> | FieldReadFunction<any>;
@@ -41157,6 +41398,7 @@ export type CategoryTranslationKeySpecifier = (
   | "name"
   | "seoDescription"
   | "seoTitle"
+  | "translatableContent"
   | CategoryTranslationKeySpecifier
 )[];
 export type CategoryTranslationFieldPolicy = {
@@ -41167,6 +41409,7 @@ export type CategoryTranslationFieldPolicy = {
   name?: FieldPolicy<any> | FieldReadFunction<any>;
   seoDescription?: FieldPolicy<any> | FieldReadFunction<any>;
   seoTitle?: FieldPolicy<any> | FieldReadFunction<any>;
+  translatableContent?: FieldPolicy<any> | FieldReadFunction<any>;
 };
 export type CategoryUpdateKeySpecifier = (
   | "category"
@@ -41214,6 +41457,7 @@ export type ChannelKeySpecifier = (
   | "privateMetafields"
   | "slug"
   | "stockSettings"
+  | "taxConfiguration"
   | "warehouses"
   | ChannelKeySpecifier
 )[];
@@ -41237,6 +41481,7 @@ export type ChannelFieldPolicy = {
   privateMetafields?: FieldPolicy<any> | FieldReadFunction<any>;
   slug?: FieldPolicy<any> | FieldReadFunction<any>;
   stockSettings?: FieldPolicy<any> | FieldReadFunction<any>;
+  taxConfiguration?: FieldPolicy<any> | FieldReadFunction<any>;
   warehouses?: FieldPolicy<any> | FieldReadFunction<any>;
 };
 export type ChannelActivateKeySpecifier = (
@@ -42142,6 +42387,7 @@ export type CollectionReorderProductsFieldPolicy = {
 };
 export type CollectionTranslatableContentKeySpecifier = (
   | "collection"
+  | "collectionId"
   | "description"
   | "descriptionJson"
   | "id"
@@ -42153,6 +42399,7 @@ export type CollectionTranslatableContentKeySpecifier = (
 )[];
 export type CollectionTranslatableContentFieldPolicy = {
   collection?: FieldPolicy<any> | FieldReadFunction<any>;
+  collectionId?: FieldPolicy<any> | FieldReadFunction<any>;
   description?: FieldPolicy<any> | FieldReadFunction<any>;
   descriptionJson?: FieldPolicy<any> | FieldReadFunction<any>;
   id?: FieldPolicy<any> | FieldReadFunction<any>;
@@ -42180,6 +42427,7 @@ export type CollectionTranslationKeySpecifier = (
   | "name"
   | "seoDescription"
   | "seoTitle"
+  | "translatableContent"
   | CollectionTranslationKeySpecifier
 )[];
 export type CollectionTranslationFieldPolicy = {
@@ -42190,6 +42438,7 @@ export type CollectionTranslationFieldPolicy = {
   name?: FieldPolicy<any> | FieldReadFunction<any>;
   seoDescription?: FieldPolicy<any> | FieldReadFunction<any>;
   seoTitle?: FieldPolicy<any> | FieldReadFunction<any>;
+  translatableContent?: FieldPolicy<any> | FieldReadFunction<any>;
 };
 export type CollectionUpdateKeySpecifier = (
   | "collection"
@@ -44190,6 +44439,7 @@ export type MenuItemMoveFieldPolicy = {
 export type MenuItemTranslatableContentKeySpecifier = (
   | "id"
   | "menuItem"
+  | "menuItemId"
   | "name"
   | "translation"
   | MenuItemTranslatableContentKeySpecifier
@@ -44197,6 +44447,7 @@ export type MenuItemTranslatableContentKeySpecifier = (
 export type MenuItemTranslatableContentFieldPolicy = {
   id?: FieldPolicy<any> | FieldReadFunction<any>;
   menuItem?: FieldPolicy<any> | FieldReadFunction<any>;
+  menuItemId?: FieldPolicy<any> | FieldReadFunction<any>;
   name?: FieldPolicy<any> | FieldReadFunction<any>;
   translation?: FieldPolicy<any> | FieldReadFunction<any>;
 };
@@ -44215,12 +44466,14 @@ export type MenuItemTranslationKeySpecifier = (
   | "id"
   | "language"
   | "name"
+  | "translatableContent"
   | MenuItemTranslationKeySpecifier
 )[];
 export type MenuItemTranslationFieldPolicy = {
   id?: FieldPolicy<any> | FieldReadFunction<any>;
   language?: FieldPolicy<any> | FieldReadFunction<any>;
   name?: FieldPolicy<any> | FieldReadFunction<any>;
+  translatableContent?: FieldPolicy<any> | FieldReadFunction<any>;
 };
 export type MenuItemUpdateKeySpecifier = (
   | "errors"
@@ -46232,6 +46485,7 @@ export type PageTranslatableContentKeySpecifier = (
   | "contentJson"
   | "id"
   | "page"
+  | "pageId"
   | "seoDescription"
   | "seoTitle"
   | "title"
@@ -46244,6 +46498,7 @@ export type PageTranslatableContentFieldPolicy = {
   contentJson?: FieldPolicy<any> | FieldReadFunction<any>;
   id?: FieldPolicy<any> | FieldReadFunction<any>;
   page?: FieldPolicy<any> | FieldReadFunction<any>;
+  pageId?: FieldPolicy<any> | FieldReadFunction<any>;
   seoDescription?: FieldPolicy<any> | FieldReadFunction<any>;
   seoTitle?: FieldPolicy<any> | FieldReadFunction<any>;
   title?: FieldPolicy<any> | FieldReadFunction<any>;
@@ -46268,6 +46523,7 @@ export type PageTranslationKeySpecifier = (
   | "seoDescription"
   | "seoTitle"
   | "title"
+  | "translatableContent"
   | PageTranslationKeySpecifier
 )[];
 export type PageTranslationFieldPolicy = {
@@ -46278,6 +46534,7 @@ export type PageTranslationFieldPolicy = {
   seoDescription?: FieldPolicy<any> | FieldReadFunction<any>;
   seoTitle?: FieldPolicy<any> | FieldReadFunction<any>;
   title?: FieldPolicy<any> | FieldReadFunction<any>;
+  translatableContent?: FieldPolicy<any> | FieldReadFunction<any>;
 };
 export type PageTypeKeySpecifier = (
   | "attributes"
@@ -47716,6 +47973,7 @@ export type ProductTranslatableContentKeySpecifier = (
   | "id"
   | "name"
   | "product"
+  | "productId"
   | "seoDescription"
   | "seoTitle"
   | "translation"
@@ -47728,6 +47986,7 @@ export type ProductTranslatableContentFieldPolicy = {
   id?: FieldPolicy<any> | FieldReadFunction<any>;
   name?: FieldPolicy<any> | FieldReadFunction<any>;
   product?: FieldPolicy<any> | FieldReadFunction<any>;
+  productId?: FieldPolicy<any> | FieldReadFunction<any>;
   seoDescription?: FieldPolicy<any> | FieldReadFunction<any>;
   seoTitle?: FieldPolicy<any> | FieldReadFunction<any>;
   translation?: FieldPolicy<any> | FieldReadFunction<any>;
@@ -47751,6 +48010,7 @@ export type ProductTranslationKeySpecifier = (
   | "name"
   | "seoDescription"
   | "seoTitle"
+  | "translatableContent"
   | ProductTranslationKeySpecifier
 )[];
 export type ProductTranslationFieldPolicy = {
@@ -47761,6 +48021,7 @@ export type ProductTranslationFieldPolicy = {
   name?: FieldPolicy<any> | FieldReadFunction<any>;
   seoDescription?: FieldPolicy<any> | FieldReadFunction<any>;
   seoTitle?: FieldPolicy<any> | FieldReadFunction<any>;
+  translatableContent?: FieldPolicy<any> | FieldReadFunction<any>;
 };
 export type ProductTypeKeySpecifier = (
   | "assignedVariantAttributes"
@@ -48325,6 +48586,7 @@ export type ProductVariantTranslatableContentKeySpecifier = (
   | "id"
   | "name"
   | "productVariant"
+  | "productVariantId"
   | "translation"
   | ProductVariantTranslatableContentKeySpecifier
 )[];
@@ -48333,6 +48595,7 @@ export type ProductVariantTranslatableContentFieldPolicy = {
   id?: FieldPolicy<any> | FieldReadFunction<any>;
   name?: FieldPolicy<any> | FieldReadFunction<any>;
   productVariant?: FieldPolicy<any> | FieldReadFunction<any>;
+  productVariantId?: FieldPolicy<any> | FieldReadFunction<any>;
   translation?: FieldPolicy<any> | FieldReadFunction<any>;
 };
 export type ProductVariantTranslateKeySpecifier = (
@@ -48350,12 +48613,14 @@ export type ProductVariantTranslationKeySpecifier = (
   | "id"
   | "language"
   | "name"
+  | "translatableContent"
   | ProductVariantTranslationKeySpecifier
 )[];
 export type ProductVariantTranslationFieldPolicy = {
   id?: FieldPolicy<any> | FieldReadFunction<any>;
   language?: FieldPolicy<any> | FieldReadFunction<any>;
   name?: FieldPolicy<any> | FieldReadFunction<any>;
+  translatableContent?: FieldPolicy<any> | FieldReadFunction<any>;
 };
 export type ProductVariantUpdateKeySpecifier = (
   | "errors"
@@ -48729,6 +48994,7 @@ export type PromotionRuleTranslatableContentKeySpecifier = (
   | "description"
   | "id"
   | "name"
+  | "promotionRuleId"
   | "translation"
   | PromotionRuleTranslatableContentKeySpecifier
 )[];
@@ -48736,6 +49002,7 @@ export type PromotionRuleTranslatableContentFieldPolicy = {
   description?: FieldPolicy<any> | FieldReadFunction<any>;
   id?: FieldPolicy<any> | FieldReadFunction<any>;
   name?: FieldPolicy<any> | FieldReadFunction<any>;
+  promotionRuleId?: FieldPolicy<any> | FieldReadFunction<any>;
   translation?: FieldPolicy<any> | FieldReadFunction<any>;
 };
 export type PromotionRuleTranslateKeySpecifier = (
@@ -48752,6 +49019,7 @@ export type PromotionRuleTranslationKeySpecifier = (
   | "id"
   | "language"
   | "name"
+  | "translatableContent"
   | PromotionRuleTranslationKeySpecifier
 )[];
 export type PromotionRuleTranslationFieldPolicy = {
@@ -48759,6 +49027,7 @@ export type PromotionRuleTranslationFieldPolicy = {
   id?: FieldPolicy<any> | FieldReadFunction<any>;
   language?: FieldPolicy<any> | FieldReadFunction<any>;
   name?: FieldPolicy<any> | FieldReadFunction<any>;
+  translatableContent?: FieldPolicy<any> | FieldReadFunction<any>;
 };
 export type PromotionRuleUpdateKeySpecifier = (
   | "errors"
@@ -48848,6 +49117,7 @@ export type PromotionTranslatableContentKeySpecifier = (
   | "description"
   | "id"
   | "name"
+  | "promotionId"
   | "translation"
   | PromotionTranslatableContentKeySpecifier
 )[];
@@ -48855,6 +49125,7 @@ export type PromotionTranslatableContentFieldPolicy = {
   description?: FieldPolicy<any> | FieldReadFunction<any>;
   id?: FieldPolicy<any> | FieldReadFunction<any>;
   name?: FieldPolicy<any> | FieldReadFunction<any>;
+  promotionId?: FieldPolicy<any> | FieldReadFunction<any>;
   translation?: FieldPolicy<any> | FieldReadFunction<any>;
 };
 export type PromotionTranslateKeySpecifier = (
@@ -48871,6 +49142,7 @@ export type PromotionTranslationKeySpecifier = (
   | "id"
   | "language"
   | "name"
+  | "translatableContent"
   | PromotionTranslationKeySpecifier
 )[];
 export type PromotionTranslationFieldPolicy = {
@@ -48878,6 +49150,7 @@ export type PromotionTranslationFieldPolicy = {
   id?: FieldPolicy<any> | FieldReadFunction<any>;
   language?: FieldPolicy<any> | FieldReadFunction<any>;
   name?: FieldPolicy<any> | FieldReadFunction<any>;
+  translatableContent?: FieldPolicy<any> | FieldReadFunction<any>;
 };
 export type PromotionUpdateKeySpecifier = ("errors" | "promotion" | PromotionUpdateKeySpecifier)[];
 export type PromotionUpdateFieldPolicy = {
@@ -49331,6 +49604,7 @@ export type SaleTranslatableContentKeySpecifier = (
   | "id"
   | "name"
   | "sale"
+  | "saleId"
   | "translation"
   | SaleTranslatableContentKeySpecifier
 )[];
@@ -49338,6 +49612,7 @@ export type SaleTranslatableContentFieldPolicy = {
   id?: FieldPolicy<any> | FieldReadFunction<any>;
   name?: FieldPolicy<any> | FieldReadFunction<any>;
   sale?: FieldPolicy<any> | FieldReadFunction<any>;
+  saleId?: FieldPolicy<any> | FieldReadFunction<any>;
   translation?: FieldPolicy<any> | FieldReadFunction<any>;
 };
 export type SaleTranslateKeySpecifier = (
@@ -49355,12 +49630,14 @@ export type SaleTranslationKeySpecifier = (
   | "id"
   | "language"
   | "name"
+  | "translatableContent"
   | SaleTranslationKeySpecifier
 )[];
 export type SaleTranslationFieldPolicy = {
   id?: FieldPolicy<any> | FieldReadFunction<any>;
   language?: FieldPolicy<any> | FieldReadFunction<any>;
   name?: FieldPolicy<any> | FieldReadFunction<any>;
+  translatableContent?: FieldPolicy<any> | FieldReadFunction<any>;
 };
 export type SaleUpdateKeySpecifier = (
   | "discountErrors"
@@ -49550,6 +49827,7 @@ export type ShippingMethodTranslatableContentKeySpecifier = (
   | "id"
   | "name"
   | "shippingMethod"
+  | "shippingMethodId"
   | "translation"
   | ShippingMethodTranslatableContentKeySpecifier
 )[];
@@ -49558,6 +49836,7 @@ export type ShippingMethodTranslatableContentFieldPolicy = {
   id?: FieldPolicy<any> | FieldReadFunction<any>;
   name?: FieldPolicy<any> | FieldReadFunction<any>;
   shippingMethod?: FieldPolicy<any> | FieldReadFunction<any>;
+  shippingMethodId?: FieldPolicy<any> | FieldReadFunction<any>;
   translation?: FieldPolicy<any> | FieldReadFunction<any>;
 };
 export type ShippingMethodTranslationKeySpecifier = (
@@ -49565,6 +49844,7 @@ export type ShippingMethodTranslationKeySpecifier = (
   | "id"
   | "language"
   | "name"
+  | "translatableContent"
   | ShippingMethodTranslationKeySpecifier
 )[];
 export type ShippingMethodTranslationFieldPolicy = {
@@ -49572,6 +49852,7 @@ export type ShippingMethodTranslationFieldPolicy = {
   id?: FieldPolicy<any> | FieldReadFunction<any>;
   language?: FieldPolicy<any> | FieldReadFunction<any>;
   name?: FieldPolicy<any> | FieldReadFunction<any>;
+  translatableContent?: FieldPolicy<any> | FieldReadFunction<any>;
 };
 export type ShippingMethodTypeKeySpecifier = (
   | "channelListings"
@@ -51784,6 +52065,7 @@ export type VoucherTranslatableContentKeySpecifier = (
   | "name"
   | "translation"
   | "voucher"
+  | "voucherId"
   | VoucherTranslatableContentKeySpecifier
 )[];
 export type VoucherTranslatableContentFieldPolicy = {
@@ -51791,6 +52073,7 @@ export type VoucherTranslatableContentFieldPolicy = {
   name?: FieldPolicy<any> | FieldReadFunction<any>;
   translation?: FieldPolicy<any> | FieldReadFunction<any>;
   voucher?: FieldPolicy<any> | FieldReadFunction<any>;
+  voucherId?: FieldPolicy<any> | FieldReadFunction<any>;
 };
 export type VoucherTranslateKeySpecifier = (
   | "errors"
@@ -51807,12 +52090,14 @@ export type VoucherTranslationKeySpecifier = (
   | "id"
   | "language"
   | "name"
+  | "translatableContent"
   | VoucherTranslationKeySpecifier
 )[];
 export type VoucherTranslationFieldPolicy = {
   id?: FieldPolicy<any> | FieldReadFunction<any>;
   language?: FieldPolicy<any> | FieldReadFunction<any>;
   name?: FieldPolicy<any> | FieldReadFunction<any>;
+  translatableContent?: FieldPolicy<any> | FieldReadFunction<any>;
 };
 export type VoucherUpdateKeySpecifier = (
   | "discountErrors"

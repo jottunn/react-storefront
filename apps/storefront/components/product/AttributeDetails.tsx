@@ -1,3 +1,4 @@
+import { ATTR_BRAND_REF, ATTR_GHID_MARIMI } from "@/lib/const";
 import { getProductAttributes } from "@/lib/product";
 import { translate } from "@/lib/translations";
 import { ProductDetailsFragment, ProductVariantDetailsFragment } from "@/saleor/api";
@@ -10,8 +11,8 @@ export interface AttributeDetailsProps {
 export function AttributeDetails({ product, selectedVariant }: AttributeDetailsProps) {
   // const t = useIntl();
   const attributes = getProductAttributes(product, selectedVariant)
-    .filter((attr) => attr.attribute.slug !== process.env.NEXT_PUBLIC_ATTR_GHID_MARIMI)
-    .filter((attr) => attr.attribute.slug !== "brand-ref");
+    .filter((attr) => attr.attribute.slug !== ATTR_GHID_MARIMI)
+    .filter((attr) => attr.attribute.slug !== ATTR_BRAND_REF);
   if (attributes.length === 0) {
     return null;
   }

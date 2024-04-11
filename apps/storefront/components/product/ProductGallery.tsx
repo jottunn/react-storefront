@@ -116,13 +116,12 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
               {media.type === "VIDEO" && (
                 <div role="button" tabIndex={-2}>
                   {
-                    <Image
+                    <img
                       src={media.thumbnailUrl || ""}
                       alt={media.alt}
-                      fill={true}
                       style={{ objectFit: "cover" }}
                       sizes="(max-width: 768px) 100vw, 33vw"
-                      unoptimized
+                      loading="lazy"
                     />
                   }
 

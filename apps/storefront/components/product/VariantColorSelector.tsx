@@ -2,6 +2,7 @@ import Link from "next/link";
 import { usePaths } from "@/lib/paths";
 import { ProductDetailsFragment, ProductVariantDetailsFragment } from "@/saleor/api";
 import Image from "next/image";
+import { ATTR_COLOR_SLUG } from "@/lib/const";
 
 export interface VariantSelectorProps {
   product: ProductDetailsFragment;
@@ -12,7 +13,7 @@ function getColorOfVariant(productVariant: ProductVariantDetailsFragment) {
   let color = "";
   if (productVariant && Array.isArray(productVariant.attributes)) {
     productVariant.attributes.forEach((attribute) => {
-      if (attribute.attribute.slug === process.env.NEXT_PUBLIC_ATTR_COLOR_SLUG) {
+      if (attribute.attribute.slug === ATTR_COLOR_SLUG) {
         attribute.values.forEach((value: any) => {
           color = value.name;
         });
@@ -36,7 +37,7 @@ export function VariantColorSelector({ product, selectedVariant }: VariantSelect
         return [];
       }
       return variant.attributes.flatMap((attribute) => {
-        if (attribute.attribute.slug === process.env.NEXT_PUBLIC_ATTR_COLOR_SLUG) {
+        if (attribute.attribute.slug === ATTR_COLOR_SLUG) {
           return attribute.values
             .filter((value) => {
               const name = value.name as string;

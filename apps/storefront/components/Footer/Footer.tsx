@@ -1,11 +1,11 @@
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
-import { HTMLAttributes } from "react";
+import { HTMLAttributes, useEffect, useState } from "react";
 
 import { getLinkPath } from "@/lib/menus";
 import { usePaths } from "@/lib/paths";
-import { useFooterMenuQuery, usePageTypesQuery } from "@/saleor/api";
+import { useFooterMenuQuery, usePageTypesBySlugQuery, usePageTypesQuery } from "@/saleor/api";
 
 import { Box } from "../Box";
 import { ChannelDropdown } from "../regionDropdowns/ChannelDropdown";
@@ -22,16 +22,36 @@ export function Footer({ className, ...rest }: FooterProps) {
   const paths = usePaths();
   const { query } = useRegions();
   const { data, error } = useFooterMenuQuery({ variables: { ...query } });
-  const brandPageType = process.env.NEXT_PUBLIC_PAGE_TYPE_BRAND || "";
-  const contactPageType = process.env.NEXT_PUBLIC_PAGE_TYPE_CONTACT || "";
-  const { data: pageData, error: pageError } = usePageTypesQuery({
+  const [pageTypeIds, setPageTypeIds] = useState({ brand: "", contact: "" });
+
+  const { data: pageTypeData, loading: pageTypeLoading } = usePageTypesBySlugQuery({
     variables: {
       filter: {
-        pageTypes: [brandPageType, contactPageType],
+        slugs: ["brand", "contact"],
+      },
+    },
+  });
+
+  useEffect(() => {
+    if (!pageTypeLoading) {
+      const brandPageType =
+        pageTypeData?.pageTypes?.edges.find((edge) => edge.node.slug === "brand")?.node.id || "";
+      const contactPageType =
+        pageTypeData?.pageTypes?.edges.find((edge) => edge.node.slug === "contact")?.node.id || "";
+      setPageTypeIds({ brand: brandPageType, contact: contactPageType });
+    }
+  }, [pageTypeData, pageTypeLoading]);
+
+  const { data: pageData, error: pageError } = usePageTypesQuery({
+    skip: !pageTypeIds.brand || !pageTypeIds.contact, // Only execute the query if the IDs are available
+    variables: {
+      filter: {
+        pageTypes: [pageTypeIds.brand, pageTypeIds.contact],
       },
       locale: query.locale,
     },
   });
+
   const pagesDataArr = mapEdgesToItems(pageData?.pages);
   const brandsDataArr = pagesDataArr.filter((page) => page.pageType.name === "Brand");
   const contactDataArr = pagesDataArr.filter((page) => page.pageType.name === "Contact");

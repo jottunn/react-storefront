@@ -22,7 +22,6 @@ export interface CheckoutConsumerProps {
 export const [useCheckout, Provider] = createSafeContext<CheckoutConsumerProps>();
 
 export function CheckoutProvider({ children }: { children: ReactNode }) {
-  console.log("CheckoutProvider");
   const router = useRouter();
   const locale = router.query.locale?.toString() || DEFAULT_LOCALE;
   const [cartModalOpen, setCartModalOpen] = useState(false);

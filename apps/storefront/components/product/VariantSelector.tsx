@@ -10,6 +10,7 @@ import { useRegions } from "../RegionsProvider";
 import { VariantColorSelector } from "./VariantColorSelector";
 
 import { useProductInfo } from "../../lib/hooks/useProductInfo";
+import { ATTR_COLOR_SLUG } from "@/lib/const";
 
 export interface VariantSelectorProps {
   product: ProductDetailsFragment;
@@ -78,7 +79,7 @@ export function VariantSelector({ product, selectedVariant }: VariantSelectorPro
     if (productVariant && Array.isArray(productVariant.attributes)) {
       for (const attribute of productVariant.attributes) {
         if (
-          attribute.attribute.slug === process.env.NEXT_PUBLIC_ATTR_COLOR_SLUG &&
+          attribute.attribute.slug === ATTR_COLOR_SLUG &&
           attribute.values &&
           attribute.values.length > 0
         ) {
@@ -122,11 +123,11 @@ export function VariantSelector({ product, selectedVariant }: VariantSelectorPro
             .filter((variant) => variant.quantityAvailable)
             .map((variant) => {
               const hasAttributeWithColor = variant.attributes.some(
-                (item) => item.attribute.slug === process.env.NEXT_PUBLIC_ATTR_COLOR_SLUG
+                (item) => item.attribute.slug === ATTR_COLOR_SLUG
               );
               const existsAttributeWithCurrentColor = variant.attributes.some(
                 (item) =>
-                  item.attribute.slug === process.env.NEXT_PUBLIC_ATTR_COLOR_SLUG &&
+                  item.attribute.slug === ATTR_COLOR_SLUG &&
                   item.values.some((value) => value.name === currentColor)
               );
               if (!existsAttributeWithCurrentColor && hasAttributeWithColor) {

@@ -34,79 +34,93 @@ import { useIntl } from "react-intl";
 import { messages } from "@/components/translations";
 
 export const getStaticProps = async (context: GetStaticPropsContext) => {
-  const response: ApolloQueryResult<PageQuery> = await serverApolloClient.query<
-    PageQuery,
-    PageQueryVariables
-  >({
-    query: PageDocument,
-    variables: {
-      slug: "home",
-      locale: contextToRegionQuery(context).locale,
-    },
-  });
-
-  /**New products */
-
-  const filter: ProductFilterInput = { isPublished: true, stockAvailability: "IN_STOCK" };
-  const sortBy: ProductOrder = { direction: "DESC", field: "PUBLICATION_DATE" };
-
-  const queryVariables = {
-    filter,
-    first: 8,
-    ...contextToRegionQuery(context),
-    sortBy,
-  };
-
-  const productsResponse: ApolloQueryResult<ProductCollectionQuery> =
-    await serverApolloClient.query<ProductCollectionQuery, ProductCollectionQueryVariables>({
-      query: ProductCollectionDocument,
-      variables: queryVariables,
-    });
-
-  let newProducts = mapEdgesToItems(productsResponse.data.products);
-  newProducts = groupProductsByColor(newProducts as GroupedProduct[]);
-
-  /** Categories */
-  const categoryFilter: CategoryFilterInput = {
-    metadata: [{ key: "Show on Homepage", value: "YES" }],
-  };
-
-  const categoriesResponse: ApolloQueryResult<CategoriesByMetaKeyQuery> =
-    await serverApolloClient.query<CategoriesByMetaKeyQuery, CategoriesByMetaKeyQueryVariables>({
-      query: CategoriesByMetaKeyDocument,
+  try {
+    const response: ApolloQueryResult<PageQuery> = await serverApolloClient.query<
+      PageQuery,
+      PageQueryVariables
+    >({
+      query: PageDocument,
       variables: {
-        filter: categoryFilter,
-        ...contextToRegionQuery(context),
+        slug: "home",
+        locale: contextToRegionQuery(context).locale,
       },
     });
+    /**New products */
 
-  const homepageCategories = mapEdgesToItems(categoriesResponse.data.categories);
+    const filter: ProductFilterInput = { isPublished: true, stockAvailability: "IN_STOCK" };
+    const sortBy: ProductOrder = { direction: "DESC", field: "PUBLICATION_DATE" };
 
-  /** Collections */
-  const collectionFilter: CollectionFilterInput = {
-    metadata: [{ key: "Show on Homepage", value: "YES" }],
-  };
+    const queryVariables = {
+      filter,
+      first: 8,
+      ...contextToRegionQuery(context),
+      sortBy,
+    };
 
-  const collectionsResponse: ApolloQueryResult<CollectionsByMetaKeyQuery> =
-    await serverApolloClient.query<CollectionsByMetaKeyQuery, CollectionsByMetaKeyQueryVariables>({
-      query: CollectionsByMetaKeyDocument,
-      variables: {
-        filter: collectionFilter,
-        ...contextToRegionQuery(context),
+    const productsResponse: ApolloQueryResult<ProductCollectionQuery> =
+      await serverApolloClient.query<ProductCollectionQuery, ProductCollectionQueryVariables>({
+        query: ProductCollectionDocument,
+        variables: queryVariables,
+      });
+
+    let newProducts = mapEdgesToItems(productsResponse.data.products);
+    newProducts = groupProductsByColor(newProducts as GroupedProduct[]);
+
+    /** Categories */
+    const categoryFilter: CategoryFilterInput = {
+      metadata: [{ key: "Show on Homepage", value: "YES" }],
+    };
+
+    const categoriesResponse: ApolloQueryResult<CategoriesByMetaKeyQuery> =
+      await serverApolloClient.query<CategoriesByMetaKeyQuery, CategoriesByMetaKeyQueryVariables>({
+        query: CategoriesByMetaKeyDocument,
+        variables: {
+          filter: categoryFilter,
+          ...contextToRegionQuery(context),
+        },
+      });
+
+    const homepageCategories = mapEdgesToItems(categoriesResponse.data.categories);
+
+    /** Collections */
+    const collectionFilter: CollectionFilterInput = {
+      metadata: [{ key: "Show on Homepage", value: "YES" }],
+    };
+
+    const collectionsResponse: ApolloQueryResult<CollectionsByMetaKeyQuery> =
+      await serverApolloClient.query<CollectionsByMetaKeyQuery, CollectionsByMetaKeyQueryVariables>(
+        {
+          query: CollectionsByMetaKeyDocument,
+          variables: {
+            filter: collectionFilter,
+            ...contextToRegionQuery(context),
+          },
+        }
+      );
+
+    const homepageCollections = mapEdgesToItems(collectionsResponse.data.collections);
+
+    return {
+      props: {
+        page: response?.data.page,
+        newProducts: newProducts,
+        homepageCategories: homepageCategories,
+        homepageCollections: homepageCollections,
       },
-    });
-
-  const homepageCollections = mapEdgesToItems(collectionsResponse.data.collections);
-
-  return {
-    props: {
-      page: response?.data.page,
-      newProducts: newProducts,
-      homepageCategories: homepageCategories,
-      homepageCollections: homepageCollections,
-    },
-    revalidate: 60 * 60, // value in seconds, how often ISR will trigger on the server
-  };
+      revalidate: 60 * 60, // value in seconds, how often ISR will trigger on the server
+    };
+  } catch (error) {
+    console.error("Failed to fetch data:", error);
+    return {
+      props: {
+        page: {}, // Provide default props or empty objects
+        newProducts: [],
+        homepageCategories: [],
+        homepageCollections: [],
+      },
+      revalidate: 1,
+    };
+  }
 };
 
 function getMetadataValue(metadataArray: any[], key: any) {
@@ -120,10 +134,16 @@ function Home({
   homepageCategories,
   homepageCollections,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
-  const bannerAttribute = page?.attributes.find((attr) => attr.attribute.name === "Banner");
-  const buttonText = page ? getMetadataValue(page.metadata, "Button Text") : "";
-  const linkBanner = page ? getMetadataValue(page.metadata, "Link Banner") : "";
-  const textBanner = page ? getMetadataValue(page.metadata, "Text Banner") : "";
+  const bannerAttribute =
+    page && "attributes" in page
+      ? page.attributes.find((attr) => attr.attribute.name === "Banner")
+      : null;
+  const buttonText =
+    page && "metadata" in page ? getMetadataValue(page.metadata, "Button Text") : "";
+  const linkBanner =
+    page && "metadata" in page ? getMetadataValue(page.metadata, "Link Banner") : "#";
+  const textBanner =
+    page && "metadata" in page ? getMetadataValue(page.metadata, "Text Banner") : "";
   const t = useIntl();
 
   return (
@@ -168,7 +188,7 @@ function Home({
         </div>
       </div>
 
-      {page && page.content && (
+      {page && "content" in page && page.content && (
         <div className="container mb-28 mx-auto max-w-[800px] text-center">
           <RichText jsonStringData={page.content} />
         </div>

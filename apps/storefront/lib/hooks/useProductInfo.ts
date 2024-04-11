@@ -1,6 +1,7 @@
 import { useRegions } from "components/RegionsProvider/RegionsProvider";
 import { ProductCardFragment } from "@/saleor/api";
 import { translate } from "../translations";
+import { ATTR_COLOR_SLUG } from "../const";
 
 export const useProductInfo = () => {
   const { formatPrice } = useRegions();
@@ -23,10 +24,7 @@ export const useProductInfo = () => {
       product.variants.map((variant) =>
         variant.attributes.map((attribute) =>
           attribute.values.map((value) => {
-            if (
-              attribute.attribute.slug === process.env.NEXT_PUBLIC_ATTR_COLOR_SLUG &&
-              value.name !== color
-            ) {
+            if (attribute.attribute.slug === ATTR_COLOR_SLUG && value.name !== color) {
               color = value.name || "";
               const productVariant: ProductVariant = {
                 color: value.name || "",

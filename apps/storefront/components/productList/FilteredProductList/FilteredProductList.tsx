@@ -26,6 +26,7 @@ import useDebouncedValue from "@/lib/hooks/useDebouncedValue";
 import { useApolloClient } from "@apollo/client";
 import { useRegions } from "@/components/RegionsProvider";
 import FilterDropdown from "./FilterDropdown";
+import { ATTR_BRAND_REF, ATTR_COLOR_COMMERCIAL_SLUG, ATTR_GHID_MARIMI } from "@/lib/const";
 
 export interface FilteredProductListProps {
   brand?: string;
@@ -78,8 +79,8 @@ export function FilteredProductList({
       // Aggregate attributes from the product
       product.node.attributes.forEach((attribute: SelectedAttribute) => {
         if (
-          attribute.attribute.slug !== process.env.NEXT_PUBLIC_ATTR_GHID_MARIMI &&
-          attribute.attribute.slug !== process.env.NEXT_PUBLIC_ATTR_BRAND_REF
+          attribute.attribute.slug !== ATTR_GHID_MARIMI &&
+          attribute.attribute.slug !== ATTR_BRAND_REF
         ) {
           addAttributeToMap(attributesMap, attribute);
         }
@@ -90,7 +91,7 @@ export function FilteredProductList({
         // console.log(doesVariantComplyWithFilter(variant));
         if (variant.quantityAvailable && variant.quantityAvailable > 0) {
           variant.attributes.forEach((attribute: SelectedAttribute) => {
-            if (attribute.attribute.slug !== process.env.NEXT_PUBLIC_ATTR_COLOR_COMMERCIAL_SLUG) {
+            if (attribute.attribute.slug !== ATTR_COLOR_COMMERCIAL_SLUG) {
               addAttributeToMap(attributesMap, attribute);
             }
           });

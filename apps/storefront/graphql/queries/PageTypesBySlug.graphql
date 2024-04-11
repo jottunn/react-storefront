@@ -1,0 +1,10 @@
+query PageTypesBySlug($filter: PageTypeFilterInput) {
+  pageTypes(first: 10, filter: $filter) {
+    edges {
+        node {
+            id
+            slug
+        }
+    }
+  }
+}

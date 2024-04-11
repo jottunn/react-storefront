@@ -16,6 +16,7 @@ import {
 import { usePaths } from "../../lib/paths";
 import { useRegions } from "../RegionsProvider";
 import { messages } from "../translations";
+import { ATTR_COLOR_COMMERCIAL_SLUG } from "@/lib/const";
 
 interface CheckoutLineItemProps {
   line: CheckoutLineDetailsFragment;
@@ -86,7 +87,7 @@ export function CheckoutLineItem({ line }: CheckoutLineItemProps) {
   };
 
   const variantAttr = line.variant?.attributes.find(
-    (attr) => attr.attribute.slug === process.env.NEXT_PUBLIC_ATTR_COLOR_COMMERCIAL_SLUG
+    (attr) => attr.attribute.slug === ATTR_COLOR_COMMERCIAL_SLUG
   );
   const colorAttrName = variantAttr?.values[0].name ? " | " + variantAttr?.values[0].name : "";
   const primaryMedia = line.variant.product?.thumbnail || line.variant.media?.[0];
