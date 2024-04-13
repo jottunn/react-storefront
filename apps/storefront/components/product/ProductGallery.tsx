@@ -42,12 +42,12 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
   const closeModal = () => {
     setCurrentIndex(null);
   };
-  console.log(galleryMedia);
+  // console.log(galleryMedia);
 
   return (
     <>
       {isMobile ? (
-        <div className="md:hidden" style={{ height: "400px", minWidth: "400px" }}>
+        <div className="md:hidden" style={{ height: "100%", maxWidth: "100%" }}>
           <Swiper slidesPerView={1} modules={[Scrollbar]} scrollbar={{ draggable: true }}>
             {galleryMedia.map((media, index) => (
               <SwiperSlide key={index}>
@@ -60,6 +60,7 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
                     height={400}
                     priority={index === 0}
                     loading={index < 1 ? "eager" : "lazy"}
+                    style={{ objectFit: "contain" }}
                   />
                 )}
 
@@ -116,12 +117,14 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
               {media.type === "VIDEO" && (
                 <div role="button" tabIndex={-2}>
                   {
-                    <img
+                    <Image
                       src={media.thumbnailUrl || ""}
                       alt={media.alt}
+                      fill={true}
                       style={{ objectFit: "cover" }}
                       sizes="(max-width: 768px) 100vw, 33vw"
                       loading="lazy"
+                      unoptimized
                     />
                   }
 

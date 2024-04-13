@@ -2,7 +2,7 @@ import { ApolloQueryResult, useQuery } from "@apollo/client";
 import { GetStaticPaths, GetStaticPropsContext, InferGetStaticPropsType } from "next";
 import { useRouter } from "next/router";
 import Custom404 from "pages/404";
-import React, { ReactElement, useEffect, useRef, useState } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 
 import { Layout, PageHero } from "@/components";
 import { FilteredProductList } from "@/components/productList/FilteredProductList/FilteredProductList";
@@ -51,7 +51,6 @@ function CategoryPage({
   category: initialCategory,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   const router = useRouter();
-  const skipQuery = useRef(true);
   const { currentChannel, currentLocale } = useRegions();
   const [category, setCategory] = useState(initialCategory);
 
@@ -65,32 +64,39 @@ function CategoryPage({
 
   const { refetch } = useQuery<CategoryBySlugQuery>(CategoryBySlugDocument, {
     variables: {
-      slug: category?.slug,
+      slug: (router.query.slug as string) || initialCategory?.slug,
       locale: localeToEnum(currentLocale),
       channel: currentChannel.slug,
     },
-    skip: skipQuery.current,
+    skip: !router.isReady || !router.query.slug,
+    onCompleted: (data) => {
+      if (data.category) {
+        setCategory(data.category);
+      }
+    },
   });
 
   useEffect(() => {
-    refetch({
-      slug: category?.slug,
-      locale: localeToEnum(currentLocale),
-      channel: currentChannel.slug,
-    })
-      .then((response) => {
-        // Handle the successful refetch here
-        if (response.data.category) {
-          setCategory(response.data.category);
-        }
+    let isMounted = true;
+
+    if (router.isReady) {
+      refetch({
+        slug: router.query.slug as string,
+        locale: localeToEnum(currentLocale),
+        channel: currentChannel.slug,
       })
-      .catch((error) => {
-        console.error("Error during refetch:", error);
-        // Handle the error here
-      });
-    // Ensure future updates don't skip the query
-    skipQuery.current = false;
-  }, [currentChannel.slug, currentLocale]);
+        .then((response) => {
+          if (isMounted && response.data.category) {
+            setCategory(response.data.category);
+          }
+        })
+        .catch(console.error);
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [router.isReady, router.query.slug, currentChannel.slug, currentLocale]);
 
   if (!category) {
     return <Custom404 />;

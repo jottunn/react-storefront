@@ -15,6 +15,7 @@ import styles from "./Footer.module.css";
 import { mapEdgesToItems } from "@/lib/maps";
 import RichText from "../RichText";
 import { translate } from "@/lib/translations";
+import { UPLOAD_FOLDER } from "@/lib/const";
 
 export type FooterProps = HTMLAttributes<HTMLElement>;
 
@@ -191,9 +192,7 @@ export function Footer({ className, ...rest }: FooterProps) {
                   >
                     <a className="text-md mt-2 font-medium text-gray-600 cursor-pointer text-center hover:text-green-600 block">
                       <img
-                        src={`${process.env.NEXT_PUBLIC_MEDIA_UPLOAD_PATH ?? ""}/${
-                          targetAttribute?.values[0].name ?? ""
-                        }`}
+                        src={`${UPLOAD_FOLDER ?? ""}/${targetAttribute?.values[0].name ?? ""}`}
                         alt=""
                       />
                     </a>

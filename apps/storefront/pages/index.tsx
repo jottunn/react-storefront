@@ -32,6 +32,7 @@ import { GroupedProduct, groupProductsByColor } from "@/lib/product";
 import { mapEdgesToItems } from "@/lib/maps";
 import { useIntl } from "react-intl";
 import { messages } from "@/components/translations";
+import { UPLOAD_FOLDER } from "@/lib/const";
 
 export const getStaticProps = async (context: GetStaticPropsContext) => {
   try {
@@ -160,9 +161,7 @@ function Home({
               >
                 <div className="relative flex h-full w-full overflow-hidden">
                   <img
-                    src={`${process.env.NEXT_PUBLIC_MEDIA_UPLOAD_PATH ?? ""}/${
-                      bannerAttribute?.values[0].name ?? ""
-                    }`}
+                    src={`${UPLOAD_FOLDER ?? ""}/${bannerAttribute?.values[0].name ?? ""}`}
                     style={{
                       position: "absolute",
                       height: "100%",
