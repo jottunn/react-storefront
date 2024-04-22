@@ -416,7 +416,7 @@ function ProductPage({
                   brandRefPage?.attributes?.map((attr) => (
                     <Image
                       key={attr.attribute.name}
-                      src={`${UPLOAD_FOLDER ?? ""}/${attr?.values[0].name ?? ""}`}
+                      src={`${UPLOAD_FOLDER ?? ""}/${attr?.values?.[0]?.name ?? ""}`}
                       alt={brandRefPage.title}
                       width={80}
                       height={80}
@@ -574,7 +574,7 @@ function ProductPage({
               {sizeGuide.attributes.map((attr) => (
                 <Image
                   key={attr?.attribute.name}
-                  src={`${UPLOAD_FOLDER ?? ""}/${attr?.values[0].name ?? ""}`}
+                  src={`${UPLOAD_FOLDER ?? ""}/${attr?.values?.[0]?.name ?? ""}`}
                   alt={sizeGuide.title}
                   fill={true}
                   style={{ objectFit: "contain", padding: "4rem 0" }}

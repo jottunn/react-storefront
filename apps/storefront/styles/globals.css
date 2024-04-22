@@ -31,7 +31,9 @@
 
 html {
   font-size: 62.5%;
+  scroll-behavior: smooth;
 }
+
 .country-select-container select {
   background-image: none !important;
   font-size: 1.2rem;
