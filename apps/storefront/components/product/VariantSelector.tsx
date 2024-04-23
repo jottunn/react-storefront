@@ -25,7 +25,7 @@ export function VariantSelector({ product, selectedVariant }: VariantSelectorPro
   const [selectedVariantID, setSelectedVariantID] = useState(selectedVariant?.id);
   const { variants } = product;
 
-  console.log("VariantSelector render");
+  //console.log("VariantSelector render");
 
   // useMemo for computations that don't change often\
   const currentColor = useMemo(() => {

@@ -15,6 +15,7 @@ import {
 } from "@/saleor/api";
 import { serverApolloClient } from "@/lib/ssr/common";
 import { useRegions } from "@/components/RegionsProvider";
+import { useRouter } from "next/router";
 
 export const getStaticProps = async (
   context: GetStaticPropsContext<{ channel: string; locale: string; slug: string }>
@@ -47,38 +48,37 @@ export const getStaticProps = async (
 function CollectionPage({
   collection: initialCollection,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
-  const skipQuery = useRef(true);
+  const router = useRouter();
+  const skipQuery = useRef(!initialCollection);
   const { currentChannel, currentLocale } = useRegions();
   const [collection, setCollection] = useState(initialCollection);
 
   const { refetch } = useQuery<CollectionBySlugQuery>(CollectionBySlugDocument, {
     variables: {
-      slug: collection?.slug,
+      slug: router.query.slug,
       locale: localeToEnum(currentLocale),
       channel: currentChannel.slug,
     },
-    skip: skipQuery.current,
+    skip: skipQuery.current || !router.isReady,
   });
 
   useEffect(() => {
-    refetch({
-      slug: collection?.slug,
-      locale: localeToEnum(currentLocale),
-      channel: currentChannel.slug,
-    })
-      .then((response) => {
-        // Handle the successful refetch here
-        if (response.data.collection) {
-          setCollection(response.data.collection);
-        }
+    if (router.isReady) {
+      refetch({
+        slug: router.query.slug,
+        locale: localeToEnum(currentLocale),
+        channel: currentChannel.slug,
       })
-      .catch((error) => {
-        console.error("Error during refetch collection:", error);
-        // Handle the error here
-      });
-    // Ensure future updates don't skip the query
-    skipQuery.current = false;
-  }, [currentChannel.slug, currentLocale]);
+        .then((response) => {
+          if (response.data.collection) {
+            setCollection(response.data.collection);
+          }
+        })
+        .catch((error) => {
+          console.error("Error during refetch collection:", error);
+        });
+    }
+  }, [router.isReady, router.query.slug, currentChannel.slug, currentLocale]);
 
   if (!collection) {
     return <Custom404 />;

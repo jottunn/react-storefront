@@ -43,7 +43,7 @@ export function FilterDropdown({
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items className="focus:outline-none absolute left-0 w-56 origin-top-right  bg-white shadow-lg ring-1 ring-black ring-opacity-5 z-10">
+        <Menu.Items className="focus:outline-none absolute left-0 w-52 md:w-56 origin-top-right  bg-white shadow-lg ring-1 ring-black ring-opacity-5 z-10 max-h-[220px] overflow-scroll">
           {options?.map((option) => (
             <Menu.Item key={option.id}>
               {({ active }) => (

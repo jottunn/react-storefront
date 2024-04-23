@@ -89,7 +89,7 @@ export function CheckoutLineItem({ line }: CheckoutLineItemProps) {
   const variantAttr = line.variant?.attributes.find(
     (attr) => attr.attribute.slug === ATTR_COLOR_COMMERCIAL_SLUG
   );
-  const colorAttrName = variantAttr?.values[0].name ? " | " + variantAttr?.values[0].name : "";
+  const colorAttrName = variantAttr?.values[0]?.name ? " | " + variantAttr?.values[0].name : "";
   const primaryMedia = line.variant.product?.thumbnail || line.variant.media?.[0];
 
   if (!line) return null;
@@ -107,8 +107,8 @@ export function CheckoutLineItem({ line }: CheckoutLineItemProps) {
                 <Image
                   src={primaryMedia.url || "#"}
                   alt={primaryMedia.alt || ""}
-                  width={100}
-                  height={100}
+                  fill={true}
+                  style={{ objectFit: "contain" }}
                   className="hover:scale-110 ease-in duration-300"
                 />
               )}

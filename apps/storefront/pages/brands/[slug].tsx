@@ -13,6 +13,7 @@ import { BaseSeo } from "@/components/seo/BaseSeo";
 import Image from "next/image";
 import { translate } from "@/lib/translations";
 import { useRegions } from "@/components/RegionsProvider";
+import { UPLOAD_FOLDER } from "@/lib/const";
 
 export const getStaticProps = async (
   context: GetStaticPropsContext<{ channel: string; locale: string; slug: string }>
@@ -96,7 +97,7 @@ function BrandPage({
           {brand && (
             <>
               <Image
-                src={`${process.env.NEXT_PUBLIC_MEDIA_UPLOAD_PATH ?? ""}/${logoImg ?? ""}`}
+                src={`${UPLOAD_FOLDER ?? ""}/${logoImg ?? ""}`}
                 className="inline-block max-w-[200px] h-auto"
                 alt={brand.toUpperCase()}
                 width={100}

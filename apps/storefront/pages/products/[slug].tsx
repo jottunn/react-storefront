@@ -42,7 +42,12 @@ import { ProductCard } from "@/components/ProductCollection/ProductCard";
 import { GroupedProduct, groupProductsByColor } from "@/lib/product";
 import { XIcon } from "@heroicons/react/outline";
 import Image from "next/image";
-import { ATTR_BRAND_REF, ATTR_COLOR_COMMERCIAL_SLUG, ATTR_GHID_MARIMI } from "@/lib/const";
+import {
+  ATTR_BRAND_REF,
+  ATTR_COLOR_COMMERCIAL_SLUG,
+  ATTR_GHID_MARIMI,
+  UPLOAD_FOLDER,
+} from "@/lib/const";
 
 export type OptionalQuery = {
   variant?: string;
@@ -65,8 +70,6 @@ export const getServerSideProps = async (
   const cookies = parseCookies(context);
   const currentChannel = cookies.currentChannel || DEFAULT_CHANNEL.slug;
 
-  console.log(contextToRegionQuery(context).locale);
-
   const response: ApolloQueryResult<ProductBySlugQuery> = await serverApolloClient.query<
     ProductBySlugQuery,
     ProductBySlugQueryVariables
@@ -80,6 +83,7 @@ export const getServerSideProps = async (
   });
 
   const selectedVariantId = Array.isArray(variant) ? variant[0] : variant;
+
   // const variants = response.data.product?.variants;
   // if (variants) {
   //   if (!selectedVariantID && variants.length === 1) {
@@ -332,7 +336,10 @@ function ProductPage({
   };
 
   const selectedVariant =
-    product?.variants?.find((v) => v?.id === selectedVariantId) || product.variants?.[0];
+    product.variants && product.variants.length > 1
+      ? product?.variants?.find((v) => v?.id === selectedVariantId)
+      : product.variants?.[0];
+
   const isAddToCartButtonDisabled =
     !product.isAvailableForPurchase ||
     (product.variants && product.variants.length > 1 && !selectedVariantId) ||
@@ -351,7 +358,7 @@ function ProductPage({
       <main>
         <div
           className={clsx(
-            "grid grid-cols-1 gap-[3rem] max-h-full overflow-auto md:overflow-hidden container px-8 md:grid-cols-2"
+            "grid grid-cols-1 gap-[3rem] max-h-full overflow-auto md:overflow-hidden container px-8 md:grid-cols-2 pb-4"
           )}
         >
           <div>
@@ -408,9 +415,8 @@ function ProductPage({
                   Object.keys(brandRefPage).length > 0 &&
                   brandRefPage?.attributes?.map((attr) => (
                     <Image
-                      src={`${process.env.NEXT_PUBLIC_MEDIA_UPLOAD_PATH ?? ""}/${
-                        attr?.values[0].name ?? ""
-                      }`}
+                      key={attr.attribute.name}
+                      src={`${UPLOAD_FOLDER ?? ""}/${attr?.values?.[0]?.name ?? ""}`}
                       alt={brandRefPage.title}
                       width={80}
                       height={80}
@@ -567,9 +573,8 @@ function ProductPage({
               <RichText jsonStringData={sizeGuide.content || ""} />
               {sizeGuide.attributes.map((attr) => (
                 <Image
-                  src={`${process.env.NEXT_PUBLIC_MEDIA_UPLOAD_PATH ?? ""}/${
-                    attr?.values[0].name ?? ""
-                  }`}
+                  key={attr?.attribute.name}
+                  src={`${UPLOAD_FOLDER ?? ""}/${attr?.values?.[0]?.name ?? ""}`}
                   alt={sizeGuide.title}
                   fill={true}
                   style={{ objectFit: "contain", padding: "4rem 0" }}

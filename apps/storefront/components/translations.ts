@@ -443,6 +443,46 @@ export const messages = defineMessages({
     description: "Size Guide link text",
     defaultMessage: "Size guide",
   },
+  sortBy: {
+    id: "app.sortBy",
+    description: "Sort By text",
+    defaultMessage: "Sort By",
+  },
+  clearAll: {
+    id: "app.clearAll",
+    description: "Clear all filters",
+    defaultMessage: "Clear all filters",
+  },
+  sortByPopularity: {
+    id: "app.sortByPopularity",
+    description: "sort By Popularity",
+    defaultMessage: "Popularity",
+  },
+  sortByPriceAsc: {
+    id: "app.sortByPriceAsc",
+    description: "sort By Price ascending",
+    defaultMessage: "Price ascending",
+  },
+  sortByPriceDesc: {
+    id: "app.sortByPriceDesc",
+    description: "sort By Price descending",
+    defaultMessage: "Price descending",
+  },
+  sortByOldest: {
+    id: "app.sortByOldest",
+    description: "sort By Oldest",
+    defaultMessage: "Oldest",
+  },
+  sortByLatest: {
+    id: "app.sortByLatest",
+    description: "sort By Latest",
+    defaultMessage: "Latest",
+  },
+  sortByNameAsc: {
+    id: "app.sortByNameAsc",
+    description: "sort By Name ascending",
+    defaultMessage: "Name ascending",
+  },
 });
 
 export default messages;

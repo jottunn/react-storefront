@@ -2,10 +2,11 @@ import { Menu, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronDownIcon } from "@heroicons/react/solid";
 import clsx from "clsx";
 import { Fragment } from "react";
-
+import { messages } from "../../translations";
 import { OrderDirection, ProductOrderField } from "@/saleor/api";
 
 import { getSortingOptions, UrlSorting } from "./sorting";
+import { useIntl } from "react-intl";
 
 export interface SortingDropdownProps {
   optionToggle: (field?: ProductOrderField, direction?: OrderDirection) => void;
@@ -14,15 +15,15 @@ export interface SortingDropdownProps {
 
 export function SortingDropdown({ optionToggle, chosen }: SortingDropdownProps) {
   const options = getSortingOptions(chosen);
-
+  const t = useIntl();
   return (
-    <Menu as="div" className="relative inline-block text-left float-right right-20">
+    <Menu as="div" className="relative inline-block text-left float-right">
       <div>
         <Menu.Button
           className="inline-flex w-full justify-left px-2 py-2 text-base font-medium  hover:bg-opacity-30 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 text-left"
           data-testid="sortBy"
         >
-          Sort by
+          {t.formatMessage(messages.sortBy)}
           <ChevronDownIcon className="ml-2 -mr-1 h-5 w-5 " aria-hidden="true" />
         </Menu.Button>
       </div>
@@ -36,7 +37,7 @@ export function SortingDropdown({ optionToggle, chosen }: SortingDropdownProps) 
         leaveTo="transform opacity-0 scale-95"
       >
         <Menu.Items
-          className="focus:outline-none absolute left-0 w-56 origin-top-right bg-white shadow-lg ring-1 ring-black ring-opacity-5 z-10"
+          className="focus:outline-none absolute left-0 w-50 origin-top-right bg-white shadow-lg ring-1 ring-black ring-opacity-5 z-10"
           data-testid="sortingDropdown"
         >
           {options?.map((option) => (

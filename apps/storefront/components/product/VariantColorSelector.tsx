@@ -55,7 +55,7 @@ export function VariantColorSelector({ product, selectedVariant }: VariantSelect
                   alt={
                     variant.media?.[0] ? variantMedia.alt : `${product.name} ${value.name ?? ""}`
                   }
-                  className={`border-2 p-2 ${
+                  className={`border-2 p-2 h-[60px] ${
                     isSelectedColor
                       ? "border-black"
                       : "border-neutral-400 opacity-80 hover:opacity-100"
