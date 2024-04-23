@@ -1,6 +1,4 @@
-import messages from "@/components/translations";
 import { OrderDirection, ProductOrderField } from "@/saleor/api";
-import { useIntl } from "react-intl";
 
 export interface UrlSorting {
   field: ProductOrderField;
@@ -15,40 +13,14 @@ export interface SortingOption {
 }
 
 export const getSortingOptions = (chosenSorting: UrlSorting | null) => {
-  const t = useIntl();
   const options: SortingOption[] = [
-    { label: t.formatMessage(messages.sortByPopularity), chosen: false },
-    // { label: "Name descending", field: "NAME", direction: "DESC", chosen: false },
-    {
-      label: t.formatMessage(messages.sortByPriceAsc),
-      field: "PRICE",
-      direction: "ASC",
-      chosen: false,
-    },
-    {
-      label: t.formatMessage(messages.sortByPriceDesc),
-      field: "PRICE",
-      direction: "DESC",
-      chosen: false,
-    },
-    {
-      label: t.formatMessage(messages.sortByLatest),
-      field: "DATE",
-      direction: "DESC",
-      chosen: false,
-    },
-    {
-      label: t.formatMessage(messages.sortByOldest),
-      field: "DATE",
-      direction: "ASC",
-      chosen: false,
-    },
-    {
-      label: t.formatMessage(messages.sortByNameAsc),
-      field: "NAME",
-      direction: "ASC",
-      chosen: false,
-    },
+    { label: "Popularity", chosen: false },
+    { label: "Name ascending", field: "NAME", direction: "ASC", chosen: false },
+    { label: "Name descending", field: "NAME", direction: "DESC", chosen: false },
+    { label: "Price ascending", field: "PRICE", direction: "ASC", chosen: false },
+    { label: "Price descending", field: "PRICE", direction: "DESC", chosen: false },
+    { label: "Oldest", field: "DATE", direction: "ASC", chosen: false },
+    { label: "Latest", field: "DATE", direction: "DESC", chosen: false },
   ];
 
   let isChosenSet = false;
