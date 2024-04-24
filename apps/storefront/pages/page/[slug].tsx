@@ -82,13 +82,37 @@ function PagePage({ page: initialPage }: InferGetStaticPropsType<typeof getStati
   }, [currentChannel.slug, currentLocale]);
 
   const content = page && translate(page, "content");
+  const richTextAttributes =
+    page && "attributes" in page
+      ? page.attributes.filter((attr) => attr.attribute.inputType === "RICH_TEXT")
+      : [];
 
   if (!page?.id) {
     return <Custom404 />;
   }
 
   return (
-    <main className="container pt-8 px-8">{content && <RichText jsonStringData={content} />}</main>
+    <main className="container pt-8 px-8">
+      {content && <RichText jsonStringData={content} />}
+      {richTextAttributes && richTextAttributes.length > 0 && (
+        <div className="container flex flex-col md:flex-row">
+          {richTextAttributes.map((attr, index) =>
+            attr.values.map((item) => {
+              const parsedRichText = JSON.parse(item.richText as "string");
+              if (parsedRichText && parsedRichText.blocks && parsedRichText.blocks.length > 0) {
+                return (
+                  <div key={`${index}`} className="md:w-1/2 p-4 border-t border-gray-300 py-20">
+                    <div className="p-2">
+                      <RichText jsonStringData={item.richText || undefined} />
+                    </div>
+                  </div>
+                );
+              }
+            })
+          )}
+        </div>
+      )}
+    </main>
   );
 }
 

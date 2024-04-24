@@ -6,6 +6,8 @@ import { HomepageBlock, Layout, RichText } from "@/components";
 import { BaseSeo } from "@/components/seo/BaseSeo";
 import { contextToRegionQuery } from "@/lib/regions";
 import {
+  Attribute,
+  AttributeValue,
   CategoriesByMetaKeyDocument,
   CategoriesByMetaKeyQuery,
   CategoriesByMetaKeyQueryVariables,
@@ -33,6 +35,7 @@ import { mapEdgesToItems } from "@/lib/maps";
 import { useIntl } from "react-intl";
 import { messages } from "@/components/translations";
 import { UPLOAD_FOLDER } from "@/lib/const";
+import { translate } from "@/lib/translations";
 
 export const getStaticProps = async (context: GetStaticPropsContext) => {
   try {
@@ -139,6 +142,10 @@ function Home({
     page && "attributes" in page
       ? page.attributes.find((attr) => attr.attribute.name === "Banner")
       : null;
+  const richTextAttributes =
+    page && "attributes" in page
+      ? page.attributes.filter((attr) => attr.attribute.inputType === "RICH_TEXT")
+      : [];
   const buttonText =
     page && "metadata" in page ? getMetadataValue(page.metadata, "Button Text") : "";
   const linkBanner =
@@ -146,6 +153,7 @@ function Home({
   const textBanner =
     page && "metadata" in page ? getMetadataValue(page.metadata, "Text Banner") : "";
   const t = useIntl();
+  const content = page && "content" in page && translate(page, "content");
 
   return (
     <>
@@ -187,9 +195,9 @@ function Home({
         </div>
       </div>
 
-      {page && "content" in page && page.content && (
+      {content && (
         <div className="container mb-28 mx-auto max-w-[800px] text-center">
-          <RichText jsonStringData={page.content} />
+          <RichText jsonStringData={content} />
         </div>
       )}
 
@@ -249,6 +257,25 @@ function Home({
             ))}
         </div>
       </div>
+
+      {richTextAttributes && richTextAttributes.length > 0 && (
+        <div className="container flex flex-col md:flex-row">
+          {richTextAttributes.map((attr, index) =>
+            attr.values.map((item) => {
+              const parsedRichText = JSON.parse(item.richText as "string");
+              if (parsedRichText && parsedRichText.blocks && parsedRichText.blocks.length > 0) {
+                return (
+                  <div key={`${index}`} className="md:w-1/2 p-4 border-t border-gray-300 py-20">
+                    <div className="p-2">
+                      <RichText jsonStringData={item.richText || undefined} />
+                    </div>
+                  </div>
+                );
+              }
+            })
+          )}
+        </div>
+      )}
     </>
   );
 }

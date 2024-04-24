@@ -32598,6 +32598,12 @@ export type PageFragment = {
       value?: string | null;
       reference?: string | null;
       inputType?: AttributeInputTypeEnum | null;
+      richText?: string | null;
+      translation?: {
+        __typename?: "AttributeValueTranslation";
+        id: string;
+        richText?: string | null;
+      } | null;
     }>;
   }>;
 };
@@ -35649,6 +35655,12 @@ export type PageQuery = {
         value?: string | null;
         reference?: string | null;
         inputType?: AttributeInputTypeEnum | null;
+        richText?: string | null;
+        translation?: {
+          __typename?: "AttributeValueTranslation";
+          id: string;
+          richText?: string | null;
+        } | null;
       }>;
     }>;
   } | null;
@@ -35690,6 +35702,12 @@ export type PageByIdQuery = {
         value?: string | null;
         reference?: string | null;
         inputType?: AttributeInputTypeEnum | null;
+        richText?: string | null;
+        translation?: {
+          __typename?: "AttributeValueTranslation";
+          id: string;
+          richText?: string | null;
+        } | null;
       }>;
     }>;
   } | null;
@@ -36816,6 +36834,11 @@ export const PageFragmentDoc = gql`
         value
         reference
         inputType
+        richText
+        translation(languageCode: $locale) {
+          id
+          richText
+        }
       }
     }
   }

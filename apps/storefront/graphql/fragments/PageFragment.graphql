@@ -25,6 +25,11 @@ fragment PageFragment on Page {
             value
             reference
             inputType
+            richText
+            translation(languageCode: $locale)  {
+                id
+                richText
+            }
         }
     }
 }
