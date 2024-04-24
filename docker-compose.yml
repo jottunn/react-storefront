@@ -1,21 +1,6 @@
 version: "3"
 
 services:
-  saleor-app-checkout:
-    container_name: saleor-app-checkout
-    build:
-      context: .
-      dockerfile: Dockerfile.base
-      args:
-        - SALEOR_API_URL=http://localhost:8000/graphql/ # handled by nginx
-        - CHECKOUT_APP_URL=http://localhost:3001
-        - CHECKOUT_STOREFRONT_URL=http://localhost:3001/checkout-spa/
-        - CLOUD_DEPLOYMENT_URL=
-    ports:
-      - 3001:3001
-    networks:
-      - saleor-platform_saleor-backend-tier
-    command: pnpm turbo run start --filter=saleor-app-checkout...
   storefront:
     container_name: storefront
     build:
@@ -24,14 +9,27 @@ services:
       args:
         - SALEOR_API_URL=http://localhost:8000/graphql/ # handled by nginx
         - STOREFRONT_URL=http://localhost:3000
-        - CHECKOUT_APP_URL=http://localhost:3001
-        - CHECKOUT_STOREFRONT_URL=http://localhost:3001/checkout-spa/
         - CLOUD_DEPLOYMENT_URL=
     ports:
       - 3000:3000
     networks:
       - saleor-platform_saleor-backend-tier
     command: sh -c '(nginx &) && pnpm turbo run start --filter=storefront...'
+  products-importer:
+    container_name: products-importer
+    build:
+      context: .
+      dockerfile: Dockerfile.base
+      args:
+        - SALEOR_API_URL=http://localhost:8000/graphql/ # handled by nginx
+        - PRODUCTS_IMPORTER_URL=http://localhost:3004
+        - STOREFRONT_URL=http://localhost:3000
+        - CLOUD_DEPLOYMENT_URL=
+    ports:
+      - 3004:3004
+    networks:
+      - saleor-platform_saleor-backend-tier
+    command: sh -c '(nginx &) && pnpm turbo run start --filter=products-importer...'
 
 networks:
   saleor-platform_saleor-backend-tier:
