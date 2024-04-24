@@ -1,5 +1,3 @@
-version: "3"
-
 services:
   storefront:
     container_name: storefront
@@ -13,7 +11,7 @@ services:
     ports:
       - 3000:3000
     networks:
-      - saleor-platform_saleor-backend-tier
+      - saleor-backend-tier
     command: sh -c '(nginx &) && pnpm turbo run start --filter=storefront...'
   products-importer:
     container_name: products-importer
@@ -28,9 +26,9 @@ services:
     ports:
       - 3004:3004
     networks:
-      - saleor-platform_saleor-backend-tier
+      - saleor-backend-tier
     command: sh -c '(nginx &) && pnpm turbo run start --filter=products-importer...'
 
 networks:
-  saleor-platform_saleor-backend-tier:
+  saleor-backend-tier:
     external: true
