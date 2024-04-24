@@ -73,6 +73,12 @@
         "src/graphql/index.ts"
       ]
     },
+    "i18n:extract": {
+      "outputs": []
+    },
+    "i18n:compile": {
+      "outputs": []
+    },
     "test": {
       "outputs": []
     },
