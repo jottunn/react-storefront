@@ -1,0 +1,12 @@
+mutation createBulkProductVariant($product: ID!, $variants: [ProductVariantBulkCreateInput!]!) {
+    productVariantBulkCreate (product: $product, variants: $variants) {
+        results {
+            productVariant {
+                id
+            }
+        }
+        errors {
+            message
+        }
+    }
+}

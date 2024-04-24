@@ -14,18 +14,13 @@
         "ALLOWED_SALEOR_API_REGEX",
         "APL",
         "BROWSER",
-        "CHECKOUT_APP_URL",
         "CHECKOUT_STOREFRONT_URL",
         "CLOUD_DEPLOYMENT_URL",
         "NEXT_PUBLIC_ALLOWED_IMAGE_DOMAINS",
         "NEXT_PUBLIC_ALLOWED_SALEOR_API_REGEX",
         "NEXT_PUBLIC_API_URI",
-        "NEXT_PUBLIC_CHECKOUT_APP_URL",
-        "NEXT_PUBLIC_CHECKOUT_URL",
-        "NEXT_PUBLIC_DEFAULT_CHANNEL",
         "NEXT_PUBLIC_DEMO_MODE",
         "NEXT_PUBLIC_GEOLOCATION",
-        "NEXT_PUBLIC_HOMEPAGE_MENU",
         "NEXT_PUBLIC_SENTRY_DSN",
         "NEXT_PUBLIC_SENTRY_ENVIRONMENT",
         "NEXT_PUBLIC_SENTRY_RELEASE",
@@ -76,18 +71,6 @@
         "graphql.schema.json",
         "saleor/api.tsx",
         "src/graphql/index.ts"
-      ]
-    },
-    "i18n:extract": {
-      "outputs": [
-        "apps/saleor-app-checkout/content/locales",
-        "packages/checkout-storefront/content/locales"
-      ]
-    },
-    "i18n:compile": {
-      "outputs": [
-        "apps/saleor-app-checkout/content/compiled-locales",
-        "packages/checkout-storefront/content/compiled-locales"
       ]
     },
     "test": {

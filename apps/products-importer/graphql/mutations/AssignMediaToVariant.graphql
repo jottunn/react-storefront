@@ -1,0 +1,17 @@
+mutation assignMediaToVariant($variantId: ID! , $mediaId: ID!) {
+  variantMediaAssign(variantId: $variantId, mediaId: $mediaId) {
+    productVariant {
+      id
+      name
+    }
+    media {
+      id
+      alt
+      url
+    }
+    errors {
+      field
+      message
+    }
+  }
+}
