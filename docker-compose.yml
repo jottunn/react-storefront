@@ -14,7 +14,7 @@ services:
     ports:
       - 3001:3001
     networks:
-      - saleor-platform_saleor-backend-tier
+      - saleor-backend-tier
     command: pnpm turbo run start --filter=saleor-app-checkout...
   storefront:
     container_name: storefront
@@ -30,9 +30,9 @@ services:
     ports:
       - 3000:3000
     networks:
-      - saleor-platform_saleor-backend-tier
+      - saleor-backend-tier
     command: sh -c '(nginx &) && pnpm turbo run start --filter=storefront...'
 
 networks:
-  saleor-platform_saleor-backend-tier:
+  saleor-backend-tier:
     external: true
