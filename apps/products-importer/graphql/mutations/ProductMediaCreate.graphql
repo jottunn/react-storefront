@@ -1,0 +1,16 @@
+mutation createProductMedia($input: ProductMediaCreateInput!) {
+  productMediaCreate(input: $input) {
+    media {
+      id
+      alt    	
+      url
+    }
+    product {
+      id
+    }
+    errors {
+      field
+      message
+    }
+  }
+}

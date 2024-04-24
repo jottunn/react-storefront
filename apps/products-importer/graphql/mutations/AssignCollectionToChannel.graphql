@@ -1,0 +1,10 @@
+mutation assignCollectionToChannel($id: ID!, $input:CollectionChannelListingUpdateInput! ) {
+    collectionChannelListingUpdate(id: $id, input: $input) {
+		collection {
+            id
+        }
+        errors {
+            message
+        }
+    }
+}

@@ -8,13 +8,14 @@ const allowedImageDomains = process.env.NEXT_PUBLIC_ALLOWED_IMAGE_DOMAINS
   ? process.env.NEXT_PUBLIC_ALLOWED_IMAGE_DOMAINS.split(",")
   : [];
 
-const checkoutEmbededInStorefrontPath = "/saleor-app-checkout";
-
 module.exports = withBundleAnalyzer({
   reactStrictMode: false,
   swcMinify: true,
   images: {
-    domains: [apiURL.hostname, ...allowedImageDomains],
+    remotePatterns: [
+      { hostname: apiURL.hostname },
+      ...allowedImageDomains.map((domain) => ({ hostname: domain })),
+    ],
     formats: ["image/avif", "image/webp"],
   },
   trailingSlash: true,
@@ -73,31 +74,6 @@ module.exports = withBundleAnalyzer({
     const cloudDeploymentUrl = process.env.CLOUD_DEPLOYMENT_URL;
 
     return [
-      {
-        source: "/checkout/",
-        destination: `${process.env.NEXT_PUBLIC_CHECKOUT_URL}/`,
-      },
-      {
-        source: `${checkoutEmbededInStorefrontPath}/`,
-        destination: `${process.env.NEXT_PUBLIC_CHECKOUT_APP_URL}/`,
-      },
-      {
-        source: `${checkoutEmbededInStorefrontPath}/:path*/`,
-        destination: `${process.env.NEXT_PUBLIC_CHECKOUT_APP_URL}/:path*/`,
-      },
-      {
-        source: `${checkoutEmbededInStorefrontPath}/:path*`,
-        destination: `${process.env.NEXT_PUBLIC_CHECKOUT_APP_URL}/:path*`,
-      },
-
-      {
-        source: "/api/manifest",
-        destination: `${process.env.NEXT_PUBLIC_CHECKOUT_APP_URL}/api/manifest`,
-      },
-      {
-        source: "/api/install",
-        destination: `${process.env.NEXT_PUBLIC_CHECKOUT_APP_URL}/api/install`,
-      },
       ...(cloudDeploymentUrl
         ? [
             {

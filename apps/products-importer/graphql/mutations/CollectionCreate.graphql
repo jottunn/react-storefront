@@ -1,0 +1,14 @@
+  mutation createNewCollection($input: CollectionCreateInput!) {
+    collectionCreate(input: $input) {
+      collection {
+        id
+        name
+        slug
+        description
+      }
+      errors {
+        field
+        message
+      }
+    }
+  }

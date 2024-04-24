@@ -1,0 +1,13 @@
+mutation createProducts($input: [ProductBulkCreateInput!]!) {
+  productBulkCreate(products: $input) {    
+     results {
+        product {
+            id
+            name
+        }
+        errors {
+          message
+        }
+     } 
+   }
+}
