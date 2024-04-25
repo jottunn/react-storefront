@@ -112,7 +112,7 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
         homepageCategories: homepageCategories,
         homepageCollections: homepageCollections,
       },
-      revalidate: 60 * 60, // value in seconds, how often ISR will trigger on the server
+      revalidate: 60 * 5, // value in seconds, how often ISR will trigger on the server
     };
   } catch (error) {
     console.error("Failed to fetch data:", error);

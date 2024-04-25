@@ -84,7 +84,7 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
       ) : (
         <div
           className={clsx(
-            "mb-2 w-full max-h-screen grid grid-cols-1 gap-6 md:h-full h-[38rem] overflow-scroll scrollbar-hide",
+            "mb-2 w-full max-h-screen grid grid-cols-1 gap-6 h-[38rem]",
             galleryMedia.length > 1 && "md:grid-cols-1 md:col-span-1"
           )}
           style={{

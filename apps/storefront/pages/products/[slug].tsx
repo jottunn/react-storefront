@@ -362,7 +362,7 @@ function ProductPage({
             "grid grid-cols-1 gap-[3rem] max-h-full overflow-auto md:overflow-hidden container px-8 md:grid-cols-2 pb-4"
           )}
         >
-          <div>
+          <div className="overflow-scroll scrollbar-hide md:h-full">
             <ProductGallery
               placeholder={placeholder}
               product={product}
