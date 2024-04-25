@@ -38,10 +38,9 @@ import getBase64 from "@/lib/generateBlurPlaceholder";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
-import "swiper/css/navigation";
 import { ProductCard } from "@/components/ProductCollection/ProductCard";
 import { GroupedProduct, groupProductsByColor } from "@/lib/product";
-import { XIcon } from "@heroicons/react/outline";
+import { ChevronLeftIcon, ChevronRightIcon, XIcon } from "@heroicons/react/outline";
 import Image from "next/image";
 import {
   ATTR_BRAND_REF,
@@ -517,17 +516,32 @@ function ProductPage({
             )}
           </div>
         </div>
+
         {relatedProducts && relatedProducts.length > 0 && (
-          <div className="container px-8 py-48">
-            <h2 className="m-0 text-left text-lg font-bold mb-10">
-              {t.formatMessage(messages.relatedProducts)}
-            </h2>
+          <div className="container px-8 pt-44 pb-44">
+            <div className="swiper-header flex justify-center items-center space-x-4">
+              <h2 className="text-lg uppercase m-0 flex-1 text-left mb-8">
+                {" "}
+                {t.formatMessage(messages.relatedProducts)}
+              </h2>
+              <div className="swiper-navigation flex mb-8">
+                <button className="swiper-button-prev1 custom-prev inline-flex justify-center items-center w-10 h-10 border border-gray-600 hover:border-gray-700 disabled:border-gray-200 rounded-full transition-colors cursor-pointer">
+                  <ChevronLeftIcon className="h-6 w-6 text-gray-500" />
+                </button>
+                <button className="swiper-button-next1 custom-next inline-flex justify-center items-center w-10 h-10 border border-gray-600 hover:border-gray-700 disabled:border-gray-200 ml-2 rounded-full transition-colors cursor-pointer">
+                  <ChevronRightIcon className="h-6 w-6 text-gray-500" />
+                </button>
+              </div>
+            </div>
             <div style={{ maxHeight: "400px" }}>
               <Swiper
                 slidesPerView={2}
                 spaceBetween={10}
                 modules={[Navigation]}
-                navigation
+                navigation={{
+                  prevEl: ".swiper-button-prev1",
+                  nextEl: ".swiper-button-next1",
+                }}
                 breakpoints={{
                   // When the viewport width is >= 640px
                   640: {

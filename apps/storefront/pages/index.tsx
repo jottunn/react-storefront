@@ -1,13 +1,11 @@
 import { ApolloQueryResult } from "@apollo/client";
-import { GetStaticPropsContext, InferGetStaticPropsType } from "next";
+import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import React, { ReactElement } from "react";
 
 import { HomepageBlock, Layout, RichText } from "@/components";
 import { BaseSeo } from "@/components/seo/BaseSeo";
 import { contextToRegionQuery } from "@/lib/regions";
 import {
-  Attribute,
-  AttributeValue,
   CategoriesByMetaKeyDocument,
   CategoriesByMetaKeyQuery,
   CategoriesByMetaKeyQueryVariables,
@@ -36,9 +34,9 @@ import { messages } from "@/components/translations";
 import { UPLOAD_FOLDER } from "@/lib/const";
 import { translate } from "@/lib/translations";
 import "swiper/css";
-import "swiper/css/navigation";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/outline";
 
-export const getStaticProps = async (context: GetStaticPropsContext) => {
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   try {
     const response: ApolloQueryResult<PageQuery> = await serverApolloClient.query<
       PageQuery,
@@ -49,9 +47,9 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
         slug: "home",
         locale: contextToRegionQuery(context).locale,
       },
+      fetchPolicy: "no-cache",
     });
     /**New products */
-
     const filter: ProductFilterInput = { isPublished: true, stockAvailability: "IN_STOCK" };
     const sortBy: ProductOrder = { direction: "DESC", field: "PUBLICATION_DATE" };
 
@@ -66,6 +64,7 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
       await serverApolloClient.query<ProductCollectionQuery, ProductCollectionQueryVariables>({
         query: ProductCollectionDocument,
         variables: queryVariables,
+        fetchPolicy: "no-cache",
       });
 
     let newProducts = mapEdgesToItems(productsResponse.data.products);
@@ -83,6 +82,7 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
           filter: categoryFilter,
           ...contextToRegionQuery(context),
         },
+        fetchPolicy: "no-cache",
       });
 
     const homepageCategories = mapEdgesToItems(categoriesResponse.data.categories);
@@ -100,6 +100,7 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
             filter: collectionFilter,
             ...contextToRegionQuery(context),
           },
+          fetchPolicy: "no-cache",
         }
       );
 
@@ -112,7 +113,7 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
         homepageCategories: homepageCategories,
         homepageCollections: homepageCollections,
       },
-      revalidate: 60 * 5, // value in seconds, how often ISR will trigger on the server
+      //revalidate: 6, // value in seconds, how often ISR will trigger on the server
     };
   } catch (error) {
     console.error("Failed to fetch data:", error);
@@ -123,7 +124,7 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
         homepageCategories: [],
         homepageCollections: [],
       },
-      revalidate: 1,
+      //revalidate: 1,
     };
   }
 };
@@ -138,7 +139,7 @@ function Home({
   newProducts,
   homepageCategories,
   homepageCollections,
-}: InferGetStaticPropsType<typeof getStaticProps>) {
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const bannerAttribute =
     page && "attributes" in page
       ? page.attributes.find((attr) => attr.attribute.name === "Banner")
@@ -200,20 +201,35 @@ function Home({
       </div>
 
       {content && (
-        <div className="container mb-28 mx-auto max-w-[800px] text-center">
+        <div className="container mb-6 mx-auto max-w-[800px] text-center">
           <RichText jsonStringData={content} />
         </div>
       )}
 
       {newProducts && newProducts.length > 0 && (
-        <div className="container px-8 pb-48">
-          <h2 className="m-0 text-left text-lg mb-10">{t.formatMessage(messages.newProducts)}</h2>
+        <div className="container px-8 pb-24">
+          <div className="swiper-header flex justify-center items-center space-x-4">
+            <h2 className="text-lg uppercase m-0 flex-1 text-left mb-8">
+              {t.formatMessage(messages.newProducts)}
+            </h2>
+            <div className="swiper-navigation flex mb-8">
+              <button className="swiper-button-prev1 custom-prev inline-flex justify-center items-center w-10 h-10 border border-gray-600 hover:border-gray-700 disabled:border-gray-200 rounded-full transition-colors cursor-pointer">
+                <ChevronLeftIcon className="h-6 w-6 text-gray-500" />
+              </button>
+              <button className="swiper-button-next1 custom-next inline-flex justify-center items-center w-10 h-10 border border-gray-600 hover:border-gray-700 disabled:border-gray-200 ml-2 rounded-full transition-colors cursor-pointer">
+                <ChevronRightIcon className="h-6 w-6 text-gray-500" />
+              </button>
+            </div>
+          </div>
           <div style={{ maxHeight: "400px" }}>
             <Swiper
               slidesPerView={2}
               spaceBetween={10}
               modules={[Navigation]}
-              navigation
+              navigation={{
+                prevEl: ".swiper-button-prev1",
+                nextEl: ".swiper-button-next1",
+              }}
               breakpoints={{
                 // When the viewport width is >= 640px
                 640: {
@@ -248,16 +264,16 @@ function Home({
       )}
 
       <div className="container block">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 my-20">
-          {homepageCategories &&
-            homepageCategories.map((category) => (
-              <HomepageBlock key={category.id} item={category} type="category" />
-            ))}
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 mt-20 mb-40">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-20 mb-40">
           {homepageCollections &&
             homepageCollections.map((collection) => (
               <HomepageBlock key={collection.id} item={collection} type="collection" />
+            ))}
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-20 mb-40">
+          {homepageCategories &&
+            homepageCategories.map((category) => (
+              <HomepageBlock key={category.id} item={category} type="category" />
             ))}
         </div>
       </div>

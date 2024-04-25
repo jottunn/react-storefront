@@ -103,7 +103,7 @@ export function ProductCard({ product, loading, priority }: ProductCardProps) {
               {thumbnailUrl && (
                 <Image
                   alt={productDisplayName}
-                  className="transition-opacity duration-400 ease-in-out"
+                  className="transition-opacity duration-400 ease-in-out p-3"
                   src={isHovered ? hoverImageUrl : thumbnailUrl}
                   fill
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -123,7 +123,7 @@ export function ProductCard({ product, loading, priority }: ProductCardProps) {
             </div>
           </div>
           <p
-            className="block mt-2 text-md font-extrabold text-main text-center hover:text-gray-700"
+            className="block mt-2 text-md font-extrabold text-main text-center hover:text-gray-700 min-h-[50px]"
             data-testid={`productName${product.name}`}
           >
             {productDisplayName}

@@ -90,7 +90,7 @@ export function CheckoutLineItem({ line }: CheckoutLineItemProps) {
     (attr) => attr.attribute.slug === ATTR_COLOR_COMMERCIAL_SLUG
   );
   const colorAttrName = variantAttr?.values[0]?.name ? " | " + variantAttr?.values[0].name : "";
-  const primaryMedia = line.variant.product?.thumbnail || line.variant.media?.[0];
+  const primaryMedia = line.variant.media?.[0] || line.variant.product?.thumbnail;
 
   if (!line) return null;
 
