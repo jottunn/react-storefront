@@ -176,7 +176,7 @@ export function Footer({ className, ...rest }: FooterProps) {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-10 gap-2.5 items-center justify-items-center w-4/5">
+        <div className="grid grid-cols-2 md:grid-cols-10 gap-4 pt-6 items-center justify-items-center w-4/5">
           {brandsDataArr &&
             brandsDataArr.map((brand) => {
               const targetAttribute = brand.attributes.find(

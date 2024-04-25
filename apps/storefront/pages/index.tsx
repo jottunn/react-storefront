@@ -28,7 +28,6 @@ import {
 import { serverApolloClient } from "@/lib/ssr/common";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
-import "swiper/css";
 import { ProductCard } from "@/components/ProductCollection/ProductCard";
 import { GroupedProduct, groupProductsByColor } from "@/lib/product";
 import { mapEdgesToItems } from "@/lib/maps";
@@ -36,6 +35,8 @@ import { useIntl } from "react-intl";
 import { messages } from "@/components/translations";
 import { UPLOAD_FOLDER } from "@/lib/const";
 import { translate } from "@/lib/translations";
+import "swiper/css";
+import "swiper/css/navigation";
 
 export const getStaticProps = async (context: GetStaticPropsContext) => {
   try {
@@ -168,18 +169,21 @@ function Home({
                 href={linkBanner}
               >
                 <div className="relative flex h-full w-full overflow-hidden">
-                  <img
-                    src={`${UPLOAD_FOLDER ?? ""}/${bannerAttribute?.values[0].name ?? ""}`}
-                    style={{
-                      position: "absolute",
-                      height: "100%",
-                      width: "100%",
-                      inset: "0px",
-                      objectFit: "cover",
-                      objectPosition: "49% 48%",
-                      color: "transparent",
-                    }}
-                  />
+                  {bannerAttribute?.values[0]?.name && (
+                    <img
+                      src={`${UPLOAD_FOLDER ?? ""}/${bannerAttribute.values[0].name}`}
+                      alt={buttonText || ""}
+                      style={{
+                        position: "absolute",
+                        height: "100%",
+                        width: "100%",
+                        inset: "0px",
+                        objectFit: "cover",
+                        objectPosition: "49% 48%",
+                        color: "transparent",
+                      }}
+                    />
+                  )}
                 </div>
               </a>
             </div>
@@ -206,7 +210,7 @@ function Home({
           <h2 className="m-0 text-left text-lg mb-10">{t.formatMessage(messages.newProducts)}</h2>
           <div style={{ maxHeight: "400px" }}>
             <Swiper
-              slidesPerView={1}
+              slidesPerView={2}
               spaceBetween={10}
               modules={[Navigation]}
               navigation

@@ -38,6 +38,7 @@ import getBase64 from "@/lib/generateBlurPlaceholder";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
+import "swiper/css/navigation";
 import { ProductCard } from "@/components/ProductCollection/ProductCard";
 import { GroupedProduct, groupProductsByColor } from "@/lib/product";
 import { XIcon } from "@heroicons/react/outline";
@@ -523,7 +524,7 @@ function ProductPage({
             </h2>
             <div style={{ maxHeight: "400px" }}>
               <Swiper
-                slidesPerView={1}
+                slidesPerView={2}
                 spaceBetween={10}
                 modules={[Navigation]}
                 navigation

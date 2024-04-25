@@ -134,8 +134,8 @@ export function FilteredProductList({
   };
 
   const fetchAvailableFilters = async () => {
-    console.log("trigger refetch");
-    console.log(productsFilter);
+    // console.log("trigger refetch");
+    // console.log(productsFilter);
     try {
       const { data: avFiltersData } = await apolloClient.query({
         query: AvailableProductFiltersDocument,
