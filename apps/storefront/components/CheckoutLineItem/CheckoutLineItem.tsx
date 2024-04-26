@@ -39,7 +39,7 @@ export function CheckoutLineItem({ line }: CheckoutLineItemProps) {
     setQuantity(line.quantity);
   }, [line]);
 
-  console.log(line);
+  // console.log(line);
 
   // Adjust the onQuantityUpdate function as needed
   // Define debounced function using useCallback to ensure it doesn't change on every render
@@ -108,6 +108,7 @@ export function CheckoutLineItem({ line }: CheckoutLineItemProps) {
                   src={primaryMedia.url || "#"}
                   alt={primaryMedia.alt || ""}
                   fill={true}
+                  sizes="(max-width: 768px) 100vw, 33vw"
                   style={{ objectFit: "contain" }}
                   className="hover:scale-110 ease-in duration-300"
                 />

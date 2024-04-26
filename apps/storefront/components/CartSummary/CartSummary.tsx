@@ -19,7 +19,7 @@ export function CartSummary({ checkout }: CartSummaryProps) {
   const t = useIntl();
   const [editPromoCode] = useState(false);
   const [checkoutAddPromoCodeMutation] = useCheckoutAddPromoCodeMutation();
-  const { subtotalPrice, shippingPrice, totalPrice, discount } = checkout;
+  const { subtotalPrice, shippingPrice, totalPrice, discount, discountName } = checkout;
   const {
     register: registerForm,
     handleSubmit: handleSubmitForm,
@@ -75,7 +75,11 @@ export function CartSummary({ checkout }: CartSummaryProps) {
           <dl className="text-sm">
             {!!discount?.amount && (
               <div className="py-2 flex items-center justify-between">
-                <dt className="text-gray-600">{t.formatMessage(messages.discount)}</dt>
+                <dt className="text-gray-600">
+                  {t.formatMessage(messages.discount)}
+                  <br />
+                  <small>{discountName}</small>
+                </dt>
                 <dd className="font-medium text-gray-900">{formatPrice(discount)}</dd>
               </div>
             )}
