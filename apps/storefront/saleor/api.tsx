@@ -12232,7 +12232,7 @@ export type Mutation = {
   /** Check payment balance. */
   paymentCheckBalance?: Maybe<PaymentCheckBalance>;
   /**
-   * Initializes a payment gateway session. It triggers the webhook `PAYMENT_GATEWAY_INITIALIZE_SESSION`, to the requested `paymentGateways`. If `paymentGateways` is not provided, the webhook will be send to all subscribed payment gateways.
+   * Initializes a payment gateway session. It triggers the webhook `PAYMENT_GATEWAY_INITIALIZE_SESSION`, to the requested `paymentGateways`. If `paymentGateways` is not provided, the webhook will be send to all subscribed payment gateways. There is a limit of 100 transaction items per checkout / order.
    *
    * Added in Saleor 3.13.
    *
@@ -13091,7 +13091,7 @@ export type Mutation = {
    */
   transactionEventReport?: Maybe<TransactionEventReport>;
   /**
-   * Initializes a transaction session. It triggers the webhook `TRANSACTION_INITIALIZE_SESSION`, to the requested `paymentGateways`.
+   * Initializes a transaction session. It triggers the webhook `TRANSACTION_INITIALIZE_SESSION`, to the requested `paymentGateways`. There is a limit of 100 transaction items per checkout / order.
    *
    * Added in Saleor 3.13.
    *
@@ -18504,7 +18504,7 @@ export type PaymentGatewayConfigError = {
 export type PaymentGatewayConfigErrorCode = "GRAPHQL_ERROR" | "INVALID" | "NOT_FOUND";
 
 /**
- * Initializes a payment gateway session. It triggers the webhook `PAYMENT_GATEWAY_INITIALIZE_SESSION`, to the requested `paymentGateways`. If `paymentGateways` is not provided, the webhook will be send to all subscribed payment gateways.
+ * Initializes a payment gateway session. It triggers the webhook `PAYMENT_GATEWAY_INITIALIZE_SESSION`, to the requested `paymentGateways`. If `paymentGateways` is not provided, the webhook will be send to all subscribed payment gateways. There is a limit of 100 transaction items per checkout / order.
  *
  * Added in Saleor 3.13.
  *
@@ -28377,7 +28377,7 @@ export type TransactionEventTypeEnum =
 export type TransactionFlowStrategyEnum = "AUTHORIZATION" | "CHARGE";
 
 /**
- * Initializes a transaction session. It triggers the webhook `TRANSACTION_INITIALIZE_SESSION`, to the requested `paymentGateways`.
+ * Initializes a transaction session. It triggers the webhook `TRANSACTION_INITIALIZE_SESSION`, to the requested `paymentGateways`. There is a limit of 100 transaction items per checkout / order.
  *
  * Added in Saleor 3.13.
  *
@@ -35470,6 +35470,49 @@ export type MainMenuQuery = {
   } | null;
 };
 
+export type MainRightMenuQueryVariables = Exact<{
+  locale: LanguageCodeEnum;
+  channel: Scalars["String"];
+}>;
+
+export type MainRightMenuQuery = {
+  __typename?: "Query";
+  menu?: {
+    __typename?: "Menu";
+    id: string;
+    items?: Array<{
+      __typename?: "MenuItem";
+      id: string;
+      name: string;
+      url?: string | null;
+      translation?: { __typename?: "MenuItemTranslation"; id: string; name: string } | null;
+      category?: { __typename?: "Category"; id: string; slug: string } | null;
+      collection?: { __typename?: "Collection"; id: string; slug: string } | null;
+      page?: { __typename?: "Page"; id: string; slug: string } | null;
+      children?: Array<{
+        __typename?: "MenuItem";
+        id: string;
+        name: string;
+        url?: string | null;
+        children?: Array<{
+          __typename?: "MenuItem";
+          id: string;
+          name: string;
+          url?: string | null;
+          translation?: { __typename?: "MenuItemTranslation"; id: string; name: string } | null;
+          category?: { __typename?: "Category"; id: string; slug: string } | null;
+          collection?: { __typename?: "Collection"; id: string; slug: string } | null;
+          page?: { __typename?: "Page"; id: string; slug: string } | null;
+        }> | null;
+        translation?: { __typename?: "MenuItemTranslation"; id: string; name: string } | null;
+        category?: { __typename?: "Category"; id: string; slug: string } | null;
+        collection?: { __typename?: "Collection"; id: string; slug: string } | null;
+        page?: { __typename?: "Page"; id: string; slug: string } | null;
+      }> | null;
+    }> | null;
+  } | null;
+};
+
 export type OrderDetailsQueryVariables = Exact<{
   token: Scalars["UUID"];
 }>;
@@ -38934,6 +38977,59 @@ export function useMainMenuLazyQuery(
 export type MainMenuQueryHookResult = ReturnType<typeof useMainMenuQuery>;
 export type MainMenuLazyQueryHookResult = ReturnType<typeof useMainMenuLazyQuery>;
 export type MainMenuQueryResult = Apollo.QueryResult<MainMenuQuery, MainMenuQueryVariables>;
+export const MainRightMenuDocument = gql`
+  query MainRightMenu($locale: LanguageCodeEnum!, $channel: String!) {
+    menu(slug: "navbar-right", channel: $channel) {
+      id
+      items {
+        ...MenuItemWithChildrenFragment
+      }
+    }
+  }
+  ${MenuItemWithChildrenFragmentDoc}
+`;
+
+/**
+ * __useMainRightMenuQuery__
+ *
+ * To run a query within a React component, call `useMainRightMenuQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMainRightMenuQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMainRightMenuQuery({
+ *   variables: {
+ *      locale: // value for 'locale'
+ *      channel: // value for 'channel'
+ *   },
+ * });
+ */
+export function useMainRightMenuQuery(
+  baseOptions: Apollo.QueryHookOptions<MainRightMenuQuery, MainRightMenuQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<MainRightMenuQuery, MainRightMenuQueryVariables>(
+    MainRightMenuDocument,
+    options
+  );
+}
+export function useMainRightMenuLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<MainRightMenuQuery, MainRightMenuQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<MainRightMenuQuery, MainRightMenuQueryVariables>(
+    MainRightMenuDocument,
+    options
+  );
+}
+export type MainRightMenuQueryHookResult = ReturnType<typeof useMainRightMenuQuery>;
+export type MainRightMenuLazyQueryHookResult = ReturnType<typeof useMainRightMenuLazyQuery>;
+export type MainRightMenuQueryResult = Apollo.QueryResult<
+  MainRightMenuQuery,
+  MainRightMenuQueryVariables
+>;
 export const OrderDetailsQueryDocument = gql`
   query OrderDetailsQuery($token: UUID!) {
     orderByToken(token: $token) {

@@ -11,7 +11,7 @@
 }
 
 .nav {
-  @apply pl-0.5 h-full hidden lg:flex;
+  @apply pl-0.5 h-full hidden lg:flex md:justify-between;
 }
 
 .nav > ol {

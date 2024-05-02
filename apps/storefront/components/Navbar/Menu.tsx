@@ -1,6 +1,6 @@
 import React from "react";
 
-import { useMainMenuQuery } from "@/saleor/api";
+import { useMainMenuQuery, useMainRightMenuQuery } from "@/saleor/api";
 
 import { useRegions } from "../RegionsProvider";
 import DropdownMenu from "./DropdownMenu";
@@ -13,11 +13,16 @@ export function Menu() {
     variables: { ...query },
   });
 
-  if (error) {
-    console.error("Navbar/Menu component error", error.message);
+  const { error: rightMenuError, data: rightMenuData } = useMainRightMenuQuery({
+    variables: { ...query },
+  });
+
+  if (error || rightMenuError) {
+    console.error("Navbar/Menu component error", error?.message || rightMenuError?.message);
   }
 
   const menuItems = data?.menu?.items || [];
+  const rightMenuItems = rightMenuData?.menu?.items || [];
 
   return (
     <nav className={styles.nav}>
@@ -25,6 +30,13 @@ export function Menu() {
         {menuItems.map((item) => (
           <li key={item?.id}>
             <DropdownMenu key={item?.id} menuItem={item} />
+          </li>
+        ))}
+      </ol>
+      <ol>
+        {rightMenuItems.map((item) => (
+          <li key={item.id}>
+            <DropdownMenu menuItem={item} />
           </li>
         ))}
       </ol>

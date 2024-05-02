@@ -51,7 +51,7 @@ export function Navbar() {
               />
             </a>
           </Link>
-          <div className="ml-auto flex items-center justify-center gap-4 whitespace-nowrap lg:gap-6">
+          <div className="ml-auto flex items-center justify-center gap-4 whitespace-nowrap lg:gap-6 pr-4">
             <div className="hidden md:flex">
               <SearchBar />
             </div>

@@ -6,7 +6,7 @@ import { useIntl } from "react-intl";
 
 import { useLogout } from "@/lib/hooks/useLogout";
 import { usePaths } from "@/lib/paths";
-import { useMainMenuQuery } from "@/saleor/api";
+import { useMainMenuQuery, useMainRightMenuQuery } from "@/saleor/api";
 
 import NavIconButton from "../Navbar/NavIconButton";
 import { ChannelDropdown } from "../regionDropdowns/ChannelDropdown";
@@ -36,18 +36,23 @@ export function BurgerMenu({ open, onCloseClick }: BurgerMenuProps) {
     variables: { ...query },
   });
 
+  const { error: rightMenuError, data: rightMenuData } = useMainRightMenuQuery({
+    variables: { ...query },
+  });
+
   // Avoid hydration warning by setting authenticated state in useEffect
   useEffect(() => {
     setAuthenticated(actuallyAuthenticated);
   }, [actuallyAuthenticated]);
 
-  if (error) {
-    console.error("BurgerMenu component error", error.message);
+  if (error || rightMenuError) {
+    console.error("BurgerMenu component error", error?.message || rightMenuError?.message);
   }
 
   const onLogout = useLogout();
 
   const menu = data?.menu?.items || [];
+  const rightMenuItems = rightMenuData?.menu?.items || [];
 
   return (
     <div
@@ -62,6 +67,10 @@ export function BurgerMenu({ open, onCloseClick }: BurgerMenuProps) {
         </div>
 
         {menu.map((item) => (
+          <CollapseMenu menuItem={item} key={item.id} />
+        ))}
+
+        {rightMenuItems.map((item) => (
           <CollapseMenu menuItem={item} key={item.id} />
         ))}
 
