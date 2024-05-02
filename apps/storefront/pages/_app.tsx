@@ -1,5 +1,5 @@
 import "styles/globals.css";
-
+import localFont from "next/font/local";
 import { ApolloProvider } from "@apollo/client";
 import { NextPage } from "next";
 import { AppProps } from "next/app";
@@ -21,6 +21,8 @@ type NextPageWithLayout = NextPage & {
 type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
 };
+
+const openSans = localFont({ src: "../public/fonts/OpenSans-VariableFont_wdth,wght.ttf" });
 
 function MyApp({ Component, pageProps }: AppPropsWithLayout) {
   const getLayout = Component.getLayout ?? ((page: ReactElement) => page);
@@ -50,7 +52,12 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
           <RegionsProvider>
             <BaseSeo />
             <NextNProgress color="#41cc1d" options={{ showSpinner: false }} />
-            {getLayout(<Component {...pageProps} />)}
+            {/* {getLayout(<Component {...pageProps} />)} */}
+            {getLayout(
+              <main className={openSans.className}>
+                <Component {...pageProps} />
+              </main>
+            )}
           </RegionsProvider>
         </CheckoutProvider>
       </ApolloProvider>
