@@ -37,7 +37,7 @@ export function AccountLayout({ children }: AccountLayoutProps) {
           <div className="mb-2 flex-initial md:w-3/5">
             <NavigationPanel />
           </div>
-          <div className="flex flex-initial w-full flex-col overflow-y-auto md:px-4 space-y-4">
+          <div className="flex flex-initial w-full flex-col overflow-y-auto md:px-4 space-y-4 h-full">
             {children}
           </div>
         </main>

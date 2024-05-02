@@ -63,7 +63,7 @@ export function AddressBookCard({ address, onRefreshBook }: AddressBookCardProps
         />
       )}
       <Button
-        className="my-1"
+        className="my-1 bg-gray-800"
         onClick={() => onDeleteAddress(address.id)}
         label={t.formatMessage(messages.removeButton)}
       />

@@ -91,7 +91,46 @@ export const messages = defineMessages({
     description: "Link to orders view",
     defaultMessage: "Orders",
   },
-
+  menuAccountOrderNumber: {
+    id: "app.account.orderNumber",
+    description: "Order Number",
+    defaultMessage: "Number",
+  },
+  menuAccountOrderCreateDate: {
+    id: "app.account.orderCreateDate",
+    description: "Order Create Date",
+    defaultMessage: "Create Date",
+  },
+  menuAccountOrderStatus: {
+    id: "app.account.orderStatus",
+    description: "Order Status",
+    defaultMessage: "Status",
+  },
+  menuAccountOrderDetails: {
+    id: "app.account.orderDetail",
+    description: "Your order number",
+    defaultMessage: "Your order number",
+  },
+  menuAccountOrderDetailsItems: {
+    id: "app.account.orderDetailItems",
+    description: "Items",
+    defaultMessage: "Items",
+  },
+  menuAccountOrderDetailsPrice: {
+    id: "app.account.orderDetailPrice",
+    description: "Price",
+    defaultMessage: "Price",
+  },
+  menuAccountOrderDetailsShippingPrice: {
+    id: "app.account.orderDetailShippingPrice",
+    description: "Shipping Price",
+    defaultMessage: "Shipping Price",
+  },
+  quantity: {
+    id: "app.quantity",
+    description: "Quantity",
+    defaultMessage: "Quantity",
+  },
   logOut: {
     id: "app.navigation.logout",
     description: "Log out link",
@@ -358,6 +397,16 @@ export const messages = defineMessages({
     description: "Header of the search page.",
     defaultMessage: "Search results for",
   },
+  searchTitle: {
+    id: "app.search.searchTitle",
+    description: "Search form placeholder",
+    defaultMessage: "Search for products...",
+  },
+  search: {
+    id: "app.search",
+    description: "Search",
+    defaultMessage: "Search",
+  },
   searchFieldPlaceholder: {
     id: "app.search.searchFieldPlaceholder",
     description: "Placeholder displayed in the search field.",
@@ -448,38 +497,48 @@ export const messages = defineMessages({
     description: "Sort By text",
     defaultMessage: "Sort By",
   },
+  filterBy: {
+    id: "app.filterBy",
+    description: "Filter By text",
+    defaultMessage: "Filters",
+  },
+  apply: {
+    id: "app.buttons.apply",
+    description: "Apply filters",
+    defaultMessage: "Apply",
+  },
   clearAll: {
     id: "app.clearAll",
     description: "Clear all filters",
     defaultMessage: "Clear all filters",
   },
-  sortByPopularity: {
-    id: "app.sortByPopularity",
-    description: "sort By Popularity",
-    defaultMessage: "Popularity",
+  sortByDefault: {
+    id: "app.sort.sortByDefault",
+    description: "Default Sorting",
+    defaultMessage: "Default Sorting",
   },
   sortByPriceAsc: {
-    id: "app.sortByPriceAsc",
+    id: "app.sort.sortByPriceAsc",
     description: "sort By Price ascending",
     defaultMessage: "Price ascending",
   },
   sortByPriceDesc: {
-    id: "app.sortByPriceDesc",
+    id: "app.sort.sortByPriceDesc",
     description: "sort By Price descending",
     defaultMessage: "Price descending",
   },
   sortByOldest: {
-    id: "app.sortByOldest",
+    id: "app.sort.sortByOldest",
     description: "sort By Oldest",
     defaultMessage: "Oldest",
   },
   sortByLatest: {
-    id: "app.sortByLatest",
+    id: "app.sort.sortByLatest",
     description: "sort By Latest",
     defaultMessage: "Latest",
   },
   sortByNameAsc: {
-    id: "app.sortByNameAsc",
+    id: "app.sort.sortByNameAsc",
     description: "sort By Name ascending",
     defaultMessage: "Name ascending",
   },

@@ -4,6 +4,8 @@ import { usePaths } from "@/lib/paths";
 import { OrderDetailsFragment } from "@/saleor/api";
 
 import { useRegions } from "../RegionsProvider";
+import messages from "../translations";
+import { useIntl } from "react-intl";
 
 export interface OrdersTableProps {
   orders: OrderDetailsFragment[];
@@ -13,15 +15,19 @@ export function OrdersTable({ orders }: OrdersTableProps) {
   const router = useRouter();
   const paths = usePaths();
   const { formatPrice } = useRegions();
-
+  const t = useIntl();
   return (
     <table className="w-full divide-y bg-white rounded-md ">
       <thead className="text-center h-16">
         <tr>
-          <th className="w-1/4 font-semibold text-md">Number</th>
-          <th className="w-1/4 font-semibold text-md">Creation Date</th>
+          <th className="w-1/4 font-semibold text-md">
+            {t.formatMessage(messages.menuAccountOrderNumber)}
+          </th>
+          <th className="w-1/4 font-semibold text-md">
+            {t.formatMessage(messages.menuAccountOrderCreateDate)}
+          </th>
           <th className="w-1/4 font-semibold text-md md:text-center hidden md:table-cell">
-            Status
+            {t.formatMessage(messages.menuAccountOrderStatus)}
           </th>
           <th className="w-1/4 font-semibold text-md">Total</th>
         </tr>

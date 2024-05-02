@@ -48,7 +48,9 @@ export function EmailPreferences() {
 
   return (
     <div className="mt-4 mb-4">
-      <h2 className="checkout-section-header-active mb-2">Change email</h2>
+      <h2 className="checkout-section-header-active mb-2">
+        {t.formatMessage(messages.changeEmailHeader)}
+      </h2>
       <form method="post" onSubmit={onEmailPreferenceSubmit}>
         <div className="grid grid-cols-12 gap-4 w-full">
           <div className="col-span-full">
