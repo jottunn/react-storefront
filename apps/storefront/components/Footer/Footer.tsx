@@ -67,6 +67,32 @@ export function Footer({ className, ...rest }: FooterProps) {
   return (
     <footer className={clsx(styles.footer, className)} {...rest}>
       <Box className={styles["footer-inner"]}>
+        <div className="grid grid-cols-2 md:grid-cols-12 gap-4 pb-8 mb-12 items-center justify-items-center w-full border-b border-dark=300">
+          {brandsDataArr &&
+            brandsDataArr.map((brand) => {
+              const targetAttribute = brand.attributes.find(
+                (attribute) => attribute.attribute.inputType === "FILE"
+              );
+              if (targetAttribute && targetAttribute.values.length > 0) {
+                return (
+                  <Link
+                    key={brand.slug}
+                    href={paths.brands._slug(brand.slug || "").$url()}
+                    passHref
+                    legacyBehavior
+                  >
+                    <a className="text-md mt-2 font-medium text-gray-600 cursor-pointer text-center hover:text-green-600 block">
+                      <img
+                        src={`${UPLOAD_FOLDER ?? ""}/${targetAttribute?.values[0].name ?? ""}`}
+                        alt=""
+                      />
+                    </a>
+                  </Link>
+                );
+              }
+              return null;
+            })}
+        </div>
         <div className={styles["footer-grid"]}>
           {menu.map((item) => (
             <div className="" key={item?.id}>
@@ -176,32 +202,6 @@ export function Footer({ className, ...rest }: FooterProps) {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-10 gap-4 pt-6 items-center justify-items-center w-4/5">
-          {brandsDataArr &&
-            brandsDataArr.map((brand) => {
-              const targetAttribute = brand.attributes.find(
-                (attribute) => attribute.attribute.inputType === "FILE"
-              );
-              if (targetAttribute && targetAttribute.values.length > 0) {
-                return (
-                  <Link
-                    key={brand.slug}
-                    href={paths.brands._slug(brand.slug || "").$url()}
-                    passHref
-                    legacyBehavior
-                  >
-                    <a className="text-md mt-2 font-medium text-gray-600 cursor-pointer text-center hover:text-green-600 block">
-                      <img
-                        src={`${UPLOAD_FOLDER ?? ""}/${targetAttribute?.values[0].name ?? ""}`}
-                        alt=""
-                      />
-                    </a>
-                  </Link>
-                );
-              }
-              return null;
-            })}
-        </div>
         <div className="flex items-start items-center mt-24 border-t border-main-6">
           <p className="text-sm text-main-3 flex-grow text-left">
             © Copyright {new Date().getFullYear()} Surmont Shop. Toate drepturile rezervate.
