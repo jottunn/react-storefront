@@ -60,25 +60,31 @@ function CollectionPage({
       channel: currentChannel.slug,
     },
     skip: skipQuery.current || !router.isReady,
+    onCompleted: (data) => {
+      console.log("fetched, change state");
+      if (data.collection) {
+        setCollection(data.collection);
+      }
+    },
   });
 
-  useEffect(() => {
-    if (router.isReady) {
-      refetch({
-        slug: router.query.slug,
-        locale: localeToEnum(currentLocale),
-        channel: currentChannel.slug,
-      })
-        .then((response) => {
-          if (response.data.collection) {
-            setCollection(response.data.collection);
-          }
-        })
-        .catch((error) => {
-          console.error("Error during refetch collection:", error);
-        });
-    }
-  }, [router.isReady, router.query.slug, currentChannel.slug, currentLocale]);
+  // useEffect(() => {
+  //   if (router.isReady) {
+  //     refetch({
+  //       slug: router.query.slug,
+  //       locale: localeToEnum(currentLocale),
+  //       channel: currentChannel.slug,
+  //     })
+  //       .then((response) => {
+  //         if (response.data.collection) {
+  //           setCollection(response.data.collection);
+  //         }
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error during refetch collection:", error);
+  //       });
+  //   }
+  // }, [router.isReady, router.query.slug, currentChannel.slug, currentLocale]);
 
   if (!collection) {
     return <Custom404 />;

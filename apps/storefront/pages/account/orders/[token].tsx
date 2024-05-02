@@ -7,6 +7,8 @@ import { AddressDisplay } from "@/components/checkout/AddressDisplay";
 import { useRegions } from "@/components/RegionsProvider";
 import { useOrderDetailsByTokenQuery } from "@/saleor/api";
 import { useUser } from "@/lib/useUser";
+import { useIntl } from "react-intl";
+import messages from "@/components/translations";
 
 export const getStaticProps = async (context: GetStaticPropsContext) => ({
   props: {
@@ -38,23 +40,29 @@ function OrderDetailsPage({ token }: InferGetStaticPropsType<typeof getStaticPro
     return null;
   }
   const order = data.orderByToken;
-
+  const t = useIntl();
   return (
     <>
       <h1 className="text-2xl ml-2 md:ml-20 mt-5 font-bold text-gray-800 mb-2">
-        Your order number : {order?.number}
+        {t.formatMessage(messages.menuAccountOrderDetails)} : {order?.number}
       </h1>
-      <h1 className="text-1xl ml-2 md:ml-20 font-semibold text-gray-600 mb-4">
-        Status : {order?.status}
-      </h1>
+      <p className="text-base ml-2 md:ml-20 font-semibold text-gray-600 mb-4">
+        {t.formatMessage(messages.menuAccountOrderStatus)} : {order?.status}
+      </p>
       <div className="grid grid-cols-2 md:grid-cols-4 mb-20 mt-10 ml-2 md:ml-20 max-w-6xl h-full">
         <div className="col-span-2 md:col-span-4">
           <table className="w-full divide-y table-fixed">
             <thead className="text-center">
               <tr>
-                <td className="md:w-1/4 font-semibold text-md md:text-center text-left">Items</td>
-                <td className="md:w-1/4 font-semibold text-md">Price</td>
-                <td className="md:w-1/4 font-semibold text-md">Quantity</td>
+                <td className="md:w-1/4 font-semibold text-md md:text-center text-left">
+                  {t.formatMessage(messages.menuAccountOrderDetailsItems)}
+                </td>
+                <td className="md:w-1/4 font-semibold text-md">
+                  {t.formatMessage(messages.menuAccountOrderDetailsPrice)}
+                </td>
+                <td className="md:w-1/4 font-semibold text-md">
+                  {t.formatMessage(messages.quantity)}
+                </td>
                 <td className="md:w-1/4 font-semibold text-md text-right">
                   <p className="mr-3 md:mr-10">Total</p>
                 </td>
@@ -98,7 +106,9 @@ function OrderDetailsPage({ token }: InferGetStaticPropsType<typeof getStaticPro
         </div>
         <div className="md:col-start-3 col-span-2 border-t" />
         <div className="md:col-start-3 text-md h-16">
-          <div className="mt-5 text-left md:text-center">Shipping Price</div>
+          <div className="mt-5 text-left md:text-center">
+            {t.formatMessage(messages.menuAccountOrderDetailsShippingPrice)}
+          </div>
         </div>
         <div className="text-md text-center">
           <p className="mt-5 text-right mr-3 md:mr-10">{formatPrice(order?.shippingPrice.gross)}</p>
@@ -113,14 +123,18 @@ function OrderDetailsPage({ token }: InferGetStaticPropsType<typeof getStaticPro
 
         {!!order?.billingAddress && (
           <div className="col-span-2 mr-2 my-2 p-4 rounded shadow-xs bg-white border md:w-1/2 md:col-span-2 md:w-full">
-            <h2 className="font-semibold text-lg mb-2">Billing Address </h2>
+            <h2 className="font-semibold text-lg mb-2">
+              {t.formatMessage(messages.billingAddressCardHeader)}
+            </h2>
             <AddressDisplay address={order.billingAddress} />
           </div>
         )}
 
         {!!order?.shippingAddress && (
           <div className="col-span-2 mr-2 md:ml-2 my-2 p-4 shadow-xs rounded bg-white border md:w-1/2 md:col-start-3 md:col-span-2 md:w-full">
-            <h2 className="font-semibold text-lg mb-2">Shipping Address </h2>
+            <h2 className="font-semibold text-lg mb-2">
+              {t.formatMessage(messages.shippingAddressCardHeader)}
+            </h2>
             <AddressDisplay address={order.shippingAddress} />
           </div>
         )}

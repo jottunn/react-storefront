@@ -270,9 +270,9 @@ export function ProductCollection({
   products = groupProductsByColor(products as GroupedProduct[]);
 
   return (
-    <div>
+    <>
       <ul
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
         data-testid="productsList"
       >
         {products.map((product, index) => (
@@ -295,7 +295,7 @@ export function ProductCollection({
           // totalCount={productCollection?.products?.totalCount || undefined}
         />
       )}
-    </div>
+    </>
   );
 }
 

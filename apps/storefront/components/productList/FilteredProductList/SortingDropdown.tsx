@@ -14,16 +14,23 @@ export interface SortingDropdownProps {
 }
 
 export function SortingDropdown({ optionToggle, chosen }: SortingDropdownProps) {
-  const options = getSortingOptions(chosen);
   const t = useIntl();
+  const options = getSortingOptions(chosen, t.formatMessage);
+  // Determine the label to display
+  const currentLabel = chosen
+    ? options.find(
+        (option) => option.field === chosen.field && option.direction === chosen.direction
+      )?.label
+    : t.formatMessage({ id: "app.sort.sortByDefault", defaultMessage: "Default Sorting" });
+
   return (
-    <Menu as="div" className="relative inline-block text-left float-right">
+    <Menu as="div" className="inline text-left float-right w-[160px] mb-8 md:mb-0">
       <div>
         <Menu.Button
           className="inline-flex w-full justify-left px-2 py-2 text-base font-medium  hover:bg-opacity-30 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 text-left"
           data-testid="sortBy"
         >
-          {t.formatMessage(messages.sortBy)}
+          {currentLabel}
           <ChevronDownIcon className="ml-2 -mr-1 h-5 w-5 " aria-hidden="true" />
         </Menu.Button>
       </div>

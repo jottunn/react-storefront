@@ -12,15 +12,42 @@ export interface SortingOption {
   chosen: boolean;
 }
 
-export const getSortingOptions = (chosenSorting: UrlSorting | null) => {
+export const getSortingOptions = (chosenSorting: UrlSorting | null, t: Function) => {
   const options: SortingOption[] = [
-    { label: "Popularity", chosen: false },
-    { label: "Name ascending", field: "NAME", direction: "ASC", chosen: false },
-    { label: "Name descending", field: "NAME", direction: "DESC", chosen: false },
-    { label: "Price ascending", field: "PRICE", direction: "ASC", chosen: false },
-    { label: "Price descending", field: "PRICE", direction: "DESC", chosen: false },
-    { label: "Oldest", field: "DATE", direction: "ASC", chosen: false },
-    { label: "Latest", field: "DATE", direction: "DESC", chosen: false },
+    {
+      label: t({ id: "app.sort.sortByDefault", defaultMessage: "Default Sorting" }),
+      chosen: false,
+    },
+    {
+      label: t({ id: "app.sort.sortByPriceAsc", defaultMessage: "Price ascending" }),
+      field: "PRICE",
+      direction: "ASC",
+      chosen: false,
+    },
+    {
+      label: t({ id: "app.sort.sortByPriceDesc", defaultMessage: "Price descending" }),
+      field: "PRICE",
+      direction: "DESC",
+      chosen: false,
+    },
+    {
+      label: t({ id: "app.sort.sortByLatest", defaultMessage: "Latest" }),
+      field: "DATE",
+      direction: "DESC",
+      chosen: false,
+    },
+    {
+      label: t({ id: "app.sort.sortByOldest", defaultMessage: "Oldest" }),
+      field: "DATE",
+      direction: "ASC",
+      chosen: false,
+    },
+    {
+      label: t({ id: "app.sort.sortByNameAsc", defaultMessage: "Name ascending" }),
+      field: "NAME",
+      direction: "ASC",
+      chosen: false,
+    },
   ];
 
   let isChosenSet = false;

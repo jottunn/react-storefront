@@ -55,13 +55,13 @@ export function VariantColorSelector({ product, selectedVariant }: VariantSelect
                   alt={
                     variant.media?.[0] ? variantMedia.alt : `${product.name} ${value.name ?? ""}`
                   }
-                  className={`border-2 p-2 h-[60px] ${
+                  className={`border-2 p-2 h-[80px] w-auto ${
                     isSelectedColor
                       ? "border-black"
                       : "border-neutral-400 opacity-80 hover:opacity-100"
                   }`}
-                  width="60"
-                  height="60"
+                  width="80"
+                  height="80"
                 />
               );
               return isSelectedColor ? (
@@ -83,7 +83,7 @@ export function VariantColorSelector({ product, selectedVariant }: VariantSelect
 
   return (
     <div
-      className="flex flex-wrap gap-3 mt-6 mb-4 justify-items-center justify-center"
+      className="flex flex-wrap gap-3 my-6 justify-items-center justify-center"
       key={"colorsof" + product.id}
     >
       {colorOptions}

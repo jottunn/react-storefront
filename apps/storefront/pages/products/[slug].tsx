@@ -8,7 +8,6 @@ import React, { ReactElement, useEffect, useState, useRef } from "react";
 import { useIntl } from "react-intl";
 import { parseCookies } from "nookies";
 import { Layout, RichText, VariantSelector } from "@/components";
-import { AttributeDetails } from "@/components/product/AttributeDetails";
 import { ProductGallery } from "@/components/product/ProductGallery";
 import { useRegions } from "@/components/RegionsProvider";
 import { ProductPageSeo } from "@/components/seo/ProductPageSeo";
@@ -83,15 +82,6 @@ export const getServerSideProps = async (
   });
 
   const selectedVariantId = Array.isArray(variant) ? variant[0] : variant;
-
-  // const variants = response.data.product?.variants;
-  // if (variants) {
-  //   if (!selectedVariantID && variants.length === 1) {
-  //     selectedVariant = variants[0];
-  //   } else {
-  //     selectedVariant = variants.find(v => v.id === selectedVariantID);
-  //   }
-  // }
   let placeholder: string | null = null;
   const thumb = response.data.product?.thumbnail?.url;
   if (thumb) {
@@ -504,7 +494,6 @@ function ProductPage({
 
               {!!addToCartError && <p className="text-red-500 font-bold">{addToCartError}</p>}
             </div>
-            <AttributeDetails product={product} selectedVariant={selectedVariant} />
 
             {description && (
               <div className="space-y-6">

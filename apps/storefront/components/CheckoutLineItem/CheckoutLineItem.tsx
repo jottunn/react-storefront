@@ -120,13 +120,13 @@ export function CheckoutLineItem({ line }: CheckoutLineItemProps) {
         <div className="pr-3">
           <Link href={getProductLink()} passHref legacyBehavior>
             <a href="pass">
-              <p className="text-md text-white-500 dark:text-white-400 hover:text-action-1">
+              <p className="text-md text-white-500 dark:text-white-400 hover:text-action-1 break-words">
                 {translate(line?.variant.product, "name")}
               </p>
             </a>
           </Link>
           <p
-            className="text-md text-neutral-800 dark:text-neutral-400 break-all"
+            className="text-md text-neutral-800 dark:text-neutral-400 break-words"
             data-testid={`cartVariantItem${line?.variant.name}`}
           >
             {translate(line?.variant, "name")} {`${colorAttrName}`}

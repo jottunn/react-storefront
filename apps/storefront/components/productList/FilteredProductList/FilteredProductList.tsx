@@ -1,5 +1,5 @@
 import { TransitionOptions, useQueryState } from "next-usequerystate";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { ProductCollection } from "@/components/ProductCollection";
 import {
   AvailableProductFiltersDocument,
@@ -13,7 +13,6 @@ import {
 
 import {
   Attribute1,
-  getFilterOptions,
   getPillsData,
   parseQueryAttributeFilters,
   serializeQueryAttributeFilters,
@@ -25,8 +24,12 @@ import { SortingDropdown } from "./SortingDropdown";
 import useDebouncedValue from "@/lib/hooks/useDebouncedValue";
 import { useApolloClient } from "@apollo/client";
 import { useRegions } from "@/components/RegionsProvider";
-import FilterDropdown from "./FilterDropdown";
 import { ATTR_BRAND_REF, ATTR_COLOR_COMMERCIAL_SLUG, ATTR_GHID_MARIMI } from "@/lib/const";
+import { useIntl } from "react-intl";
+import { Dialog, Transition } from "@headlessui/react";
+import FilterIconLabel from "./FilterIconLabel";
+import FilterDropdowns from "./FilterDropdowns";
+import messages from "@/components/translations";
 
 export interface FilteredProductListProps {
   brand?: string;
@@ -64,7 +67,6 @@ export function FilteredProductList({
   // );
   // New state for managing attribute filters
   const [attributeFilters, setAttributeFilters] = useState<Attribute1[]>([]);
-
   const [productsFilter, setProductsFilter] = useState<ProductFilterInput>();
   const pills: FilterPill[] = getPillsData(queryFilters, attributeFilters);
 
@@ -72,7 +74,10 @@ export function FilteredProductList({
   const debouncedProductsFilter = useDebouncedValue(productsFilter, 50);
   const apolloClient = useApolloClient();
   const { query } = useRegions();
-
+  const t = useIntl();
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
+  const openModal = () => setFilterModalOpen(true);
+  const closeModal = () => setFilterModalOpen(false);
   const aggregateAttributesFromProducts = (products: ProductCountableEdge[]) => {
     const attributesMap = new Map<string, Attribute1>();
     products?.forEach((product) => {
@@ -256,43 +261,32 @@ export function FilteredProductList({
 
   return (
     <>
-      <div className="flex flex-col divide-y">
-        <div className="flex items-center">
-          <div className="flex-grow">
-            {attributeFilters &&
-              attributeFilters.map((attribute) => (
-                <FilterDropdown
-                  key={attribute.id}
-                  label={attribute.name ?? ""}
-                  //TODO label={translate(attribute.attribute, "name") || ""}
-                  optionToggle={addAttributeFilter}
-                  attributeSlug={attribute.slug}
-                  options={getFilterOptions(attribute, pills)}
-                />
-              ))}
-            <SortingDropdown
-              optionToggle={(field?: ProductOrderField, direction?: OrderDirection) => {
-                return setSortBy(field && direction ? { field, direction } : null, {
-                  scroll: false,
-                  shallow: true,
-                });
-              }}
-              chosen={sortBy}
-            />
-            {/* <StockToggle
-              enabled={inStockFilter}
-              onChange={(value: boolean) =>
-                setInStockFilter(!!value || null, {
-                  scroll: false,
-                  shallow: true,
-                })
-              }
-            /> */}
+      <div className="flex flex-wrap md:flex-nowrap items-center justify-start w-full mb-8">
+        <div className="inline md:flex md:flex-none md:w-[250px] justify-between mb-8 md:mb-0 mr-8 order-1">
+          <div className="hidden md:flex flex-grow align-center md:align-start ">
+            <FilterIconLabel />
           </div>
-          {/* <div className="flex-none text-main-2 text-base">
-            <div>{itemsCounter} items</div>
-          </div> */}
+          <button
+            aria-label="Open filters"
+            onClick={openModal}
+            type="button"
+            className="flex block md:hidden border border-gray-300 py-2 px-4"
+          >
+            <FilterIconLabel />
+          </button>
         </div>
+        <div className="ml-auto flex-none order-2 md:order-3 relative inline-block text-left float-right">
+          <SortingDropdown
+            optionToggle={(field?: ProductOrderField, direction?: OrderDirection) => {
+              return setSortBy(field && direction ? { field, direction } : null, {
+                scroll: false,
+                shallow: true,
+              });
+            }}
+            chosen={sortBy}
+          />
+        </div>
+
         {pills.length > 0 && (
           <FilterPills
             pills={pills}
@@ -302,13 +296,85 @@ export function FilteredProductList({
         )}
       </div>
 
-      <div className="mt-4">
-        <ProductCollection
-          filter={productsFilter}
-          sortBy={sortBy || undefined}
-          // setCounter={setItemsCounter}
-          perPage={30}
-        />
+      <div className="block md:grid md:grid-cols-listing md:gap-8">
+        <div className="hidden md:block">
+          <FilterDropdowns
+            attributeFilters={attributeFilters}
+            addAttributeFilter={addAttributeFilter}
+            pills={pills}
+          />
+        </div>
+        <Transition show={filterModalOpen}>
+          <Dialog onClose={closeModal} className="relative z-50">
+            <Transition.Child
+              as={Fragment}
+              enter="transition-all ease-in-out duration-300"
+              enterFrom="opacity-0 backdrop-blur-none"
+              enterTo="opacity-100 backdrop-blur-[.5px]"
+              leave="transition-all ease-in-out duration-200"
+              leaveFrom="opacity-100 backdrop-blur-[.5px]"
+              leaveTo="opacity-0 backdrop-blur-none"
+            >
+              <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+            </Transition.Child>
+            <Transition.Child
+              as={Fragment}
+              enter="transition-all ease-in-out duration-300"
+              enterFrom="translate-x-[-100%]"
+              enterTo="translate-x-0"
+              leave="transition-all ease-in-out duration-200"
+              leaveFrom="translate-x-0"
+              leaveTo="translate-x-[-100%]"
+            >
+              <Dialog.Panel className="fixed bottom-0 left-0 top-0 flex h-full w-[310px] flex-col border-l border-neutral-200 bg-white/90 p-6 text-black backdrop-blur-xl md:w-[430px]">
+                <div className="flex justify-between justify-start w-full items-center mb-6">
+                  <span className="text-md font-bold">FILTERS</span>
+                  <button title="Close" aria-label="Close cart" onClick={closeModal} type="button">
+                    <div className="relative flex h-11 w-11 items-center justify-center text-black transition-colors dark:border-neutral-700 dark:text-dark">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                        aria-hidden="true"
+                        className="h-6 transition-all ease-in-out hover:scale-110 "
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M6 18L18 6M6 6l12 12"
+                        ></path>
+                      </svg>
+                    </div>
+                  </button>
+                </div>
+                <FilterDropdowns
+                  attributeFilters={attributeFilters}
+                  addAttributeFilter={addAttributeFilter}
+                  pills={pills}
+                />
+                <button
+                  title="Apply"
+                  aria-label="Apply filters"
+                  onClick={closeModal}
+                  type="button"
+                  className="bg-black p-3 mt-4 text-white text-md w-2/5"
+                >
+                  {t.formatMessage(messages.apply)}
+                </button>
+              </Dialog.Panel>
+            </Transition.Child>
+          </Dialog>
+        </Transition>
+        <div>
+          <ProductCollection
+            filter={productsFilter}
+            sortBy={sortBy || undefined}
+            // setCounter={setItemsCounter}
+            perPage={30}
+          />
+        </div>
       </div>
     </>
   );

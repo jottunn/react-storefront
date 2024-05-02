@@ -68,6 +68,7 @@
     "@graphql-codegen/typescript-react-apollo": "3.3.5",
     "@next/bundle-analyzer": "13.0.0",
     "@svgr/webpack": "6.5.0",
+    "@types/lodash": "^4.17.0",
     "@types/lodash-es": "4.17.6",
     "@types/lodash.debounce": "^4.0.9",
     "@types/node": "16.11.22",

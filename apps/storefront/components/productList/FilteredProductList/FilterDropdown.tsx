@@ -1,4 +1,4 @@
-import { Menu, Transition } from "@headlessui/react";
+import { Menu, Transition, Disclosure } from "@headlessui/react";
 import { CheckIcon, ChevronDownIcon } from "@heroicons/react/solid";
 import clsx from "clsx";
 import { Fragment } from "react";
@@ -24,49 +24,61 @@ export function FilterDropdown({
   options,
 }: FilterDropdownProps) {
   return (
-    <Menu as="div" className="relative inline-block text-left">
-      <div>
-        <Menu.Button
-          className="inline-flex w-full justify-left px-2 py-2 text-base font-medium  hover:bg-opacity-30 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
-          data-testid={`filterAttribute${label}`}
-        >
-          {label}
-          <ChevronDownIcon className="ml-2 -mr-1 h-5 w-5 " aria-hidden="true" />
-        </Menu.Button>
-      </div>
-      <Transition
-        as={Fragment}
-        enter="transition ease-out duration-100"
-        enterFrom="transform opacity-0 scale-95"
-        enterTo="transform opacity-100 scale-100"
-        leave="transition ease-in duration-75"
-        leaveFrom="transform opacity-100 scale-100"
-        leaveTo="transform opacity-0 scale-95"
-      >
-        <Menu.Items className="focus:outline-none absolute left-0 w-52 md:w-56 origin-top-right  bg-white shadow-lg ring-1 ring-black ring-opacity-5 z-10 max-h-[220px] overflow-scroll">
-          {options?.map((option) => (
-            <Menu.Item key={option.id}>
-              {({ active }) => (
+    <Disclosure
+      as="div"
+      className="relative block text-left border-b border-b-gray-300 md:border md:border-gray-200 mr-8 w-full"
+    >
+      {({ open }) => (
+        <>
+          <div>
+            <Disclosure.Button
+              className="inline-flex w-full justify-between px-2 py-3 text-base font-medium  hover:bg-opacity-30"
+              data-testid={`filterAttribute${label}`}
+            >
+              {label}
+              <ChevronDownIcon
+                className={`${open ? "transform rotate-180" : ""} ml-2 -mr-1 h-5 w-5`}
+                aria-hidden="true"
+              />
+            </Disclosure.Button>
+          </div>
+          <Transition
+            as={Fragment}
+            enter="transition ease-out duration-100"
+            enterFrom="transform opacity-0 scale-95"
+            enterTo="transform opacity-100 scale-100"
+            leave="transition ease-in duration-75"
+            leaveFrom="transform opacity-100 scale-100"
+            leaveTo="transform opacity-0 scale-95"
+          >
+            <Disclosure.Panel className="focus:outline-none origin-top-right bg-transparent border-t border-b-gray-200 z-10 max-h-[300px] overflow-scroll py-2">
+              {options?.map((option) => (
                 <button
+                  key={option.id}
                   type="button"
                   onClick={() => optionToggle(attributeSlug, option.slug)}
                   className={clsx(
-                    active ? "border-brand text-brand" : "border-transparent text-gray-900",
-                    "group flex w-full items-center px-2 py-2 text-base border-2"
+                    "group flex w-full items-center px-2 py-3 text-base",
+                    option.chosen ? "text-brand" : "text-gray-900"
                   )}
                   data-testid={`filterAttributeValue${option.label}`}
                 >
-                  <div className="flex-grow text-left">{option.label}</div>
-                  {option.chosen && (
-                    <CheckIcon className="ml-2 -mr-1 h-5 w-3 " aria-hidden="true" />
-                  )}
+                  <span
+                    className={`inline-block mr-2 rounded-sm w-5 h-5 ${
+                      option.chosen
+                        ? "bg-brand border-transparent"
+                        : "bg-transparent border border-gray-400"
+                    }`}
+                    aria-hidden="true"
+                  ></span>
+                  {option.label}
                 </button>
-              )}
-            </Menu.Item>
-          ))}
-        </Menu.Items>
-      </Transition>
-    </Menu>
+              ))}
+            </Disclosure.Panel>
+          </Transition>
+        </>
+      )}
+    </Disclosure>
   );
 }
 

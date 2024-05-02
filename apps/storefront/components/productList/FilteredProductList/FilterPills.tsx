@@ -17,8 +17,8 @@ export interface FilterPillsProps {
 export function FilterPills({ pills, onRemoveAttribute, onClearFilters }: FilterPillsProps) {
   const t = useIntl();
   return (
-    <div className="flex pt-4">
-      <div className="inline md:flex-grow md:flex gap-2">
+    <div className="flex justify-start pr-3 w-full order-3 md:order-2">
+      <div className="flex items-end flex-wrap gap-2.5 justify-start flex-grow">
         {typeof window !== "undefined" &&
           pills.map(({ label, attributeSlug, choiceSlug }) => (
             <Chip
@@ -28,13 +28,15 @@ export function FilterPills({ pills, onRemoveAttribute, onClearFilters }: Filter
               onClick={() => {
                 onRemoveAttribute(attributeSlug, choiceSlug);
               }}
+              classNames={{
+                container: "!h-[3rem]",
+                label: "!text-[1.2rem]",
+              }}
             />
           ))}
-      </div>
-      <div className="mr-2 flex self-center justify-end flex-grow">
         <button
           onClick={onClearFilters}
-          className="text-main-2 text-base"
+          className="text-main-1 hover:text-main-2 text-[1.4rem] underline relative transform -translate-y-[4px]"
           type="button"
           data-testid="clearFilters"
         >
