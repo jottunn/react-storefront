@@ -17,6 +17,8 @@ export const getSortingOptions = (chosenSorting: UrlSorting | null, t: Function)
     {
       label: t({ id: "app.sort.sortByDefault", defaultMessage: "Default Sorting" }),
       chosen: false,
+      field: "CREATED_AT",
+      direction: "DESC",
     },
     {
       label: t({ id: "app.sort.sortByPriceAsc", defaultMessage: "Price ascending" }),
@@ -68,10 +70,21 @@ export const parseQuerySort = (query: string | null): UrlSorting | null => {
   if (!query) {
     return null;
   }
-  const [field, direction] = query.split("_");
-  if (!field || !direction) {
-    return null;
+
+  // Find the index of the last underscore, which separates the field from the direction
+  const lastUnderscoreIndex = query.lastIndexOf("_");
+
+  if (lastUnderscoreIndex === -1) {
+    return null; // No underscore found, invalid format
   }
+
+  const field = query.substring(0, lastUnderscoreIndex);
+  const direction = query.substring(lastUnderscoreIndex + 1);
+
+  if (!field || !direction) {
+    return null; // Either field or direction is empty after splitting
+  }
+
   const sorting: UrlSorting = {
     field: field as ProductOrderField,
     direction: direction as OrderDirection,
