@@ -8,21 +8,23 @@ import { useState } from "react";
 import { getDiscountPercentage } from "@/lib/util";
 import { GroupedProduct } from "@/lib/product";
 import { ATTR_COLOR_COMMERCIAL_SLUG } from "@/lib/const";
+import { ProductVariant } from "@/saleor/api";
 
 export interface ProductCardProps {
   product: GroupedProduct;
   loading: "eager" | "lazy";
   priority?: boolean;
+  compliantVariant?: ProductVariant;
 }
 
-export function ProductCard({ product, loading, priority }: ProductCardProps) {
+export function ProductCard({ product, loading, priority, compliantVariant }: ProductCardProps) {
   const paths = usePaths();
   const { getProductBrand } = useProductInfo();
   const productBrand = getProductBrand(product);
   const { formatPrice } = useRegions();
   const [isHovered, setIsHovered] = useState(false); // State to track hover
 
-  const variant = product.variants?.[0];
+  const variant = compliantVariant || product.variants?.[0];
 
   const productName = translate(product, "name"); // This should always be a string
   const variantAttr = variant?.attributes.find(

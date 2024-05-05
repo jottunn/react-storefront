@@ -275,6 +275,7 @@ export function ProductCollection({
         {products.map((product, index) => (
           <ProductCard
             key={`${product.id}-${product.variants?.[0]?.id || index}`}
+            compliantVariant={product?.variants?.[0] as ProductVariant}
             product={product as GroupedProduct}
             priority={index < 9}
             loading={index < 9 ? "eager" : "lazy"}
