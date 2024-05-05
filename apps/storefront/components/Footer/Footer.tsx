@@ -153,12 +153,11 @@ export function Footer({ className, ...rest }: FooterProps) {
           </div>
           <div key="social-footer" className="md:text-right">
             <a className="mb-2 inline-block">
-              <Image
+              <img
                 src={"/visa-master-card-logos.jpg"}
                 alt="visa mastercard"
                 width="232"
                 height="54"
-                priority={false}
                 loading="lazy"
               />
             </a>
@@ -168,14 +167,7 @@ export function Footer({ className, ...rest }: FooterProps) {
               rel="noreferrer"
               className="mb-2 inline-block"
             >
-              <Image
-                src={"/sal.svg"}
-                alt="sal"
-                width="180"
-                height="45"
-                priority={false}
-                loading="lazy"
-              />
+              <img src={"/sal.svg"} alt="sal" width="180" height="45" loading="lazy" />
             </a>
             <br />
             <a
@@ -184,14 +176,7 @@ export function Footer({ className, ...rest }: FooterProps) {
               rel="noreferrer"
               className="mb-2 inline-block"
             >
-              <Image
-                src={"/sol.svg"}
-                alt="sol"
-                width="180"
-                height="45"
-                priority={false}
-                loading="lazy"
-              />
+              <img src={"/sol.svg"} alt="sol" width="180" height="45" loading="lazy" />
             </a>
             <br />
             <div className="mt-8 inline-block">

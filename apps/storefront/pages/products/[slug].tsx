@@ -348,17 +348,17 @@ function ProductPage({
       <main>
         <div
           className={clsx(
-            "grid grid-cols-1 gap-[3rem] max-h-full overflow-auto md:overflow-hidden container px-8 md:grid-cols-2 pb-4"
+            "grid grid-cols-1 gap-[2rem] md:gap-[3rem] max-h-full container px-8 md:grid-cols-2 pb-4"
           )}
         >
-          <div className="overflow-scroll scrollbar-hide md:h-full">
+          <div className="h-full">
             <ProductGallery
               placeholder={placeholder}
               product={product}
               selectedVariant={selectedVariant}
             />
           </div>
-          <div className="space-y-5 m-auto mt-10 md:mt-40 md:mb-20 md:max-w-2xl">
+          <div className="space-y-5 m-auto mt-6 md:mt-40 md:mb-20 md:max-w-2xl">
             <div className="flex items-center justify-center space-x-2">
               {categoryAncestors.map((parent) => (
                 <React.Fragment key={parent.slug}>
@@ -410,7 +410,13 @@ function ProductPage({
                       alt={brandRefPage.title}
                       width={80}
                       height={80}
-                      style={{ objectFit: "contain", maxWidth: "100px", display: "inline-block" }}
+                      style={{
+                        objectFit: "contain",
+                        maxWidth: "100px",
+                        display: "inline-block",
+                        width: "auto",
+                        height: "auto",
+                      }}
                       priority={false}
                       loading="lazy"
                     />
@@ -551,12 +557,14 @@ function ProductPage({
               >
                 {relatedProducts.map((product, index) => (
                   <SwiperSlide key={index}>
-                    <ProductCard
-                      key={product.id}
-                      product={product as GroupedProduct}
-                      priority={false}
-                      loading="lazy"
-                    />
+                    <ul>
+                      <ProductCard
+                        key={product.id}
+                        product={product as GroupedProduct}
+                        priority={false}
+                        loading="lazy"
+                      />
+                    </ul>
                   </SwiperSlide>
                 ))}
               </Swiper>

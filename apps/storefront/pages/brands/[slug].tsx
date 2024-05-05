@@ -98,7 +98,7 @@ function BrandPage({
             <>
               <Image
                 src={`${UPLOAD_FOLDER ?? ""}/${logoImg ?? ""}`}
-                className="inline-block max-w-[200px] h-auto"
+                className="inline-block h-auto w-auto max-w-[200px]"
                 alt={brand.toUpperCase()}
                 width={100}
                 height={100}

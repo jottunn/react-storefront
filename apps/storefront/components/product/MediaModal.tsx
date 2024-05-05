@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, EffectFade, Keyboard } from "swiper/modules";
+import { Navigation, Keyboard } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
-import "swiper/css/effect-fade";
 import "swiper/css/keyboard";
 import Image from "next/image";
 import { XIcon } from "@heroicons/react/outline";
 import { EnhancedProductMedia, getYouTubeIDFromURL } from "@/lib/media";
 import Spinner from "../Spinner";
+import "react-inner-image-zoom/lib/InnerImageZoom/styles.css";
+import ZoomPanImage from "./ZoomPanImage";
 
 export interface ImageModalProps {
   galleryMedia: EnhancedProductMedia[];
@@ -19,12 +20,13 @@ export interface ImageModalProps {
 
 const MediaModal = ({ galleryMedia, closeModal, currentIndex, placeholder }: ImageModalProps) => {
   const [loaded, setLoaded] = useState(false);
+
   const handleIframeLoad = () => {
     setLoaded(true);
   };
 
   return (
-    <div className="min-h-screen absolute overflow-hidden grid grid-cols-1 mx-auto px-8 md:h-full w-full">
+    <div className="min-h-screen absolute overflow-hidden grid grid-cols-1 mx-auto md:px-8 md:h-full w-full">
       <button
         type="button"
         className="absolute grid content-center justify-center right-0 p-8 h-10 w-10 z-50 mt-10"
@@ -35,35 +37,39 @@ const MediaModal = ({ galleryMedia, closeModal, currentIndex, placeholder }: Ima
       </button>
       <div className="container m-auto">
         <Swiper
-          modules={[Navigation, EffectFade, Keyboard]}
+          modules={[Navigation, Keyboard]}
+          allowTouchMove={false}
           navigation
           slidesPerView={1}
-          effect="fade"
+          centeredSlides={true}
           keyboard={true}
           style={
             {
-              "--swiper-navigation-color": "#fff",
-              "--swiper-pagination-color": "#fff",
+              "--swiper-navigation-color": "#0b9446",
+              "--swiper-pagination-color": "#0b9446",
             } as any
           }
           initialSlide={currentIndex}
         >
           {galleryMedia.map((media, index) => (
-            <SwiperSlide key={index} style={{ height: "800px", minWidth: "800px" }}>
+            <SwiperSlide key={index}>
               <div className="flex items-center justify-center h-full">
                 {media.type === "IMAGE" ? (
-                  <Image
-                    className="m-auto"
-                    src={media.url}
-                    alt={`Image ${index}`}
-                    width={800}
-                    height={800}
-                    style={{ objectFit: "contain" }}
-                    loading={index === 0 ? "eager" : "lazy"}
-                    {...(placeholder !== null
-                      ? { placeholder: "blur", blurDataURL: placeholder }
-                      : {})}
-                  />
+                  // <Image
+                  //   className="m-auto"
+                  //   src={media.url}
+                  //   alt={`Image ${index}`}
+                  //   fill
+                  //   sizes={'100vw'}
+                  //   style={{ objectFit: "contain" }}
+                  //   loading={index === 0 ? "eager" : "lazy"}
+                  //   {...(placeholder !== null
+                  //     ? { placeholder: "blur", blurDataURL: placeholder }
+                  //     : {})}
+                  //   unoptimized
+                  // />
+
+                  <ZoomPanImage src={media.url} alt={media.alt} />
                 ) : (
                   <div className="w-full h-full">
                     {!loaded && (
@@ -87,7 +93,7 @@ const MediaModal = ({ galleryMedia, closeModal, currentIndex, placeholder }: Ima
                         src={`https://www.youtube.com/embed/${
                           getYouTubeIDFromURL(media.url) as string
                         }?autoplay=1`}
-                        className="w-full h-4/5 md:w-4/5 m-auto"
+                        className="w-full h-[800px] md:w-4/5 m-auto"
                         onLoad={handleIframeLoad}
                         allow="autoplay"
                         allowFullScreen
