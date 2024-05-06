@@ -5,6 +5,7 @@ import { useIntl } from "react-intl";
 import { useRequestEmailChangeMutation } from "@/saleor/api";
 
 import { messages } from "../translations";
+import { useUser } from "@/lib/useUser";
 
 interface EmailChangeFormData {
   newEmail: string;
@@ -22,6 +23,7 @@ export function EmailPreferences() {
     formState: { errors },
     setError,
   } = useForm<EmailChangeFormData>();
+  const { user } = useUser();
 
   const onEmailPreferenceSubmit = handleSubmit(async (formData) => {
     const result = await requestEmailChange({
@@ -66,6 +68,7 @@ export function EmailPreferences() {
                 required: true,
                 pattern: /^\S+@\S+$/i,
               })}
+              placeholder={user?.email}
             />
             {!!errors.newEmail && (
               <p className="mt-2 text-sm text-red-600">{errors.newEmail.message}</p>

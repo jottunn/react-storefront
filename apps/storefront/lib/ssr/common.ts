@@ -1,5 +1,5 @@
 import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
-import typePolicies from "../auth/typePolicies";
+import typePolicies from "../typePolicies";
 import { API_URI } from "../const";
 
 export const serverApolloClient = new ApolloClient({

@@ -1,21 +1,18 @@
 import { useRouter } from "next/router";
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect } from "react";
 
 import { Layout, Spinner } from "@/components";
 import { NavigationPanel } from "@/components/NavigationPanel";
 import { usePaths } from "@/lib/paths";
 import { useUser } from "@/lib/useUser";
-import { useSaleorAuthContext } from "@saleor/auth-sdk/react";
-
 export type AccountLayoutProps = { children: ReactNode };
 
 export function AccountLayout({ children }: AccountLayoutProps) {
   const router = useRouter();
   const paths = usePaths();
-  const { authenticated } = useUser();
-  const { isAuthenticating } = useSaleorAuthContext();
+  const { user, loading } = useUser();
 
-  if (isAuthenticating) {
+  if (loading) {
     return (
       <Layout>
         <Spinner />
@@ -23,7 +20,7 @@ export function AccountLayout({ children }: AccountLayoutProps) {
     );
   }
 
-  if (!authenticated) {
+  if (!user) {
     if (router.isReady && typeof window !== "undefined") {
       void router.replace(paths.account.login.$url({ query: { next: router?.asPath } }));
     }

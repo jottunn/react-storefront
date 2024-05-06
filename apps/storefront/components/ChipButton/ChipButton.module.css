@@ -1,0 +1,9 @@
+.chip-button {
+  @apply cursor-pointer h-10 py-2 inline-flex items-center rounded-[20px] border text-base hover:border-gray-500 whitespace-nowrap;
+  padding-left: calc(theme("spacing.4"));
+  padding-right: calc(theme("spacing.4"));
+}
+
+.chip-button-active {
+  @apply hover:text-gray-500;
+}

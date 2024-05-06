@@ -26,6 +26,7 @@ export async function getStaticPaths() {
 function OrderDetailsPage({ token }: InferGetStaticPropsType<typeof getStaticProps>) {
   const { formatPrice } = useRegions();
   const { authenticated } = useUser();
+  const t = useIntl();
   const { loading, error, data } = useOrderDetailsByTokenQuery({
     variables: { token: token as string },
     skip: !token || !authenticated,
@@ -40,7 +41,7 @@ function OrderDetailsPage({ token }: InferGetStaticPropsType<typeof getStaticPro
     return null;
   }
   const order = data.orderByToken;
-  const t = useIntl();
+
   return (
     <>
       <h1 className="text-2xl ml-2 md:ml-20 mt-5 font-bold text-gray-800 mb-2">

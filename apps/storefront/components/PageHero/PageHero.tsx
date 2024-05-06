@@ -1,4 +1,4 @@
-import { ChipButton } from "@saleor/ui-kit";
+import { ChipButton } from "@/components/ChipButton";
 import React from "react";
 import { Box } from "../Box";
 import { RichText } from "../RichText";

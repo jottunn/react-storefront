@@ -9,9 +9,8 @@ import {
 import clsx from "clsx";
 
 import styles from "./Select.module.css";
-import { ChevronDownIcon } from "../icons";
-import { ClassNames } from "@lib/globalTypes";
-
+import { ChevronDownIcon } from "@heroicons/react/solid";
+import { ClassNames } from "../Chip/Chip";
 const PLACEHOLDER_KEY = "placeholder";
 
 export interface Option<TData extends string = string> {

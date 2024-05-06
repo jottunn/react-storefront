@@ -2,7 +2,7 @@ import { ApolloQueryResult, useQuery } from "@apollo/client";
 import { GetStaticPaths, GetStaticPropsContext, InferGetStaticPropsType } from "next";
 import { useRouter } from "next/router";
 import Custom404 from "pages/404";
-import React, { ReactElement, useCallback, useEffect, useState } from "react";
+import React, { ReactElement, useCallback, useState } from "react";
 import debounce from "lodash/debounce";
 import { Layout, PageHero } from "@/components";
 import { FilteredProductList } from "@/components/productList/FilteredProductList/FilteredProductList";
@@ -16,8 +16,9 @@ import {
   CategoryBySlugQuery,
   CategoryBySlugQueryVariables,
 } from "@/saleor/api";
-import { serverApolloClient } from "@/lib/ssr/common";
+
 import { useRegions } from "@/components/RegionsProvider";
+import { serverApolloClient } from "@/lib/ssr/common";
 
 export const getStaticProps = async (
   context: GetStaticPropsContext<{ channel: string; locale: string; slug: string }>

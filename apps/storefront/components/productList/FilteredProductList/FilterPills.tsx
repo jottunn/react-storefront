@@ -1,5 +1,5 @@
 import messages from "@/components/translations";
-import { Chip } from "@saleor/ui-kit";
+import { Chip } from "@/components/Chip";
 import { useIntl } from "react-intl";
 
 export interface FilterPill {

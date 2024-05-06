@@ -2,7 +2,7 @@ import React, { forwardRef, ChangeEvent } from "react";
 import { type CountryCode } from "saleor/api";
 import { countries as allCountries } from "./lib/consts/countries";
 import { getCountryName } from "./lib/utils/locale";
-import { Select } from "@saleor/ui-kit";
+import { Select } from "@/components/Select";
 
 interface CountrySelectProps {
   only?: CountryCode[];

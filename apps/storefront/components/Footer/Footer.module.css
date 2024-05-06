@@ -32,7 +32,7 @@
   min-height: 30px;
 }
 
-@screen lg {
+@screen md {
   .footer-grid {
     max-width: 100%;
     display: grid;

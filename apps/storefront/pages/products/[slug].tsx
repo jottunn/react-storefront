@@ -30,7 +30,7 @@ import {
   useCheckoutAddProductLineMutation,
   useCreateCheckoutMutation,
 } from "@/saleor/api";
-import { serverApolloClient } from "@/lib/auth/useAuthenticatedApolloClient";
+import { serverApolloClient } from "@/lib/ssr/common";
 import { useUser } from "@/lib/useUser";
 import { mapEdgesToItems } from "@/lib/maps";
 import getBase64 from "@/lib/generateBlurPlaceholder";
