@@ -557,14 +557,12 @@ function ProductPage({
               >
                 {relatedProducts.map((product, index) => (
                   <SwiperSlide key={index}>
-                    <ul>
-                      <ProductCard
-                        key={product.id}
-                        product={product as GroupedProduct}
-                        priority={false}
-                        loading="lazy"
-                      />
-                    </ul>
+                    <ProductCard
+                      key={product.id}
+                      product={product as GroupedProduct}
+                      priority={false}
+                      loading="lazy"
+                    />
                   </SwiperSlide>
                 ))}
               </Swiper>

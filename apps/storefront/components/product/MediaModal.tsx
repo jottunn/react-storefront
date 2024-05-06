@@ -8,7 +8,6 @@ import Image from "next/image";
 import { XIcon } from "@heroicons/react/outline";
 import { EnhancedProductMedia, getYouTubeIDFromURL } from "@/lib/media";
 import Spinner from "../Spinner";
-import "react-inner-image-zoom/lib/InnerImageZoom/styles.css";
 import ZoomPanImage from "./ZoomPanImage";
 
 export interface ImageModalProps {

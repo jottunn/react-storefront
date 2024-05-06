@@ -38262,7 +38262,7 @@ export type AvailableShippingMethodsQueryResult = Apollo.QueryResult<
 >;
 export const CategoriesByMetaKeyDocument = gql`
   query CategoriesByMetaKey($filter: CategoryFilterInput, $locale: LanguageCodeEnum!) {
-    categories(first: 4, filter: $filter) {
+    categories(first: 2, filter: $filter) {
       edges {
         node {
           ...CategoryDetailsFragment
@@ -38635,7 +38635,7 @@ export const CollectionsByMetaKeyDocument = gql`
     $locale: LanguageCodeEnum!
     $channel: String!
   ) {
-    collections(first: 4, filter: $filter, channel: $channel) {
+    collections(first: 3, filter: $filter, channel: $channel) {
       edges {
         node {
           ...CollectionDetailsFragment

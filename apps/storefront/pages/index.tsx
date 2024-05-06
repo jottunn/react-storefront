@@ -1,7 +1,7 @@
 import { ApolloQueryResult } from "@apollo/client";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import React, { ReactElement } from "react";
-
+import Image from "next/image";
 import { HomepageBlock, Layout, RichText } from "@/components";
 import { BaseSeo } from "@/components/seo/BaseSeo";
 import { contextToRegionQuery } from "@/lib/regions";
@@ -171,18 +171,15 @@ function Home({
               >
                 <div className="relative flex h-full w-full overflow-hidden">
                   {bannerAttribute?.values[0]?.name && (
-                    <img
+                    <Image
+                      key="banner"
                       src={`${UPLOAD_FOLDER ?? ""}/${bannerAttribute.values[0].name}`}
                       alt={buttonText || ""}
-                      style={{
-                        position: "absolute",
-                        height: "100%",
-                        width: "100%",
-                        inset: "0px",
-                        objectFit: "cover",
-                        objectPosition: "49% 48%",
-                        color: "transparent",
-                      }}
+                      className="absolute h-full w-full inset-0 object-cover object-center"
+                      fill
+                      sizes="100vw"
+                      priority={true}
+                      loading={"eager"}
                     />
                   )}
                 </div>

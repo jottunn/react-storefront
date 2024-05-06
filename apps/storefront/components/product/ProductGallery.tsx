@@ -81,7 +81,7 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
                     height={250}
                     priority={index === 0}
                     loading={index < 1 ? "eager" : "lazy"}
-                    style={{ objectFit: "contain", width: "auto", height: "auto" }}
+                    style={{ objectFit: "contain" }}
                     onClick={() => handleImageClick(index)}
                   />
                 )}
@@ -135,7 +135,7 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
                         alt={media.alt}
                         width={700}
                         height={400}
-                        style={{ objectFit: "contain", width: "auto", height: "auto" }}
+                        style={{ objectFit: "contain" }}
                         role="button"
                         tabIndex={-2}
                         priority={index === 0}
@@ -180,7 +180,7 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
                         alt={media.alt}
                         width={106}
                         height={106}
-                        style={{ objectFit: "cover", width: "auto", height: "auto" }}
+                        style={{ objectFit: "cover" }}
                       />
                     )}
                     {media.type === "VIDEO" && (

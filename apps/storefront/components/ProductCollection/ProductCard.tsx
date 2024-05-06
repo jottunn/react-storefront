@@ -82,7 +82,7 @@ export function ProductCard({ product, loading, priority, compliantVariant }: Pr
   }
 
   return (
-    <li
+    <div
       className="w-full"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -108,7 +108,7 @@ export function ProductCard({ product, loading, priority, compliantVariant }: Pr
                   className="transition-opacity duration-400 ease-in-out p-3"
                   src={isHovered ? hoverImageUrl : thumbnailUrl}
                   fill
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  sizes="(max-width: 640px) 50vw, 33vw"
                   priority={priority}
                   loading={loading}
                   style={{
@@ -167,6 +167,6 @@ export function ProductCard({ product, loading, priority, compliantVariant }: Pr
           )
         )}
       </p>
-    </li>
+    </div>
   );
 }
