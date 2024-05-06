@@ -17,40 +17,46 @@ function Dropdown({ menuItem }: DropdownProps) {
       {!!menuItem.children?.length && (
         <div className={styles["dropdown-menu"]}>
           <div className="container pl-7">
-            <div className="grid grid-cols-7 gap-[2rem] mx-2">
-              {menuItem.children?.map((item) => (
-                <div key={item?.id}>
-                  {item?.url ? (
-                    <a
-                      href={item.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className={styles["dropdown-main"]}
-                    >
-                      {item?.name}
-                    </a>
-                  ) : (
-                    <Link href={getLinkPath(item)} passHref legacyBehavior>
-                      <a href="pass" className={styles["dropdown-main"]}>
-                        {item?.name}
-                      </a>
-                    </Link>
-                  )}
-                  {!!item?.children?.length && (
-                    <ul className={styles["dropdown-ul"]}>
-                      {item?.children?.map((sub) => (
-                        <li key={sub?.id}>
-                          <Link href={getLinkPath(sub)} passHref legacyBehavior>
-                            <a href="pass" className={styles["dropdown-link"]}>
-                              {sub?.name}
+            <div className="grid grid-cols-4 gap-[2rem] mx-2">
+              {menuItem.children?.map((item) => {
+                return (
+                  <div key={item?.id}>
+                    {item.name.length > 1 && (
+                      <>
+                        {item?.url ? (
+                          <a
+                            href={item.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className={styles["dropdown-main"]}
+                          >
+                            {item?.name}
+                          </a>
+                        ) : (
+                          <Link href={getLinkPath(item)} passHref legacyBehavior>
+                            <a href="pass" className={styles["dropdown-main"]}>
+                              {item?.name}
                             </a>
                           </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              ))}
+                        )}
+                      </>
+                    )}
+                    {!!item?.children?.length && (
+                      <ul className={styles["dropdown-ul"]}>
+                        {item?.children?.map((sub) => (
+                          <li key={sub?.id}>
+                            <Link href={getLinkPath(sub)} passHref legacyBehavior>
+                              <a href="pass" className={styles["dropdown-link"]}>
+                                {sub?.name}
+                              </a>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>

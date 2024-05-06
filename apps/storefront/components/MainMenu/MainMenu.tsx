@@ -64,7 +64,7 @@ export function MainMenu() {
                       }
                       return (
                         <li key={child.id}>
-                          <Link href={getLinkPath(child)} passHref legacyBehavior>
+                          <Link href={getLinkPath(child)} passHref legacyBehavior aria-label="Menu">
                             <a
                               onClick={() => setOpenDropdown(false)}
                               href="pass"

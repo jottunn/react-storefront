@@ -52,7 +52,7 @@
 }
 
 .dropdown-link {
-  @apply text-base text-main-2 cursor-pointer hover:underline;
+  @apply text-base font-semibold text-main-1 cursor-pointer hover:underline;
 }
 
 .nav-icon-button {
