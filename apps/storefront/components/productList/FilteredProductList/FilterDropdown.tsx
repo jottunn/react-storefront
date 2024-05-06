@@ -1,5 +1,5 @@
-import { Menu, Transition, Disclosure } from "@headlessui/react";
-import { CheckIcon, ChevronDownIcon } from "@heroicons/react/solid";
+import { Transition, Disclosure } from "@headlessui/react";
+import { ChevronDownIcon } from "@heroicons/react/solid";
 import clsx from "clsx";
 import { Fragment } from "react";
 
@@ -51,7 +51,7 @@ export function FilterDropdown({
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
           >
-            <Disclosure.Panel className="focus:outline-none origin-top-right bg-transparent border-t border-b-gray-200 z-10 max-h-[300px] overflow-scroll py-2">
+            <Disclosure.Panel className="focus:outline-none origin-top-right bg-transparent border-t border-b-gray-200 z-10 max-h-[300px] overflow-y-auto py-2">
               {options?.map((option) => (
                 <button
                   key={option.id}
