@@ -24,7 +24,10 @@ export function ProductCard({ product, loading, priority, compliantVariant }: Pr
   const { formatPrice } = useRegions();
   const [isHovered, setIsHovered] = useState(false); // State to track hover
 
-  const variant = compliantVariant || product.variants?.[0];
+  const checkProductVariant = product.variants?.filter(
+    (variant) => variant.quantityAvailable != null && variant.quantityAvailable > 0
+  );
+  const variant = compliantVariant || checkProductVariant?.[0];
 
   const productName = translate(product, "name"); // This should always be a string
   const variantAttr = variant?.attributes.find(

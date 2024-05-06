@@ -37,7 +37,7 @@ export function VariantSelector({ product, selectedVariant }: VariantSelectorPro
   // }
 
   useEffect(() => {
-    setSelectedVariantID(selectedVariant?.id);
+    setSelectedVariantID(selectedVariant?.id || "");
   }, [selectedVariant?.id]);
 
   // Skip displaying selector when theres less than 2 variants
