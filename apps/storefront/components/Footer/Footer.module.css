@@ -21,19 +21,23 @@
 }
 
 .menu-heading {
-  @apply block text-md font-bold mb-4 cursor-pointer hover:underline;
+  @apply block text-md font-bold mb-4 cursor-pointer uppercase;
 }
 
 .menu-link {
   @apply text-base cursor-pointer hover:underline;
 }
 
+.footer-grid > div {
+  min-height: 30px;
+}
+
 @screen lg {
   .footer-grid {
     max-width: 100%;
     display: grid;
-    grid-gap: 4rem;
+    grid-gap: 1rem;
     text-align: left;
-    grid-template-columns: 1fr 1fr 2fr 2fr;
+    grid-template-columns: 2fr 2fr 1fr 1fr;
   }
 }

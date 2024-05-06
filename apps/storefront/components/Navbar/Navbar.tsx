@@ -76,6 +76,7 @@ export function Navbar() {
               icon="menu"
               className="ml-2 lg:hidden"
               onClick={() => setBurgerOpen(true)}
+              aria-label="Open Menu"
             />
           </div>
         </div>

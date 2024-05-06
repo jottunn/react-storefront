@@ -67,7 +67,7 @@ export function Footer({ className, ...rest }: FooterProps) {
   return (
     <footer className={clsx(styles.footer, className)} {...rest}>
       <Box className={styles["footer-inner"]}>
-        <div className="grid grid-cols-2 md:grid-cols-12 gap-4 pb-8 mb-12 items-center justify-items-center w-full border-b border-dark=300">
+        <div className="grid grid-cols-4 md:grid-cols-12 gap-4 pb-8 mb-12 items-center justify-items-center w-full border-b border-dark=300">
           {brandsDataArr &&
             brandsDataArr.map((brand) => {
               const targetAttribute = brand.attributes.find(
@@ -82,9 +82,11 @@ export function Footer({ className, ...rest }: FooterProps) {
                     legacyBehavior
                   >
                     <a className="text-md mt-2 font-medium text-gray-600 cursor-pointer text-center hover:text-green-600 block">
-                      <img
+                      <Image
                         src={`${UPLOAD_FOLDER ?? ""}/${targetAttribute?.values[0].name ?? ""}`}
-                        alt=""
+                        alt={brand.title}
+                        width={200}
+                        height={200}
                       />
                     </a>
                   </Link>
@@ -94,63 +96,66 @@ export function Footer({ className, ...rest }: FooterProps) {
             })}
         </div>
         <div className={styles["footer-grid"]}>
-          {menu.map((item) => (
-            <div className="" key={item?.id}>
-              {item?.url ? (
-                <a
-                  href={item.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={styles["menu-heading"]}
-                >
-                  {item?.name}
-                </a>
-              ) : (
-                <Link href={getLinkPath(item)} passHref legacyBehavior>
-                  <a href="pass" className={styles["menu-heading"]}>
+          <div className="grid grid-cols-2 gap-4 w-full mb-4">
+            {menu.map((item) => (
+              <div className="" key={item?.id}>
+                {item?.url ? (
+                  <a
+                    href={item.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={styles["menu-heading"]}
+                  >
                     {item?.name}
                   </a>
-                </Link>
-              )}
-              <ul className={styles.menu}>
-                {item?.children?.map((sub) => (
-                  <li key={sub?.id}>
-                    {sub?.url ? (
-                      <a
-                        href={sub.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className={styles["menu-link"]}
-                        data-testid={`footerExternalLinks${sub?.name}`}
-                      >
-                        {sub?.name}
-                      </a>
-                    ) : (
-                      <Link href={getLinkPath(sub)} passHref legacyBehavior>
+                ) : (
+                  <Link href={getLinkPath(item)} passHref legacyBehavior>
+                    <a href="pass" className={styles["menu-heading"]}>
+                      {item?.name}
+                    </a>
+                  </Link>
+                )}
+                <ul className={styles.menu}>
+                  {item?.children?.map((sub) => (
+                    <li key={sub?.id}>
+                      {sub?.url ? (
                         <a
-                          href="pass"
+                          href={sub.url}
+                          target="_blank"
+                          rel="noreferrer"
                           className={styles["menu-link"]}
-                          data-testid={`footerInternalLinks${sub?.name}`}
+                          data-testid={`footerExternalLinks${sub?.name}`}
                         >
                           {sub?.name}
                         </a>
-                      </Link>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+                      ) : (
+                        <Link href={getLinkPath(sub)} passHref legacyBehavior>
+                          <a
+                            href="pass"
+                            className={styles["menu-link"]}
+                            data-testid={`footerInternalLinks${sub?.name}`}
+                          >
+                            {sub?.name}
+                          </a>
+                        </Link>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
           <div className="no-margin-p mb-6">
             {contactDataArr[0] && (
               <>
-                <h5 className="font-bold text-md uppercase mb-5">
+                <p className="font-bold text-md uppercase mb-5">
                   {translate(contactDataArr[0], "title") || ""}
-                </h5>
+                </p>
                 <RichText jsonStringData={translate(contactDataArr[0], "content") || ""} />
               </>
             )}
           </div>
+          <div>&nbsp;</div>
           <div key="social-footer" className="md:text-right">
             <a className="mb-2 inline-block">
               <img
