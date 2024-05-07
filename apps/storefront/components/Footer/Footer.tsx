@@ -67,7 +67,7 @@ export function Footer({ className, ...rest }: FooterProps) {
   return (
     <footer className={clsx(styles.footer, className)} {...rest}>
       <Box className={styles["footer-inner"]}>
-        <div className="grid grid-cols-4 md:grid-cols-12 gap-4 pb-8 mb-12 items-center justify-items-center w-full border-b border-dark=300">
+        <div className="grid grid-cols-4 md:grid-cols-12 gap-4 pb-8 mb-12 items-center justify-items-center w-full border-b border-dark=300 md:min-h-[90px]">
           {brandsDataArr &&
             brandsDataArr.map((brand) => {
               const targetAttribute = brand.attributes.find(

@@ -500,17 +500,19 @@ function ProductPage({
 
               {!!addToCartError && <p className="text-red-500 font-bold">{addToCartError}</p>}
             </div>
-
-            {description && (
-              <div className="space-y-6">
-                <p className="text-md mt-8 font-bold text-black-500 uppercase">
-                  {t.formatMessage(messages.description)}
-                </p>
-                <RichText jsonStringData={description} />
-              </div>
-            )}
           </div>
         </div>
+        <div className="container pb-12">
+          {description && (
+            <div className="space-y-6">
+              <p className="text-md mt-8 font-bold text-black-500 uppercase">
+                {t.formatMessage(messages.description)}
+              </p>
+              <RichText jsonStringData={description} />
+            </div>
+          )}
+        </div>
+        <hr />
 
         {relatedProducts && relatedProducts.length > 0 && (
           <div className="container px-8 pt-44 pb-44">

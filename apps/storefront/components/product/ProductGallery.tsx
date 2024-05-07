@@ -105,7 +105,7 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
         </div>
       ) : (
         <div
-          className="mb-2 w-full max-h-screen"
+          className="mb-2 w-full"
           style={{
             scrollSnapType: "both mandatory",
           }}
