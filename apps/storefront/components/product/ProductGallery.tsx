@@ -169,7 +169,8 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
                   <div
                     key={media.url + "-thumb"}
                     className={clsx(
-                      "cursor-pointer content-center hover:brightness-110 hover:contrast-115 transition-all duration-30 border-2 border-transparent",
+                      "cursor-pointer content-center hover:brightness-110 hover:contrast-115 transition-all duration-30 border-2",
+                      { "border-transparent": index !== activeIndex },
                       { "border-action-1": index === activeIndex }
                     )}
                     onClick={() => handleThumbnailClick(index)}

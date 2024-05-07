@@ -9,7 +9,9 @@ export function Layout({ children }: LayoutProps) {
   return (
     <>
       <Navbar />
-      <div className="align-middle flex flex-col flex-grow border-b-2">{children}</div>
+      <div className="align-middle flex flex-col flex-grow border-b-2 min-h-[700px]">
+        {children}
+      </div>
       <Footer />
     </>
   );
