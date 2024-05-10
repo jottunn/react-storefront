@@ -1,7 +1,6 @@
 import React, { ChangeEvent, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useIntl } from "react-intl";
-
 import {
   CheckoutDetailsFragment,
   useCheckoutEmailUpdateMutation,
@@ -11,11 +10,11 @@ import {
 import { Button } from "../Button";
 import { useRegions } from "../RegionsProvider";
 import { messages } from "../translations";
-import { getCurrentHref } from "./lib/utils/locale";
 import { useSaleorAuthContext } from "@saleor/auth-sdk/react";
 import { useRouter } from "next/router";
-// import usePaths from "@/lib/paths";
+import { pagesPath } from "@/lib/$path";
 import { useUser } from "@/lib/useUser";
+import { BASE_URL } from "@/lib/const";
 
 export interface EmailSectionProps {
   checkout: CheckoutDetailsFragment;
@@ -26,12 +25,10 @@ export function EmailSection({ checkout }: EmailSectionProps) {
   const { query, currentChannel } = useRegions();
   const { signIn } = useSaleorAuthContext();
   const { authenticated, user } = useUser();
-
   const router = useRouter();
   const [modifyEmail, setModifyEmail] = useState(!checkout?.email);
   const [createAccount, setCreateAccount] = useState(false);
   const [isSignInVisible, setIsSignInVisible] = useState(false);
-
   const [checkoutEmailUpdate] = useCheckoutEmailUpdateMutation({});
   const [createAccountMutation] = useRegisterMutation({});
   const [customerAttach] = useCheckoutCustomerAttachMutation();
@@ -48,28 +45,25 @@ export function EmailSection({ checkout }: EmailSectionProps) {
     },
   });
 
-  // const watchedEmail = watch("email");
-  //const emailChanged = watchedEmail !== checkout?.email;
-
   const onEmailFormSubmit = handleSubmit(async (formData) => {
     // If user opts to create an account, handle account creation logic
     if (createAccount) {
+      const redirectUrl = `${BASE_URL}${pagesPath.account.confirm.$url().pathname}`;
       const accountResult = await createAccountMutation({
         variables: {
           input: {
             email: formData.email,
             password: formData.password,
             channel: currentChannel.slug,
-            redirectUrl: getCurrentHref(),
+            redirectUrl: redirectUrl,
           },
         },
       });
       // Handle account creation result (success or error handling)
       const accountMutationErrors = accountResult.data?.accountRegister?.errors || [];
       if (accountMutationErrors.length > 0) {
-        accountMutationErrors.forEach((e) =>
-          setError("email" || "password", { message: e.message || "" })
-        );
+        const customError = accountMutationErrors[0] as any;
+        setError("email" || "password", { message: customError.code || "" });
         return;
       }
     }
@@ -83,10 +77,10 @@ export function EmailSection({ checkout }: EmailSectionProps) {
     });
     const mutationErrors = emailUpdateResult.data?.checkoutEmailUpdate?.errors || [];
     if (mutationErrors.length > 0) {
-      mutationErrors.forEach((e) => setError("email", { message: e.message || "" }));
+      const customMutationError = mutationErrors[0] as any;
+      setError("email", { message: customMutationError.code || "" });
       return;
     }
-
     setModifyEmail(false);
   });
 
@@ -97,7 +91,7 @@ export function EmailSection({ checkout }: EmailSectionProps) {
     });
 
     if (data?.tokenCreate?.errors?.length) {
-      setError("email", { message: "Invalid credentials" });
+      setError("email", { message: "INVALID_CREDENTIALS" });
       return;
     }
 
@@ -112,7 +106,7 @@ export function EmailSection({ checkout }: EmailSectionProps) {
 
     if (emailUpdateResult.data?.checkoutEmailUpdate?.errors?.length) {
       // Handle checkout email update errors
-      setError("email", { message: "Failed to update checkout with email" });
+      setError("email", { message: "updateCheckotEmail" });
       return;
     }
 
@@ -126,7 +120,7 @@ export function EmailSection({ checkout }: EmailSectionProps) {
 
     if (customerAttachResult.data?.checkoutCustomerAttach?.errors?.length) {
       // Handle checkout email update errors
-      setError("email", { message: "Failed to update checkout with email" });
+      setError("email", { message: "updateCheckotEmail" });
       return;
     }
     void router.push(router.asPath);
@@ -158,9 +152,15 @@ export function EmailSection({ checkout }: EmailSectionProps) {
         )}
       </div>
       <div className="col-span-full text-md text-red-800 bg-red-50" role="alert">
-        {errors.email && <span className="font-medium text-sm">{errors.email?.message}</span>}
+        {errors.email && (
+          <span className="font-medium text-sm">
+            {t.formatMessage({ id: errors.email?.message || "error" })}
+          </span>
+        )}
         {errors.password && (
-          <span className="text-red-500 font-medium text-sm">{errors.password.message}</span>
+          <span className="text-red-500 font-medium text-sm">
+            {t.formatMessage({ id: errors.password?.message || "error" })}
+          </span>
         )}
       </div>
       {isSignInVisible && !authenticated ? (
@@ -177,11 +177,11 @@ export function EmailSection({ checkout }: EmailSectionProps) {
               {...register("email", {
                 required: {
                   value: true,
-                  message: "Email is required",
+                  message: "REQUIRED",
                 },
                 pattern: {
                   value: /^\S+@\S+$/i,
-                  message: "Please enter a valid email address",
+                  message: "invalidEmail",
                 },
               })}
             />
@@ -198,11 +198,11 @@ export function EmailSection({ checkout }: EmailSectionProps) {
               {...register("password", {
                 required: {
                   value: true,
-                  message: "Password is required",
+                  message: "REQUIRED",
                 },
                 minLength: {
                   value: 8,
-                  message: "Password must be at least 8 characters long",
+                  message: "PASSWORD_TOO_SHORT",
                 },
               })}
             />
@@ -233,8 +233,11 @@ export function EmailSection({ checkout }: EmailSectionProps) {
             <form method="post" onSubmit={onEmailFormSubmit}>
               <div className="grid grid-cols-12 gap-4 w-full">
                 <div className="col-span-full">
+                  <label htmlFor="email" className="block text-md uppercase mb-2">
+                    {t.formatMessage(messages.loginEmailFieldLabel)}
+                  </label>
                   <input
-                    type="text"
+                    type="email"
                     autoComplete="email"
                     className="w-full border-gray-300 rounded-lg shadow-sm text-base"
                     spellCheck={false}
@@ -242,7 +245,7 @@ export function EmailSection({ checkout }: EmailSectionProps) {
                       required: true,
                       pattern: {
                         value: /^\S+@\S+$/i,
-                        message: "Please enter a valid email address",
+                        message: "invalidEmail",
                       },
                     })}
                     value={user?.email}
@@ -274,10 +277,10 @@ export function EmailSection({ checkout }: EmailSectionProps) {
                       type="password"
                       id="password"
                       {...register("password", {
-                        required: "Password is required to create an account.",
+                        required: "REQUIRED",
                         minLength: {
                           value: 8,
-                          message: "Password must be at least 8 characters long",
+                          message: "PASSWORD_TOO_SHORT",
                         },
                       })}
                     />
@@ -287,7 +290,7 @@ export function EmailSection({ checkout }: EmailSectionProps) {
                   <div className="col-span-full">
                     <Button
                       type="submit"
-                      className="btn-checkout-section"
+                      className="btn-checkout-section md:w-[30%]"
                       label={t.formatMessage(messages.saveButton)}
                     />
                   </div>

@@ -18,7 +18,7 @@ import { useRegions } from "@/components/RegionsProvider";
 import { useRouter } from "next/router";
 
 export const getStaticProps = async (
-  context: GetStaticPropsContext<{ channel: string; locale: string; slug: string }>
+  context: GetStaticPropsContext<{ channel: string; locale: string; slug: string }>,
 ) => {
   if (!context.params) {
     return {

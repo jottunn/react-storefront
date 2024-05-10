@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useIntl } from "react-intl";
-
-import { useRequestEmailChangeMutation } from "@/saleor/api";
-
+import { useConfirmEmailChangeMutation, useRequestEmailChangeMutation } from "@/saleor/api";
 import { messages } from "../translations";
 import { useUser } from "@/lib/useUser";
+import { useRouter } from "next/router";
+import { BASE_URL } from "@/lib/const";
+import { pagesPath } from "@/lib/$path";
+import { useSaleorAuthContext } from "@saleor/auth-sdk/react";
 
 interface EmailChangeFormData {
   newEmail: string;
@@ -16,6 +18,8 @@ interface EmailChangeFormData {
 export function EmailPreferences() {
   const t = useIntl();
   const [requestEmailChange] = useRequestEmailChangeMutation({});
+  const [confirmEmailChangeMutation] = useConfirmEmailChangeMutation();
+  const { signIn, signOut } = useSaleorAuthContext();
   const [successMessage, setSuccessMessage] = React.useState<string>();
   const {
     register,
@@ -24,27 +28,49 @@ export function EmailPreferences() {
     setError,
   } = useForm<EmailChangeFormData>();
   const { user } = useUser();
+  const router = useRouter();
+  const { token } = router.query;
 
+  useEffect(() => {
+    if (token) {
+      confirmEmailChangeMutation({
+        variables: { token: String(token) },
+      }).then((response) => {
+        if (response.data?.confirmEmailChange?.errors.length === 0) {
+          console.log(response.data?.confirmEmailChange);
+          setError("newEmail", { message: response.data?.confirmEmailChange?.errors?.[0].code });
+        } else {
+          router.push(
+            pagesPath.account.login.$url({
+              query: { confirmed: "1" },
+            }),
+          );
+        }
+      });
+    }
+  }, [token]);
+
+  const redirectUrl = `${BASE_URL}${pagesPath.account.preferences.$url().pathname}`;
   const onEmailPreferenceSubmit = handleSubmit(async (formData) => {
     const result = await requestEmailChange({
       variables: {
         newEmail: formData.newEmail,
         password: formData.password,
-        redirectUrl: `https://${window.location.host}/account/preferences`,
+        redirectUrl: redirectUrl,
       },
     });
     const mutationErrors = result?.data?.requestEmailChange?.errors || [];
     if (mutationErrors.length > 0) {
       mutationErrors.forEach((e) =>
         setError(e.field as keyof EmailChangeFormData, {
-          message: e.message || "",
-        })
+          message: e.code || "",
+        }),
       );
     } else if (result.data?.requestEmailChange?.user) {
-      setSuccessMessage("Email changed successfully. Check your mailbox for confirmation email.");
+      setSuccessMessage(t.formatMessage(messages.changedEmail));
       setTimeout(() => {
         setSuccessMessage("");
-      }, 3000);
+      }, 10000);
     }
   });
 
@@ -68,10 +94,12 @@ export function EmailPreferences() {
                 required: true,
                 pattern: /^\S+@\S+$/i,
               })}
-              placeholder={user?.email}
+              defaultValue={user?.email || ""}
             />
             {!!errors.newEmail && (
-              <p className="mt-2 text-sm text-red-600">{errors.newEmail.message}</p>
+              <p className="mt-2 text-sm text-red-600">
+                {t.formatMessage({ id: errors.newEmail.message })}
+              </p>
             )}
           </div>
         </div>
@@ -90,7 +118,9 @@ export function EmailPreferences() {
               })}
             />
             {!!errors.password && (
-              <p className="mt-2 text-sm text-red-600">{errors.password.message}</p>
+              <p className="mt-2 text-sm text-red-600">
+                {t.formatMessage({ id: errors.password.message })}
+              </p>
             )}
           </div>
         </div>
@@ -98,7 +128,6 @@ export function EmailPreferences() {
         <div>
           <button
             className="mt-2 w-40 bg-main hover:bg-main-1 text-white text-md py-2 transition duration-100"
-            onClick={() => onEmailPreferenceSubmit()}
             type="submit"
           >
             {t.formatMessage(messages.saveButton)}

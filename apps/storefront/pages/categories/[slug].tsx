@@ -21,7 +21,7 @@ import { useRegions } from "@/components/RegionsProvider";
 import { serverApolloClient } from "@/lib/ssr/common";
 
 export const getStaticProps = async (
-  context: GetStaticPropsContext<{ channel: string; locale: string; slug: string }>
+  context: GetStaticPropsContext<{ channel: string; locale: string; slug: string }>,
 ) => {
   if (!context.params) {
     return {
@@ -68,7 +68,7 @@ function CategoryPage({
     debounce((newCategory: Category) => {
       setCategory(newCategory);
     }, 300),
-    []
+    [],
   );
 
   const { refetch } = useQuery<CategoryBySlugQuery>(CategoryBySlugDocument, {

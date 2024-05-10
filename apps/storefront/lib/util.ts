@@ -73,7 +73,7 @@ export const formatMoneyRange = (
   range: {
     start?: { amount: number; currency: string } | null;
     stop?: { amount: number; currency: string } | null;
-  } | null
+  } | null,
 ) => {
   const { start, stop } = range || {};
   const startMoney = start ? formatMoney(start.amount, start.currency) : "";
@@ -110,7 +110,7 @@ export function getHrefForVariant({
 
 export const getDiscountPercentage = (
   priceUndiscounted: number,
-  priceAfterDiscount: number
+  priceAfterDiscount: number,
 ): number => {
   const discountPercentage = ((priceUndiscounted - priceAfterDiscount) / priceUndiscounted) * 100;
   return Math.round(discountPercentage);
@@ -122,3 +122,5 @@ export function getThirtyDaysAgoDate(): string {
   pastDate.setDate(today.getDate() - 31);
   return pastDate.toISOString();
 }
+
+export const getCurrentHref = () => location.href;

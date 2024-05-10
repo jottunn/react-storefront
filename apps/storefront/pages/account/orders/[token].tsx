@@ -48,7 +48,7 @@ function OrderDetailsPage({ token }: InferGetStaticPropsType<typeof getStaticPro
         {t.formatMessage(messages.menuAccountOrderDetails)} : {order?.number}
       </h1>
       <p className="text-base ml-2 md:ml-20 font-semibold text-gray-600 mb-4">
-        {t.formatMessage(messages.menuAccountOrderStatus)} : {order?.status}
+        {t.formatMessage(messages.menuAccountOrderStatus)} : {t.formatMessage({ id: order.status })}
       </p>
       <div className="grid grid-cols-2 md:grid-cols-4 mb-20 mt-10 ml-2 md:ml-20 max-w-6xl h-full">
         <div className="col-span-2 md:col-span-4">

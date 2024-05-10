@@ -5,13 +5,13 @@ export const getLinkPath = (item: MenuItemFragment) => {
   const paths = pagesPath;
 
   if (item.category) {
-    return paths.category._slug(item.category?.slug).$url();
+    return paths.categories._slug(item.category?.slug).$url();
   }
   if (item.collection) {
-    return paths.collection._slug(item.collection?.slug).$url();
+    return paths.collections._slug(item.collection?.slug).$url();
   }
   if (item.page) {
-    return paths.page._slug(item.page?.slug).$url();
+    return paths.pages._slug(item.page?.slug).$url();
   }
   return paths.$url();
 };

@@ -26,7 +26,7 @@ export function PasswordPreferences() {
 
   const onPasswordPreferenceSubmit = handleSubmit(async (formData) => {
     if (formData.newPassword !== formData.newPasswordRepeat) {
-      setError("newPasswordRepeat", { message: "Passwords have to match." });
+      setError("newPasswordRepeat", { message: "passwordsDoNotMatch" });
     } else {
       const result = await passwordChangeMutation({
         variables: {
@@ -38,14 +38,14 @@ export function PasswordPreferences() {
       if (mutationErrors.length > 0) {
         mutationErrors.forEach((e) =>
           setError(e.field as keyof PasswordChangeFormData, {
-            message: e.message || "",
-          })
+            message: e.code || "error",
+          }),
         );
       } else if (result.data?.passwordChange?.user) {
-        setSuccessMessage("Password changed successfully.");
+        setSuccessMessage(t.formatMessage(messages.changedPassword));
         setTimeout(() => {
           setSuccessMessage("");
-        }, 3000);
+        }, 10000);
       }
     }
   });
@@ -71,7 +71,9 @@ export function PasswordPreferences() {
               })}
             />
             {!!errors.oldPassword && (
-              <p className="mt-2 text-sm text-red-600">{errors.oldPassword.message}</p>
+              <p className="mt-2 text-sm text-red-600">
+                {t.formatMessage({ id: errors.oldPassword.message })}
+              </p>
             )}
           </div>
         </div>
@@ -91,7 +93,9 @@ export function PasswordPreferences() {
               })}
             />
             {!!errors.newPassword && (
-              <p className="mt-2 text-sm text-red-600">{errors.newPassword.message}</p>
+              <p className="mt-2 text-sm text-red-600">
+                {t.formatMessage({ id: errors.newPassword.message })}
+              </p>
             )}
           </div>
         </div>
@@ -111,7 +115,9 @@ export function PasswordPreferences() {
               })}
             />
             {!!errors.newPasswordRepeat && (
-              <p className="mt-2 text-sm text-red-600">{errors.newPasswordRepeat.message}</p>
+              <p className="mt-2 text-sm text-red-600">
+                {t.formatMessage({ id: errors.newPasswordRepeat.message })}
+              </p>
             )}
           </div>
         </div>

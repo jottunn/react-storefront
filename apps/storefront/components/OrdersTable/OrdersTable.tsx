@@ -41,7 +41,7 @@ export function OrdersTable({ orders }: OrdersTableProps) {
           >
             <td>{order?.number}</td>
             <td>{order.created.slice(0, 10)}</td>
-            <td className="hidden md:table-cell">{order.status}</td>
+            <td className="hidden md:table-cell">{t.formatMessage({ id: order.status })}</td>
             <td>{formatPrice(order.total.gross)}</td>
           </tr>
         ))}

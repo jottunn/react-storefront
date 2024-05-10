@@ -31,6 +31,46 @@ export const messages = defineMessages({
     description: "Button for reminding the password to the users",
     defaultMessage: "Forgot password?",
   },
+  backLogin: {
+    id: "app.login.backLogin",
+    description: "Link to go to the login page",
+    defaultMessage: "Back to login",
+  },
+  forgotPasswordHeadline: {
+    id: "app.login.forgotPasswordHeadline",
+    description: "Info text displayed as title for forgot password page",
+    defaultMessage: "Provide a new password for your account:",
+  },
+  forgotPasswordText: {
+    id: "app.login.forgotPasswordText",
+    description: "Info text for forgot password",
+    defaultMessage: "We will send you an email to reset your password.",
+  },
+  forgotPasswordButton: {
+    id: "app.login.forgotPasswordButton",
+    description: "Forgot password button text",
+    defaultMessage: "Reset password",
+  },
+  forgotPasswordSendLinkButton: {
+    id: "app.login.forgotPasswordSendLinkButton",
+    description: "Forgot password button text",
+    defaultMessage: "Send reset link",
+  },
+  forgotPasswordAfterSubmit: {
+    id: "app.login.forgotPasswordAfterSubmit",
+    description: "Message displayed to user after form submission",
+    defaultMessage: "Check your email for the password reset link.",
+  },
+  gdprConsent: {
+    id: "app.login.gdprConsent",
+    description: "GDPR message displayed when registering",
+    defaultMessage: "I agree with the processing of personal data according to the",
+  },
+  gdprConsentErr: {
+    id: "app.login.gdprConsentErr",
+    description: "GDPR error displayed when registering",
+    defaultMessage: "You must accept the GDPR terms to register.",
+  },
   createAccount: {
     id: "app.login.createAccount",
     description: "Link to create account view",
@@ -59,12 +99,33 @@ export const messages = defineMessages({
   registerButton: {
     id: "app.register.registerButton",
     description: "Register account button label",
-    defaultMessage: "Register",
+    defaultMessage: "Register new account",
   },
   registerSuccess: {
     id: "app.register.registerSuccess",
     description: "Account creation while checkout",
     defaultMessage: "Your account has been created.",
+  },
+  resendConfirmationCode: {
+    id: "app.register.resendConfirmationCode",
+    description: "Text displayed for when ACCOUNT_NOT_CONFIRMED err is displayed",
+    defaultMessage: "Resend confirmation email",
+  },
+  accountConfirmed: {
+    id: "app.register.accountConfirmed",
+    description: "Text displayed for when ACCOUNT_IS_CONFIRMED",
+    defaultMessage: "Your account has been successfully confirmed.",
+  },
+  accountConfirmationInProgress: {
+    id: "app.register.accountConfirmationInProgress",
+    description: "Text displayed after a new account is created",
+    defaultMessage:
+      "An email has been sent to your email address containing a link to confirm your account. You must confirm your account to be able to log in.",
+  },
+  accountConfirmTitle: {
+    id: "app.register.accountConfirmTitle",
+    description: "Title displayed for confirmed page when err are displayed",
+    defaultMessage: "Confirm Account",
   },
   backToLogin: {
     id: "app.register.backToLogin",
@@ -417,6 +478,11 @@ export const messages = defineMessages({
     description: "Header for email change section",
     defaultMessage: "Change email",
   },
+  changedEmail: {
+    id: "app.preferences.changeEmail.changed",
+    description: "Message displayed on success email changing",
+    defaultMessage: "Email changed successfully. Check your mailbox for confirmation email.",
+  },
   changePasswordHeader: {
     id: "app.preferences.changePassword.header",
     description: "Header for password change section",
@@ -435,7 +501,12 @@ export const messages = defineMessages({
   newPasswordRepeatedFieldLabel: {
     id: "app.preferences.newPassword.header",
     description: "Repeated new password field label",
-    defaultMessage: "Repeat new password",
+    defaultMessage: "Confirm new password",
+  },
+  changedPassword: {
+    id: "app.preferences.changePassword.changedPassword",
+    desription: "Password changed successfully",
+    defaultMessage: "Password changed successfully",
   },
   noAddressDataMessage: {
     id: "app.preferences.addressbook.noData",
