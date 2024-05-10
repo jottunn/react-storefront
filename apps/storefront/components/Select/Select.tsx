@@ -9,7 +9,7 @@ import {
 import clsx from "clsx";
 
 import styles from "./Select.module.css";
-import { ChevronDownIcon } from "@heroicons/react/solid";
+import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import { ClassNames } from "../Chip/Chip";
 const PLACEHOLDER_KEY = "placeholder";
 
@@ -28,11 +28,12 @@ export interface SelectProps<TData extends string = string>
   onChange: (event: ChangeEvent<HTMLSelectElement>) => void;
   options: Option<TData>[];
   classNames?: ClassNames<"container">;
+  placeholder?: string;
 }
 
 const SelectComponent = <TData extends string = string>(
   { options, classNames, placeholder = "", onChange, ...rest }: SelectProps<TData>,
-  ref: ForwardedRef<HTMLSelectElement>
+  ref: ForwardedRef<HTMLSelectElement>,
 ) => {
   const [showPlaceholder, setShowPlaceholder] = useState(!!placeholder);
 

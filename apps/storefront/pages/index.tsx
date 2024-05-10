@@ -34,7 +34,7 @@ import { messages } from "@/components/translations";
 import { UPLOAD_FOLDER } from "@/lib/const";
 import { translate } from "@/lib/translations";
 import "swiper/css";
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/outline";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   try {
@@ -101,7 +101,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
             ...contextToRegionQuery(context),
           },
           fetchPolicy: "no-cache",
-        }
+        },
       );
 
     const homepageCollections = mapEdgesToItems(collectionsResponse.data.collections);
@@ -289,7 +289,7 @@ function Home({
                   </div>
                 );
               }
-            })
+            }),
           )}
         </div>
       )}

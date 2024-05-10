@@ -1,5 +1,5 @@
 import { Menu, Transition } from "@headlessui/react";
-import { CheckIcon, ChevronDownIcon } from "@heroicons/react/solid";
+import { CheckIcon, ChevronDownIcon } from "@heroicons/react/24/solid";
 import clsx from "clsx";
 import { Fragment } from "react";
 import { messages } from "../../translations";
@@ -19,7 +19,7 @@ export function SortingDropdown({ optionToggle, chosen }: SortingDropdownProps) 
   // Determine the label to display
   const currentLabel = chosen
     ? options.find(
-        (option) => option.field === chosen.field && option.direction === chosen.direction
+        (option) => option.field === chosen.field && option.direction === chosen.direction,
       )?.label
     : t.formatMessage({ id: "app.sort.sortByDefault", defaultMessage: "Default Sorting" });
 
@@ -55,7 +55,7 @@ export function SortingDropdown({ optionToggle, chosen }: SortingDropdownProps) 
                   onClick={() => optionToggle(option.field, option.direction)}
                   className={clsx(
                     active ? "border-brand text-brand" : "border-transparent text-gray-900",
-                    "group flex w-full items-center px-2 py-2 text-base border-2 text-left"
+                    "group flex w-full items-center px-2 py-2 text-base border-2 text-left",
                   )}
                   data-testid={`sortByOption${option.label}`}
                 >

@@ -4,11 +4,9 @@ Allow: /
 
 # *
 User-agent: *
+Disallow: /cart
 Disallow: /checkout
 Disallow: /account/*
 
 # Host
-Host: https://localhost:3001
-
-# Sitemaps
-Sitemap: https://localhost:3001/sitemap.xml
+Host: http://localhost:3000

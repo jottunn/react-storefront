@@ -1,5 +1,5 @@
 import { Menu } from "@headlessui/react";
-import { CheckIcon } from "@heroicons/react/outline";
+import { CheckIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import React from "react";
 
@@ -18,7 +18,7 @@ export function BaseRegionsDropdownItem({ label, chosen, onClick }: BaseRegionsD
           onClick={onClick}
           className={clsx(
             active ? "border-brand text-brand" : "border-transparent text-gray-900",
-            "group px-2 py-2 text-sm border-2 w-full"
+            "group px-2 py-2 text-sm border-2 w-full",
           )}
         >
           <div className="flex gap-2">

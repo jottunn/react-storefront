@@ -39,7 +39,7 @@ import { Navigation } from "swiper/modules";
 import "swiper/css";
 import { ProductCard } from "@/components/ProductCollection/ProductCard";
 import { GroupedProduct, groupProductsByColor } from "@/lib/product";
-import { ChevronLeftIcon, ChevronRightIcon, XIcon } from "@heroicons/react/outline";
+import { ChevronLeftIcon, ChevronRightIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import {
   ATTR_BRAND_REF,
@@ -53,7 +53,7 @@ export type OptionalQuery = {
 };
 
 export const getServerSideProps = async (
-  context: GetServerSidePropsContext<{ locale: string; slug: string }>
+  context: GetServerSidePropsContext<{ locale: string; slug: string }>,
 ) => {
   if (!context.params) {
     return {
@@ -108,13 +108,13 @@ export const getServerSideProps = async (
     });
 
   let relatedProducts = mapEdgesToItems(relatedProductsResponse.data.products).filter(
-    (relatedProduct) => relatedProduct.slug !== response.data?.product?.slug
+    (relatedProduct) => relatedProduct.slug !== response.data?.product?.slug,
   );
   relatedProducts = groupProductsByColor(relatedProducts as GroupedProduct[]);
 
   const getRefPage = async (attrSlug: string | null | undefined): Promise<PageFragment> => {
     const attribute = response.data.product?.attributes.find(
-      (attr) => attr.attribute.slug === attrSlug
+      (attr) => attr.attribute.slug === attrSlug,
     );
     if (!attribute || attribute.values.length === 0) return {} as PageFragment;
     const pageId = attribute.values[0].reference;
@@ -208,7 +208,7 @@ function ProductPage({
         if (response.data.product) {
           setProduct(response.data.product);
           const newVariant = response.data.product.variants?.find(
-            (v) => v.id === router.query.variant
+            (v) => v.id === router.query.variant,
           );
           if (newVariant) {
             setSelectedVariantId(newVariant?.id);
@@ -339,7 +339,7 @@ function ProductPage({
   const categoryAncestors = mapEdgesToItems(product.category?.ancestors);
   const brandAttribute = product.attributes.find((attr) => attr.attribute.slug === "brand");
   const commercialColorAttr = selectedVariant?.attributes.find(
-    (attr) => attr.attribute.slug === ATTR_COLOR_COMMERCIAL_SLUG
+    (attr) => attr.attribute.slug === ATTR_COLOR_COMMERCIAL_SLUG,
   );
 
   return (
@@ -348,7 +348,7 @@ function ProductPage({
       <main>
         <div
           className={clsx(
-            "grid grid-cols-1 gap-[2rem] md:gap-[3rem] max-h-full container px-8 md:grid-cols-2 pb-4"
+            "grid grid-cols-1 gap-[2rem] md:gap-[3rem] max-h-full container px-8 md:grid-cols-2 pb-4",
           )}
         >
           <div className="h-full">
@@ -362,7 +362,7 @@ function ProductPage({
             <div className="flex items-center justify-center space-x-2">
               {categoryAncestors.map((parent) => (
                 <React.Fragment key={parent.slug}>
-                  <Link href={paths.category._slug(parent.slug).$url()} passHref legacyBehavior>
+                  <Link href={paths.categories._slug(parent.slug).$url()} passHref legacyBehavior>
                     <a className="text-md mt-2 font-medium text-gray-600 cursor-pointer text-center hover:text-green-600">
                       {translate(parent, "name")}
                     </a>
@@ -374,7 +374,7 @@ function ProductPage({
               {!!product.category?.slug && (
                 <>
                   <Link
-                    href={paths.category._slug(product?.category?.slug).$url()}
+                    href={paths.categories._slug(product?.category?.slug).$url()}
                     passHref
                     legacyBehavior
                   >
@@ -477,7 +477,7 @@ function ProductPage({
                 disabled={isAddToCartButtonDisabled}
                 className={clsx(
                   "w-full py-3 px-8 flex items-center justify-center text-base bg-action-1 text-white disabled:bg-disabled hover:bg-action-2 hover:text-white border-2 border-transparent  focus:outline-none uppercase",
-                  !isAddToCartButtonDisabled && "hover:border-action-1 hover:text-white"
+                  !isAddToCartButtonDisabled && "hover:border-action-1 hover:text-white",
                 )}
                 data-testid="addToCartButton"
               >
@@ -579,7 +579,7 @@ function ProductPage({
               aria-label="Close"
               onClick={() => setShowSizeGuideModal(false)}
             >
-              <XIcon className="w-10 h-10 border text-white hover:text-red" />
+              <XMarkIcon className="w-10 h-10 border text-white hover:text-red" />
             </button>
             <div className="container m-auto">
               <RichText jsonStringData={sizeGuide.content || ""} />

@@ -5,7 +5,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/keyboard";
 import Image from "next/image";
-import { XIcon } from "@heroicons/react/outline";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import { EnhancedProductMedia, getYouTubeIDFromURL } from "@/lib/media";
 import Spinner from "../Spinner";
 import ZoomPanImage from "./ZoomPanImage";
@@ -32,7 +32,7 @@ const MediaModal = ({ galleryMedia, closeModal, currentIndex, placeholder }: Ima
         aria-label="Close"
         onClick={closeModal}
       >
-        <XIcon className="w-10 h-10 border text-white hover:text-red" />
+        <XMarkIcon className="w-10 h-10 border text-white hover:text-red" />
       </button>
       <div className="container m-auto">
         <Swiper

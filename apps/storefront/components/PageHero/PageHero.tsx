@@ -27,7 +27,7 @@ export function PageHero({ title, description, pills = [], parents = [] }: PageH
           <div className="flex gap-2 flex-wrap items-center justify-center mb-4">
             {parents.map((parent, i) => (
               <React.Fragment key={parent.slug}>
-                <Link href={paths.category._slug(parent.slug).$url()} passHref legacyBehavior>
+                <Link href={paths.categories._slug(parent.slug).$url()} passHref legacyBehavior>
                   <a className="text-base mt-2 font-medium text-gray-600 cursor-pointer text-center hover:text-green-600">
                     {parent.label}
                   </a>

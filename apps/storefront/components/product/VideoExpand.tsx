@@ -1,4 +1,4 @@
-import { XIcon } from "@heroicons/react/outline";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import React from "react";
 
 import { getYouTubeIDFromURL } from "@/lib/media";
@@ -33,7 +33,7 @@ export function VideoExpand({ video, onRemoveExpand }: VideoExpandProps) {
           }
         }}
       >
-        <XIcon className="w-6 h-6" />
+        <XMarkIcon className="w-6 h-6" />
       </div>
       <div className="w-full h-full absolute md:mt-10 flex justify-center items-center">
         <iframe

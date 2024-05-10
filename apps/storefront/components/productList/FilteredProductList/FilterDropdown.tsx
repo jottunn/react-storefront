@@ -1,5 +1,5 @@
 import { Transition, Disclosure } from "@headlessui/react";
-import { ChevronDownIcon } from "@heroicons/react/solid";
+import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import clsx from "clsx";
 import { Fragment } from "react";
 
@@ -59,7 +59,7 @@ export function FilterDropdown({
                   onClick={() => optionToggle(attributeSlug, option.slug)}
                   className={clsx(
                     "group flex w-full items-center px-2 py-3 text-base",
-                    option.chosen ? "text-brand" : "text-gray-900"
+                    option.chosen ? "text-brand" : "text-gray-900",
                   )}
                   data-testid={`filterAttributeValue${option.label}`}
                 >

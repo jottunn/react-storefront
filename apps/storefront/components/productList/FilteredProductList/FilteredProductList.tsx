@@ -1,4 +1,4 @@
-import { TransitionOptions, useQueryState } from "next-usequerystate";
+import { useQueryState } from "next-usequerystate";
 import { Fragment, useEffect, useState } from "react";
 import { ProductCollection } from "@/components/ProductCollection";
 import {
@@ -56,10 +56,8 @@ export function FilteredProductList({
   // const [itemsCounter, setItemsCounter] = useState(0);
   const [sortByQuery, setSortByQuery] = useQueryState("sortBy", {});
   const sortBy = parseQuerySort(sortByQuery);
-  const setSortBy = (
-    value: UrlSorting | undefined | null,
-    transitionOptions?: TransitionOptions | undefined
-  ) => setSortByQuery(serializeQuerySort(value), transitionOptions);
+  const setSortBy = (value: UrlSorting | undefined | null) =>
+    setSortByQuery(serializeQuerySort(value));
 
   // const [inStockFilter, setInStockFilter] = useQueryState(
   //   "inStock",
@@ -113,7 +111,7 @@ export function FilteredProductList({
 
   const addAttributeToMap = (
     attributesMap: Map<string, Attribute1>,
-    attribute: SelectedAttribute
+    attribute: SelectedAttribute,
   ) => {
     // console.log('attributesMap', attributesMap);
     // console.log('attribute', attribute);
@@ -154,7 +152,7 @@ export function FilteredProductList({
         //workaround for saleor bug, sgraphql query "attributes" does not implement distinct, attributes can be on multiple product types
 
         const avFilter = aggregateAttributesFromProducts(
-          avFiltersData?.products?.edges as ProductCountableEdge[]
+          avFiltersData?.products?.edges as ProductCountableEdge[],
         );
         setAttributeFilters(avFilter);
       }
@@ -212,15 +210,12 @@ export function FilteredProductList({
       return result;
     }, []);
 
-    return setQueryFilters(newFilters.length ? newFilters : null, {
-      scroll: false,
-      shallow: true,
-    });
+    return setQueryFilters(newFilters.length ? newFilters : null);
   };
 
   const addAttributeFilter = (attributeSlug: string, choiceSlug: string) => {
     const isFilterAlreadyApplied = !!pills.find(
-      (pill) => pill.attributeSlug === attributeSlug && pill.choiceSlug === choiceSlug
+      (pill) => pill.attributeSlug === attributeSlug && pill.choiceSlug === choiceSlug,
     );
     if (isFilterAlreadyApplied) {
       return removeAttributeFilter(attributeSlug, choiceSlug);
@@ -278,10 +273,7 @@ export function FilteredProductList({
         <div className="ml-auto flex-none order-2 md:order-3 relative inline-block text-left float-right">
           <SortingDropdown
             optionToggle={(field?: ProductOrderField, direction?: OrderDirection) => {
-              return setSortBy(field && direction ? { field, direction } : null, {
-                scroll: false,
-                shallow: true,
-              });
+              return setSortBy(field && direction ? { field, direction } : null);
             }}
             chosen={sortBy}
           />

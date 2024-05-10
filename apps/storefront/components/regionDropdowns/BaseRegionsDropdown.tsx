@@ -1,5 +1,5 @@
 import { Menu, Transition } from "@headlessui/react";
-import { ChevronDownIcon } from "@heroicons/react/outline";
+import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import React from "react";
 
@@ -36,7 +36,7 @@ export function BaseRegionsDropdown({
         <Menu.Items
           className={clsx(
             horizontalAlignment === "left" ? "left-0" : "right-0",
-            "focus:outline-none absolute -translate-y-full origin-top-right bg-white shadow-lg ring-1 ring-black ring-opacity-5 z-10"
+            "focus:outline-none absolute -translate-y-full origin-top-right bg-white shadow-lg ring-1 ring-black ring-opacity-5 z-10",
           )}
         >
           {children}

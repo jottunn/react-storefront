@@ -17,8 +17,8 @@ export function HomepageBlock({ item, type }: HomepageBlockProps) {
           <Link
             href={
               type === "category"
-                ? paths.category._slug(item.slug).$url()
-                : paths.collection._slug(item.slug).$url()
+                ? paths.categories._slug(item.slug).$url()
+                : paths.collections._slug(item.slug).$url()
             }
             passHref
             legacyBehavior

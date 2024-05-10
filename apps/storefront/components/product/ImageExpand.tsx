@@ -1,4 +1,4 @@
-import { XIcon } from "@heroicons/react/outline";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import React from "react";
 
@@ -21,7 +21,7 @@ export function ImageExpand({ image, onRemoveExpand }: ImageExpandProps) {
         aria-label="Close"
         onClick={onRemoveExpand}
       >
-        <XIcon className="w-6 h-6" />
+        <XMarkIcon className="w-6 h-6" />
       </button>
       <div className="w-full h-full absolute md:mt-10">
         <Image src={image.url} alt={image.alt} fill={true} style={{ objectFit: "scale-down" }} />

@@ -15,32 +15,6 @@ export const useProductInfo = () => {
     price: string | undefined;
     name: string;
   };
-  const getColorVariants = (product: ProductCardFragment): ProductVariant[] => {
-    //const paths = usePaths();
-    let color = "";
-    const finalVariants: ProductVariant[] = [];
-
-    product.variants &&
-      product.variants.map((variant) =>
-        variant.attributes.map((attribute) =>
-          attribute.values.map((value) => {
-            if (attribute.attribute.slug === ATTR_COLOR_SLUG && value.name !== color) {
-              color = value.name || "";
-              const productVariant: ProductVariant = {
-                color: value.name || "",
-                url: "#", //TODOpaths.products._slug(product.slug).$url({...(variant && { query: { variant: variant.id } })}),
-                thumb: variant.media?.[0]?.url,
-                price: formatPrice(variant.pricing?.price?.gross),
-                name: `${translate(product, "name") || ""} - ${value.name || ""}`,
-              };
-              finalVariants.push(productVariant);
-            }
-            return null;
-          })
-        )
-      );
-    return finalVariants;
-  };
 
   const getProductPrice = (product: ProductCardFragment) => {
     /* display lowest price, if multiple variants */
@@ -65,7 +39,7 @@ export const useProductInfo = () => {
 
   const getProductBrand = (product: ProductCardFragment) => {
     const brandAttribute = product.attributes.find(
-      (attribute) => attribute.attribute.slug === "brand"
+      (attribute) => attribute.attribute.slug === "brand",
     );
     const mainValue = brandAttribute?.values[0];
     if (mainValue?.name) {
@@ -74,5 +48,5 @@ export const useProductInfo = () => {
     return "";
   };
 
-  return { getColorVariants, getProductPrice, getProductBrand };
+  return { getProductPrice, getProductBrand };
 };

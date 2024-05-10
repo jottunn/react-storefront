@@ -9,8 +9,8 @@
   ],
   "devDependencies": {
     "@types/find-config": "1.0.1",
-    "dotenv": "16.0.3",
-    "dotenv-expand": "9.0.0",
+    "dotenv": "16.4.5",
+    "dotenv-expand": "11.0.6",
     "find-config": "1.0.0"
   }
 }

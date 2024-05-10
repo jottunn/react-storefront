@@ -1,4 +1,4 @@
-import { PlayIcon } from "@heroicons/react/outline";
+import { PlayIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
@@ -171,7 +171,7 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
                     className={clsx(
                       "cursor-pointer content-center hover:brightness-110 hover:contrast-115 transition-all duration-30 border-2",
                       { "border-transparent": index !== activeIndex },
-                      { "border-action-1": index === activeIndex }
+                      { "border-action-1": index === activeIndex },
                     )}
                     onClick={() => handleThumbnailClick(index)}
                   >

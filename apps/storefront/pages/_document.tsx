@@ -14,7 +14,7 @@ class MyDocument extends Document<{ lang?: string }> {
     return (
       <Html lang={this.props.lang}>
         <Head>
-          <link rel="preconnect" href={`//${hostname}`} crossOrigin="true" />
+          <link rel="preconnect" href={`//${hostname}`} crossOrigin="anonymous" />
           <link rel="dns-prefetch" href={`//${hostname}`} />
         </Head>
         <body spellCheck={false}>
