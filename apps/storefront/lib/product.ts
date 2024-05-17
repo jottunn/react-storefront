@@ -7,6 +7,7 @@ import {
   ProductVariantDetailsFragment,
   SelectedAttributeDetailsFragment,
 } from "@/saleor/api";
+import { ATTR_COLOR_SLUG } from "./const";
 // import { translate } from "./translations";
 /**
  * When a variant is selected, the variant attributes are shown together with
@@ -19,7 +20,7 @@ import {
 
 export const getProductAttributes = (
   product: ProductDetailsFragment,
-  selectedVariant?: ProductVariantDetailsFragment | null
+  selectedVariant?: ProductVariantDetailsFragment | null,
 ): SelectedAttributeDetailsFragment[] => {
   if (selectedVariant) return product.attributes.concat(selectedVariant.attributes);
   return product.attributes;
@@ -45,14 +46,16 @@ function groupVariantsByColor(variants: ProductVariantDetailsFragment[]) {
   const map = new Map<string, ProductVariantDetailsFragment[]>();
 
   variants.forEach((variant) => {
-    const colorValue =
-      variant.attributes.find((attr) => attr.attribute.slug === "culoare")?.values[0]?.name ||
-      "No Color";
+    if (variant.quantityAvailable && variant.quantityAvailable > 0) {
+      const colorValue =
+        variant.attributes.find((attr) => attr.attribute.slug === ATTR_COLOR_SLUG)?.values[0]
+          ?.name || "No Color";
 
-    if (!map.has(colorValue)) {
-      map.set(colorValue, []);
+      if (!map.has(colorValue)) {
+        map.set(colorValue, []);
+      }
+      map.get(colorValue)!.push(variant);
     }
-    map.get(colorValue)!.push(variant);
   });
 
   return map; // Map with key as color or "No Color", and value as array of variants

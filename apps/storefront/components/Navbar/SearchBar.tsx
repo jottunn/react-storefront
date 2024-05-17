@@ -1,9 +1,9 @@
 import { useRef } from "react"; // Import useRef
 import { useRouter } from "next/router";
-import NavIconButton from "./NavIconButton";
 import { usePaths } from "@/lib/paths";
 import { useIntl } from "react-intl";
 import messages from "../translations";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 export const SearchBar = () => {
   const paths = usePaths();
@@ -49,7 +49,7 @@ export const SearchBar = () => {
           className="inline-flex aspect-square w-10 items-center justify-center text-neutral-500 hover:text-neutral-700 focus:text-neutral-700 group-invalid:pointer-events-none group-invalid:opacity-80 mt-1"
         >
           <span className="sr-only">{t.formatMessage(messages.search)}</span>
-          <NavIconButton isButton={false} icon="spyglass" />
+          <MagnifyingGlassIcon className="w-6 h-6 relative top-1" />
         </button>
       </div>
     </form>

@@ -71,7 +71,7 @@ export function Footer({ className, ...rest }: FooterProps) {
           {brandsDataArr &&
             brandsDataArr.map((brand) => {
               const targetAttribute = brand.attributes.find(
-                (attribute) => attribute.attribute.inputType === "FILE"
+                (attribute) => attribute.attribute.inputType === "FILE",
               );
               if (targetAttribute && targetAttribute.values.length > 0) {
                 return (
@@ -163,7 +163,6 @@ export function Footer({ className, ...rest }: FooterProps) {
                 alt="visa mastercard"
                 width="232"
                 height="54"
-                loading="lazy"
               />
             </a>
             <a
@@ -172,7 +171,7 @@ export function Footer({ className, ...rest }: FooterProps) {
               rel="noreferrer"
               className="mb-2 inline-block"
             >
-              <img src={"/sal.svg"} alt="sal" width="180" height="45" loading="lazy" />
+              <img src={"/sal.svg"} alt="sal" width="180" height="45" />
             </a>
             <br />
             <a
@@ -181,7 +180,7 @@ export function Footer({ className, ...rest }: FooterProps) {
               rel="noreferrer"
               className="mb-2 inline-block"
             >
-              <img src={"/sol.svg"} alt="sol" width="180" height="45" loading="lazy" />
+              <img src={"/sol.svg"} alt="sol" width="180" height="45" />
             </a>
             <br />
             <div className="mt-8 inline-block">

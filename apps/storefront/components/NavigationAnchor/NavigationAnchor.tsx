@@ -25,10 +25,12 @@ export function NavigationAnchor({ menuItem, className }: NavigationAnchorProps)
   }
 
   return (
-    <Link href={getLinkPath(menuItem)} passHref legacyBehavior>
-      <a href="pass" className={className} data-testid={`categoriesList${menuItem.name}`}>
-        {translate(menuItem, "name")}
-      </a>
+    <Link
+      href={getLinkPath(menuItem)}
+      className={className}
+      data-testid={`categoriesList${menuItem.name}`}
+    >
+      {translate(menuItem, "name")}
     </Link>
   );
 }

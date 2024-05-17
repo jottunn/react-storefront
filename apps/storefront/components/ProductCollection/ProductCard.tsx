@@ -5,10 +5,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRegions } from "../RegionsProvider";
 import { useState } from "react";
-import { getDiscountPercentage } from "@/lib/util";
 import { GroupedProduct } from "@/lib/product";
 import { ATTR_COLOR_COMMERCIAL_SLUG } from "@/lib/const";
 import { ProductVariant } from "@/saleor/api";
+import { TagIcon } from "@heroicons/react/24/outline";
 
 export interface ProductCardProps {
   product: GroupedProduct;
@@ -25,16 +25,14 @@ export function ProductCard({ product, loading, priority, compliantVariant }: Pr
   const [isHovered, setIsHovered] = useState(false); // State to track hover
 
   const checkProductVariant = product.variants?.filter(
-    (variant) => variant.quantityAvailable != null && variant.quantityAvailable > 0
+    (variant) => variant.quantityAvailable != null && variant.quantityAvailable > 0,
   );
   const variant = compliantVariant || checkProductVariant?.[0];
-
   const productName = translate(product, "name"); // This should always be a string
   const variantAttr = variant?.attributes.find(
-    (attr) => attr.attribute.slug === ATTR_COLOR_COMMERCIAL_SLUG
+    (attr) => attr.attribute.slug === ATTR_COLOR_COMMERCIAL_SLUG,
   );
   const colorName = variantAttr?.values[0]?.name || ""; // Fallback to an empty string if color is undefined
-
   // Construct the string, ensuring that undefined values are handled.
   const productDisplayName = `${productName}${colorName ? ` - ${colorName}` : ""}`;
   // Find the first and second image, falling back to the first if only one exists
@@ -48,7 +46,7 @@ export function ProductCard({ product, loading, priority, compliantVariant }: Pr
   }
 
   let isPriceRange = false;
-  let salesPercent = "";
+  // let salesPercent = "";
   if (colorName === "") {
     isPriceRange =
       product.pricing?.priceRange?.start?.gross.amount !==
@@ -56,33 +54,33 @@ export function ProductCard({ product, loading, priority, compliantVariant }: Pr
   }
 
   //if isPriceRange, check if it's on sale or not and get both prices
-  if (isPriceRange && product.pricing?.onSale) {
-    const salesPercentLowest = getDiscountPercentage(
-      product.pricing?.priceRangeUndiscounted?.start?.gross.amount || 0,
-      product.pricing?.priceRange?.start?.gross.amount || 0
-    );
-    const salesPercentHighest = getDiscountPercentage(
-      product.pricing?.priceRangeUndiscounted?.stop?.gross.amount || 0,
-      product.pricing?.priceRange?.stop?.gross.amount || 0
-    );
-    let displayedPercentage = salesPercentHighest === 0 ? salesPercentLowest : salesPercentHighest;
-    if (salesPercentHighest !== 0 && salesPercentLowest !== 0) {
-      displayedPercentage =
-        salesPercentHighest > salesPercentLowest ? salesPercentLowest : salesPercentHighest;
-    }
-    salesPercent = displayedPercentage > 0 ? `from ${displayedPercentage}` : "";
-  } else if (
-    variant &&
-    variant.pricing &&
-    variant.pricing.price &&
-    variant.pricing.priceUndiscounted &&
-    variant.pricing.onSale
-  ) {
-    salesPercent = getDiscountPercentage(
-      variant.pricing.priceUndiscounted.gross.amount || 0,
-      variant.pricing.price.gross.amount
-    ).toString();
-  }
+  // if (isPriceRange && product.pricing?.onSale) {
+  //   const salesPercentLowest = getDiscountPercentage(
+  //     product.pricing?.priceRangeUndiscounted?.start?.gross.amount || 0,
+  //     product.pricing?.priceRange?.start?.gross.amount || 0
+  //   );
+  //   const salesPercentHighest = getDiscountPercentage(
+  //     product.pricing?.priceRangeUndiscounted?.stop?.gross.amount || 0,
+  //     product.pricing?.priceRange?.stop?.gross.amount || 0
+  //   );
+  //   let displayedPercentage = salesPercentHighest === 0 ? salesPercentLowest : salesPercentHighest;
+  //   if (salesPercentHighest !== 0 && salesPercentLowest !== 0) {
+  //     displayedPercentage =
+  //       salesPercentHighest > salesPercentLowest ? salesPercentLowest : salesPercentHighest;
+  //   }
+  //   salesPercent = displayedPercentage > 0 ? `from ${displayedPercentage}` : "";
+  // } else if (
+  //   variant &&
+  //   variant.pricing &&
+  //   variant.pricing.price &&
+  //   variant.pricing.priceUndiscounted &&
+  //   variant.pricing.onSale
+  // ) {
+  //   salesPercent = getDiscountPercentage(
+  //     variant.pricing.priceUndiscounted.gross.amount || 0,
+  //     variant.pricing.price.gross.amount
+  //   ).toString();
+  // }
 
   return (
     <div
@@ -120,9 +118,10 @@ export function ProductCard({ product, loading, priority, compliantVariant }: Pr
                   }}
                 />
               )}
-              {salesPercent && (
-                <div className="absolute right-2 top-2 py-1 px-2 rounded-lg uppercase text-sm font-normal text-red-500 bg-[#f7f7f7]">
-                  {salesPercent}%
+              {product.pricing?.onSale && (
+                <div className="absolute right-2 top-2 py-1 px-2">
+                  {/* {salesPercent}% */}
+                  <TagIcon className="text-action-1 w-6 h-6" />
                 </div>
               )}
             </div>
@@ -139,7 +138,7 @@ export function ProductCard({ product, loading, priority, compliantVariant }: Pr
         <p className="block text-sm font-normal text-main text-center pt-2 pb-2">{productBrand}</p>
       )}
 
-      <p className="block text-main text-center font-normal">
+      <p className="block text-main text-center font-normal mb-6">
         <span className="text-md">
           {isPriceRange
             ? product.pricing?.priceRange?.start?.gross.amount !==

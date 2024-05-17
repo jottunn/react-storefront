@@ -563,6 +563,16 @@ export const messages = defineMessages({
     description: "Size Guide link text",
     defaultMessage: "Size guide",
   },
+  chooseSize: {
+    id: "app.chooseSize",
+    description: "Choose Size",
+    defaultMessage: "Choose Size",
+  },
+  size: {
+    id: "app.size",
+    description: "Size",
+    defaultMessage: "Size",
+  },
   sortBy: {
     id: "app.sortBy",
     description: "Sort By text",
@@ -612,6 +622,11 @@ export const messages = defineMessages({
     id: "app.sort.sortByNameAsc",
     description: "sort By Name ascending",
     defaultMessage: "Name ascending",
+  },
+  outletTitle: {
+    id: "app.search.outletTitle",
+    description: "Title for Outlet page",
+    defaultMessage: "Outlet",
   },
 });
 

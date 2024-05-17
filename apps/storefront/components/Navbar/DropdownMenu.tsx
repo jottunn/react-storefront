@@ -24,19 +24,17 @@ function Dropdown({ menuItem }: DropdownProps) {
                     {item.name.length > 1 && (
                       <>
                         {item?.url ? (
-                          <a
+                          <Link
                             href={item.url}
                             target="_blank"
                             rel="noreferrer"
                             className={styles["dropdown-main"]}
                           >
                             {item?.name}
-                          </a>
+                          </Link>
                         ) : (
-                          <Link href={getLinkPath(item)} passHref legacyBehavior>
-                            <a href="pass" className={styles["dropdown-main"]}>
-                              {item?.name}
-                            </a>
+                          <Link href={getLinkPath(item)} className={styles["dropdown-main"]}>
+                            {item?.name}
                           </Link>
                         )}
                       </>
@@ -45,10 +43,8 @@ function Dropdown({ menuItem }: DropdownProps) {
                       <ul className={styles["dropdown-ul"]}>
                         {item?.children?.map((sub) => (
                           <li key={sub?.id}>
-                            <Link href={getLinkPath(sub)} passHref legacyBehavior>
-                              <a href="pass" className={styles["dropdown-link"]}>
-                                {sub?.name}
-                              </a>
+                            <Link href={getLinkPath(sub)} className={styles["dropdown-link"]}>
+                              {sub?.name}
                             </Link>
                           </li>
                         ))}

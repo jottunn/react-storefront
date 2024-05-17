@@ -2,7 +2,7 @@ import { PlayIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
-import { EnhancedProductMedia, getGalleryMedia, getYouTubeIDFromURL } from "@/lib/media";
+import { getGalleryMedia, getYouTubeIDFromURL } from "@/lib/media";
 import { ProductDetailsFragment, ProductVariantDetailsFragment } from "@/saleor/api";
 
 import { Swiper, SwiperSlide, SwiperRef } from "swiper/react";
@@ -58,8 +58,6 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
       setActiveIndex(mainSwiperRef.current.swiper.activeIndex);
     }
   };
-
-  // console.log(galleryMedia);
 
   return (
     <>
@@ -134,12 +132,12 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
                         src={media.url}
                         alt={media.alt}
                         width={700}
-                        height={400}
+                        height={550}
                         style={{ objectFit: "contain" }}
                         role="button"
                         tabIndex={-2}
                         priority={index === 0}
-                        loading={index < 3 ? "eager" : "lazy"}
+                        loading={index < 5 ? "eager" : "lazy"}
                         {...(placeholder !== null
                           ? { placeholder: "blur", blurDataURL: placeholder }
                           : {})}

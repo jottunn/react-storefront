@@ -19,7 +19,7 @@ export default function CartModal() {
     checkout?.lines?.reduce(
       (amount: number, line?: CheckoutLineDetailsFragment | null) =>
         line ? amount + line.quantity : amount,
-      0
+      0,
     ) || 0;
 
   const saleorApiUrl = process.env.NEXT_PUBLIC_API_URI;

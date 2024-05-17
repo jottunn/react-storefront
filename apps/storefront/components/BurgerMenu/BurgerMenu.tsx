@@ -3,12 +3,9 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useIntl } from "react-intl";
-
 import { useLogout } from "@/lib/hooks/useLogout";
 import { usePaths } from "@/lib/paths";
 import { useMainMenuQuery, useMainRightMenuQuery } from "@/saleor/api";
-
-import NavIconButton from "../Navbar/NavIconButton";
 import { ChannelDropdown } from "../regionDropdowns/ChannelDropdown";
 import { LocaleDropdown } from "../regionDropdowns/LocaleDropdown";
 import { useRegions } from "../RegionsProvider";
@@ -17,6 +14,7 @@ import styles from "./BurgerMenu.module.css";
 import { CollapseMenu } from "./CollapseMenu";
 import { useUser } from "@/lib/useUser";
 import { SearchBar } from "../Navbar/SearchBar";
+import { XMarkIcon } from "@heroicons/react/24/solid";
 
 export interface BurgerMenuProps {
   open?: boolean;
@@ -63,7 +61,7 @@ export function BurgerMenu({ open, onCloseClick }: BurgerMenuProps) {
       <div className={styles.backdrop} aria-hidden="true" onClick={onCloseClick} />
       <div className={styles.body}>
         <div className="flex justify-start w-full mb-5">
-          <NavIconButton icon="close" onClick={onCloseClick} />
+          <XMarkIcon onClick={onCloseClick} className="w-8 h-8 cursor-pointer" />
         </div>
 
         {menu.map((item) => (
