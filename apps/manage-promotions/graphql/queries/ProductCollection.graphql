@@ -1,0 +1,9 @@
+query ProductCollection($filter: ProductFilterInput) {
+  products(first: 100, channel: "default-channel", filter: $filter) {
+    edges {
+      node {
+        id
+      }    
+    }
+  }
+}

@@ -1,0 +1,8 @@
+  mutation deleteCollection($id: ID!) {
+    collectionDelete(id: $id) {
+      errors {
+        field
+        message
+      }
+    }
+  }

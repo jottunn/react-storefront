@@ -1,0 +1,14 @@
+query CollectionsByMetaKey($filter: CollectionFilterInput, $channel: String!) {
+  collections(first:100, filter: $filter, channel: $channel) {
+    edges {
+        node {
+            id
+            name
+            metadata {
+              key
+              value
+            }
+        }
+    }
+  }
+}

@@ -1,0 +1,5 @@
+ fragment WebhookSale on Sale {  
+      id
+      name
+      type     
+  }

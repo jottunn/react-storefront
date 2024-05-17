@@ -1,0 +1,12 @@
+query getPromotionByName ($where: PromotionWhereInput) {
+    promotions (where: $where, first: 1){
+        edges {
+            node {
+            id      
+                rules {
+                cataloguePredicate    		
+                }
+            }
+        }      
+    }        
+}

@@ -1,0 +1,8 @@
+query getPromotionById ($id: ID!) {
+    promotion (id: $id){      
+        name
+        rules {
+            cataloguePredicate              
+        }
+    }        
+}
