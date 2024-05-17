@@ -11,10 +11,12 @@
     "build:saleor-app-checkout": "pnpm run build --filter=saleor-app-checkout...",
     "build:storefront": "pnpm run build --filter=storefront...",
     "build:products-importer": "pnpm run build --filter=products-importer...",
+    "build:manage-promotions": "pnpm run build --filter=manage-promotions...",
     "start": "env-cmd --no-override -f .env env-cmd --no-override -f .env.local --fallback turbo run start --parallel --cache-dir=.turbo",
     "start:saleor-app-checkout": "pnpm run start --filter=saleor-app-checkout...",
     "start:storefront": "pnpm run start --filter=storefront...",
     "start:products-importer": "pnpm run start --filter=products-importer...",
+    "start:manage-promotions": "pnpm run start --filter=manage-promotions...",
     "generate": "env-cmd --no-override -f .env env-cmd --no-override -f .env.local --fallback turbo run generate --cache-dir=.turbo",
     "dev": "env-cmd --no-override -f .env env-cmd --no-override -f .env.local --fallback pnpm run _dev",
     "/*": "https://github.com/vercel/turborepo/issues/460",
@@ -49,7 +51,7 @@
     "node": ">=16.0.0",
     "pnpm": ">=8"
   },
-  "packageManager": "pnpm@9.1.0",
+  "packageManager": "pnpm@9.1.1",
   "pnpm": {
     "overrides": {
       "@urql/exchange-auth>@urql/core": "^4.0.2",
