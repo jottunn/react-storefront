@@ -35,7 +35,7 @@ services:
       dockerfile: Dockerfile.base
       args:
         - SALEOR_API_URL=http://localhost:8000/graphql/ # handled by nginx
-        - PRODUCTS_IMPORTER_URL=http://localhost:3005
+        - MANAGE_PROMOTIONS_URL=http://localhost:3005
         - STOREFRONT_URL=http://localhost:3000
         - CLOUD_DEPLOYMENT_URL=
     ports:
