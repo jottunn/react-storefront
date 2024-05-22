@@ -17,12 +17,17 @@ export function SortingDropdown({ optionToggle, chosen }: SortingDropdownProps) 
   const t = useIntl();
   const options = getSortingOptions(chosen, t.formatMessage);
   // Determine the label to display
-  const currentLabel = chosen
+  let currentLabel = chosen
     ? options.find(
         (option) => option.field === chosen.field && option.direction === chosen.direction,
       )?.label
     : t.formatMessage({ id: "app.sort.sortByDefault", defaultMessage: "Default Sorting" });
-
+  if (!currentLabel) {
+    currentLabel = t.formatMessage({
+      id: "app.sort.sortByDefault",
+      defaultMessage: "Default Sorting",
+    });
+  }
   return (
     <Menu as="div" className="inline text-left float-right w-[160px] mb-8 md:mb-0">
       <div>

@@ -33,9 +33,9 @@ export function PageHero({ title, description, pills = [], parents = [] }: PageH
                   </a>
                 </Link>
                 <span className="text-gray-600 mt-2 text-base">/</span>
-                <span className="text-base mt-2 font-medium text-gray-500">{title}</span>
               </React.Fragment>
             ))}
+            <span className="text-base mt-2 font-medium text-gray-500">{title}</span>
           </div>
         )}
         <h1 className="text-4xl font-bold" data-testid={`titleOf${title}`}>

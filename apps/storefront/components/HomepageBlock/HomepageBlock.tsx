@@ -45,7 +45,7 @@ export function HomepageBlock({ item, type }: HomepageBlockProps) {
         )}
       </div>
       {jsonData && jsonData.blocks.length > 0 && jsonData.blocks[0].data && (
-        <p className="text-sm pt-2">{jsonData.blocks[0].data.text}</p>
+        <p className="text-sm pt-2">{jsonData.blocks[0].data.text.replace("<br>", "")}</p>
       )}
     </div>
   );

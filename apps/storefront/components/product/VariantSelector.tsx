@@ -51,8 +51,8 @@ export function VariantSelector({
     setSelectedVariantID(selectedVariant?.id || "");
   }, [selectedVariant?.id]);
 
-  // Skip displaying selector when theres less than 2 variants
-  if (!variants || variants.length === 1) {
+  // Skip displaying selector when theres no variant
+  if (!variants || variants.length === 0) {
     return null;
   }
 
@@ -130,14 +130,19 @@ export function VariantSelector({
         <VariantColorSelector product={product} selectedVariant={selectedVariant} />
 
         <div className="w-full md:w-[80%] text-left m-auto mb-6">
-          <p className="text-md font-semibold mt-8 mb-2">
-            {t.formatMessage(variants.length > 0 ? messages.chooseSize : messages.size)}
+          <p
+            className={clsx(
+              "text-md font-semibold mt-8 mb-2",
+              sizeGuide && Object.keys(sizeGuide).length > 0 ? "text-left" : "text-center",
+            )}
+          >
+            {t.formatMessage(variants.length > 1 ? messages.chooseSize : messages.size)}
           </p>
-          <div className="flex min-h-[40px]">
+          <div className="flex h-[40px] justify-center">
             <Listbox value={selectedVariantID} onChange={onChange}>
               <ListboxButton
                 className={clsx(
-                  "relative block w-full border border-1 border-dark-900 py-2 pr-8 pl-3 text-left text-[1.5rem] text-dark-700",
+                  "relative block min-w-[120px] border border-1 border-dark-900 py-2 pr-8 pl-3 text-left text-[1.5rem] text-dark-700",
                   "focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-dark-700",
                 )}
               >
@@ -191,7 +196,7 @@ export function VariantSelector({
             </Listbox>
 
             {sizeGuide && Object.keys(sizeGuide).length > 0 && (
-              <div className="text-right w-full">
+              <div className="text-right min-w-[180px] w-full">
                 <a
                   href="#"
                   onClick={(e) => {

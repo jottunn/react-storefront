@@ -50,7 +50,6 @@ export function RegionsProvider({ children }: { children: ReactNode }) {
   const setCurrentChannel = async (channel: string) => {
     resetCheckoutToken();
     setCurrentChannelSlug(channel);
-    //await apolloClient.resetStore();
 
     // Set a cookie for the current channel
     setCookie(null, "currentChannel", channel, {
@@ -70,7 +69,7 @@ export function RegionsProvider({ children }: { children: ReactNode }) {
     return formatAsMoney(
       price?.amount || 0,
       price?.currency || currentChannel.currencyCode,
-      locale
+      locale,
     );
   };
 

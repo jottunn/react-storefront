@@ -26,7 +26,6 @@ function Dropdown({ menuItem }: DropdownProps) {
                         {item?.url ? (
                           <Link
                             href={item.url}
-                            target="_blank"
                             rel="noreferrer"
                             className={styles["dropdown-main"]}
                           >

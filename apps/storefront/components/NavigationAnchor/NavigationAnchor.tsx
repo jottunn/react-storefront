@@ -14,7 +14,6 @@ export function NavigationAnchor({ menuItem, className }: NavigationAnchorProps)
     return (
       <a
         href={menuItem.url}
-        target="_blank"
         rel="noreferrer"
         className={className}
         data-testid={`categoriesList${menuItem.name}`}

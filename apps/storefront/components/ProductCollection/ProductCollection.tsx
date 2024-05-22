@@ -124,7 +124,7 @@ export function ProductCollection({
             productMap.set(product.node.id, product as ProductCountableEdge);
           });
           newProducts.forEach((product: ProductCountableEdge) =>
-            productMap.set(product.node.id, product)
+            productMap.set(product.node.id, product),
           );
 
           // Convert the map back to an array
@@ -159,14 +159,14 @@ export function ProductCollection({
    */
   function doesProductComplyWithFilter(
     product: ProductCardFragment,
-    filter: ProductFilterInput
+    filter: ProductFilterInput,
   ): boolean {
     // If the filter specifies attributes, check compliance based on product-level attributes
     if (filter.attributes && filter.attributes.length > 0) {
       return filter.attributes.every((filterAttr) => {
         // Check if the product has the filter attribute
         const productAttribute = product.attributes.find(
-          (productAttr) => productAttr.attribute.slug === filterAttr.slug
+          (productAttr) => productAttr.attribute.slug === filterAttr.slug,
         );
 
         // If the product does not have the attribute at all, consider it compliant for this specific attribute
@@ -176,7 +176,7 @@ export function ProductCollection({
 
         // If the product has the attribute, check if any of its values match the filter's values
         return productAttribute.values.some((value) =>
-          filterAttr.values?.includes(value.slug ?? "")
+          filterAttr.values?.includes(value.slug ?? ""),
         );
       });
     }
@@ -191,7 +191,7 @@ export function ProductCollection({
       for (const filterAttr of filter.attributes) {
         // Check if the variant has the filter attribute
         const variantAttribute = variant.attributes.find(
-          (variantAttr) => variantAttr.attribute.slug === filterAttr.slug
+          (variantAttr) => variantAttr.attribute.slug === filterAttr.slug,
         );
 
         // If the variant does not have the attribute at all, consider it compliant for this specific attribute
@@ -201,7 +201,7 @@ export function ProductCollection({
 
         // If the variant has the attribute, check if any of its values match the filter's values
         const hasMatchingValue = variantAttribute.values.some((value) =>
-          filterAttr.values?.includes(value.slug ?? "")
+          filterAttr.values?.includes(value.slug ?? ""),
         );
 
         if (!hasMatchingValue) {
@@ -235,7 +235,7 @@ export function ProductCollection({
 
       // Filter variants for this product based on compliance with the filter
       const compliantVariants = product.variants?.filter((variant) =>
-        variantSatisfiesFilter(variant, filter)
+        variantSatisfiesFilter(variant, filter),
       );
 
       if (compliantVariants && compliantVariants.length > 0) {
@@ -264,7 +264,7 @@ export function ProductCollection({
     products = filterAndTransformProducts(products as GroupedProduct[], filter);
   }
   if (products.length === 0) {
-    return <p>{t.formatMessage(messages.noProducts)}</p>;
+    return <p className="text-md">{t.formatMessage(messages.noProducts)}</p>;
   }
 
   products = groupProductsByColor(products as GroupedProduct[]);

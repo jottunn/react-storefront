@@ -1,20 +1,11 @@
 import clsx from "clsx";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import { useIntl } from "react-intl";
-import { useLogout } from "@/lib/hooks/useLogout";
-import { usePaths } from "@/lib/paths";
-import { useMainMenuQuery, useMainRightMenuQuery } from "@/saleor/api";
-import { ChannelDropdown } from "../regionDropdowns/ChannelDropdown";
-import { LocaleDropdown } from "../regionDropdowns/LocaleDropdown";
-import { useRegions } from "../RegionsProvider";
-import { messages } from "../translations";
+// import { ChannelDropdown } from "../regionDropdowns/ChannelDropdown";
+// import { LocaleDropdown } from "../regionDropdowns/LocaleDropdown";
 import styles from "./BurgerMenu.module.css";
 import { CollapseMenu } from "./CollapseMenu";
-import { useUser } from "@/lib/useUser";
 import { SearchBar } from "../Navbar/SearchBar";
 import { XMarkIcon } from "@heroicons/react/24/solid";
+import useMenuData from "@/lib/hooks/useMenuData";
 
 export interface BurgerMenuProps {
   open?: boolean;
@@ -22,35 +13,11 @@ export interface BurgerMenuProps {
 }
 
 export function BurgerMenu({ open, onCloseClick }: BurgerMenuProps) {
-  const paths = usePaths();
-  const { query } = useRegions();
-  const t = useIntl();
+  const { menuItems, rightMenuItems, error } = useMenuData();
 
-  const [authenticated, setAuthenticated] = useState(false);
-  const { authenticated: actuallyAuthenticated } = useUser();
-  const router = useRouter();
-
-  const { error, data } = useMainMenuQuery({
-    variables: { ...query },
-  });
-
-  const { error: rightMenuError, data: rightMenuData } = useMainRightMenuQuery({
-    variables: { ...query },
-  });
-
-  // Avoid hydration warning by setting authenticated state in useEffect
-  useEffect(() => {
-    setAuthenticated(actuallyAuthenticated);
-  }, [actuallyAuthenticated]);
-
-  if (error || rightMenuError) {
-    console.error("BurgerMenu component error", error?.message || rightMenuError?.message);
+  if (error) {
+    console.error("BurgerMenu component error", error?.message);
   }
-
-  const onLogout = useLogout();
-
-  const menu = data?.menu?.items || [];
-  const rightMenuItems = rightMenuData?.menu?.items || [];
 
   return (
     <div
@@ -64,7 +31,7 @@ export function BurgerMenu({ open, onCloseClick }: BurgerMenuProps) {
           <XMarkIcon onClick={onCloseClick} className="w-8 h-8 cursor-pointer" />
         </div>
 
-        {menu.map((item) => (
+        {menuItems.map((item) => (
           <CollapseMenu menuItem={item} key={item.id} />
         ))}
 
@@ -73,42 +40,14 @@ export function BurgerMenu({ open, onCloseClick }: BurgerMenuProps) {
         ))}
 
         <div className="mt-auto pt-4">
-          <div className="flex flex-col">
-            {authenticated ? (
-              <>
-                <Link href={paths.account.preferences.$url()} passHref legacyBehavior>
-                  <a tabIndex={0} className={styles["burger-link"]} href="pass">
-                    {t.formatMessage(messages.menuAccountPreferences)}
-                  </a>
-                </Link>
-                <button
-                  type="button"
-                  onClick={onLogout}
-                  tabIndex={-1}
-                  className={styles["burger-link"]}
-                >
-                  {t.formatMessage(messages.logOut)}
-                </button>
-              </>
-            ) : (
-              <button
-                type="button"
-                onClick={() => router.push(paths.account.login.$url())}
-                tabIndex={-1}
-                className={styles["burger-link"]}
-              >
-                {t.formatMessage(messages.logIn)}
-              </button>
-            )}
-          </div>
           <div className="py-4">
             <SearchBar />
           </div>
         </div>
-        <div className="flex mt-4 gap-4">
+        {/* <div className="flex mt-4 gap-4">
           <ChannelDropdown />
           <LocaleDropdown />
-        </div>
+        </div> */}
       </div>
     </div>
   );

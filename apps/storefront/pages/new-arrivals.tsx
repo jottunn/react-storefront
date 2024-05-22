@@ -1,21 +1,16 @@
 import React, { ReactElement } from "react";
-
 import { Layout } from "@/components";
 import { OrderDirection, ProductFilterInput, ProductOrderField } from "@/saleor/api";
+import FilteredProductList from "@/components/productList/FilteredProductList";
+import { UrlSorting } from "@/components/productList/FilteredProductList/sorting";
 
-import ProductCollection from "@/components/ProductCollection/ProductCollection";
-
-export interface SortByProps {
-  field: ProductOrderField;
-  direction?: OrderDirection;
-}
 function NewArrivalsPage() {
   const filter: ProductFilterInput = {
     isPublished: true,
     stockAvailability: "IN_STOCK",
     isVisibleInListing: true,
   };
-  const sortBy: SortByProps = { field: "PUBLICATION_DATE", direction: "DESC" };
+  const sortBy: UrlSorting = { field: "PUBLICATION_DATE", direction: "DESC" };
 
   return (
     <>
@@ -26,7 +21,8 @@ function NewArrivalsPage() {
       </header>
       <main>
         <div className="container px-8 mt-4 mb-40">
-          <ProductCollection filter={filter} sortBy={sortBy} perPage={30} />
+          <FilteredProductList sort={sortBy} />
+          {/* <ProductCollection filter={filter} sortBy={sortBy} perPage={30} /> */}
         </div>
       </main>
     </>

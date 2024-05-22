@@ -35,6 +35,7 @@ export interface FilteredProductListProps {
   brand?: string;
   collectionIDs?: string[];
   categoryIDs?: string[];
+  sort?: UrlSorting;
 }
 
 export interface Filters {
@@ -46,6 +47,7 @@ export function FilteredProductList({
   brand,
   collectionIDs,
   categoryIDs,
+  sort,
 }: FilteredProductListProps) {
   const [queryFilters, setQueryFilters] = useQueryState("filters", {
     parse: parseQueryAttributeFilters,
@@ -55,7 +57,10 @@ export function FilteredProductList({
 
   // const [itemsCounter, setItemsCounter] = useState(0);
   const [sortByQuery, setSortByQuery] = useQueryState("sortBy", {});
-  const sortBy = parseQuerySort(sortByQuery);
+  let sortBy = parseQuerySort(sortByQuery);
+  if (!sortBy && sort !== undefined) {
+    sortBy = sort;
+  }
   const setSortBy = (value: UrlSorting | undefined | null) =>
     setSortByQuery(serializeQuerySort(value));
 

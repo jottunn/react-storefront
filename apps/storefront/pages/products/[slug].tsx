@@ -427,7 +427,7 @@ function ProductPage({
               </a>
             </Link>
 
-            {product.variants?.length === 1 && (
+            {product.variants?.length === 0 && (
               <h2 className="text-xl font-bold tracking-tight text-gray-800 text-center">
                 <span>{formatPrice(product.variants?.[0]?.pricing?.price?.gross)}</span>
                 {product.variants?.[0]?.pricing?.onSale && (
@@ -438,7 +438,7 @@ function ProductPage({
               </h2>
             )}
 
-            {product.variants && product.variants?.length > 1 && (
+            {product.variants && product.variants?.length > 0 && (
               <VariantSelector
                 product={product}
                 selectedVariant={selectedVariant}

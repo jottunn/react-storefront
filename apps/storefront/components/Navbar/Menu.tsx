@@ -1,28 +1,15 @@
-import React from "react";
-
-import { useMainMenuQuery, useMainRightMenuQuery } from "@/saleor/api";
-
-import { useRegions } from "../RegionsProvider";
+import React, { memo } from "react";
 import DropdownMenu from "./DropdownMenu";
 import styles from "./Navbar.module.css";
+import useMenuData from "@/lib/hooks/useMenuData";
 
-export function Menu() {
-  const { query } = useRegions();
+export const Menu = () => {
+  const { menuItems, rightMenuItems, error } = useMenuData();
 
-  const { error, data } = useMainMenuQuery({
-    variables: { ...query },
-  });
-
-  const { error: rightMenuError, data: rightMenuData } = useMainRightMenuQuery({
-    variables: { ...query },
-  });
-
-  if (error || rightMenuError) {
-    console.error("Navbar/Menu component error", error?.message || rightMenuError?.message);
+  if (error) {
+    console.error("Navbar/Menu component error", error.message);
+    return null; // Or render some error message
   }
-
-  const menuItems = data?.menu?.items || [];
-  const rightMenuItems = rightMenuData?.menu?.items || [];
 
   return (
     <nav className={styles.nav}>
@@ -42,6 +29,6 @@ export function Menu() {
       </ol>
     </nav>
   );
-}
+};
 
-export default Menu;
+export default memo(Menu);
