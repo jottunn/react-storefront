@@ -18,12 +18,20 @@ function UserMenu({ className, ...rest }: UserMenuProps) {
 
   return (
     <div className={clsx(styles["user-menu-container"], className)} {...rest}>
-      <UserIcon className={styles["nav-icon-button"]} />
+      <Link
+        href={paths.account.preferences.$url()}
+        tabIndex={0}
+        className={styles["user-menu-item"]}
+      >
+        <UserIcon className={styles["nav-icon-button"]} />
+      </Link>
       <div className={styles["user-menu"]}>
-        <Link href={paths.account.preferences.$url()} passHref legacyBehavior>
-          <a tabIndex={0} className={styles["user-menu-item"]} href="pass">
-            {t.formatMessage(messages.menuAccountPreferences)}
-          </a>
+        <Link
+          href={paths.account.preferences.$url()}
+          tabIndex={0}
+          className={styles["user-menu-item"]}
+        >
+          {t.formatMessage(messages.menuAccountPreferences)}
         </Link>
         <button type="button" onClick={onLogout} tabIndex={-1} className={styles["user-menu-item"]}>
           {t.formatMessage(messages.logOut)}

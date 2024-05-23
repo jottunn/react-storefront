@@ -127,7 +127,7 @@ export function ProductCard({ product, loading, priority, compliantVariant }: Pr
             </div>
           </div>
           <p
-            className="block mt-2 text-md font-extrabold text-main text-center hover:text-gray-700 min-h-[50px]"
+            className="block mt-2 text-md font-extrabold text-main text-center hover:text-gray-700 min-h-[75px] md:min-h-[50px]"
             data-testid={`productName${product.name}`}
           >
             {productDisplayName}

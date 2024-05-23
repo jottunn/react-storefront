@@ -6,6 +6,10 @@ import { CollapseMenu } from "./CollapseMenu";
 import { SearchBar } from "../Navbar/SearchBar";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import useMenuData from "@/lib/hooks/useMenuData";
+import useLogout from "@/lib/hooks/useLogout";
+import { useIntl } from "react-intl";
+import { messages } from "../translations";
+import { useUser } from "@/lib/useUser";
 
 export interface BurgerMenuProps {
   open?: boolean;
@@ -14,7 +18,10 @@ export interface BurgerMenuProps {
 
 export function BurgerMenu({ open, onCloseClick }: BurgerMenuProps) {
   const { menuItems, rightMenuItems, error } = useMenuData();
+  const t = useIntl();
+  const { authenticated } = useUser();
 
+  const onLogout = useLogout();
   if (error) {
     console.error("BurgerMenu component error", error?.message);
   }
@@ -44,10 +51,20 @@ export function BurgerMenu({ open, onCloseClick }: BurgerMenuProps) {
             <SearchBar />
           </div>
         </div>
-        {/* <div className="flex mt-4 gap-4">
-          <ChannelDropdown />
-          <LocaleDropdown />
-        </div> */}
+        {authenticated && (
+          <div className="py-4">
+            <button
+              type="button"
+              onClick={onLogout}
+              tabIndex={-1}
+              className="text-md font-semibold text-red-500 border border-red-500 py-2 px-4"
+            >
+              {t.formatMessage(messages.logOut)}
+            </button>
+            {/* <ChannelDropdown />
+          <LocaleDropdown /> */}
+          </div>
+        )}
       </div>
     </div>
   );
