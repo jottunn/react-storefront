@@ -12,11 +12,13 @@
     "build:storefront": "pnpm run build --filter=storefront...",
     "build:products-importer": "pnpm run build --filter=products-importer...",
     "build:manage-promotions": "pnpm run build --filter=manage-promotions...",
+    "build:search": "pnpm run build --filter=search...",
     "start": "env-cmd --no-override -f .env env-cmd --no-override -f .env.local --fallback turbo run start --parallel --cache-dir=.turbo",
     "start:saleor-app-checkout": "pnpm run start --filter=saleor-app-checkout...",
     "start:storefront": "pnpm run start --filter=storefront...",
     "start:products-importer": "pnpm run start --filter=products-importer...",
     "start:manage-promotions": "pnpm run start --filter=manage-promotions...",
+    "start:search": "pnpm run start --filter=search...",
     "generate": "env-cmd --no-override -f .env env-cmd --no-override -f .env.local --fallback turbo run generate --cache-dir=.turbo",
     "dev": "env-cmd --no-override -f .env env-cmd --no-override -f .env.local --fallback pnpm run _dev",
     "/*": "https://github.com/vercel/turborepo/issues/460",
@@ -37,6 +39,22 @@
     "cy:run": "cypress run",
     "cy:open": "cypress open"
   },
+  "dependencies": {
+    "@opentelemetry/api": "1.7.0",
+    "@opentelemetry/api-logs": "0.46.0",
+    "@opentelemetry/core": "1.19.0",
+    "@opentelemetry/exporter-logs-otlp-http": "0.46.0",
+    "@opentelemetry/exporter-trace-otlp-http": "0.46.0",
+    "@opentelemetry/instrumentation-http": "0.46.0",
+    "@opentelemetry/instrumentation-winston": "0.33.1",
+    "@opentelemetry/resources": "1.18.1",
+    "@opentelemetry/sdk-logs": "0.45.1",
+    "@opentelemetry/sdk-node": "0.45.1",
+    "@opentelemetry/sdk-trace-base": "1.18.1",
+    "@opentelemetry/sdk-trace-node": "1.18.1",
+    "@opentelemetry/semantic-conventions": "1.18.1",
+    "@saleor/app-sdk": "0.47.2"
+  },
   "devDependencies": {
     "cypress": "13.9.0",
     "env-cmd": "10.1.0",
@@ -44,14 +62,15 @@
     "lint-staged": "15.2.2",
     "prettier": "3.2.5",
     "turbo": "1.13.3",
-    "typescript": "5.4.5"
+    "typescript": "5.1.6",
+    "next": "14.2.3"
   },
   "engines": {
     "npm": ">=7.0.0",
     "node": ">=16.0.0",
     "pnpm": ">=8"
   },
-  "packageManager": "pnpm@9.1.1",
+  "packageManager": "pnpm@9.1.2",
   "pnpm": {
     "overrides": {
       "@urql/exchange-auth>@urql/core": "^4.0.2",

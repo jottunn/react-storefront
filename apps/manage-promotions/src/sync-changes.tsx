@@ -32,7 +32,7 @@ export const SyncChanges = () => {
         <List>
           {result.map((msg, index) => (
             <List.Item borderRadius={3} gap={3} paddingX={2} paddingY={2} key={index}>
-              <Text color={"success1"}>{msg}</Text>
+              <Text color={"textBrandDefault"}>{msg}</Text>
             </List.Item>
           ))}
         </List>

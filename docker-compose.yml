@@ -43,6 +43,18 @@ services:
     networks:
       - saleor-backend-tier
     command: sh -c '(nginx &) && pnpm turbo run start --filter=manage-promotions...'
+  search:
+    container_name: search
+    build:
+      context: .
+      dockerfile: Dockerfile.base
+      args:
+        - SALEOR_API_URL=http://localhost:8000/graphql/ # handled by nginx
+    ports:
+      - 3006:3006
+    networks:
+      - saleor-backend-tier
+    command: sh -c '(nginx &) && pnpm turbo run start --filter=search...'
 
 networks:
   saleor-backend-tier:
