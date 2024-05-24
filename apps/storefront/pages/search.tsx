@@ -1,15 +1,23 @@
 import { useQueryState } from "next-usequerystate";
-import React, { ReactElement, useEffect } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import { useIntl } from "react-intl";
 import { useDebounce } from "react-use";
-
-import { Layout, ProductCollection } from "@/components";
+import { Layout } from "@/components";
 import { messages } from "@/components/translations";
 import { ProductFilterInput } from "@/saleor/api";
+import { algoliaClient } from "@/lib/searchClient";
+import FilteredProductList from "@/components/productList/FilteredProductList";
+import { SearchIndex } from "algoliasearch";
 
+interface Hit {
+  objectID: string;
+  name: string;
+  [key: string]: any;
+}
 function SearchPage() {
   const t = useIntl();
   const [searchQuery, _setSearchQuery] = useQueryState("q");
+  const [productsIds, setProductsIds] = useState<string[]>([]);
   const [displayedSearchQuery, setDisplayedSearchQuery] = React.useState("");
   const [debouncedFilter, setDebouncedFilter] = React.useState<ProductFilterInput>({});
 
@@ -22,12 +30,30 @@ function SearchPage() {
       }
     },
     1000,
-    [searchQuery]
+    [searchQuery],
   );
 
   useEffect(() => {
+    const fetchProductIds = async () => {
+      if (searchQuery && searchQuery.length > 2) {
+        try {
+          const index: SearchIndex = algoliaClient.initIndex(
+            process.env.NEXT_PUBLIC_ALGOLIA_INDEX_NAME || "",
+          );
+          const results = await index.search<Hit>(searchQuery);
+          const hits = results.hits;
+          const ids = hits.map((hit) => hit.objectID);
+          setProductsIds(ids);
+        } catch (error) {
+          console.error("Algolia search error: ", error);
+          // Fallback logic here
+        }
+      }
+    };
+
     if (searchQuery !== null) {
       setDisplayedSearchQuery(searchQuery);
+      fetchProductIds();
     }
   }, [searchQuery]);
 
@@ -37,9 +63,13 @@ function SearchPage() {
         {t.formatMessage(messages.searchHeader)} &nbsp;
         {displayedSearchQuery && <span className="text-action-1">{displayedSearchQuery}</span>}
       </p>
-      {searchQuery !== null && Object.keys(debouncedFilter).length > 0 && (
-        <ProductCollection filter={debouncedFilter} />
-      )}
+      {searchQuery !== null &&
+        Object.keys(debouncedFilter).length > 0 &&
+        (productsIds.length > 0 ? (
+          <FilteredProductList productsIDs={productsIds} />
+        ) : (
+          <FilteredProductList search={debouncedFilter} />
+        ))}
     </main>
   );
 }

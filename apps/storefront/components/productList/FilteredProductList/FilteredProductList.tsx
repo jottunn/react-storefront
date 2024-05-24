@@ -35,7 +35,9 @@ export interface FilteredProductListProps {
   brand?: string;
   collectionIDs?: string[];
   categoryIDs?: string[];
+  productsIDs?: string[];
   sort?: UrlSorting;
+  search?: ProductFilterInput;
 }
 
 export interface Filters {
@@ -47,7 +49,9 @@ export function FilteredProductList({
   brand,
   collectionIDs,
   categoryIDs,
+  productsIDs,
   sort,
+  search,
 }: FilteredProductListProps) {
   const [queryFilters, setQueryFilters] = useQueryState("filters", {
     parse: parseQueryAttributeFilters,
@@ -192,6 +196,8 @@ export function FilteredProductList({
       stockAvailability: "IN_STOCK",
       isPublished: true,
       isVisibleInListing: true,
+      ids: productsIDs,
+      ...search,
     };
 
     // Only update productsFilter state if it's different from the current state
@@ -201,7 +207,7 @@ export function FilteredProductList({
 
     // Eslint does not recognize stringified queryFilters, so we have to ignore it
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(queryFilters), categoryIDs, collectionIDs, brand]);
+  }, [JSON.stringify(queryFilters), categoryIDs, collectionIDs, brand, productsIDs, search]);
 
   const removeAttributeFilter = (attributeSlug: string, choiceSlug: string) => {
     const newFilters = queryFilters.reduce((result: UrlFilter[], filter: UrlFilter) => {

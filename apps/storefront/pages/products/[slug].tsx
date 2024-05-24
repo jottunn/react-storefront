@@ -479,7 +479,7 @@ function ProductPage({
             </div>
           </div>
         </div>
-        <div className="container pb-12">
+        <div className="container pb-12 px-8">
           {description && (
             <div className="space-y-6">
               <p className="text-md mt-8 font-bold text-black-500 uppercase">

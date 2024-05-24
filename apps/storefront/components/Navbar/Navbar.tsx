@@ -12,6 +12,7 @@ import Image from "next/image";
 import CartModal from "../cart/CartModal";
 import { SearchBar } from "./SearchBar";
 import { UserIcon, Bars3BottomLeftIcon } from "@heroicons/react/24/outline";
+import Search from "../Search/searchBox";
 
 export function Navbar() {
   const paths = usePaths();
@@ -50,7 +51,8 @@ export function Navbar() {
           </Link>
           <div className="ml-auto flex items-center justify-center gap-4 whitespace-nowrap lg:gap-6 pr-4">
             <div className="hidden md:flex">
-              <SearchBar />
+              {/* <SearchBar /> */}
+              <Search />
             </div>
             {!authenticated ? (
               <Link href={paths.account.login.$url()} data-testid="userIcon">
