@@ -8,6 +8,7 @@ import { ProductFilterInput } from "@/saleor/api";
 import { algoliaClient } from "@/lib/searchClient";
 import FilteredProductList from "@/components/productList/FilteredProductList";
 import { SearchIndex } from "algoliasearch";
+import CustomSearchBox from "@/components/Search/searchBox";
 
 interface Hit {
   objectID: string;
@@ -35,7 +36,7 @@ function SearchPage() {
 
   useEffect(() => {
     const fetchProductIds = async () => {
-      if (searchQuery && searchQuery.length > 2) {
+      if (searchQuery && searchQuery.length > 2 && algoliaClient) {
         try {
           const index: SearchIndex = algoliaClient.initIndex(
             process.env.NEXT_PUBLIC_ALGOLIA_INDEX_NAME || "",
@@ -59,17 +60,21 @@ function SearchPage() {
 
   return (
     <main className="container w-full px-8 mt-5 py-8">
-      <p className="font-semibold text-xl mb-5">
-        {t.formatMessage(messages.searchHeader)} &nbsp;
-        {displayedSearchQuery && <span className="text-action-1">{displayedSearchQuery}</span>}
-      </p>
-      {searchQuery !== null &&
-        Object.keys(debouncedFilter).length > 0 &&
-        (productsIds.length > 0 ? (
-          <FilteredProductList productsIDs={productsIds} />
-        ) : (
-          <FilteredProductList search={debouncedFilter} />
-        ))}
+      {searchQuery !== null && (
+        <>
+          <p className="font-semibold text-xl mb-5">
+            {t.formatMessage(messages.searchHeader)} &nbsp;
+            {displayedSearchQuery && <span className="text-action-1">{displayedSearchQuery}</span>}
+          </p>
+          {Object.keys(debouncedFilter).length > 0 &&
+            (productsIds.length > 0 ? (
+              <FilteredProductList productsIDs={productsIds} />
+            ) : (
+              <FilteredProductList search={debouncedFilter} />
+            ))}
+        </>
+      )}
+      {searchQuery === null && <CustomSearchBox />}
     </main>
   );
 }

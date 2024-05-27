@@ -8,6 +8,7 @@ import { usePaths } from "@/lib/paths";
 import { useIntl } from "react-intl";
 import messages from "../translations";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { algoliaClient } from "@/lib/searchClient";
 
 type SearchResult = {
   productName: string;
@@ -29,23 +30,18 @@ function CustomSearchBox() {
   const paths = usePaths();
   const t = useIntl();
 
-  const searchClient: SearchClient = useMemo(() => {
-    return algoliasearch(
-      process.env.NEXT_PUBLIC_ALGOLIA_APP_ID || "",
-      process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY || "",
+  const searchIndex: SearchIndex | null = useMemo(() => {
+    return (
+      algoliaClient && algoliaClient.initIndex(process.env.NEXT_PUBLIC_ALGOLIA_INDEX_NAME || "")
     );
-  }, []);
-
-  const searchIndex: SearchIndex = useMemo(() => {
-    return searchClient.initIndex(process.env.NEXT_PUBLIC_ALGOLIA_INDEX_NAME || "");
-  }, [searchClient]);
+  }, [algoliaClient]);
 
   const debouncedSearch = useMemo(
     () =>
       debounce(async (query: string) => {
         if (cache[query]) {
           setResults(cache[query]);
-        } else {
+        } else if (searchIndex) {
           try {
             const { hits } = await searchIndex.search<SearchResult>(query);
             setCache((prevCache) => ({ ...prevCache, [query]: hits }));
@@ -120,6 +116,7 @@ function CustomSearchBox() {
             value={inputValue}
             onChange={handleChange}
             onFocus={handleFocus}
+            autoComplete="off"
             className="h-10 w-full rounded-md border border-neutral-300 bg-transparent bg-white px-4 py-2 pr-10 text-sm text-black placeholder:text-neutral-500 focus:border-black focus:ring-black"
           />
         </label>
