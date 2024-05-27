@@ -7,7 +7,8 @@ import {
   ProductCollectionDocument,
   RemoveProductsFromCollectionDocument,
 } from "../../../generated/graphql";
-import { getDefaultChannelId } from "../sync/get-default-channel-id";
+import { getChannelId } from "../sync/get-channel-id";
+import { publishCollection } from "./collection-channels";
 
 export async function deleteCollection(client: Client, collectionId: string) {
   const { data: deletedCollection } = await client
@@ -21,11 +22,10 @@ export async function createCollection(
   client: Client,
   saleName: string,
   saleId: string,
-  promotionId: string
+  promotionId: string,
+  allChannels: any[]
 ) {
   try {
-    //get default channel id
-    const defaultChannelId = await getDefaultChannelId(client);
     // Create a new collection
     const { data: collectionData } = await client
       .mutation(CreateNewCollectionDocument, {
@@ -46,19 +46,7 @@ export async function createCollection(
       throw new Error("Failed to create collection");
     }
     const collectionId = collectionData.collectionCreate?.collection.id;
-    const { data: channelAssignedData } = await client
-      .mutation(AssignCollectionToChannelDocument, {
-        id: collectionId,
-        input: {
-          addChannels: [
-            {
-              channelId: defaultChannelId,
-              isPublished: true,
-            },
-          ],
-        },
-      })
-      .toPromise();
+    await publishCollection(client, collectionId, allChannels);
 
     return collectionId;
   } catch (error) {

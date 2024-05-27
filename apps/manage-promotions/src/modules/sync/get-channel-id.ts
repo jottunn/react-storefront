@@ -1,15 +1,15 @@
 import { Client } from "urql";
 import { GetChannelsDocument } from "../../../generated/graphql";
 
-export async function getDefaultChannelId(client: Client) {
+export async function getChannelId(client: Client, channelName: string) {
   const getChannels = await client.query(GetChannelsDocument, {});
   const fetchedChannels = getChannels.data?.channels;
-  if (fetchedChannels) {
+  if (fetchedChannels && channelName) {
     for (let c = 0; c < fetchedChannels.length; c++) {
-      if (fetchedChannels[c]["slug"] == "default-channel") {
+      if (fetchedChannels[c]["slug"] === channelName) {
         return fetchedChannels[c]["id"];
       }
     }
   }
-  return "";
+  return fetchedChannels?.map((fetchedChannels) => fetchedChannels.id);
 }

@@ -1,0 +1,8 @@
+mutation updateCollectionChannel( $id: ID!, $input: CollectionChannelListingUpdateInput!) {
+    collectionChannelListingUpdate(id: $id, input: $input) {
+        errors {
+            field
+            message
+        }
+    }
+}

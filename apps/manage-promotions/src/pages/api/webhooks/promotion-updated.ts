@@ -4,17 +4,10 @@ import {
   WebhookSaleFragmentDoc,
   SaleUpdatedWebhookPayloadFragment,
   SaleUpdatedWebhookPayloadFragmentDoc,
-  ProductFilterInput,
-  InputMaybe,
-  StockAvailability,
-  ProductCollectionDocument,
-  GetProductVariantByIdDocument,
   GetPromotionByNameDocument,
-  CollectionsByMetaKeyDocument,
-  RemoveProductsFromCollectionDocument,
-  AddProductsToCollectionDocument,
   CollectionFilterInput,
   UpdateCollectionDocument,
+  UpdateCollectionChannelDocument,
 } from "../../../../generated/graphql";
 import { saleorApp } from "../../../saleor-app";
 import { createClient } from "../../../lib/create-graphq-client";
@@ -25,6 +18,11 @@ import {
   updateProductsCollection,
 } from "../../../modules/collections/collection-crud";
 import { fetchPromotionsProducts } from "../../../modules/promotions/get-promotion-products";
+import { getChannelId } from "../../../modules/sync/get-channel-id";
+import {
+  publishCollection,
+  unpublishCollection,
+} from "../../../modules/collections/collection-channels";
 
 /**
  * Example payload of the webhook. It will be transformed with graphql-codegen to Typescript type: PromotionCreatedWebhookPayloadFragment
@@ -120,10 +118,14 @@ export default promotionUpdatedWebhook.createHandler(async (req, res, ctx) => {
     //const node = result.data.products?.edges.map((e: { node: any }) => e.node);
     const promotionId = result.data?.promotions?.edges?.[0].node?.id || "";
     const promotionRules = result.data?.promotions?.edges?.[0].node?.rules || [];
-
-    //get promotion's products
-    const productIdsArray = await fetchPromotionsProducts(client, promotionRules);
-
+    const promotionEndDate = result.data?.promotions?.edges?.[0].node?.endDate || "";
+    const nowISO = new Date().toISOString();
+    const nowDate = new Date(nowISO);
+    const promoEndDate = new Date(promotionEndDate);
+    const allChannels = promotionRules.flatMap((rule) => rule.channels);
+    const uniqueChannels = allChannels.filter(
+      (channel, index, self) => index === self.findIndex((c) => c?.slug === channel?.slug)
+    );
     //get existing collection Id, with metadata related to updated promotion
     const collectionFilter: CollectionFilterInput = {
       metadata: [{ key: "promotion", value: promotionId }],
@@ -131,12 +133,33 @@ export default promotionUpdatedWebhook.createHandler(async (req, res, ctx) => {
     const saleCollectionsArr = await fetchSaleCollections(client, collectionFilter);
     let promoCollectionId = saleCollectionsArr?.[0]?.id;
 
+    if (!promoCollectionId && promotionEndDate != "" && promoEndDate < nowDate) {
+      //collection already unpublished, do nothing
+      return res.status(200).end();
+    }
+
     if (!promoCollectionId) {
       console.log("No Collection found associated with promotion:", saleName);
       //return res.status(404).send('Collection not found');
       //create new collection
-      promoCollectionId = await createCollection(client, saleName, saleId, promotionId);
+      promoCollectionId = await createCollection(
+        client,
+        saleName,
+        saleId,
+        promotionId,
+        uniqueChannels
+      );
     }
+
+    if (promotionEndDate != "" && promoEndDate < nowDate && uniqueChannels) {
+      //remove collection from its channels
+      unpublishCollection(client, promoCollectionId, uniqueChannels);
+    } else {
+      publishCollection(client, promoCollectionId, uniqueChannels);
+    }
+
+    //get promotion's products
+    const productIdsArray = await fetchPromotionsProducts(client, promotionRules);
 
     //update assigned products
     await updateProductsCollection(client, promoCollectionId, productIdsArray);

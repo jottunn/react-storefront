@@ -1,8 +1,12 @@
 query getPromotionById ($id: ID!) {
     promotion (id: $id){      
         name
+        endDate
         rules {
-            cataloguePredicate              
-        }
+            cataloguePredicate   
+            channels {
+                slug
+            }           
+        }        
     }        
 }

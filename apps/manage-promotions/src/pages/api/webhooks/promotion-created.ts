@@ -98,13 +98,18 @@ export default promotionCreatedWebhook.createHandler(async (req, res, ctx) => {
       { requestPolicy: "network-only" }
     );
     const promotionId = newPromototionResult.data?.promotions?.edges?.[0].node?.id;
+    const promotionRules = newPromototionResult.data?.promotions?.edges?.[0].node?.rules || [];
+    const allChannels = promotionRules.flatMap((rule) => rule.channels);
+    const uniqueChannels = allChannels.filter(
+      (channel, index, self) => index === self.findIndex((c) => c?.slug === channel?.slug)
+    );
 
     if (!promotionId) {
       console.log("No promotion found with the given name:", saleName);
       return res.status(404).send("Promotion not found");
     }
 
-    await createCollection(client, saleName, saleId, promotionId);
+    await createCollection(client, saleName, saleId, promotionId, uniqueChannels);
 
     // console.log('channelAssignedData', channelAssignedData);
   } catch (error) {

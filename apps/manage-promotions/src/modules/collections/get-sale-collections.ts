@@ -9,7 +9,7 @@ export async function fetchSaleCollections(
     CollectionsByMetaKeyDocument,
     {
       filter: collectionFilter,
-      channel: "default-channel",
+      published: ["PUBLISHED", "HIDDEN"],
     },
     { requestPolicy: "network-only" }
   );

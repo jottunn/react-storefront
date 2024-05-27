@@ -3,7 +3,6 @@ import { fetchPromotions } from "../promotions/get-promotions";
 import {
   CollectionFilterInput,
   GetPromotionByIdDocument,
-  SaleSortField,
   UpdateCollectionDocument,
 } from "../../../generated/graphql";
 import { fetchSaleCollections } from "../collections/get-sale-collections";
@@ -14,6 +13,7 @@ import {
 } from "../collections/collection-crud";
 import { fetchPromotionsProducts } from "../promotions/get-promotion-products";
 import { titleToSlug } from "../../lib/to-slug";
+import { publishCollection, unpublishCollection } from "../collections/collection-channels";
 /**
  * 1. get all promotions
  * 2. get all sales collections
@@ -54,6 +54,14 @@ export const sync = async (client: Client) => {
     );
     const promotionName = currentPromotion.data?.promotion?.name || "";
     const promotionRules = currentPromotion.data?.promotion?.rules || [];
+    const promotionEndDate = currentPromotion.data?.promotion?.endDate || "";
+    const nowISO = new Date().toISOString();
+    const nowDate = new Date(nowISO);
+    const promoEndDate = new Date(promotionEndDate);
+    const allChannels = promotionRules.flatMap((rule) => rule.channels);
+    const uniqueChannels = allChannels.filter(
+      (channel, index, self) => index === self.findIndex((c) => c?.slug === channel?.slug)
+    );
 
     //get promotion's products
     const productIdsArray = await fetchPromotionsProducts(client, promotionRules);
@@ -66,9 +74,23 @@ export const sync = async (client: Client) => {
     let promoCollectionId = saleCollectionsArr?.[0]?.id;
     //4. if no collection, create one
     if (!promoCollectionId) {
-      promoCollectionId = await createCollection(client, promotionName, "", availablePromotions[i]);
+      promoCollectionId = await createCollection(
+        client,
+        promotionName,
+        "",
+        availablePromotions[i],
+        uniqueChannels
+      );
       messages.push(`New collection has been created for: ${promotionName}`);
     }
+
+    if (promotionEndDate != "" && promoEndDate < nowDate && uniqueChannels) {
+      //remove collection from its channels if promotion ended
+      unpublishCollection(client, promoCollectionId, uniqueChannels);
+    } else {
+      publishCollection(client, promoCollectionId, uniqueChannels);
+    }
+
     //update assigned products
     await updateProductsCollection(client, promoCollectionId, productIdsArray);
 

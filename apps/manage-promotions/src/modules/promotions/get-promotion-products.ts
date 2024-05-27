@@ -17,29 +17,31 @@ export async function fetchPromotionsProducts(
 
   for (const rule of promotionRules) {
     const catalogRules = rule.cataloguePredicate.OR;
-    for (const catalogRule of catalogRules) {
-      if (catalogRule.productPredicate) {
-        catalogRule.productPredicate.ids.forEach((id: string) => uniqueProductIds.add(id));
-      }
-      if (catalogRule.categoryPredicate) {
-        catalogRule.categoryPredicate.ids.forEach((id: string) => {
-          categoryIDsSet.add(id);
-        });
-      }
-      if (catalogRule.collectionPredicate) {
-        catalogRule.collectionPredicate.ids.forEach((id: string) => {
-          collectionIDsSet.add(id);
-        });
-      }
-      if (catalogRule.variantPredicate) {
-        //get product with variant
-        for (const variantId of catalogRule.variantPredicate.ids) {
-          const { data: productWithVariant } = await client.query(GetProductVariantByIdDocument, {
-            id: variantId,
+    if (catalogRules) {
+      for (const catalogRule of catalogRules) {
+        if (catalogRule.productPredicate) {
+          catalogRule.productPredicate.ids.forEach((id: string) => uniqueProductIds.add(id));
+        }
+        if (catalogRule.categoryPredicate) {
+          catalogRule.categoryPredicate.ids.forEach((id: string) => {
+            categoryIDsSet.add(id);
           });
-          const prodId = productWithVariant?.productVariant?.product.id;
-          if (prodId) {
-            uniqueProductIds.add(prodId);
+        }
+        if (catalogRule.collectionPredicate) {
+          catalogRule.collectionPredicate.ids.forEach((id: string) => {
+            collectionIDsSet.add(id);
+          });
+        }
+        if (catalogRule.variantPredicate) {
+          //get product with variant
+          for (const variantId of catalogRule.variantPredicate.ids) {
+            const { data: productWithVariant } = await client.query(GetProductVariantByIdDocument, {
+              id: variantId,
+            });
+            const prodId = productWithVariant?.productVariant?.product.id;
+            if (prodId) {
+              uniqueProductIds.add(prodId);
+            }
           }
         }
       }
