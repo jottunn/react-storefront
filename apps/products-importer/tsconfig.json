@@ -15,6 +15,12 @@
     "jsx": "preserve",
     "incremental": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "../manage-stock/src/pages/api/webhooks/get-stock.ts",
+    "../manage-stock/src/pages/api/webhooks/update-stock.ts"
+  ],
   "exclude": ["node_modules"]
 }

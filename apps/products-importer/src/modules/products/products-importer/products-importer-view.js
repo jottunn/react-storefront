@@ -24,6 +24,7 @@ import {
 } from "../../../lib/products";
 import { productCache } from "./productCache";
 import { productInputIdsCache } from "./productInputIdsCache";
+import { createSlug } from "../../../lib/utils";
 
 export const ProductsImporterView = () => {
   const [uploading, setUploading] = useState(false);
@@ -53,7 +54,7 @@ export const ProductsImporterView = () => {
    * **/
   const getProductDetails = async (productName) => {
     try {
-      const cacheKey = productName && productName.replaceAll(" ", "-");
+      const cacheKey = createSlug(productName);
       if (productCache[cacheKey]) {
         return productCache[cacheKey];
       } else {
@@ -306,10 +307,25 @@ export const ProductsImporterView = () => {
     const products = {};
     for (const row of parsedCSV) {
       const sku = row["Cod stoc"] && row["Cod stoc"].trim();
+      const stoc = row["stoc"] && row["stoc"].trim();
       let productName = row["Denumire comerciala"] && row["Denumire comerciala"].trim();
+      const productNameSlug = createSlug(productName);
+      if (productName) {
+        productName = productName
+          .split(" ")
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" ");
+      }
       let colorDisplayed = row["culoare-comerciala"] && row["culoare-comerciala"].trim();
+      if (colorDisplayed) {
+        colorDisplayed = colorDisplayed
+          .split(" ")
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" ");
+      }
       let collection = row["Sezon"] && row["Sezon"].trim();
-      let category = row["Categorie site"] && row["Categorie site"].trim();
+      let categoryCsv = row["Categorie site"] && row["Categorie site"].trim();
+      const category = createSlug(categoryCsv);
       let productType = row["Tip produs"] && row["Tip produs"].trim();
       let channel = row["Channel"] ? row["Channel"].trim() : "default-channel";
 
@@ -403,9 +419,10 @@ export const ProductsImporterView = () => {
         }
 
         const nowISO = new Date().toISOString();
+
         //if product is not in products, create the object
-        if (!products[productName]) {
-          products[productName] = {
+        if (!products[productNameSlug]) {
+          products[productNameSlug] = {
             name: productName,
             attributes: [],
             seo: {
@@ -415,7 +432,6 @@ export const ProductsImporterView = () => {
             productType: productInputIdsCache["Tip produs"][productType]["id"],
             channelListings: [
               {
-                //TODO TO CHANGE IN PROD TO FALSE, only after stock update they should become available
                 channelId: productInputIdsCache["Channel"][channel],
                 isPublished: true,
                 publishedAt: nowISO,
@@ -429,26 +445,26 @@ export const ProductsImporterView = () => {
         }
 
         if (collection) {
-          products[productName].collections = [productInputIdsCache["Sezon"][collection]];
+          products[productNameSlug].collections = [productInputIdsCache["Sezon"][collection]];
         }
 
         //add Product Attributes - use productInputIdsCache['Tip produs'][productType]['productAttributes']
         let definedProdAttributes =
           productInputIdsCache["Tip produs"][productType]["productAttributes"];
-        if (products[productName].attributes.length === 0) {
+        if (products[productNameSlug].attributes.length === 0) {
           let attributes = await addProductAttributes(definedProdAttributes, row);
-          products[productName]["attributes"] = attributes;
+          products[productNameSlug]["attributes"] = attributes;
         }
 
         //Add variants
-        const existingVariant = products[productName].variants.find(
+        const existingVariant = products[productNameSlug].variants.find(
           (variant) => variant.sku === sku
         );
         //if variant does not exist, add it
         if (!existingVariant) {
           const newVariant = {
             sku: sku,
-            name: row["marime"].trim() ?? productName,
+            name: row["marime"].trim() ?? "marime unică",
             attributes: [],
             trackInventory: false, // If the field is not provided, Shop.trackInventoryByDefault will be used.
             channelListings: [
@@ -459,9 +475,8 @@ export const ProductsImporterView = () => {
             ],
             stocks: [
               {
-                //TODO TO REMOVE IN PRODUCTION
                 warehouse: productInputIdsCache["Warehouse"],
-                quantity: 1,
+                quantity: stoc,
               },
             ],
           };
@@ -483,7 +498,7 @@ export const ProductsImporterView = () => {
             }
           });
 
-          products[productName].variants.push(newVariant);
+          products[productNameSlug].variants.push(newVariant);
         }
       }
     }
