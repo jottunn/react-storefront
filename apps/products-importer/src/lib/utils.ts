@@ -1,7 +1,7 @@
 export function createSlug(str: string): string {
   // Remove diacritics
-  const from = "ãàáäâèéêëìíîïòóôöùúûüñçșț";
-  const to = "aaaaaeeeeiiiioooouuuuncst";
+  const from = "ăãàáäâèéêëìíîïòóôöùúûüñçșț";
+  const to = "aaaaaaeeeeiiiioooouuuuncst";
   const mapping: { [key: string]: string } = {};
 
   for (let i = 0; i < from.length; i++) {
@@ -20,4 +20,17 @@ export function createSlug(str: string): string {
     .replace(/-+/g, "-"); // Replace multiple - with single -
 
   return slug;
+}
+
+export function convertDescriereToEditorJS(descriere: string) {
+  const paragraphs = descriere.split("\n");
+  const blocks = paragraphs.map((p) => ({
+    type: "paragraph",
+    data: { text: p.trim() },
+  }));
+  return JSON.stringify({
+    time: new Date().getTime(),
+    blocks: blocks,
+    version: "2.22.2",
+  });
 }

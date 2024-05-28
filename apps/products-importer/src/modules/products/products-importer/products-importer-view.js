@@ -24,7 +24,7 @@ import {
 } from "../../../lib/products";
 import { productCache } from "./productCache";
 import { productInputIdsCache } from "./productInputIdsCache";
-import { createSlug } from "../../../lib/utils";
+import { createSlug, convertDescriereToEditorJS } from "../../../lib/utils";
 
 export const ProductsImporterView = () => {
   const [uploading, setUploading] = useState(false);
@@ -54,7 +54,7 @@ export const ProductsImporterView = () => {
    * **/
   const getProductDetails = async (productName) => {
     try {
-      const cacheKey = createSlug(productName);
+      const cacheKey = productName;
       if (productCache[cacheKey]) {
         return productCache[cacheKey];
       } else {
@@ -307,9 +307,8 @@ export const ProductsImporterView = () => {
     const products = {};
     for (const row of parsedCSV) {
       const sku = row["Cod stoc"] && row["Cod stoc"].trim();
-      const stoc = row["stoc"] && row["stoc"].trim();
+      const stoc = row["stoc"] && parseInt(row["stoc"].trim());
       let productName = row["Denumire comerciala"] && row["Denumire comerciala"].trim();
-      const productNameSlug = createSlug(productName);
       if (productName) {
         productName = productName
           .split(" ")
@@ -326,8 +325,10 @@ export const ProductsImporterView = () => {
       let collection = row["Sezon"] && row["Sezon"].trim();
       let categoryCsv = row["Categorie site"] && row["Categorie site"].trim();
       const category = createSlug(categoryCsv);
+      console.log("categoryslug", category);
       let productType = row["Tip produs"] && row["Tip produs"].trim();
       let channel = row["Channel"] ? row["Channel"].trim() : "default-channel";
+      let description = row["descriere"] ? convertDescriereToEditorJS(row["descriere"]) : "";
 
       //check if product variant already exists in DB, if yes throw error
       let productVariantAlreadyInDB = await checkIfProductVariantExistsInDb(sku);
@@ -419,14 +420,18 @@ export const ProductsImporterView = () => {
         }
 
         const nowISO = new Date().toISOString();
+        const seoDescription = `${productName} ${colorDisplayed} - ${row["brand"]} - pe magazinul online Surmont.ro`;
 
         //if product is not in products, create the object
-        if (!products[productNameSlug]) {
-          products[productNameSlug] = {
+        if (!products[productName]) {
+          products[productName] = {
             name: productName,
+            description: description,
             attributes: [],
             seo: {
-              title: productName + (colorDisplayed ? " - " + colorDisplayed : ""),
+              title:
+                productName + (colorDisplayed ? " - " + colorDisplayed : "") + " | " + "Surmont",
+              description: seoDescription,
             },
             category: productInputIdsCache["Categorie site"][category],
             productType: productInputIdsCache["Tip produs"][productType]["id"],
@@ -445,28 +450,28 @@ export const ProductsImporterView = () => {
         }
 
         if (collection) {
-          products[productNameSlug].collections = [productInputIdsCache["Sezon"][collection]];
+          products[productName].collections = [productInputIdsCache["Sezon"][collection]];
         }
 
         //add Product Attributes - use productInputIdsCache['Tip produs'][productType]['productAttributes']
         let definedProdAttributes =
           productInputIdsCache["Tip produs"][productType]["productAttributes"];
-        if (products[productNameSlug].attributes.length === 0) {
+        if (products[productName].attributes.length === 0) {
           let attributes = await addProductAttributes(definedProdAttributes, row);
-          products[productNameSlug]["attributes"] = attributes;
+          products[productName]["attributes"] = attributes;
         }
 
         //Add variants
-        const existingVariant = products[productNameSlug].variants.find(
+        const existingVariant = products[productName].variants.find(
           (variant) => variant.sku === sku
         );
         //if variant does not exist, add it
         if (!existingVariant) {
           const newVariant = {
             sku: sku,
-            name: row["marime"].trim() ?? "marime unică",
+            name: row["marime"] ? row["marime"].trim() : "mărime unică",
             attributes: [],
-            trackInventory: false, // If the field is not provided, Shop.trackInventoryByDefault will be used.
+            trackInventory: false,
             channelListings: [
               {
                 channelId: productInputIdsCache["Channel"][channel],
@@ -498,7 +503,7 @@ export const ProductsImporterView = () => {
             }
           });
 
-          products[productNameSlug].variants.push(newVariant);
+          products[productName].variants.push(newVariant);
         }
       }
     }

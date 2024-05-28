@@ -8,6 +8,7 @@ import { Client } from "urql";
  * @returns
  */
 export const getProductsVar = async (client: Client, productName: any) => {
+  console.log(productName);
   const productQuery = `
     query GetProductByName($title: String!) {
       products(where: { name: {eq : $title } }, first: 4, channel: "default-channel") {
@@ -83,7 +84,7 @@ export const getProductVariantBySku = async (client: Client, sku: any) => {
  * @returns
  */
 export const getCategoryID = async (client: Client, categoryNames: []) => {
-  //console.log(categoryNames);
+  console.log("getCategoryID", categoryNames);
   const getCategoriesQuery = `
   query GetCategoryID($categoryNames: [String!]!) {
     categories(first: 100, filter: { slugs:  $categoryNames }) {
@@ -101,7 +102,10 @@ export const getCategoryID = async (client: Client, categoryNames: []) => {
     const result = await client.query(getCategoriesQuery, { categoryNames: categoryNames });
     //console.log(result);
     const node = result.data.categories?.edges.map((e: { node: any }) => e.node);
-    return node[0]["id"]; // Return the first node
+    if (node && node.length > 0) {
+      return node[0]["id"]; // Return the first node
+    }
+    return false;
   } catch (error) {
     console.error("Error fetching categories:", error);
     throw error; // Throw the error for handling in the calling function
