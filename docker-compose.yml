@@ -55,6 +55,18 @@ services:
     networks:
       - saleor-backend-tier
     command: sh -c '(nginx &) && pnpm turbo run start --filter=search...'
+  manage-stock:
+    container_name: manage-stock
+    build:
+      context: .
+      dockerfile: Dockerfile.base
+      args:
+        - SALEOR_API_URL=http://localhost:8000/graphql/ # handled by nginx
+    ports:
+      - 3007:3007
+    networks:
+      - saleor-backend-tier
+    command: sh -c '(nginx &) && pnpm turbo run start --filter=manage-stock...'
 
 networks:
   saleor-backend-tier:
