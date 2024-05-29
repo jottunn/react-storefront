@@ -24,7 +24,7 @@ import {
 } from "../../../lib/products";
 import { productCache } from "./productCache";
 import { productInputIdsCache } from "./productInputIdsCache";
-import { createSlug, convertDescriereToEditorJS } from "../../../lib/utils";
+import { createSlug, convertDescriereToEditorJS, getFileExtension } from "../../../lib/utils";
 
 export const ProductsImporterView = () => {
   const [uploading, setUploading] = useState(false);
@@ -113,6 +113,7 @@ export const ProductsImporterView = () => {
   const handleProductMediaAssignment = async (productDetails, mediaId, currentVariantColor) => {
     try {
       const variantIds = await findProductVariantIds(productDetails, currentVariantColor);
+      //console.log('variantIds', variantIds);
       for (let i = 0; i < variantIds.length; i++) {
         await assignMedia(variantIds[i], mediaId);
       }
@@ -173,18 +174,21 @@ export const ProductsImporterView = () => {
     let imageNameArr = imgName.split("_");
     let productName = imageNameArr[0];
     let currentVariantColor = "";
-    //split by . to remove the extension
+    //remove the extension
+    const fileExtension = getFileExtension(imgName);
     if (imageNameArr.length === 1) {
       //no comercial color provided
-      const productNameArr = productName.split(".");
-      productName = productNameArr[0];
+      productName = productName.replace(fileExtension, "");
     } else {
-      const currentVariantColorArr = imageNameArr[1].split(".");
-      currentVariantColor = currentVariantColorArr[0];
+      currentVariantColor = imageNameArr[1].replace(fileExtension, "");
     }
+
+    currentVariantColor = currentVariantColor.replace("SLASH", "/").replace("BACKSLASH", "\\");
+    productName = productName.replace("SLASH", "/").replace("BACKSLASH", "\\");
 
     try {
       const productDetails = await getProductDetails(productName);
+      //console.log('productDetails', productDetails);
       if (productDetails) {
         const mediaId = await handleAddMedia(
           productName + " " + currentVariantColor,
@@ -319,13 +323,15 @@ export const ProductsImporterView = () => {
       if (colorDisplayed) {
         colorDisplayed = colorDisplayed
           .split(" ")
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .map((word) => {
+            return word.charAt(0).toUpperCase() + word.slice(1);
+          })
           .join(" ");
       }
       let collection = row["Sezon"] && row["Sezon"].trim();
       let categoryCsv = row["Categorie site"] && row["Categorie site"].trim();
       const category = createSlug(categoryCsv);
-      console.log("categoryslug", category);
+      //console.log("categoryslug", category);
       let productType = row["Tip produs"] && row["Tip produs"].trim();
       let channel = row["Channel"] ? row["Channel"].trim() : "default-channel";
       let description = row["descriere"] ? convertDescriereToEditorJS(row["descriere"]) : "";
@@ -426,7 +432,6 @@ export const ProductsImporterView = () => {
         if (!products[productName]) {
           products[productName] = {
             name: productName,
-            description: description,
             attributes: [],
             seo: {
               title:
@@ -447,6 +452,10 @@ export const ProductsImporterView = () => {
             ],
             variants: [],
           };
+        }
+
+        if (description) {
+          products[productName].description = description;
         }
 
         if (collection) {
@@ -617,10 +626,13 @@ export const ProductsImporterView = () => {
   };
 
   const handleUpload = async (isCsv) => {
-    setUploading(true);
     //current represents the currently rendered DOM node (literally, the element as it's rendered in the browser).
     const input = inputRef?.current;
     let files = input.files;
+    if (files.length === 0) {
+      return;
+    }
+    setUploading(true);
     for (var i = 0; i < files.length; i++) {
       await handleFileUpload(files[i]);
     }
@@ -672,6 +684,10 @@ export const ProductsImporterView = () => {
         <button onClick={handleUpload} disabled={uploading} className="button-66">
           {uploading ? "Uploading..." : "Upload"}
         </button>
+
+        {uploading && (
+          <p className="block w-full text-md">Uploading in progress, please wait....</p>
+        )}
 
         <button onClick={resetSelectedFiles} disabled={uploading} className="reset-button">
           Reset
