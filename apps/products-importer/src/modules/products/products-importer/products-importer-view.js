@@ -113,7 +113,6 @@ export const ProductsImporterView = () => {
   const handleProductMediaAssignment = async (productDetails, mediaId, currentVariantColor) => {
     try {
       const variantIds = await findProductVariantIds(productDetails, currentVariantColor);
-      //console.log('variantIds', variantIds);
       for (let i = 0; i < variantIds.length; i++) {
         await assignMedia(variantIds[i], mediaId);
       }
@@ -133,6 +132,7 @@ export const ProductsImporterView = () => {
         variantId: variantId,
         mediaId: mediaId,
       });
+      //console.log('result2', result2);
       //media has been assigned to variant
       //clear file input
       inputRef.current.value = "";
@@ -185,10 +185,11 @@ export const ProductsImporterView = () => {
 
     currentVariantColor = currentVariantColor.replace("SLASH", "/").replace("BACKSLASH", "\\");
     productName = productName.replace("SLASH", "/").replace("BACKSLASH", "\\");
+    console.log(productName);
+    console.log(currentVariantColor);
 
     try {
       const productDetails = await getProductDetails(productName);
-      //console.log('productDetails', productDetails);
       if (productDetails) {
         const mediaId = await handleAddMedia(
           productName + " " + currentVariantColor,
@@ -259,7 +260,7 @@ export const ProductsImporterView = () => {
     productInputIdsCache["Pages"] = productInputIdsCache["Pages"] || {};
     const fetchedPageID = await getPage(client, pageSlug);
     productInputIdsCache["Pages"][pageSlug] = fetchedPageID;
-    console.log("fetchedPageID", fetchedPageID);
+    //console.log("fetchedPageID", fetchedPageID);
     return fetchedPageID;
   };
   /**
@@ -270,7 +271,7 @@ export const ProductsImporterView = () => {
 
   const addProductAttributes = async (definedProdAttributes, row) => {
     let attributes = [];
-    console.log("addProductAttributes", row);
+    //console.log("addProductAttributes", row);
     for (const attrKey of Object.keys(definedProdAttributes)) {
       if (row[attrKey]) {
         // Attribute slug exists in csv header, add it
@@ -685,13 +686,13 @@ export const ProductsImporterView = () => {
           {uploading ? "Uploading..." : "Upload"}
         </button>
 
-        {uploading && (
-          <p className="block w-full text-md">Uploading in progress, please wait....</p>
-        )}
-
         <button onClick={resetSelectedFiles} disabled={uploading} className="reset-button">
           Reset
         </button>
+
+        {uploading && (
+          <p className="block w-full text-md">Uploading in progress, please wait....</p>
+        )}
       </div>
 
       {errors.length > 0 && (
