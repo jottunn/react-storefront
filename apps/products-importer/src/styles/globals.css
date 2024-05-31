@@ -30,7 +30,7 @@ code {
   margin: 0;
   min-height: 56px;
   min-width: 120px;
-  padding: 16px 20px;
+  padding: 16px 10px;
   position: relative;
   text-align: center;
   user-select: none;
@@ -39,6 +39,7 @@ code {
   vertical-align: baseline;
   transition: all 0.2s cubic-bezier(0.22, 0.61, 0.36, 1);
   text-transform: uppercase;
+  margin: 10px;
 }
 
 .button-66:hover {
@@ -52,8 +53,8 @@ code {
   color: #000;
   min-height: 56px;
   min-width: 120px;
+  margin: 10px;
   padding: 16px 20px;
-  margin-left: 40px;
   font-size: 16px;
   font-weight: 700;
   text-transform: uppercase;

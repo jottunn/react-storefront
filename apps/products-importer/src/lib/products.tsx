@@ -286,3 +286,21 @@ export const getDefaultWarehouse = async (client: Client) => {
     throw error; // Throw the error for handling in the calling function
   }
 };
+
+export const addProductsToCollection = async (
+  client: Client,
+  collectionAddProductsM: any,
+  prodCollectionID: string,
+  products: any[]
+) => {
+  try {
+    const result = await collectionAddProductsM({
+      collectionId: prodCollectionID,
+      products: products,
+    });
+    console.log(result);
+  } catch (error) {
+    console.error("Error fetching channel:", error);
+    throw error; // Throw the error for handling in the calling function
+  }
+};

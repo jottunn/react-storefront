@@ -10,6 +10,7 @@ import {
   useCreateProductVariantMutation,
   useCreateBulkProductVariantMutation,
   useAssignCollectionToChannelMutation,
+  useCollectionAddProductsMutation,
 } from "../../../../generated/graphql";
 import { useClient } from "urql";
 import {
@@ -21,6 +22,7 @@ import {
   getProductVariantBySku,
   getPage,
   getDefaultWarehouse,
+  addProductsToCollection,
 } from "../../../lib/products";
 import { productCache } from "./productCache";
 import { productInputIdsCache } from "./productInputIdsCache";
@@ -45,6 +47,8 @@ export const ProductsImporterView = () => {
     useCreateBulkProductVariantMutation();
   const [mutationAssignCollectionToChannel, assignCollectionToChannel] =
     useAssignCollectionToChannelMutation();
+  const [mutationCollectionAddProductsM, collectionAddProductsM] =
+    useCollectionAddProductsMutation();
 
   const client = useClient();
 
@@ -215,7 +219,7 @@ export const ProductsImporterView = () => {
       let productVariant = await getProductVariantBySku(client, sku);
       if (productVariant) {
         handleErrors("Variant " + sku + " already exists in DB - skipped, no updates applied");
-        return true;
+        return productVariant;
       }
       return false;
     } catch (error) {
@@ -308,6 +312,65 @@ export const ProductsImporterView = () => {
 
     return attributes;
   };
+
+  const updateProdCollections = async (parsedCSV) => {
+    const collectionAddProducts = {};
+    for (const row of parsedCSV) {
+      const sku = row["Cod stoc"] && row["Cod stoc"].trim();
+      let channel = row["Channel"] ? row["Channel"].trim() : "default-channel";
+      let productVariantAlreadyInDB = await checkIfProductVariantExistsInDb(sku);
+
+      if (productVariantAlreadyInDB && row["reason"] && row["reason"] === "update-collection") {
+        /** query channels */
+        const channelID =
+          productInputIdsCache["Channel"] && productInputIdsCache["Channel"][channel];
+        if (!channelID) {
+          //console.log('Channel not in cache, fetching...');
+          productInputIdsCache["Channel"] = productInputIdsCache["Channel"] || {};
+          const fetchedChannels = await getChannels(client);
+          for (let c = 0; c < fetchedChannels.length; c++) {
+            let currChannelSlug = fetchedChannels[c]["slug"];
+            productInputIdsCache["Channel"][currChannelSlug] = fetchedChannels[c]["id"];
+          }
+        }
+
+        let prodCollections = row["collections"].split(",");
+        if (prodCollections) {
+          for (let i = 0; i < prodCollections.length; i++) {
+            const currCollection = prodCollections[i].trim();
+            const prodCollectionID =
+              productInputIdsCache["Collection"] &&
+              productInputIdsCache["Collection"][currCollection];
+            if (!prodCollectionID) {
+              //console.log('Collection not in cache, fetching...');
+              productInputIdsCache["Collection"] = productInputIdsCache["Collection"] || {};
+              const fetchedProdCollectionID = await getCollections(
+                client,
+                currCollection,
+                createNewCollectionMutation,
+                assignCollectionToChannel,
+                productInputIdsCache["Channel"][channel]
+              );
+              productInputIdsCache["Collection"][currCollection] = fetchedProdCollectionID;
+            }
+            if (prodCollectionID) {
+              if (!collectionAddProducts[prodCollectionID]) {
+                collectionAddProducts[prodCollectionID] = { products: [] };
+              }
+              collectionAddProducts[prodCollectionID]["products"].push(productVariantAlreadyInDB);
+            }
+          }
+        }
+      }
+    }
+    for (const prodCollectionID in collectionAddProducts) {
+      if (collectionAddProducts.hasOwnProperty(prodCollectionID)) {
+        const products = collectionAddProducts[prodCollectionID]["products"];
+        await addProductsToCollection(client, collectionAddProductsM, prodCollectionID, products);
+      }
+    }
+  };
+
   const prepareProductBulkCreateInput = async (parsedCSV) => {
     const products = {};
     for (const row of parsedCSV) {
@@ -517,8 +580,16 @@ export const ProductsImporterView = () => {
         }
       }
     }
-    console.log(products);
+    //console.log(products);
     return Object.values(products);
+  };
+
+  const updateProducts = async (parsedCSV) => {
+    try {
+      await updateProdCollections(parsedCSV);
+    } catch (error) {
+      handleErrors(error.message);
+    }
   };
 
   /**
@@ -626,6 +697,25 @@ export const ProductsImporterView = () => {
     }
   };
 
+  const handleProductUpdate = async () => {
+    try {
+      const input = inputRef?.current;
+      let files = input.files;
+      if (files.length === 0) {
+        return;
+      }
+      for (var i = 0; i < files.length; i++) {
+        const parsedCSV = await parseCSV(files[i]);
+        if (parsedCSV) {
+          const filteredCSV = filterEmptyRows(parsedCSV);
+          await updateProdCollections(filteredCSV);
+        }
+      }
+    } catch (error) {
+      handleErrors(error.message);
+    }
+  };
+
   const handleUpload = async (isCsv) => {
     //current represents the currently rendered DOM node (literally, the element as it's rendered in the browser).
     const input = inputRef?.current;
@@ -683,7 +773,11 @@ export const ProductsImporterView = () => {
         </div>
 
         <button onClick={handleUpload} disabled={uploading} className="button-66">
-          {uploading ? "Uploading..." : "Upload"}
+          {uploading ? "Importing..." : "Upload & Start Import"}
+        </button>
+
+        <button onClick={handleProductUpdate} className="button-66">
+          Update Product Collections
         </button>
 
         <button onClick={resetSelectedFiles} disabled={uploading} className="reset-button">
