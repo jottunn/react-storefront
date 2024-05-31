@@ -12,7 +12,12 @@ import { useRouter } from "next/router";
 import React, { useEffect, useMemo, useState } from "react";
 import { usePaths } from "@/lib/paths";
 import { translate } from "@/lib/translations";
-import { PageFragment, ProductDetailsFragment, ProductVariantDetailsFragment } from "@/saleor/api";
+import {
+  PageFragment,
+  ProductDetailsFragment,
+  ProductVariant,
+  ProductVariantDetailsFragment,
+} from "@/saleor/api";
 import { useRegions } from "../RegionsProvider";
 import { VariantColorSelector } from "./VariantColorSelector";
 import { useProductInfo } from "../../lib/hooks/useProductInfo";
@@ -26,6 +31,48 @@ export interface VariantSelectorProps {
   setShowSizeGuideModal?: React.Dispatch<React.SetStateAction<boolean>>;
   sizeGuide?: PageFragment;
 }
+
+function getColorOfVariant(productVariant: ProductVariantDetailsFragment) {
+  if (productVariant && Array.isArray(productVariant.attributes)) {
+    for (const attribute of productVariant.attributes) {
+      if (
+        attribute.attribute.slug === ATTR_COLOR_SLUG &&
+        attribute.values &&
+        attribute.values.length > 0
+      ) {
+        const color = attribute.values[0].name;
+        if (color) {
+          return color; // Return immediately upon finding the color
+        }
+      }
+    }
+  }
+  return ""; // Return default color if none is found
+}
+function getGroupedVariants(currentColor: string, variants: ProductVariant[]) {
+  return variants
+    .filter((variant) => variant.quantityAvailable)
+    .filter((variant) => {
+      const colorAttribute = variant.attributes.find(
+        (attribute) => attribute.attribute.slug === ATTR_COLOR_SLUG,
+      );
+      return colorAttribute && colorAttribute.values.some((value) => value.name === currentColor);
+    });
+}
+
+// function getColorOfVariant(productVariant: ProductVariantDetailsFragment) {
+//   let color = "";
+//   if (productVariant && Array.isArray(productVariant.attributes)) {
+//     productVariant.attributes.forEach((attribute) => {
+//       if (attribute.attribute.slug === ATTR_COLOR_SLUG) {
+//         attribute.values.forEach((value: any) => {
+//           color = value.name;
+//         });
+//       }
+//     });
+//   }
+//   return color;
+// }
 
 export function VariantSelector({
   product,
@@ -42,11 +89,17 @@ export function VariantSelector({
   const t = useIntl();
 
   //console.log("VariantSelector render");
+  const availableVariants = variants && variants.filter((variant) => variant.quantityAvailable);
+  // console.log('availableVariants', availableVariants);
 
   const currentColor = useMemo(() => {
     return selectedVariant ? getColorOfVariant(selectedVariant) : "";
   }, [selectedVariant]);
 
+  const sizes = useMemo(() => {
+    return currentColor ? getGroupedVariants(currentColor, variants as ProductVariant[]) : variants;
+  }, [selectedVariant]);
+  const hasSizeGuide = sizeGuide && Object.keys(sizeGuide).length > 0;
   useEffect(() => {
     setSelectedVariantID(selectedVariant?.id || "");
   }, [selectedVariant?.id]);
@@ -86,24 +139,6 @@ export function VariantSelector({
   //   );
   // };
 
-  function getColorOfVariant(productVariant: ProductVariantDetailsFragment) {
-    if (productVariant && Array.isArray(productVariant.attributes)) {
-      for (const attribute of productVariant.attributes) {
-        if (
-          attribute.attribute.slug === ATTR_COLOR_SLUG &&
-          attribute.values &&
-          attribute.values.length > 0
-        ) {
-          const color = attribute.values[0].name;
-          if (color) {
-            return color; // Return immediately upon finding the color
-          }
-        }
-      }
-    }
-    return ""; // Return default color if none is found
-  }
-
   return (
     <>
       <div className="w-full">
@@ -127,54 +162,56 @@ export function VariantSelector({
           </h2>
         )}
 
-        <VariantColorSelector product={product} selectedVariant={selectedVariant} />
+        <VariantColorSelector product={product} currentColor={currentColor} />
 
-        <div className="w-full md:w-[80%] text-left m-auto mb-6">
-          <p
-            className={clsx(
-              "text-md font-semibold mt-8 mb-2",
-              sizeGuide && Object.keys(sizeGuide).length > 0 ? "text-left" : "text-center",
-            )}
+        <div
+          className={clsx("w-full m-auto mb-6", {
+            "grid grid-cols-2 gap-[50px]": hasSizeGuide,
+          })}
+        >
+          <div
+            className={clsx("flex flex-col justify-center md:py-6", {
+              "items-end": hasSizeGuide,
+            })}
           >
-            {t.formatMessage(variants.length > 1 ? messages.chooseSize : messages.size)}
-          </p>
-          <div className="flex h-[40px] justify-center">
-            <Listbox value={selectedVariantID} onChange={onChange}>
-              <ListboxButton
-                className={clsx(
-                  "relative block min-w-[120px] border border-1 border-dark-900 py-2 pr-8 pl-3 text-left text-[1.5rem] text-dark-700",
-                  "focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-dark-700",
-                )}
-              >
-                {selectedVariant?.name}
-                <ChevronDownIcon
-                  className="group pointer-events-none absolute top-3 right-2.5 size-4 fill-dark/60"
-                  aria-hidden="true"
-                />
-              </ListboxButton>
-              <Transition
-                leave="transition ease-in duration-100"
-                leaveFrom="opacity-100"
-                leaveTo="opacity-0"
-              >
-                <ListboxOptions
-                  anchor="bottom"
-                  className="w-[var(--button-width)] border border-dark-900 p-1 [--anchor-gap:var(--spacing-1)] focus:outline-none bg-white"
+            <p
+              className={clsx("text-md font-semibold", hasSizeGuide ? "text-left" : "text-center")}
+            >
+              {sizes && sizes.length > 1 ? (
+                <span className="text-left">{t.formatMessage(messages.chooseSize)}</span>
+              ) : (
+                <span>
+                  {sizes && !sizes[0].name.includes("unică") && t.formatMessage(messages.size)}
+                  <span className="text-md font-bold ml-2">{(sizes && sizes[0].name) || ""}</span>
+                </span>
+              )}
+            </p>
+
+            {sizes && sizes.length > 1 && (
+              <Listbox value={selectedVariantID} onChange={onChange}>
+                <ListboxButton
+                  className={clsx(
+                    "relative block h-[40px] min-w-[120px] border border-1 border-dark-900 py-2 pr-8 pl-3 text-left text-[1.5rem] text-dark-700",
+                    "focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-dark-700",
+                    { "m-auto": !hasSizeGuide },
+                  )}
                 >
-                  {variants
-                    .filter((variant) => variant.quantityAvailable)
-                    .map((variant) => {
-                      const hasAttributeWithColor = variant.attributes.some(
-                        (item) => item.attribute.slug === ATTR_COLOR_SLUG,
-                      );
-                      const existsAttributeWithCurrentColor = variant.attributes.some(
-                        (item) =>
-                          item.attribute.slug === ATTR_COLOR_SLUG &&
-                          item.values.some((value) => value.name === currentColor),
-                      );
-                      if (!existsAttributeWithCurrentColor && hasAttributeWithColor) {
-                        return null;
-                      }
+                  {selectedVariant?.name}
+                  <ChevronDownIcon
+                    className="group pointer-events-none absolute top-3 right-2.5 size-4 fill-dark/60"
+                    aria-hidden="true"
+                  />
+                </ListboxButton>
+                <Transition
+                  leave="transition ease-in duration-100"
+                  leaveFrom="opacity-100"
+                  leaveTo="opacity-0"
+                >
+                  <ListboxOptions
+                    anchor="bottom"
+                    className="w-[var(--button-width)] border border-dark-900 p-1 [--anchor-gap:var(--spacing-1)] focus:outline-none bg-white"
+                  >
+                    {sizes.map((variant) => {
                       return (
                         <ListboxOption
                           key={variant.id}
@@ -191,19 +228,22 @@ export function VariantSelector({
                         </ListboxOption>
                       );
                     })}
-                </ListboxOptions>
-              </Transition>
-            </Listbox>
+                  </ListboxOptions>
+                </Transition>
+              </Listbox>
+            )}
+          </div>
 
-            {sizeGuide && Object.keys(sizeGuide).length > 0 && (
-              <div className="text-right min-w-[180px] w-full">
+          {hasSizeGuide && (
+            <div className="flex justify-start items-center py-6">
+              <div className="min-w-[180px] w-full">
                 <a
                   href="#"
                   onClick={(e) => {
                     e.preventDefault();
                     setShowSizeGuideModal && setShowSizeGuideModal(true);
                   }}
-                  className="text-sm hover:text-action-1 font-bold text-right py-4"
+                  className="text-sm hover:text-action-1 font-bold py-4"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -223,8 +263,8 @@ export function VariantSelector({
                   {t.formatMessage(messages.sizeGuide)}
                 </a>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </>

@@ -10,7 +10,7 @@ export interface UrlFilter {
 
 export const getPillsData = (
   urlFilters: UrlFilter[],
-  attributeFiltersData: Attribute1[]
+  attributeFiltersData: Attribute1[],
 ): FilterPill[] =>
   urlFilters.reduce((result: FilterPill[], filter: UrlFilter) => {
     const choiceAttribute = attributeFiltersData.find((attr) => attr.slug === filter.slug);
@@ -25,15 +25,6 @@ export const getPillsData = (
     return [...result, ...newPills];
   }, []);
 
-// interface AttributeValue1 {
-//   __typename: "AttributeValue";
-//   id: string;
-//   name: string;
-//   translation: null; // If translation can have other types, you can use: translation: TranslationType | null;
-//   slug: string;
-//   value: string;
-// }
-
 export interface Attribute1 {
   id: string;
   slug: string;
@@ -44,17 +35,19 @@ export interface Attribute1 {
 
 export const getFilterOptions = (
   attribute: Attribute1,
-  appliedFilters: FilterPill[]
+  appliedFilters: FilterPill[],
 ): FilterDropdownOption[] => {
   // console.log('getFilterOptions', attribute);
   const choices = attribute.values;
   return choices.map((choice) => ({
     chosen: !!appliedFilters.find(
-      (pill) => pill.attributeSlug === attribute.slug && pill.choiceSlug === choice.slug
+      (pill) => pill.attributeSlug === attribute.slug && pill.choiceSlug === choice.slug,
     ),
     id: choice.id,
     label: translate(choice, "name") || choice.id,
     slug: choice.slug || choice.id,
+    value: choice.value || "",
+    inputType: choice.inputType || "",
   }));
 };
 

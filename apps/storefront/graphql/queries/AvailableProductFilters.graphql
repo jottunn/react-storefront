@@ -14,6 +14,8 @@ query AvailableProductFilters( $filter: ProductFilterInput, $channel: String, $l
                 id
                 name
                 slug
+                inputType
+                value
             }
         }
         variants {

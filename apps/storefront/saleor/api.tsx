@@ -32352,6 +32352,7 @@ export type CheckoutDetailsFragment = {
           name?: string | null;
           slug?: string | null;
           value?: string | null;
+          inputType?: AttributeInputTypeEnum | null;
           reference?: string | null;
           translation?: {
             __typename?: "AttributeValueTranslation";
@@ -32433,6 +32434,7 @@ export type CheckoutLineDetailsFragment = {
         name?: string | null;
         slug?: string | null;
         value?: string | null;
+        inputType?: AttributeInputTypeEnum | null;
         reference?: string | null;
         translation?: {
           __typename?: "AttributeValueTranslation";
@@ -32677,6 +32679,7 @@ export type ProductCardFragment = {
       name?: string | null;
       slug?: string | null;
       value?: string | null;
+      inputType?: AttributeInputTypeEnum | null;
       reference?: string | null;
       translation?: {
         __typename?: "AttributeValueTranslation";
@@ -32710,6 +32713,7 @@ export type ProductCardFragment = {
         name?: string | null;
         slug?: string | null;
         value?: string | null;
+        inputType?: AttributeInputTypeEnum | null;
         reference?: string | null;
         translation?: {
           __typename?: "AttributeValueTranslation";
@@ -32777,6 +32781,7 @@ export type ProductDetailsFragment = {
       name?: string | null;
       slug?: string | null;
       value?: string | null;
+      inputType?: AttributeInputTypeEnum | null;
       reference?: string | null;
       translation?: {
         __typename?: "AttributeValueTranslation";
@@ -32834,6 +32839,7 @@ export type ProductDetailsFragment = {
         name?: string | null;
         slug?: string | null;
         value?: string | null;
+        inputType?: AttributeInputTypeEnum | null;
         reference?: string | null;
         translation?: {
           __typename?: "AttributeValueTranslation";
@@ -32916,6 +32922,7 @@ export type ProductVariantDetailsFragment = {
       name?: string | null;
       slug?: string | null;
       value?: string | null;
+      inputType?: AttributeInputTypeEnum | null;
       reference?: string | null;
       translation?: {
         __typename?: "AttributeValueTranslation";
@@ -32967,6 +32974,7 @@ export type SelectedAttributeDetailsFragment = {
     name?: string | null;
     slug?: string | null;
     value?: string | null;
+    inputType?: AttributeInputTypeEnum | null;
     reference?: string | null;
     translation?: {
       __typename?: "AttributeValueTranslation";
@@ -33152,6 +33160,7 @@ export type CheckoutAddProductLineMutation = {
               name?: string | null;
               slug?: string | null;
               value?: string | null;
+              inputType?: AttributeInputTypeEnum | null;
               reference?: string | null;
               translation?: {
                 __typename?: "AttributeValueTranslation";
@@ -33325,6 +33334,7 @@ export type CheckoutAddPromoCodeMutation = {
               name?: string | null;
               slug?: string | null;
               value?: string | null;
+              inputType?: AttributeInputTypeEnum | null;
               reference?: string | null;
               translation?: {
                 __typename?: "AttributeValueTranslation";
@@ -33494,6 +33504,7 @@ export type CheckoutBillingAddressUpdateMutation = {
               name?: string | null;
               slug?: string | null;
               value?: string | null;
+              inputType?: AttributeInputTypeEnum | null;
               reference?: string | null;
               translation?: {
                 __typename?: "AttributeValueTranslation";
@@ -33768,6 +33779,7 @@ export type CheckoutCustomerAttachMutation = {
               name?: string | null;
               slug?: string | null;
               value?: string | null;
+              inputType?: AttributeInputTypeEnum | null;
               reference?: string | null;
               translation?: {
                 __typename?: "AttributeValueTranslation";
@@ -33936,6 +33948,7 @@ export type CheckoutEmailUpdateMutation = {
               name?: string | null;
               slug?: string | null;
               value?: string | null;
+              inputType?: AttributeInputTypeEnum | null;
               reference?: string | null;
               translation?: {
                 __typename?: "AttributeValueTranslation";
@@ -34105,6 +34118,7 @@ export type CheckoutLineUpdateMutation = {
               name?: string | null;
               slug?: string | null;
               value?: string | null;
+              inputType?: AttributeInputTypeEnum | null;
               reference?: string | null;
               translation?: {
                 __typename?: "AttributeValueTranslation";
@@ -34279,6 +34293,7 @@ export type RemoveProductFromCheckoutMutation = {
               name?: string | null;
               slug?: string | null;
               value?: string | null;
+              inputType?: AttributeInputTypeEnum | null;
               reference?: string | null;
               translation?: {
                 __typename?: "AttributeValueTranslation";
@@ -34448,6 +34463,7 @@ export type CheckoutShippingAddressUpdateMutation = {
               name?: string | null;
               slug?: string | null;
               value?: string | null;
+              inputType?: AttributeInputTypeEnum | null;
               reference?: string | null;
               translation?: {
                 __typename?: "AttributeValueTranslation";
@@ -34622,6 +34638,7 @@ export type CheckoutShippingMethodUpdateMutation = {
               name?: string | null;
               slug?: string | null;
               value?: string | null;
+              inputType?: AttributeInputTypeEnum | null;
               reference?: string | null;
               translation?: {
                 __typename?: "AttributeValueTranslation";
@@ -34839,6 +34856,8 @@ export type AvailableProductFiltersQuery = {
             id: string;
             name?: string | null;
             slug?: string | null;
+            inputType?: AttributeInputTypeEnum | null;
+            value?: string | null;
           }>;
         }>;
         variants?: Array<{
@@ -34866,6 +34885,7 @@ export type AvailableProductFiltersQuery = {
               name?: string | null;
               slug?: string | null;
               value?: string | null;
+              inputType?: AttributeInputTypeEnum | null;
               reference?: string | null;
               translation?: {
                 __typename?: "AttributeValueTranslation";
@@ -35245,6 +35265,7 @@ export type CheckoutByTokenQuery = {
             name?: string | null;
             slug?: string | null;
             value?: string | null;
+            inputType?: AttributeInputTypeEnum | null;
             reference?: string | null;
             translation?: {
               __typename?: "AttributeValueTranslation";
@@ -35935,6 +35956,7 @@ export type ProductBySlugQuery = {
         name?: string | null;
         slug?: string | null;
         value?: string | null;
+        inputType?: AttributeInputTypeEnum | null;
         reference?: string | null;
         translation?: {
           __typename?: "AttributeValueTranslation";
@@ -35992,6 +36014,7 @@ export type ProductBySlugQuery = {
           name?: string | null;
           slug?: string | null;
           value?: string | null;
+          inputType?: AttributeInputTypeEnum | null;
           reference?: string | null;
           translation?: {
             __typename?: "AttributeValueTranslation";
@@ -36136,6 +36159,7 @@ export type ProductCollectionQuery = {
             name?: string | null;
             slug?: string | null;
             value?: string | null;
+            inputType?: AttributeInputTypeEnum | null;
             reference?: string | null;
             translation?: {
               __typename?: "AttributeValueTranslation";
@@ -36177,6 +36201,7 @@ export type ProductCollectionQuery = {
               name?: string | null;
               slug?: string | null;
               value?: string | null;
+              inputType?: AttributeInputTypeEnum | null;
               reference?: string | null;
               translation?: {
                 __typename?: "AttributeValueTranslation";
@@ -36330,6 +36355,7 @@ export type ProductsByAttributeQuery = {
             name?: string | null;
             slug?: string | null;
             value?: string | null;
+            inputType?: AttributeInputTypeEnum | null;
             reference?: string | null;
             translation?: {
               __typename?: "AttributeValueTranslation";
@@ -36371,6 +36397,7 @@ export type ProductsByAttributeQuery = {
               name?: string | null;
               slug?: string | null;
               value?: string | null;
+              inputType?: AttributeInputTypeEnum | null;
               reference?: string | null;
               translation?: {
                 __typename?: "AttributeValueTranslation";
@@ -36656,6 +36683,7 @@ export const SelectedAttributeDetailsFragmentDoc = gql`
       }
       slug
       value
+      inputType
       reference
     }
   }
@@ -38341,6 +38369,8 @@ export const AvailableProductFiltersDocument = gql`
               id
               name
               slug
+              inputType
+              value
             }
           }
           variants {

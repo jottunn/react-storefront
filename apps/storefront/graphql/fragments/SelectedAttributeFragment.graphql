@@ -21,6 +21,7 @@ fragment SelectedAttributeDetailsFragment on SelectedAttribute {
     }
     slug
     value
+    inputType
     reference
   }
 }

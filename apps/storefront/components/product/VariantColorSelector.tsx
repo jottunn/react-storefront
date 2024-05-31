@@ -6,28 +6,12 @@ import { ATTR_COLOR_SLUG } from "@/lib/const";
 
 export interface VariantSelectorProps {
   product: ProductDetailsFragment;
-  selectedVariant?: ProductVariantDetailsFragment | null;
+  currentColor?: string;
 }
 
-function getColorOfVariant(productVariant: ProductVariantDetailsFragment) {
-  let color = "";
-  if (productVariant && Array.isArray(productVariant.attributes)) {
-    productVariant.attributes.forEach((attribute) => {
-      if (attribute.attribute.slug === ATTR_COLOR_SLUG) {
-        attribute.values.forEach((value: any) => {
-          color = value.name;
-        });
-      }
-    });
-  }
-  return color;
-}
-
-export function VariantColorSelector({ product, selectedVariant }: VariantSelectorProps) {
+export function VariantColorSelector({ product, currentColor }: VariantSelectorProps) {
   const paths = usePaths();
-  const currentColor = selectedVariant ? getColorOfVariant(selectedVariant) : "";
   const processedColors = new Set<string>();
-
   const defaultMedia = product.media?.[0] || { url: "", alt: "Default Image" };
 
   const colorOptions =
@@ -49,20 +33,21 @@ export function VariantColorSelector({ product, selectedVariant }: VariantSelect
               const isSelectedColor = currentColor === value.name;
               const variantMedia = variant.media?.[0] || defaultMedia;
               const imgElement = (
-                <Image
+                <div
                   key={`thumb-${variant.id.toString()}-${value.name || ""}`}
-                  src={variantMedia.url}
-                  alt={
-                    variant.media?.[0] ? variantMedia.alt : `${product.name} ${value.name ?? ""}`
-                  }
-                  className={`border-2 p-2 h-[80px] w-auto ${
-                    isSelectedColor
-                      ? "border-black"
-                      : "border-neutral-400 opacity-80 hover:opacity-100"
-                  }`}
-                  width="80"
-                  height="80"
-                />
+                  className={`relative flex items-center justify-center border-2 ${
+                    isSelectedColor ? "border-black" : "border-neutral-400"
+                  } p-1 h-[80px] w-[80px] overflow-hidden`}
+                >
+                  <Image
+                    src={variantMedia.url}
+                    alt={
+                      variant.media?.[0] ? variantMedia.alt : `${product.name} ${value.name ?? ""}`
+                    }
+                    width="80"
+                    height="80"
+                  />
+                </div>
               );
               return isSelectedColor ? (
                 imgElement

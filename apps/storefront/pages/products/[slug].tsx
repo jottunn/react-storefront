@@ -358,7 +358,7 @@ function ProductPage({
               selectedVariant={selectedVariant}
             />
           </div>
-          <div className="space-y-5 m-auto mt-6 md:mt-40 md:mb-20 md:max-w-2xl">
+          <div className="space-y-5 m-auto mt-6 md:mt-40 md:mb-20 w-full">
             <div className="flex items-center justify-center space-x-2">
               {categoryAncestors.map((parent) => (
                 <React.Fragment key={parent.slug}>
@@ -453,7 +453,7 @@ function ProductPage({
                 type="submit"
                 disabled={isAddToCartButtonDisabled}
                 className={clsx(
-                  "w-full py-3 px-8 flex items-center justify-center text-base bg-action-1 text-white disabled:bg-disabled hover:bg-action-2 hover:text-white border-2 border-transparent  focus:outline-none uppercase",
+                  "w-full md:w-[300px] py-2 px-8 block m-auto items-center justify-center text-md bg-action-1 text-white disabled:bg-disabled hover:bg-action-2 hover:text-white border-2 border-transparent  focus:outline-none uppercase",
                   !isAddToCartButtonDisabled && "hover:border-action-1 hover:text-white",
                 )}
                 data-testid="addToCartButton"
@@ -464,7 +464,7 @@ function ProductPage({
               </button>
 
               {!selectedVariant && isAddToCartButtonDisabled && (
-                <p className="text-base text-yellow-600">
+                <p className="text-base text-yellow-600 text-center">
                   {t.formatMessage(messages.variantNotChosen)}
                 </p>
               )}
@@ -564,7 +564,8 @@ function ProductPage({
                   key={attr?.attribute.name}
                   src={`${UPLOAD_FOLDER ?? ""}/${attr?.values?.[0]?.name ?? ""}`}
                   alt={sizeGuide.title}
-                  fill={true}
+                  width={400}
+                  height={400}
                   style={{ objectFit: "contain", padding: "4rem 0" }}
                   priority={false}
                   loading="lazy"
