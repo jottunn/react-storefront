@@ -47,6 +47,7 @@ import {
   ATTR_GHID_MARIMI,
   UPLOAD_FOLDER,
 } from "@/lib/const";
+import { Dialog, DialogPanel } from "@headlessui/react";
 
 export type OptionalQuery = {
   variant?: string;
@@ -192,6 +193,8 @@ function ProductPage({
     },
     skip: skipQuery.current,
   });
+
+  console.log("sizeGuide", sizeGuide);
 
   useEffect(() => {
     //show blurry pics?
@@ -547,32 +550,42 @@ function ProductPage({
             </div>
           </div>
         )}
-        {showSizeGuideModal && sizeGuide && Object.keys(sizeGuide).length > 0 && (
-          <div className="min-h-screen absolute overflow-hidden grid grid-cols-1 mx-auto px-8 md:h-full w-full text-center bg-gray-800/80 top-0 z-50">
-            <button
-              type="button"
-              className="absolute grid content-center justify-center right-0 p-8 h-10 w-10 z-50 mt-10"
-              aria-label="Close"
-              onClick={() => setShowSizeGuideModal(false)}
-            >
-              <XMarkIcon className="w-10 h-10 border text-white hover:text-red" />
-            </button>
-            <div className="container m-auto">
-              <RichText jsonStringData={sizeGuide.content || ""} />
-              {sizeGuide.attributes.map((attr) => (
-                <Image
-                  key={attr?.attribute.name}
-                  src={`${UPLOAD_FOLDER ?? ""}/${attr?.values?.[0]?.name ?? ""}`}
-                  alt={sizeGuide.title}
-                  width={400}
-                  height={400}
-                  style={{ objectFit: "contain", padding: "4rem 0" }}
-                  priority={false}
-                  loading="lazy"
-                />
-              ))}
+        {sizeGuide && Object.keys(sizeGuide).length > 0 && (
+          <Dialog
+            open={showSizeGuideModal}
+            onClose={() => setShowSizeGuideModal(false)}
+            className="relative z-50"
+          >
+            <div className="fixed inset-0 w-screen overflow-y-auto p-4">
+              <div className="flex min-h-full items-center justify-center">
+                <DialogPanel className="max-w-10xl space-y-4 border-2 bg-white p-6 md:p-12">
+                  <div className="container m-auto relative text-left">
+                    <button
+                      type="button"
+                      className="absolute top-0 right-0 z-50"
+                      aria-label="Close"
+                      onClick={() => setShowSizeGuideModal(false)}
+                    >
+                      <XMarkIcon className="w-10 h-10 text-gray-900 bg-gray-100 border border-gray-900 hover:text-red-900 hover:border-red-900" />
+                    </button>
+                    <RichText jsonStringData={sizeGuide.content || ""} />
+                    {sizeGuide.attributes.map((attr) => (
+                      <Image
+                        key={attr?.attribute.name}
+                        src={`${UPLOAD_FOLDER ?? ""}/${attr?.values?.[0]?.name ?? ""}`}
+                        alt={sizeGuide.title}
+                        width={1200}
+                        height={400}
+                        style={{ objectFit: "contain", padding: "4rem 0" }}
+                        priority={false}
+                        loading="lazy"
+                      />
+                    ))}
+                  </div>
+                </DialogPanel>
+              </div>
             </div>
-          </div>
+          </Dialog>
         )}
       </main>
     </>
