@@ -334,7 +334,7 @@ export const ProductsImporterView = () => {
           }
         }
 
-        let prodCollections = row["collections"].split(",");
+        let prodCollections = row["Colectii"].split("+").map((collection) => collection.trim());
         if (prodCollections) {
           for (let i = 0; i < prodCollections.length; i++) {
             const currCollection = prodCollections[i].trim();
@@ -351,7 +351,9 @@ export const ProductsImporterView = () => {
                 assignCollectionToChannel,
                 productInputIdsCache["Channel"][channel]
               );
-              productInputIdsCache["Collection"][currCollection] = fetchedProdCollectionID;
+              if (fetchedProdCollectionID) {
+                productInputIdsCache["Collection"][currCollection] = fetchedProdCollectionID;
+              }
             }
             if (prodCollectionID) {
               if (!collectionAddProducts[prodCollectionID]) {
@@ -393,6 +395,11 @@ export const ProductsImporterView = () => {
           .join(" ");
       }
       let collection = row["Sezon"] && row["Sezon"].trim();
+      let brand = row["brand"] && row["brand"].trim();
+      let prodCollections = row["Colectii"].split("+").map((collection) => collection.trim());
+      prodCollections.push(collection);
+      prodCollections.push(brand);
+
       let categoryCsv = row["Categorie site"] && row["Categorie site"].trim();
       const category = createSlug(categoryCsv);
       //console.log("categoryslug", category);
@@ -464,20 +471,27 @@ export const ProductsImporterView = () => {
         }
 
         /** query collections (sezon)*/
-        if (collection) {
-          const prodCollectionID =
-            productInputIdsCache["Sezon"] && productInputIdsCache["Sezon"][collection];
-          if (!prodCollectionID) {
-            //console.log('Collection not in cache, fetching...');
-            productInputIdsCache["Sezon"] = productInputIdsCache["Sezon"] || {};
-            const fetchedProdCollectionID = await getCollections(
-              client,
-              collection,
-              createNewCollectionMutation,
-              assignCollectionToChannel,
-              productInputIdsCache["Channel"][channel]
-            );
-            productInputIdsCache["Sezon"][collection] = fetchedProdCollectionID;
+        if (prodCollections) {
+          for (let i = 0; i < prodCollections.length; i++) {
+            const currCollection = prodCollections[i].trim();
+            const prodCollectionID =
+              productInputIdsCache["Collections"] &&
+              productInputIdsCache["Collections"][currCollection];
+            if (!prodCollectionID) {
+              console.log("Collection not in cache, fetching...");
+              productInputIdsCache["Collections"] = productInputIdsCache["Collections"] || {};
+              const fetchedProdCollectionID = await getCollections(
+                client,
+                currCollection,
+                createNewCollectionMutation,
+                assignCollectionToChannel,
+                productInputIdsCache["Channel"][channel]
+              );
+              console.log("fetchedProdCollectionID", fetchedProdCollectionID);
+              if (fetchedProdCollectionID) {
+                productInputIdsCache["Collections"][currCollection] = fetchedProdCollectionID;
+              }
+            }
           }
         }
 
@@ -522,8 +536,11 @@ export const ProductsImporterView = () => {
           products[productName].description = description;
         }
 
-        if (collection) {
-          products[productName].collections = [productInputIdsCache["Sezon"][collection]];
+        console.log("prodCollections", prodCollections);
+        if (prodCollections) {
+          products[productName].collections = prodCollections.map(
+            (collection) => productInputIdsCache["Collections"][collection]
+          );
         }
 
         //add Product Attributes - use productInputIdsCache['Tip produs'][productType]['productAttributes']
@@ -580,7 +597,7 @@ export const ProductsImporterView = () => {
         }
       }
     }
-    //console.log(products);
+    console.log(products);
     return Object.values(products);
   };
 
@@ -776,9 +793,9 @@ export const ProductsImporterView = () => {
           {uploading ? "Importing..." : "Upload & Start Import"}
         </button>
 
-        <button onClick={handleProductUpdate} className="button-66">
+        {/* <button onClick={handleProductUpdate} className="button-66">
           Update Product Collections
-        </button>
+        </button> */}
 
         <button onClick={resetSelectedFiles} disabled={uploading} className="reset-button">
           Reset

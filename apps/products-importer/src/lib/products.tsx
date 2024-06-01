@@ -155,7 +155,7 @@ export const getCollections = async (
 ) => {
   const getCollection = `
   query getCollectionBySlug($search: String) {
-    collections(first: 1, filter: { search:  $search}) {
+    collections(first: 5, filter: { search:  $search}) {
       edges {
         node {
           id
@@ -168,17 +168,27 @@ export const getCollections = async (
   `;
   try {
     const result = await client.query(getCollection, { search: collectionName });
-    const node = result.data.collections?.edges.map((e: { node: any }) => e.node);
-    if (node[0]) {
-      return node[0]["id"];
-    } else {
-      return await createNewCollection(
-        createCollectionMutation,
-        collectionName,
-        assignCollectionToChannelMutation,
-        channelId
-      );
+    const nodes = result.data.collections?.edges.map((e: { node: any }) => e.node);
+    console.log(nodes);
+    let collectionId = "";
+
+    for (let j = 0; j < nodes.length; j++) {
+      if (nodes[j]["name"] === collectionName) {
+        collectionId = nodes[j]["id"];
+        return collectionId;
+      }
     }
+
+    console.log("create new collection ", collectionName);
+    let newCollectionId = await createNewCollection(
+      createCollectionMutation,
+      collectionName,
+      assignCollectionToChannelMutation,
+      channelId
+    );
+
+    console.log("newCollectionId", newCollectionId);
+    if (newCollectionId) return newCollectionId;
   } catch (error) {
     console.error("Error fetching collection details:", error);
     throw error; // Throw the error for handling in the calling function
@@ -213,7 +223,7 @@ export const createNewCollection = async (
           ],
         },
       });
-      // console.log('create collection', result2);
+      console.log("create collection", result2);
       return collectionId;
     }
 
