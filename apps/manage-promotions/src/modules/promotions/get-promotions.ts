@@ -1,7 +1,7 @@
 import { Client } from "urql";
 import { GetAllPromotionsDocument } from "../../../generated/graphql";
 
-export async function fetchPromotions(client: Client) {
+export async function fetchPromotions(client: Client, id = true) {
   const { data: availablePromotions } = await client.query(
     GetAllPromotionsDocument,
     {},
@@ -10,5 +10,8 @@ export async function fetchPromotions(client: Client) {
   if (!availablePromotions) {
     return [];
   }
-  return availablePromotions.promotions?.edges.map((e: { node: any }) => e.node.id) || [];
+  if (id) {
+    return availablePromotions.promotions?.edges.map((e: { node: any }) => e.node.id) || [];
+  }
+  return availablePromotions.promotions?.edges.map((e: { node: any }) => e.node) || [];
 }

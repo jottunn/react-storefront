@@ -1,0 +1,10 @@
+query CollectionsAll($channel: String!) {
+  collections(first:90, channel: $channel) {
+    edges {
+        node {
+            id
+            name
+        }
+    }
+  }
+}

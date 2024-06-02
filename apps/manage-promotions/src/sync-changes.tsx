@@ -19,24 +19,25 @@ export const SyncChanges = () => {
 
   return (
     <>
-      <Box display={"flex"} marginY={4}>
-        {loading ? (
-          <Spinner />
-        ) : (
-          <Button variant={"secondary"} onClick={() => syncAll()}>
-            Resync all Collections
-          </Button>
-        )}
-      </Box>
-      <Box display={"flex"} marginY={4}>
-        <List>
-          {result.map((msg, index) => (
-            <List.Item borderRadius={3} gap={3} paddingX={2} paddingY={2} key={index}>
-              <Text color={"textBrandDefault"}>{msg}</Text>
-            </List.Item>
-          ))}
-        </List>
-      </Box>
+      {loading ? (
+        <Spinner />
+      ) : (
+        <Button variant={"secondary"} onClick={() => syncAll()}>
+          Resync all Collections
+        </Button>
+      )}
+
+      {result && result.length > 0 && (
+        <Box display={"flex"}>
+          <List>
+            {result.map((msg, index) => (
+              <List.Item borderRadius={3} gap={3} paddingX={2} paddingY={2} key={index}>
+                <Text color={"textBrandDefault"}>{msg}</Text>
+              </List.Item>
+            ))}
+          </List>
+        </Box>
+      )}
     </>
   );
 };

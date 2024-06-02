@@ -2,7 +2,12 @@ query getAllPromotions {
     promotions (first: 90){
         edges {
             node {
-                id  
+                id
+                name
+                privateMetadata {
+                    key
+                    value
+                }
             }
         }      
     }   
