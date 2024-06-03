@@ -6,6 +6,7 @@ import {
   DeleteCollectionDocument,
   ProductCollectionDocument,
   RemoveProductsFromCollectionDocument,
+  UpdateCollectionDocument,
 } from "../../../generated/graphql";
 import { getChannelId } from "../sync/get-channel-id";
 import { publishCollection } from "./collection-channels";
@@ -22,7 +23,7 @@ export async function createCollection(
   client: Client,
   saleName: string,
   saleId: string,
-  promotionId: string,
+  // promotionId: string,
   allChannels: any[]
 ) {
   try {
@@ -34,7 +35,7 @@ export async function createCollection(
           name: saleName,
           seo: { title: saleName },
           metadata: [
-            { key: "promotion", value: promotionId },
+            // { key: "promotion", value: promotionId },
             { key: "sale", value: saleId },
             { key: "isSale", value: "YES" },
           ],
@@ -47,10 +48,9 @@ export async function createCollection(
     }
     const collectionId = collectionData.collectionCreate?.collection.id;
     await publishCollection(client, collectionId, allChannels);
-
     return collectionId;
   } catch (error) {
-    console.error("Error handling promotion deletion:", error);
+    console.error("Error handling sale deletion:", error);
     return error;
   }
 }
@@ -58,31 +58,32 @@ export async function createCollection(
 export async function updateProductsCollection(
   client: Client,
   collectionId: string,
-  promotionProducts: string[]
+  saleProducts: string[]
 ) {
   const { data: existingCollectionProducts, error: resultProductsErr } = await client.query(
     ProductCollectionDocument,
     { filter: { collections: [collectionId] } },
     { requestPolicy: "network-only" }
   );
-  //console.log('updateProductsCollection', collectionId);
 
   const existingProductsInCollection = existingCollectionProducts?.products?.edges.map(
     (e: { node: any }) => e.node.id
   );
+  // console.log('updateProductsCollection', existingCollectionProducts);
 
-  if (!existingCollectionProducts && promotionProducts) {
+  if (!existingCollectionProducts && saleProducts) {
+    console.log("add", saleProducts);
     const { data: addProductsToCollection } = await client
       .mutation(AddProductsToCollectionDocument, {
         collectionId: collectionId,
-        products: promotionProducts,
+        products: saleProducts,
       })
       .toPromise();
   } else {
     //check which products were removed, exists in existingProductsInCollection, not exists in  productIdsArray
     const notInNewUpdate =
       existingProductsInCollection &&
-      existingProductsInCollection.filter((item) => !promotionProducts.includes(item));
+      existingProductsInCollection.filter((item) => !saleProducts.includes(item));
     if (notInNewUpdate && notInNewUpdate.length > 0) {
       //remove from collection
       const { data: removeProductsFromCollection } = await client
@@ -96,7 +97,7 @@ export async function updateProductsCollection(
     //check which products were added, exists in productIdsArray, not exists in existingProductsInCollection
     const notInCollection =
       existingProductsInCollection &&
-      promotionProducts.filter((item) => !existingProductsInCollection.includes(item));
+      saleProducts.filter((item) => !existingProductsInCollection.includes(item));
     if (notInCollection && notInCollection.length > 0) {
       //add to collection
       const { data: addProductsToCollection } = await client
@@ -107,4 +108,21 @@ export async function updateProductsCollection(
         .toPromise();
     }
   }
+}
+
+export async function updateSalesCollectionPrivateMetadata(
+  client: Client,
+  collectionId: string,
+  privateMeta: any[]
+) {
+  const { data: updatedCollection } = await client
+    .mutation(UpdateCollectionDocument, {
+      id: collectionId,
+      input: {
+        privateMetadata: privateMeta,
+      },
+    })
+    .toPromise();
+
+  console.log("updatedCollection", updatedCollection);
 }

@@ -28,7 +28,7 @@ export const SyncChanges = () => {
       )}
 
       {result && result.length > 0 && (
-        <Box display={"flex"}>
+        <Box display={"block"}>
           <List>
             {result.map((msg, index) => (
               <List.Item borderRadius={3} gap={3} paddingX={2} paddingY={2} key={index}>

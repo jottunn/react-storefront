@@ -1,0 +1,44 @@
+query getSaleById ($id: ID!) {
+    sale (id: $id){      
+        name
+        endDate
+        channelListings {
+          channel {
+            name
+            slug
+            id
+          }
+        }
+        products(first:90) {
+            edges {
+                node {
+                  id
+                }
+              }
+        }
+        categories(first:90) {
+            edges {
+                node {
+                  id
+                }
+              }
+        }
+        collections(first:90) {
+            edges {
+                node {
+                  id
+                }
+              }
+        }        
+        variants(first:90) {
+            edges {
+                node {
+                  id
+                  product {
+                    id
+                  }
+                }
+            }
+        }    
+    }        
+}

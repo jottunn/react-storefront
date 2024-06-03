@@ -4,7 +4,7 @@ import { getChannelId } from "../sync/get-channel-id";
 
 export async function unpublishCollection(
   client: Client,
-  promoCollectionId: string,
+  saleCollectionId: string,
   channels: any[]
 ) {
   let channelIDs: string[] = [];
@@ -17,7 +17,7 @@ export async function unpublishCollection(
   }
   const { data: updatedCollectionVisibility } = await client
     .mutation(UpdateCollectionChannelDocument, {
-      id: promoCollectionId,
+      id: saleCollectionId,
       input: {
         removeChannels: channelIDs,
       },
@@ -25,15 +25,11 @@ export async function unpublishCollection(
     .toPromise();
 }
 
-export async function publishCollection(
-  client: Client,
-  promoCollectionId: string,
-  channels: any[]
-) {
+export async function publishCollection(client: Client, saleCollectionId: string, channels: any[]) {
   let channelsArray: any[] = [];
 
   for (let i = 0; i < channels.length; i++) {
-    const channelID = await getChannelId(client, channels[i]["slug"]);
+    const channelID = await getChannelId(client, channels[i]["slug"] || channels[i]);
     if (channelID) {
       let channelObj = {
         channelId: channelID as string,
@@ -42,12 +38,14 @@ export async function publishCollection(
       channelsArray.push(channelObj);
     }
   }
+
   const { data: updatedCollectionVisibility } = await client
     .mutation(UpdateCollectionChannelDocument, {
-      id: promoCollectionId,
+      id: saleCollectionId,
       input: {
         addChannels: channelsArray,
       },
     })
     .toPromise();
+  // console.log(updatedCollectionVisibility?.collectionChannelListingUpdate?.errors);
 }

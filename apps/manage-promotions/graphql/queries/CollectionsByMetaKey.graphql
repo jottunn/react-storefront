@@ -1,5 +1,5 @@
-query CollectionsByMetaKey($filter: CollectionFilterInput) {
-  collections(first:100, filter: $filter) {
+query CollectionsByMetaKey($filter: CollectionFilterInput, $channel: String!) {
+  collections(first:90, filter: $filter, channel: $channel) {
     edges {
         node {
             id
@@ -7,6 +7,10 @@ query CollectionsByMetaKey($filter: CollectionFilterInput) {
             metadata {
               key
               value
+            }
+            privateMetadata {
+                key
+                value
             }
         }
     }

@@ -4,7 +4,7 @@ import {
   WebhookSaleFragmentDoc,
   SaleCreatedWebhookPayloadFragment,
   SaleCreatedWebhookPayloadFragmentDoc,
-  GetPromotionByNameDocument,
+  GetSaleByNameDocument,
 } from "../../../../generated/graphql";
 import { saleorApp } from "../../../saleor-app";
 import { createClient } from "../../../lib/create-graphq-client";
@@ -38,11 +38,11 @@ const SaleCreatedGraphqlSubscription = gql`
 /**
  * Create abstract Webhook. It decorates handler and performs security checks under the hood.
  *
- * PromotionCreatedWebhook.getWebhookManifest() must be called in api/manifest too!
+ * SaleCreatedWebhook.getWebhookManifest() must be called in api/manifest too!
  */
-export const promotionCreatedWebhook = new SaleorAsyncWebhook<SaleCreatedWebhookPayloadFragment>({
-  name: "Promotion Created in Saleor",
-  webhookPath: "api/webhooks/promotion-created",
+export const saleCreatedWebhook = new SaleorAsyncWebhook<SaleCreatedWebhookPayloadFragment>({
+  name: "Sale Created in Saleor",
+  webhookPath: "api/webhooks/sale-created",
   event: "SALE_CREATED",
   apl: saleorApp.apl,
   query: SaleCreatedGraphqlSubscription,
@@ -51,7 +51,7 @@ export const promotionCreatedWebhook = new SaleorAsyncWebhook<SaleCreatedWebhook
 /**
  * Export decorated Next.js handler, which adds extra context
  */
-export default promotionCreatedWebhook.createHandler(async (req, res, ctx) => {
+export default saleCreatedWebhook.createHandler(async (req, res, ctx) => {
   const {
     /**
      * Access payload from Saleor - defined above
@@ -74,7 +74,7 @@ export default promotionCreatedWebhook.createHandler(async (req, res, ctx) => {
   /**
    * Perform logic based on Saleor Event payload
    */
-  console.log(`Promotion was created: ${payload.sale?.id}`);
+  console.log(`Sale was created: ${payload.sale?.id}`);
   const saleId = payload.sale?.id || "";
   const saleName = payload.sale?.name;
   if (!saleName) {
@@ -92,28 +92,31 @@ export default promotionCreatedWebhook.createHandler(async (req, res, ctx) => {
    */
   //const data = await client.query().toPromise()
   try {
-    const newPromototionResult = await client.query(
-      GetPromotionByNameDocument,
-      { where: { name: { eq: saleName } } },
+    const newSaleResult = await client.query(
+      GetSaleByNameDocument,
+      { filter: { search: saleName } },
       { requestPolicy: "network-only" }
     );
-    const promotionId = newPromototionResult.data?.promotions?.edges?.[0].node?.id;
-    const promotionRules = newPromototionResult.data?.promotions?.edges?.[0].node?.rules || [];
-    const allChannels = promotionRules.flatMap((rule) => rule.channels);
-    const uniqueChannels = allChannels.filter(
-      (channel, index, self) => index === self.findIndex((c) => c?.slug === channel?.slug)
+    const currentSaleEdge = newSaleResult.data?.sales?.edges.find(
+      (edge) => edge.node.name === saleName
     );
+    const currentSale = currentSaleEdge ? currentSaleEdge.node : undefined;
+    console.log("currentSale", currentSale);
+    const saleId = currentSale?.id;
+    const allChannels = currentSale?.channelListings || [];
+    const uniqueChannels = allChannels.map((listing) => listing.channel.slug);
+    console.log("uniqueChannels", uniqueChannels);
 
-    if (!promotionId) {
-      console.log("No promotion found with the given name:", saleName);
-      return res.status(404).send("Promotion not found");
+    if (!saleId) {
+      console.log("No sale found with the given name:", saleName);
+      return res.status(404).send("Sale not found");
     }
 
-    await createCollection(client, saleName, saleId, promotionId, uniqueChannels);
+    await createCollection(client, saleName, saleId, uniqueChannels);
 
     // console.log('channelAssignedData', channelAssignedData);
   } catch (error) {
-    console.error("Error creating collection for promotion:", error);
+    console.error("Error creating collection for sale:", error);
     throw error; // Throw the error for handling in the calling function
   }
 

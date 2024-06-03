@@ -1,0 +1,8 @@
+mutation updateSale( $id: ID!, $input: SaleInput!) {
+    saleUpdate(id: $id, input: $input) {
+        errors {
+            field
+            message
+        }
+    }
+}

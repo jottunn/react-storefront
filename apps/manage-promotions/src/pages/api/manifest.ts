@@ -2,9 +2,9 @@ import { createManifestHandler } from "@saleor/app-sdk/handlers/next";
 import { AppManifest } from "@saleor/app-sdk/types";
 
 import packageJson from "../../../package.json";
-import { promotionCreatedWebhook } from "./webhooks/promotion-created";
-import { promotionUpdatedWebhook } from "./webhooks/promotion-updated";
-import { promotionDeletedWebhook } from "./webhooks/promotion-deleted";
+import { saleCreatedWebhook } from "./webhooks/sale-created";
+import { saleUpdatedWebhook } from "./webhooks/sale-updated";
+import { saleDeletedWebhook } from "./webhooks/sale-deleted";
 
 /**
  * App SDK helps with the valid Saleor App Manifest creation. Read more:
@@ -21,7 +21,7 @@ export default createManifestHandler({
     const apiBaseURL = process.env.APP_API_BASE_URL ?? appBaseUrl;
 
     const manifest: AppManifest = {
-      name: "Manage Collections for Promotions",
+      name: "Manage Promotions",
       tokenTargetUrl: `${apiBaseURL}/api/register`,
       appUrl: iframeBaseUrl,
       /**
@@ -49,9 +49,9 @@ export default createManifestHandler({
        * https://github.com/saleor/saleor-app-sdk/blob/main/docs/saleor-webhook.md
        */
       webhooks: [
-        promotionCreatedWebhook.getWebhookManifest(apiBaseURL),
-        promotionUpdatedWebhook.getWebhookManifest(apiBaseURL),
-        promotionDeletedWebhook.getWebhookManifest(apiBaseURL),
+        saleCreatedWebhook.getWebhookManifest(apiBaseURL),
+        saleUpdatedWebhook.getWebhookManifest(apiBaseURL),
+        saleDeletedWebhook.getWebhookManifest(apiBaseURL),
       ],
       /**
        * Optionally, extend Dashboard with custom UIs

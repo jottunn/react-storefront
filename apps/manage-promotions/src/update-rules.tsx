@@ -1,21 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { useClient } from "urql";
 import { Box, Button, Multiselect, Spinner, Text } from "@saleor/macaw-ui";
-import { fetchPromotions } from "./modules/promotions/get-promotions";
+import { fetchSales } from "./modules/sales/get-sales";
 import { Controller, useForm } from "react-hook-form";
 import {
   fetchCategories,
   fetchCollections,
 } from "./modules/collections/get-collections-categories";
-import { addRules } from "./modules/rules/add-promotion-rules";
+import { addRules } from "./modules/rules/add-sale-rules";
+import { Collection, CollectionFilterInput } from "../generated/graphql";
+import { fetchSaleCollections } from "./modules/collections/get-sale-collections";
 
-type Promotion = {
+type Sale = {
   id: string;
   name: string;
   privateMetadata: Array<{ key: string; value: string }>;
+  rules: any[];
 };
 
-type Collection = {
+type Collection1 = {
   id: string;
   name: string;
   __typename: string;
@@ -34,79 +37,123 @@ type Rule = {
 
 export const UpdateRules: React.FC = () => {
   const client = useClient();
-  const [availablePromotions, setAvailablePromotions] = useState<Promotion[]>([]);
-  const [collections, setCollections] = useState<Collection[]>([]);
+  const [availableSales, setavailableSales] = useState<Sale[]>([]);
+  const [collections, setCollections] = useState<Collection1[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [saleCollections, setSalesCollections] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [errors, setErrors] = useState<string[]>([]);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const { control, handleSubmit, setValue, reset } = useForm();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const promotions = await fetchPromotions(client, false);
-        console.log("Fetched promotions:", promotions);
-        setAvailablePromotions(promotions);
+        const sales = await fetchSales(client, false);
+        setavailableSales(sales);
       } catch (error) {
-        console.error("Error fetching promotions:", error);
+        console.error("Error fetching sales:", error);
+        setErrors((prevErrors) => [...prevErrors, "Error fetching sales"]);
       }
     };
 
     const fetchCollectionsData = async () => {
       try {
         const collections = await fetchCollections(client);
-        console.log("Fetched collections:", collections);
         setCollections(collections);
       } catch (error) {
         console.error("Error fetching collections:", error);
+        setErrors((prevErrors) => [...prevErrors, "Error fetching collections"]);
       }
     };
 
     const fetchCategoriesData = async () => {
       try {
         const categories = await fetchCategories(client);
-        console.log("Fetched categories:", categories);
         setCategories(categories);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching categories:", error);
         setLoading(false);
+        setErrors((prevErrors) => [...prevErrors, "Error fetching categories"]);
+      }
+    };
+
+    const fetchSalesCollectons = async () => {
+      try {
+        const collectionFilter: CollectionFilterInput = {
+          metadata: [{ key: "isSale", value: "YES" }],
+        };
+        const saleCollectionsArr = await fetchSaleCollections(client, collectionFilter);
+        setSalesCollections(saleCollectionsArr);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+        setLoading(false);
+        setErrors((prevErrors) => [...prevErrors, "Error fetching categories"]);
       }
     };
 
     fetchData();
     fetchCollectionsData();
     fetchCategoriesData();
+    fetchSalesCollectons();
   }, [client]);
 
-  const { control, handleSubmit, setValue, getValues } = useForm();
-
-  const onSubmit = (data: any) => {
-    availablePromotions.forEach((promotion, index) => {
-      const selectedCategories = data[`categories-${index}`];
-      const selectedCollections = data[`collections-${index}`];
-      addRules(client, promotion.id, selectedCategories, selectedCollections);
-    });
-    console.log(data);
-  };
-
-  const extractValues = (promotion: Promotion, field: keyof Rule): string[] => {
-    const privateMetadata = promotion.privateMetadata || [];
-    const andRulesItem = privateMetadata.find((item) => item.key === "AndRules");
-
-    if (andRulesItem) {
-      const andRules = andRulesItem.value;
-      try {
-        const rulesArray: Rule[] = JSON.parse(andRules);
-        const values = rulesArray
-          .filter((rule) => rule[field]) // Filter objects that have the specified field
-          .flatMap((rule) => rule[field] || []); // Flatten the arrays of the specified field
-
-        return values;
-      } catch (error) {
-        console.error("Error parsing JSON:", error);
-        return [];
+  const onSubmit = async (data: any) => {
+    setLoading(true);
+    setSuccessMessage(null);
+    // console.log('data', data);
+    const errorList: string[] = [];
+    for (const sale of availableSales) {
+      const selectedCategories = data[`categories-${sale.id}`] || [];
+      const selectedCollections = data[`collections-${sale.id}`] || [];
+      if (selectedCategories.length > 0 || selectedCollections.length > 0) {
+        const errors = await addRules(client, sale.id, selectedCategories, selectedCollections);
+        // console.log('errors submit', errors);
+        if (errors.length > 0) {
+          errorList.push(`Errors for sale ${sale.name}: ${errors.join(", ")}`);
+        }
       }
     }
 
+    setLoading(false);
+    setErrors(errorList);
+    if (errorList.length === 0) {
+      setSuccessMessage("All sales updated successfully!");
+    }
+  };
+
+  const extractValues = (saleId: string, field: keyof Rule) => {
+    const filteredSaleCollection = saleCollections.filter((saleCollection) =>
+      saleCollection.metadata?.some(
+        (meta: { key: string; value: string }) => meta.key === "sale" && meta.value === saleId
+      )
+    );
+    console.log("filteredSaleCollection", filteredSaleCollection);
+    if (filteredSaleCollection.length > 0 && filteredSaleCollection[0].privateMetadata) {
+      const privateMetadata = filteredSaleCollection[0].privateMetadata;
+      const andRulesItem = privateMetadata.find((item: { key: string }) => item.key === "AndRules");
+      if (andRulesItem) {
+        const andRules = andRulesItem.value;
+        console.log("andRules", andRules);
+        try {
+          const rulesArray: Rule[] = JSON.parse(andRules);
+          // console.log('rulesArray', rulesArray);
+          const values = rulesArray.reduce<string[]>((acc, rule) => {
+            const fieldValues = rule[field];
+            if (fieldValues) {
+              return acc.concat(fieldValues.filter(Boolean));
+            }
+            return acc;
+          }, []);
+          return values;
+        } catch (error) {
+          console.error("Error parsing JSON:", error);
+          return [];
+        }
+      }
+    }
     return [];
   };
 
@@ -118,29 +165,53 @@ export const UpdateRules: React.FC = () => {
     }));
   };
 
+  useEffect(() => {
+    const defaultValues = availableSales.reduce((acc, sale) => {
+      const collectionValues = extractValues(sale.id, "collections") || [];
+      const categoryValues = extractValues(sale.id, "categories") || [];
+      acc[`categories-${sale.id}`] = categoryValues;
+      acc[`collections-${sale.id}`] = collectionValues;
+      return acc;
+    }, {} as { [key: string]: any[] });
+
+    reset(defaultValues);
+  }, [availableSales, reset]);
+
   if (loading) {
     return <Spinner />;
   }
 
   return (
     <>
-      <Text variant="heading">Add rules for promotions:</Text>
-      <Text as={"p"}>some more text</Text>
-
+      <Text variant="heading">Add rules for sales</Text>
+      <Text as={"p"}>
+        All existing products assigned to update Discounts (Products tab), will be removed
+      </Text>
+      {errors.length > 0 && (
+        <Box marginBottom={4}>
+          {errors.map((error, index) => (
+            <Text key={index} style={{ color: "red" }}>
+              {error}
+            </Text>
+          ))}
+        </Box>
+      )}
+      {successMessage && (
+        <Box marginBottom={4}>
+          <Text style={{ color: "green" }}>{successMessage}</Text>
+        </Box>
+      )}
       <form onSubmit={handleSubmit(onSubmit)}>
         <Box padding={4} display="flex" flexDirection="column" gap={4}>
           <Box display="flex" flexDirection="column" gap={4}>
             <div>
-              {availablePromotions.map((promotion, index) => {
-                const collectionValues = extractValues(promotion, "collections") || [];
-                const categoryValues = extractValues(promotion, "categories") || [];
+              {availableSales.map((sale, index) => {
+                const collectionValues = extractValues(sale.id, "collections") || [];
+                const categoryValues = extractValues(sale.id, "categories") || [];
                 const collectionOptions = getOptions(collections, collectionValues);
                 const categoryOptions = getOptions(categories, categoryValues);
-
-                // Set default values for the multiselects
-                setValue(`categories-${index}`, categoryValues);
-                setValue(`collections-${index}`, collectionValues);
-
+                // console.log('collectionValues', collectionValues);
+                // console.log('categoryValues', categoryValues);
                 return (
                   <div
                     className="grid-row"
@@ -156,14 +227,14 @@ export const UpdateRules: React.FC = () => {
                   >
                     <input
                       type="hidden"
-                      {...control.register(`promotionId-${index}`)}
-                      value={promotion.id}
+                      {...control.register(`saleId-${sale.id}`)}
+                      value={sale.id}
                     />
                     <div>
                       <label>
                         <Text>
                           Modify rules for:
-                          <br /> <strong>{promotion.name}</strong>
+                          <br /> <strong>{sale.name}</strong>
                         </Text>
                       </label>
                     </div>
@@ -172,14 +243,21 @@ export const UpdateRules: React.FC = () => {
                         <Text>Choose Category:</Text>
                       </label>
                       <Controller
-                        name={`categories-${index}`}
+                        name={`categories-${sale.id}`}
                         control={control}
+                        defaultValue={categoryValues}
                         render={({ field }) => (
                           <Multiselect
                             {...field}
                             label="Categories"
                             size="medium"
                             options={categoryOptions}
+                            value={field.value || categoryValues}
+                            onChange={(selected) => {
+                              const selectedValues = selected.map((option: any) => option.value);
+                              field.onChange(selectedValues);
+                              setValue(`categories-${sale.id}`, selectedValues);
+                            }}
                           />
                         )}
                       />
@@ -197,14 +275,21 @@ export const UpdateRules: React.FC = () => {
                         <Text>Choose Collections</Text>
                       </label>
                       <Controller
-                        name={`collections-${index}`}
+                        name={`collections-${sale.id}`}
                         control={control}
+                        defaultValue={collectionValues}
                         render={({ field }) => (
                           <Multiselect
                             {...field}
                             label="Collections"
                             size="medium"
                             options={collectionOptions}
+                            value={field.value || collectionValues}
+                            onChange={(selected) => {
+                              const selectedValues = selected.map((option: any) => option.value);
+                              field.onChange(selectedValues);
+                              setValue(`collections-${sale.id}`, selectedValues);
+                            }}
                           />
                         )}
                       />

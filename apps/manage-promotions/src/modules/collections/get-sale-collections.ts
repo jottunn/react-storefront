@@ -10,6 +10,7 @@ export async function fetchSaleCollections(
     {
       filter: collectionFilter,
       published: ["PUBLISHED", "HIDDEN"],
+      channel: "default-channel",
     },
     { requestPolicy: "network-only" }
   );

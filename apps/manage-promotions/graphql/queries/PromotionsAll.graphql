@@ -8,6 +8,15 @@ query getAllPromotions {
                     key
                     value
                 }
+                rules {              
+                    id            
+          		    cataloguePredicate               
+                    predicateType
+                    orderPredicate              
+                    channels {
+                        slug
+                    }
+        		}
             }
         }      
     }   

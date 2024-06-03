@@ -1,0 +1,21 @@
+query getAllSales {
+    sales (first: 90){
+        edges {
+            node {
+                id
+                name
+                channelListings {
+                    channel {
+                        name
+                        slug
+                        id
+                    }
+                }
+                privateMetadata {
+                    key
+                    value
+                }                
+            }
+        }      
+    }   
+}

@@ -8,6 +8,8 @@ import {
   CollectionFilterInput,
   UpdateCollectionDocument,
   UpdateCollectionChannelDocument,
+  GetSaleByNameDocument,
+  Sale,
 } from "../../../../generated/graphql";
 import { saleorApp } from "../../../saleor-app";
 import { createClient } from "../../../lib/create-graphq-client";
@@ -17,7 +19,7 @@ import {
   createCollection,
   updateProductsCollection,
 } from "../../../modules/collections/collection-crud";
-import { fetchPromotionsProducts } from "../../../modules/promotions/get-promotion-products";
+import { fetchSalesProducts } from "../../../modules/sales/get-sales-products";
 import { getChannelId } from "../../../modules/sync/get-channel-id";
 import {
   publishCollection,
@@ -25,7 +27,7 @@ import {
 } from "../../../modules/collections/collection-channels";
 
 /**
- * Example payload of the webhook. It will be transformed with graphql-codegen to Typescript type: PromotionCreatedWebhookPayloadFragment
+ * Example payload of the webhook. It will be transformed with graphql-codegen to Typescript type: SaleCreatedWebhookPayloadFragment
  */
 gql`
   ${WebhookSaleFragmentDoc}
@@ -53,11 +55,11 @@ const SaleUpdatedGraphqlSubscription = gql`
 /**
  * Create abstract Webhook. It decorates handler and performs security checks under the hood.
  *
- * PromotionCreatedWebhook.getWebhookManifest() must be called in api/manifest too!
+ * SaleCreatedWebhook.getWebhookManifest() must be called in api/manifest too!
  */
-export const promotionUpdatedWebhook = new SaleorAsyncWebhook<SaleUpdatedWebhookPayloadFragment>({
-  name: "Promotion Updated in Saleor",
-  webhookPath: "api/webhooks/promotion-updated",
+export const saleUpdatedWebhook = new SaleorAsyncWebhook<SaleUpdatedWebhookPayloadFragment>({
+  name: "Sale Updated in Saleor",
+  webhookPath: "api/webhooks/sale-updated",
   event: "SALE_UPDATED",
   apl: saleorApp.apl,
   query: SaleUpdatedGraphqlSubscription,
@@ -66,7 +68,7 @@ export const promotionUpdatedWebhook = new SaleorAsyncWebhook<SaleUpdatedWebhook
 /**
  * Export decorated Next.js handler, which adds extra context
  */
-export default promotionUpdatedWebhook.createHandler(async (req, res, ctx) => {
+export default saleUpdatedWebhook.createHandler(async (req, res, ctx) => {
   const {
     /**
      * Access payload from Saleor - defined above
@@ -89,7 +91,7 @@ export default promotionUpdatedWebhook.createHandler(async (req, res, ctx) => {
   /**
    * Perform logic based on Saleor Event payload
    */
-  console.log(`Promotion was updated: ${payload.sale?.id}`);
+  console.log(`Sale was updated: ${payload.sale?.id}`);
   if (!payload.sale) {
     console.log("Sale data is missing from the payload");
     return res.status(200).send("No action needed, sale data is missing.");
@@ -110,59 +112,55 @@ export default promotionUpdatedWebhook.createHandler(async (req, res, ctx) => {
 
   try {
     const result = await client.query(
-      GetPromotionByNameDocument,
-      { where: { name: { eq: saleName } } }, //, "endDate": { "range": { "gte": nowISO } } } },
+      GetSaleByNameDocument,
+      { filter: { search: saleName } },
       { requestPolicy: "network-only" }
     );
-
-    //const node = result.data.products?.edges.map((e: { node: any }) => e.node);
-    const promotionId = result.data?.promotions?.edges?.[0].node?.id || "";
-    const promotionRules = result.data?.promotions?.edges?.[0].node?.rules || [];
-    const promotionEndDate = result.data?.promotions?.edges?.[0].node?.endDate || "";
+    // console.log(result);
+    const currentSaleEdge = result.data?.sales?.edges.find((edge) => edge.node.name === saleName);
+    const currentSale = currentSaleEdge ? currentSaleEdge.node : undefined;
+    const saleId = currentSale?.id || "";
+    const saleEndDate1 = currentSale?.endDate;
     const nowISO = new Date().toISOString();
     const nowDate = new Date(nowISO);
-    const promoEndDate = new Date(promotionEndDate);
-    const allChannels = promotionRules.flatMap((rule) => rule.channels);
-    const uniqueChannels = allChannels.filter(
-      (channel, index, self) => index === self.findIndex((c) => c?.slug === channel?.slug)
+    const saleEndDate = new Date(saleEndDate1);
+    const allChannels = currentSale?.channelListings || [];
+    const uniqueChannels = allChannels.map(
+      (listing: { channel: { slug: any } }) => listing.channel.slug
     );
     //get existing collection Id, with metadata related to updated promotion
     const collectionFilter: CollectionFilterInput = {
-      metadata: [{ key: "promotion", value: promotionId }],
+      metadata: [{ key: "sale", value: saleId }],
     };
     const saleCollectionsArr = await fetchSaleCollections(client, collectionFilter);
-    let promoCollectionId = saleCollectionsArr?.[0]?.id;
+    let saleCollectionId = saleCollectionsArr?.[0]?.id;
+    // console.log(saleCollectionId);
 
-    if (!promoCollectionId && promotionEndDate != "" && promoEndDate < nowDate) {
+    if (!saleCollectionId && saleEndDate1 != "" && saleEndDate < nowDate) {
       //collection already unpublished, do nothing
       return res.status(200).end();
     }
 
-    if (!promoCollectionId) {
-      console.log("No Collection found associated with promotion:", saleName);
+    if (!saleCollectionId) {
+      console.log("No Collection found associated with sale:", saleName);
       //return res.status(404).send('Collection not found');
       //create new collection
-      promoCollectionId = await createCollection(
-        client,
-        saleName,
-        saleId,
-        promotionId,
-        uniqueChannels
-      );
+      saleCollectionId = await createCollection(client, saleName, saleId, uniqueChannels);
     }
 
-    if (promotionEndDate != "" && promoEndDate < nowDate && uniqueChannels) {
+    if (saleEndDate1 != "" && saleEndDate < nowDate && uniqueChannels) {
       //remove collection from its channels
-      unpublishCollection(client, promoCollectionId, uniqueChannels);
+      unpublishCollection(client, saleCollectionId, uniqueChannels);
     } else {
-      publishCollection(client, promoCollectionId, uniqueChannels);
+      publishCollection(client, saleCollectionId, uniqueChannels);
     }
 
     //get promotion's products
-    const productIdsArray = await fetchPromotionsProducts(client, promotionRules);
+    const productIdsArray = await fetchSalesProducts(client, currentSale as Sale);
+    // console.log('productIdsArray', productIdsArray);
 
     //update assigned products
-    await updateProductsCollection(client, promoCollectionId, productIdsArray);
+    await updateProductsCollection(client, saleCollectionId, productIdsArray);
 
     //update name if diff
     const promoCollectionName = saleCollectionsArr?.[0]?.name;
@@ -170,7 +168,7 @@ export default promotionUpdatedWebhook.createHandler(async (req, res, ctx) => {
       //update name of collection
       const { data: updatedCollection } = await client
         .mutation(UpdateCollectionDocument, {
-          id: promoCollectionId,
+          id: saleCollectionId,
           input: {
             name: saleName,
             slug: titleToSlug(saleName),

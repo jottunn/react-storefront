@@ -19,7 +19,7 @@
     "pnpm": ">=8"
   },
   "dependencies": {
-    "@saleor/app-sdk": "0.50.0",
+    "@saleor/app-sdk": "link:../../node_modules/@saleor/app-sdk",
     "@saleor/macaw-ui": "1.0.0-pre.7",
     "@urql/exchange-auth": "^1.0.0",
     "@vitejs/plugin-react": "4.2.1",
@@ -29,6 +29,7 @@
     "next": "14.2.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-hook-form": "^7.43.9",
     "urql": "^4.0.4",
     "vite": "5.2.11",
     "vitest": "1.6.0"
@@ -52,6 +53,7 @@
     "eslint-config-prettier": "^8.6.0",
     "papaparse": "^5.4.1",
     "prettier": "^2.8.2",
+    "ts-loader": "^9.5.1",
     "typescript": "5.1.6"
   },
   "lint-staged": {
