@@ -4,6 +4,11 @@ query CollectionsAll($channel: String!) {
         node {
             id
             name
+            slug
+            metadata {
+              key
+              value
+            }
         }
     }
   }

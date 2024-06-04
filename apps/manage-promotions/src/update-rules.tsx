@@ -39,6 +39,7 @@ export const UpdateRules: React.FC = () => {
   const client = useClient();
   const [availableSales, setavailableSales] = useState<Sale[]>([]);
   const [collections, setCollections] = useState<Collection1[]>([]);
+  const [brandCollections, setBrandCollections] = useState<Collection1[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [saleCollections, setSalesCollections] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -59,7 +60,16 @@ export const UpdateRules: React.FC = () => {
 
     const fetchCollectionsData = async () => {
       try {
-        const collections = await fetchCollections(client);
+        let collections = await fetchCollections(client);
+        const filteredBrandCollection = collections.filter((collection) =>
+          collection.metadata?.some(
+            (meta: { key: string; value: string }) => meta.key === "isBrand" && meta.value === "YES"
+          )
+        );
+        // filteredBrandCollection.forEach(brandCollection => {
+        //   collections = collections.filter(collection => collection.id !== brandCollection.id)
+        // })
+        setBrandCollections(filteredBrandCollection);
         setCollections(collections);
       } catch (error) {
         console.error("Error fetching collections:", error);
@@ -107,11 +117,32 @@ export const UpdateRules: React.FC = () => {
     const errorList: string[] = [];
     for (const sale of availableSales) {
       const selectedCategories = data[`categories-${sale.id}`] || [];
-      const selectedCollections = data[`collections-${sale.id}`] || [];
-      if (selectedCategories.length > 0 || selectedCollections.length > 0) {
-        const errors = await addRules(client, sale.id, selectedCategories, selectedCollections);
+      let selectedCollections = data[`collections-${sale.id}`] || [];
+      //filter out brand collections and send them separately
+      // Step 1: Create a set of IDs from brandCollections
+      const brandCollectionIds = new Set(
+        brandCollections.map((brandCollection) => brandCollection.id)
+      );
+      // Step 2: Filter out collections from selectedCollections that are in brandCollections
+      const filteredSelectedCollections = selectedCollections.filter(
+        (selectedCollection: string) => !brandCollectionIds.has(selectedCollection)
+      );
+      // Step3: Get only selected brand collections
+      const filteredBrandCollections = brandCollections.filter((brandCollection) =>
+        selectedCollections.includes(brandCollection.id)
+      );
+
+      if (selectedCategories.length > 0 || filteredSelectedCollections.length > 0) {
+        const errors = await addRules(
+          client,
+          sale.id,
+          selectedCategories,
+          filteredSelectedCollections,
+          filteredBrandCollections,
+          selectedCollections
+        );
         // console.log('errors submit', errors);
-        if (errors.length > 0) {
+        if (errors && errors.length > 0) {
           errorList.push(`Errors for sale ${sale.name}: ${errors.join(", ")}`);
         }
       }
@@ -130,19 +161,20 @@ export const UpdateRules: React.FC = () => {
         (meta: { key: string; value: string }) => meta.key === "sale" && meta.value === saleId
       )
     );
-    console.log("filteredSaleCollection", filteredSaleCollection);
+    // console.log("filteredSaleCollection", filteredSaleCollection);
     if (filteredSaleCollection.length > 0 && filteredSaleCollection[0].privateMetadata) {
       const privateMetadata = filteredSaleCollection[0].privateMetadata;
       const andRulesItem = privateMetadata.find((item: { key: string }) => item.key === "AndRules");
       if (andRulesItem) {
         const andRules = andRulesItem.value;
-        console.log("andRules", andRules);
+        //console.log("andRules", andRules);
         try {
           const rulesArray: Rule[] = JSON.parse(andRules);
           // console.log('rulesArray', rulesArray);
           const values = rulesArray.reduce<string[]>((acc, rule) => {
             const fieldValues = rule[field];
             if (fieldValues) {
+              // console.log(fieldValues);
               return acc.concat(fieldValues.filter(Boolean));
             }
             return acc;
@@ -185,7 +217,8 @@ export const UpdateRules: React.FC = () => {
     <>
       <Text variant="heading">Add rules for sales</Text>
       <Text as={"p"}>
-        All existing products assigned to update Discounts (Products tab), will be removed
+        All other rules already added to the Discount will be removed and only below rules will be
+        applied.
       </Text>
       {errors.length > 0 && (
         <Box marginBottom={4}>

@@ -31,7 +31,7 @@ const IndexPage: NextPage = () => {
         <Box display={"flex"} marginY={4}>
           {appBridgeState?.ready && mounted && (
             <Link href="/actions">
-              <Button variant="primary" style={{ marginRight: "10px" }}>
+              <Button variant="primary" style={{ marginRight: "40px" }}>
                 Add / Update Sales Rules
               </Button>
             </Link>

@@ -72,7 +72,7 @@ export async function updateProductsCollection(
   // console.log('updateProductsCollection', existingCollectionProducts);
 
   if (!existingCollectionProducts && saleProducts) {
-    console.log("add", saleProducts);
+    // console.log("add", saleProducts);
     const { data: addProductsToCollection } = await client
       .mutation(AddProductsToCollectionDocument, {
         collectionId: collectionId,
@@ -124,5 +124,5 @@ export async function updateSalesCollectionPrivateMetadata(
     })
     .toPromise();
 
-  console.log("updatedCollection", updatedCollection);
+  //console.log("updatedCollection", updatedCollection);
 }

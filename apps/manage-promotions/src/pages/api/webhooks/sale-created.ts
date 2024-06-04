@@ -101,11 +101,11 @@ export default saleCreatedWebhook.createHandler(async (req, res, ctx) => {
       (edge) => edge.node.name === saleName
     );
     const currentSale = currentSaleEdge ? currentSaleEdge.node : undefined;
-    console.log("currentSale", currentSale);
+    //console.log("currentSale", currentSale);
     const saleId = currentSale?.id;
     const allChannels = currentSale?.channelListings || [];
     const uniqueChannels = allChannels.map((listing) => listing.channel.slug);
-    console.log("uniqueChannels", uniqueChannels);
+    //console.log("uniqueChannels", uniqueChannels);
 
     if (!saleId) {
       console.log("No sale found with the given name:", saleName);

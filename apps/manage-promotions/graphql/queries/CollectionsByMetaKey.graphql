@@ -1,5 +1,5 @@
 query CollectionsByMetaKey($filter: CollectionFilterInput, $channel: String!) {
-  collections(first:90, filter: $filter, channel: $channel) {
+  collections(first:200, filter: $filter, channel: $channel) {
     edges {
         node {
             id

@@ -1,5 +1,5 @@
 query CategoriesAll {
-  categories(first:90) {
+  categories(first:200) {
     edges {
         node {
             id

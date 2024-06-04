@@ -1,5 +1,5 @@
 query getAllPromotions {
-    promotions (first: 90){
+    promotions (first: 200){
         edges {
             node {
                 id
