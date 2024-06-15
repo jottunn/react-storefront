@@ -297,17 +297,18 @@ export const ProductsImporterView = () => {
         }
 
         attributes.push(prodAttr);
-      } else if (attrKey === "brand-ref") {
-        const brandPageSlug = row["brand"].trim().replace(" ", "-").toLowerCase();
-        let pageId = productInputIdsCache["Pages"] && productInputIdsCache["Pages"][brandPageSlug];
-        if (!pageId) {
-          pageId = await getPageId(brandPageSlug);
-        }
-        attributes.push({
-          id: definedProdAttributes[attrKey][0],
-          references: [pageId],
-        });
       }
+      // } else if (attrKey === "brand-ref") {
+      //   const brandPageSlug = row["brand"].trim().replace(" ", "-").toLowerCase();
+      //   let pageId = productInputIdsCache["Pages"] && productInputIdsCache["Pages"][brandPageSlug];
+      //   if (!pageId) {
+      //     pageId = await getPageId(brandPageSlug);
+      //   }
+      //   attributes.push({
+      //     id: definedProdAttributes[attrKey][0],
+      //     references: [pageId],
+      //   });
+      // }
     }
 
     return attributes;
@@ -504,18 +505,13 @@ export const ProductsImporterView = () => {
         }
 
         const nowISO = new Date().toISOString();
-        const seoDescription = `${productName} ${colorDisplayed} - ${row["brand"]} - pe magazinul online Surmont.ro`;
+        //const seoDescription = `${productName} ${colorDisplayed} - ${row["brand"]} - pe magazinul online Surmont.ro`;
 
         //if product is not in products, create the object
         if (!products[productName]) {
           products[productName] = {
             name: productName,
             attributes: [],
-            seo: {
-              title:
-                productName + (colorDisplayed ? " - " + colorDisplayed : "") + " | " + "Surmont",
-              description: seoDescription,
-            },
             category: productInputIdsCache["Categorie site"][category],
             productType: productInputIdsCache["Tip produs"][productType]["id"],
             channelListings: [
