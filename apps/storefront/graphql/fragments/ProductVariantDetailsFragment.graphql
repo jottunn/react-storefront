@@ -7,7 +7,30 @@ fragment ProductVariantDetailsFragment on ProductVariant {
   }
   quantityAvailable
   attributes {
-    ...SelectedAttributeDetailsFragment
+    attribute {
+      id
+      slug
+      name
+      translation(languageCode: $locale) {
+        id
+        name
+      }
+      inputType
+      type
+      unit
+    }
+    values {
+      id
+      name
+      translation(languageCode: $locale) {
+        id
+        name
+        richText
+      }
+      slug
+      value
+      reference
+    }
   }
   media {
     alt
@@ -18,17 +41,20 @@ fragment ProductVariantDetailsFragment on ProductVariant {
     onSale
     priceUndiscounted {
       gross {
-        ...PriceFragment
+          currency
+          amount
       }
     }
     discount {
       gross {
-        ...PriceFragment
+          currency
+          amount
       }
     }
     price {
       gross {
-        ...PriceFragment
+          currency
+          amount
       }
     }
   }

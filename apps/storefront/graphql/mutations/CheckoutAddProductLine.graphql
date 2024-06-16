@@ -1,9 +1,9 @@
 mutation CheckoutAddProductLine(
-  $checkoutToken: UUID!
-  $variantId: ID!
+  $id: ID!,
+  $productVariantId: ID!,
   $locale: LanguageCodeEnum!
 ) {
-  checkoutLinesAdd(token: $checkoutToken, lines: [{ quantity: 1, variantId: $variantId }]) {
+  checkoutLinesAdd(id: $id, lines: [{ quantity: 1, variantId: $productVariantId }]) {
     checkout {
       ...CheckoutDetailsFragment
     }

@@ -1,9 +1,9 @@
 mutation RemoveProductFromCheckout(
-  $checkoutToken: UUID!
   $lineId: ID!
   $locale: LanguageCodeEnum!
+  $id: ID!
 ) {
-  checkoutLineDelete(token: $checkoutToken, lineId: $lineId) {
+checkoutLineDelete(lineId: $lineId, id: $id) {
     checkout {
       ...CheckoutDetailsFragment
     }

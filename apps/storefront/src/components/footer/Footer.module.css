@@ -1,0 +1,43 @@
+.footer {
+  @apply mb-18 sm:mb-15 mt-8 border-t-2;
+}
+
+.footer-inner {
+  @apply sm:container px-6;
+}
+
+@screen sm {
+  .footer-inner {
+    padding: calc(theme("spacing.10") - theme("borderWidth.2"));
+  }
+}
+
+.menu {
+  @apply list-none mb-8;
+}
+
+.menu li + li {
+  @apply mt-2;
+}
+
+.menu-heading {
+  @apply block text-md font-bold mb-4 cursor-pointer uppercase;
+}
+
+.menu-link {
+  @apply text-base cursor-pointer hover:underline;
+}
+
+.footer-grid > div {
+  min-height: 30px;
+}
+
+@screen md {
+  .footer-grid {
+    max-width: 100%;
+    display: grid;
+    grid-gap: 1rem;
+    text-align: left;
+    grid-template-columns: 2fr 2fr 1fr 1fr;
+  }
+}

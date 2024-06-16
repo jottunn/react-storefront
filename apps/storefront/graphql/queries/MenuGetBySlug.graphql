@@ -1,0 +1,7 @@
+query MenuGetBySlug($slug: String!, $locale: LanguageCodeEnum!, $channel: String!) {
+	menu(slug: $slug, channel: $channel) {
+		items {
+			...MenuItemWithChildrenFragment
+		}
+	}
+}

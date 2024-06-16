@@ -1,6 +1,5 @@
 fragment CheckoutDetailsFragment on Checkout {
   id
-  token
   email
   billingAddress {
     ...AddressDetailsFragment
@@ -8,7 +7,7 @@ fragment CheckoutDetailsFragment on Checkout {
   shippingAddress {
     ...AddressDetailsFragment
   }
-  shippingMethod {
+  deliveryMethod {
     ...DeliveryMethodFragment
   }
   isShippingRequired
@@ -16,7 +15,7 @@ fragment CheckoutDetailsFragment on Checkout {
 		id
 		email
 	}
-  availableShippingMethods {
+  shippingMethods {
     ...DeliveryMethodFragment
   }
   availablePaymentGateways {

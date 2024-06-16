@@ -21,6 +21,7 @@ generates:
         Metadata: Record<string, string>
         DateTime: string
       dedupeOperationSuffix: true # Prevent suffix duplication in generated names
+      dedupeFragments: true
       enumsAsTypes: true
   ./graphql.schema.json:
     plugins:

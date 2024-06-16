@@ -1,9 +1,9 @@
 mutation CheckoutShippingMethodUpdate(
-  $token: UUID!
+  $id: ID
   $shippingMethodId: ID!
   $locale: LanguageCodeEnum!
 ) {
-  checkoutShippingMethodUpdate(shippingMethodId: $shippingMethodId, token: $token) {
+  checkoutShippingMethodUpdate(shippingMethodId: $shippingMethodId, id: $id) {
     checkout {
       ...CheckoutDetailsFragment
     }

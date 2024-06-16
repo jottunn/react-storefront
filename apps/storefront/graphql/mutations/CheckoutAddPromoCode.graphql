@@ -1,5 +1,5 @@
-mutation CheckoutAddPromoCode($token: UUID!, $promoCode: String!, $locale: LanguageCodeEnum!) {
-  checkoutAddPromoCode(token: $token, promoCode: $promoCode) {
+mutation CheckoutAddPromoCode($id: ID, $promoCode: String!, $locale: LanguageCodeEnum!) {
+  checkoutAddPromoCode(id: $id, promoCode: $promoCode) {
     checkout {
       ...CheckoutDetailsFragment
     }

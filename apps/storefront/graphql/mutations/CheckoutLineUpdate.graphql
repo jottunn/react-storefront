@@ -1,9 +1,9 @@
 mutation CheckoutLineUpdate(
-  $token: UUID
+	$checkoutId: ID!
   $lines: [CheckoutLineUpdateInput!]!
   $locale: LanguageCodeEnum!
 ) {
-  checkoutLinesUpdate(token: $token, lines: $lines) {
+	checkoutLinesUpdate(id: $checkoutId, lines: $lines) {
     checkout {
       ...CheckoutDetailsFragment
     }

@@ -3,7 +3,8 @@ query CollectionBySlug($slug: String!, $channel: String!, $locale: LanguageCodeE
     id
     ...CollectionDetailsFragment
     backgroundImage {
-      ...ImageFragment
+        url
+        alt
     }
   }
 }

@@ -1,9 +1,9 @@
 mutation CheckoutShippingAddressUpdate(
-  $token: UUID!
+  $id: ID
   $address: AddressInput!
   $locale: LanguageCodeEnum!
 ) {
-  checkoutShippingAddressUpdate(shippingAddress: $address, token: $token) {
+  checkoutShippingAddressUpdate(shippingAddress: $address, id: $id) {
     checkout {
       ...CheckoutDetailsFragment
     }

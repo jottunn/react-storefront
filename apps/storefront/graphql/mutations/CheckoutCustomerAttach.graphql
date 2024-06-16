@@ -1,5 +1,5 @@
-mutation checkoutCustomerAttach($checkoutId: ID!, $locale: LanguageCodeEnum!) {
-	checkoutCustomerAttach(id: $checkoutId) {
+mutation checkoutCustomerAttach($id: ID!, $locale: LanguageCodeEnum!) {
+	checkoutCustomerAttach(id: $id) {
 		errors {
             message
             field

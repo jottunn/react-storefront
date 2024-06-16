@@ -7,11 +7,11 @@ const spacing = getSpacing(
   [
     0, 0.5, 1, 1.5, 2, 2.5, 3, 4, 5, 6, 6.5, 7, 8, 10, 11, 12, 14, 16, 15, 18, 19, 21, 22, 28, 85,
     256, 350,
-  ]
+  ],
 );
 
 module.exports = {
-  content: ["./pages/**/*.{js,ts,jsx,tsx}", "./components/**/*.{js,ts,jsx,tsx}"],
+  content: ["./src/app/**/*.{js,ts,jsx,tsx}", "./src/components/**/*.{js,ts,jsx,tsx}"],
   mode: "jit",
   theme: {
     extend: {
@@ -47,6 +47,7 @@ module.exports = {
           4: "rgba(57, 64, 82, 0.15)",
           5: "#EEF1F7",
           6: "rgb(240,240,240)",
+          7: "#F8FAFF",
         },
       },
       spacing: {
@@ -56,14 +57,14 @@ module.exports = {
       borderWidth: {
         DEFAULT: "1px",
       },
-      fontFamily: {
-        sans: ["Open Sans"],
-      },
       fontWeight: {
+        ultralight: 200,
+        light: 300,
         normal: 400,
         regular: 500,
         semibold: 600,
         bold: 800,
+        dark: 900,
       },
       fontSize: {
         xs: ["1.2rem", "1.6rem"],

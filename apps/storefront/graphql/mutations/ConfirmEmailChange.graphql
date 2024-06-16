@@ -1,5 +1,5 @@
-mutation confirmEmailChange($token: String!) {
-	confirmEmailChange(token: $token) {
+mutation confirmEmailChange($token: String!, $channel: String) {
+	confirmEmailChange(token: $token, channel: $channel) {
 		errors {
 			message
 			field

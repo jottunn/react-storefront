@@ -654,6 +654,14 @@ export type AddressInput = {
   phone?: InputMaybe<Scalars["String"]["input"]>;
   /** Postal code. */
   postalCode?: InputMaybe<Scalars["String"]["input"]>;
+  /**
+   * Determine if the address should be validated. By default, Saleor accepts only address inputs matching ruleset from [Google Address Data]{https://chromium-i18n.appspot.com/ssl-address), using [i18naddress](https://github.com/mirumee/google-i18n-address) library. Some mutations may require additional permissions to use the the field. More info about permissions can be found in relevant mutation.
+   *
+   * Added in Saleor 3.19.
+   *
+   * Note: this API is currently in Feature Preview and can be subject to changes at later point.
+   */
+  skipValidation?: InputMaybe<Scalars["Boolean"]["input"]>;
   /** Address. */
   streetAddress1?: InputMaybe<Scalars["String"]["input"]>;
   /** Address. */
@@ -4395,6 +4403,8 @@ export type CheckoutCountableEdge = {
 /**
  * Create a new checkout.
  *
+ * `skipValidation` field requires HANDLE_CHECKOUTS and AUTHENTICATED_APP permissions.
+ *
  * Triggers the following webhook events:
  * - CHECKOUT_CREATED (async): A checkout was created.
  */
@@ -4467,7 +4477,7 @@ export type CheckoutCreateFromOrderUnavailableVariantErrorCode =
   | "UNAVAILABLE_VARIANT_IN_CHANNEL";
 
 export type CheckoutCreateInput = {
-  /** Billing address of the customer. */
+  /** Billing address of the customer. `skipValidation` requires HANDLE_CHECKOUTS and AUTHENTICATED_APP permissions. */
   billingAddress?: InputMaybe<AddressInput>;
   /** Slug of a channel in which to create a checkout. */
   channel?: InputMaybe<Scalars["String"]["input"]>;
@@ -4477,7 +4487,7 @@ export type CheckoutCreateInput = {
   languageCode?: InputMaybe<LanguageCodeEnum>;
   /** A list of checkout lines, each containing information about an item in the checkout. */
   lines: Array<CheckoutLineInput>;
-  /** The mailing address to where the checkout will be shipped. Note: the address will be ignored if the checkout doesn't contain shippable items. */
+  /** The mailing address to where the checkout will be shipped. Note: the address will be ignored if the checkout doesn't contain shippable items. `skipValidation` requires HANDLE_CHECKOUTS and AUTHENTICATED_APP permissions. */
   shippingAddress?: InputMaybe<AddressInput>;
   /**
    * The checkout validation rules that can be changed.
@@ -11269,6 +11279,8 @@ export type Mutation = {
   checkoutComplete?: Maybe<CheckoutComplete>;
   /**
    * Create a new checkout.
+   *
+   * `skipValidation` field requires HANDLE_CHECKOUTS and AUTHENTICATED_APP permissions.
    *
    * Triggers the following webhook events:
    * - CHECKOUT_CREATED (async): A checkout was created.
@@ -18449,6 +18461,7 @@ export type PaymentErrorCode =
   | "BALANCE_CHECK_ERROR"
   | "BILLING_ADDRESS_NOT_SET"
   | "CHANNEL_INACTIVE"
+  | "CHECKOUT_COMPLETION_IN_PROGRESS"
   | "CHECKOUT_EMAIL_NOT_SET"
   | "GRAPHQL_ERROR"
   | "INVALID"
@@ -23636,7 +23649,7 @@ export type Query = {
   /**
    * Look up a checkout by id.
    *
-   * Requires one of the following permissions to query checkouts that belong to other users: MANAGE_CHECKOUTS, IMPERSONATE_USER.
+   * Requires one of the following permissions to query a checkout, if a checkout is in inactive channel: MANAGE_CHECKOUTS, IMPERSONATE_USER, HANDLE_PAYMENTS.
    */
   checkout?: Maybe<Checkout>;
   /**
@@ -23648,7 +23661,7 @@ export type Query = {
   /**
    * List of checkouts.
    *
-   * Requires one of the following permissions: MANAGE_CHECKOUTS.
+   * Requires one of the following permissions: MANAGE_CHECKOUTS, HANDLE_PAYMENTS.
    */
   checkouts?: Maybe<CheckoutCountableConnection>;
   /** Look up a collection by ID. Requires one of the following permissions to include the unpublished items: MANAGE_ORDERS, MANAGE_DISCOUNTS, MANAGE_PRODUCTS. */
@@ -30741,7 +30754,7 @@ export type WebhookCreateInput = {
   /** The asynchronous events that webhook wants to subscribe. */
   asyncEvents?: InputMaybe<Array<WebhookEventTypeAsyncEnum>>;
   /**
-   * Custom headers, which will be added to HTTP request. There is a limitation of 5 headers per webhook and 998 characters per header.Only "X-*" and "Authorization*" keys are allowed.
+   * Custom headers, which will be added to HTTP request. There is a limitation of 5 headers per webhook and 998 characters per header.Only `X-*`, `Authorization*`, and `BrokerProperties` keys are allowed.
    *
    * Added in Saleor 3.12.
    *
@@ -32013,7 +32026,7 @@ export type WebhookUpdateInput = {
   /** The asynchronous events that webhook wants to subscribe. */
   asyncEvents?: InputMaybe<Array<WebhookEventTypeAsyncEnum>>;
   /**
-   * Custom headers, which will be added to HTTP request. There is a limitation of 5 headers per webhook and 998 characters per header.Only "X-*" and "Authorization*" keys are allowed.
+   * Custom headers, which will be added to HTTP request. There is a limitation of 5 headers per webhook and 998 characters per header.Only `X-*`, `Authorization*`, and `BrokerProperties` keys are allowed.
    *
    * Added in Saleor 3.12.
    *
@@ -32242,7 +32255,6 @@ export type CategoryDetailsFragment = {
 export type CheckoutDetailsFragment = {
   __typename?: "Checkout";
   id: string;
-  token: string;
   email?: string | null;
   isShippingRequired: boolean;
   voucherCode?: string | null;
@@ -32277,17 +32289,20 @@ export type CheckoutDetailsFragment = {
     isDefaultShippingAddress?: boolean | null;
     country: { __typename?: "CountryDisplay"; code: string; country: string };
   } | null;
-  shippingMethod?: {
-    __typename?: "ShippingMethod";
-    id: string;
-    name: string;
-    minimumDeliveryDays?: number | null;
-    maximumDeliveryDays?: number | null;
-    translation?: { __typename?: "ShippingMethodTranslation"; id: string; name: string } | null;
-    price: { __typename?: "Money"; currency: string; amount: number };
-  } | null;
+  deliveryMethod?:
+    | {
+        __typename?: "ShippingMethod";
+        id: string;
+        name: string;
+        minimumDeliveryDays?: number | null;
+        maximumDeliveryDays?: number | null;
+        translation?: { __typename?: "ShippingMethodTranslation"; id: string; name: string } | null;
+        price: { __typename?: "Money"; currency: string; amount: number };
+      }
+    | { __typename?: "Warehouse" }
+    | null;
   user?: { __typename?: "User"; id: string; email: string } | null;
-  availableShippingMethods: Array<{
+  shippingMethods: Array<{
     __typename?: "ShippingMethod";
     id: string;
     name: string;
@@ -32352,7 +32367,6 @@ export type CheckoutDetailsFragment = {
           name?: string | null;
           slug?: string | null;
           value?: string | null;
-          inputType?: AttributeInputTypeEnum | null;
           reference?: string | null;
           translation?: {
             __typename?: "AttributeValueTranslation";
@@ -32434,7 +32448,6 @@ export type CheckoutLineDetailsFragment = {
         name?: string | null;
         slug?: string | null;
         value?: string | null;
-        inputType?: AttributeInputTypeEnum | null;
         reference?: string | null;
         translation?: {
           __typename?: "AttributeValueTranslation";
@@ -32679,7 +32692,6 @@ export type ProductCardFragment = {
       name?: string | null;
       slug?: string | null;
       value?: string | null;
-      inputType?: AttributeInputTypeEnum | null;
       reference?: string | null;
       translation?: {
         __typename?: "AttributeValueTranslation";
@@ -32713,7 +32725,6 @@ export type ProductCardFragment = {
         name?: string | null;
         slug?: string | null;
         value?: string | null;
-        inputType?: AttributeInputTypeEnum | null;
         reference?: string | null;
         translation?: {
           __typename?: "AttributeValueTranslation";
@@ -32781,7 +32792,6 @@ export type ProductDetailsFragment = {
       name?: string | null;
       slug?: string | null;
       value?: string | null;
-      inputType?: AttributeInputTypeEnum | null;
       reference?: string | null;
       translation?: {
         __typename?: "AttributeValueTranslation";
@@ -32839,7 +32849,6 @@ export type ProductDetailsFragment = {
         name?: string | null;
         slug?: string | null;
         value?: string | null;
-        inputType?: AttributeInputTypeEnum | null;
         reference?: string | null;
         translation?: {
           __typename?: "AttributeValueTranslation";
@@ -32878,7 +32887,11 @@ export type ProductDetailsFragment = {
       __typename?: "TaxedMoneyRange";
       start?: {
         __typename?: "TaxedMoney";
-        gross: { __typename?: "Money"; currency: string; amount: number };
+        gross: { __typename?: "Money"; amount: number; currency: string };
+      } | null;
+      stop?: {
+        __typename?: "TaxedMoney";
+        gross: { __typename?: "Money"; amount: number; currency: string };
       } | null;
     } | null;
   } | null;
@@ -32888,6 +32901,29 @@ export type ProductDetailsFragment = {
     alt: string;
     type: ProductMediaType;
   }> | null;
+  thumbnail?: { __typename?: "Image"; url: string; alt?: string | null } | null;
+};
+
+export type ProductListItemFragment = {
+  __typename?: "Product";
+  id: string;
+  name: string;
+  slug: string;
+  pricing?: {
+    __typename?: "ProductPricingInfo";
+    priceRange?: {
+      __typename?: "TaxedMoneyRange";
+      start?: {
+        __typename?: "TaxedMoney";
+        gross: { __typename?: "Money"; amount: number; currency: string };
+      } | null;
+      stop?: {
+        __typename?: "TaxedMoney";
+        gross: { __typename?: "Money"; amount: number; currency: string };
+      } | null;
+    } | null;
+  } | null;
+  category?: { __typename?: "Category"; id: string; name: string } | null;
   thumbnail?: { __typename?: "Image"; url: string; alt?: string | null } | null;
 };
 
@@ -32922,7 +32958,6 @@ export type ProductVariantDetailsFragment = {
       name?: string | null;
       slug?: string | null;
       value?: string | null;
-      inputType?: AttributeInputTypeEnum | null;
       reference?: string | null;
       translation?: {
         __typename?: "AttributeValueTranslation";
@@ -32974,7 +33009,6 @@ export type SelectedAttributeDetailsFragment = {
     name?: string | null;
     slug?: string | null;
     value?: string | null;
-    inputType?: AttributeInputTypeEnum | null;
     reference?: string | null;
     translation?: {
       __typename?: "AttributeValueTranslation";
@@ -33011,6 +33045,7 @@ export type AddressDeleteMutation = {
         country: { __typename?: "CountryDisplay"; code: string; country: string };
       }>;
     } | null;
+    errors: Array<{ __typename?: "AccountError"; message?: string | null; code: AccountErrorCode }>;
   } | null;
 };
 
@@ -33034,8 +33069,8 @@ export type AddressSetDefaultMutation = {
 };
 
 export type CheckoutAddProductLineMutationVariables = Exact<{
-  checkoutToken: Scalars["UUID"]["input"];
-  variantId: Scalars["ID"]["input"];
+  id: Scalars["ID"]["input"];
+  productVariantId: Scalars["ID"]["input"];
   locale: LanguageCodeEnum;
 }>;
 
@@ -33046,7 +33081,6 @@ export type CheckoutAddProductLineMutation = {
     checkout?: {
       __typename?: "Checkout";
       id: string;
-      token: string;
       email?: string | null;
       isShippingRequired: boolean;
       voucherCode?: string | null;
@@ -33081,17 +33115,24 @@ export type CheckoutAddProductLineMutation = {
         isDefaultShippingAddress?: boolean | null;
         country: { __typename?: "CountryDisplay"; code: string; country: string };
       } | null;
-      shippingMethod?: {
-        __typename?: "ShippingMethod";
-        id: string;
-        name: string;
-        minimumDeliveryDays?: number | null;
-        maximumDeliveryDays?: number | null;
-        translation?: { __typename?: "ShippingMethodTranslation"; id: string; name: string } | null;
-        price: { __typename?: "Money"; currency: string; amount: number };
-      } | null;
+      deliveryMethod?:
+        | {
+            __typename?: "ShippingMethod";
+            id: string;
+            name: string;
+            minimumDeliveryDays?: number | null;
+            maximumDeliveryDays?: number | null;
+            translation?: {
+              __typename?: "ShippingMethodTranslation";
+              id: string;
+              name: string;
+            } | null;
+            price: { __typename?: "Money"; currency: string; amount: number };
+          }
+        | { __typename?: "Warehouse" }
+        | null;
       user?: { __typename?: "User"; id: string; email: string } | null;
-      availableShippingMethods: Array<{
+      shippingMethods: Array<{
         __typename?: "ShippingMethod";
         id: string;
         name: string;
@@ -33160,7 +33201,6 @@ export type CheckoutAddProductLineMutation = {
               name?: string | null;
               slug?: string | null;
               value?: string | null;
-              inputType?: AttributeInputTypeEnum | null;
               reference?: string | null;
               translation?: {
                 __typename?: "AttributeValueTranslation";
@@ -33208,7 +33248,7 @@ export type CheckoutAddProductLineMutation = {
 };
 
 export type CheckoutAddPromoCodeMutationVariables = Exact<{
-  token: Scalars["UUID"]["input"];
+  id?: InputMaybe<Scalars["ID"]["input"]>;
   promoCode: Scalars["String"]["input"];
   locale: LanguageCodeEnum;
 }>;
@@ -33220,7 +33260,6 @@ export type CheckoutAddPromoCodeMutation = {
     checkout?: {
       __typename?: "Checkout";
       id: string;
-      token: string;
       email?: string | null;
       isShippingRequired: boolean;
       voucherCode?: string | null;
@@ -33255,17 +33294,24 @@ export type CheckoutAddPromoCodeMutation = {
         isDefaultShippingAddress?: boolean | null;
         country: { __typename?: "CountryDisplay"; code: string; country: string };
       } | null;
-      shippingMethod?: {
-        __typename?: "ShippingMethod";
-        id: string;
-        name: string;
-        minimumDeliveryDays?: number | null;
-        maximumDeliveryDays?: number | null;
-        translation?: { __typename?: "ShippingMethodTranslation"; id: string; name: string } | null;
-        price: { __typename?: "Money"; currency: string; amount: number };
-      } | null;
+      deliveryMethod?:
+        | {
+            __typename?: "ShippingMethod";
+            id: string;
+            name: string;
+            minimumDeliveryDays?: number | null;
+            maximumDeliveryDays?: number | null;
+            translation?: {
+              __typename?: "ShippingMethodTranslation";
+              id: string;
+              name: string;
+            } | null;
+            price: { __typename?: "Money"; currency: string; amount: number };
+          }
+        | { __typename?: "Warehouse" }
+        | null;
       user?: { __typename?: "User"; id: string; email: string } | null;
-      availableShippingMethods: Array<{
+      shippingMethods: Array<{
         __typename?: "ShippingMethod";
         id: string;
         name: string;
@@ -33334,7 +33380,6 @@ export type CheckoutAddPromoCodeMutation = {
               name?: string | null;
               slug?: string | null;
               value?: string | null;
-              inputType?: AttributeInputTypeEnum | null;
               reference?: string | null;
               translation?: {
                 __typename?: "AttributeValueTranslation";
@@ -33378,7 +33423,7 @@ export type CheckoutAddPromoCodeMutation = {
 };
 
 export type CheckoutBillingAddressUpdateMutationVariables = Exact<{
-  token: Scalars["UUID"]["input"];
+  id?: InputMaybe<Scalars["ID"]["input"]>;
   address: AddressInput;
   locale: LanguageCodeEnum;
 }>;
@@ -33390,7 +33435,6 @@ export type CheckoutBillingAddressUpdateMutation = {
     checkout?: {
       __typename?: "Checkout";
       id: string;
-      token: string;
       email?: string | null;
       isShippingRequired: boolean;
       voucherCode?: string | null;
@@ -33425,17 +33469,24 @@ export type CheckoutBillingAddressUpdateMutation = {
         isDefaultShippingAddress?: boolean | null;
         country: { __typename?: "CountryDisplay"; code: string; country: string };
       } | null;
-      shippingMethod?: {
-        __typename?: "ShippingMethod";
-        id: string;
-        name: string;
-        minimumDeliveryDays?: number | null;
-        maximumDeliveryDays?: number | null;
-        translation?: { __typename?: "ShippingMethodTranslation"; id: string; name: string } | null;
-        price: { __typename?: "Money"; currency: string; amount: number };
-      } | null;
+      deliveryMethod?:
+        | {
+            __typename?: "ShippingMethod";
+            id: string;
+            name: string;
+            minimumDeliveryDays?: number | null;
+            maximumDeliveryDays?: number | null;
+            translation?: {
+              __typename?: "ShippingMethodTranslation";
+              id: string;
+              name: string;
+            } | null;
+            price: { __typename?: "Money"; currency: string; amount: number };
+          }
+        | { __typename?: "Warehouse" }
+        | null;
       user?: { __typename?: "User"; id: string; email: string } | null;
-      availableShippingMethods: Array<{
+      shippingMethods: Array<{
         __typename?: "ShippingMethod";
         id: string;
         name: string;
@@ -33504,7 +33555,6 @@ export type CheckoutBillingAddressUpdateMutation = {
               name?: string | null;
               slug?: string | null;
               value?: string | null;
-              inputType?: AttributeInputTypeEnum | null;
               reference?: string | null;
               translation?: {
                 __typename?: "AttributeValueTranslation";
@@ -33553,7 +33603,7 @@ export type CheckoutBillingAddressUpdateMutation = {
 };
 
 export type CheckoutCompleteMutationVariables = Exact<{
-  checkoutToken: Scalars["UUID"]["input"];
+  id?: InputMaybe<Scalars["ID"]["input"]>;
   paymentData?: InputMaybe<Scalars["JSONString"]["input"]>;
 }>;
 
@@ -33610,8 +33660,6 @@ export type CheckoutCompleteMutation = {
 };
 
 export type CreateCheckoutMutationVariables = Exact<{
-  email?: InputMaybe<Scalars["String"]["input"]>;
-  lines: Array<CheckoutLineInput> | CheckoutLineInput;
   channel: Scalars["String"]["input"];
 }>;
 
@@ -33619,19 +33667,51 @@ export type CreateCheckoutMutation = {
   __typename?: "Mutation";
   checkoutCreate?: {
     __typename?: "CheckoutCreate";
-    checkout?: { __typename?: "Checkout"; id: string; token: string } | null;
-    errors: Array<{
-      __typename?: "CheckoutError";
-      field?: string | null;
-      message?: string | null;
-      code: CheckoutErrorCode;
-    }>;
+    checkout?: {
+      __typename?: "Checkout";
+      id: string;
+      email?: string | null;
+      lines: Array<{
+        __typename?: "CheckoutLine";
+        id: string;
+        quantity: number;
+        totalPrice: {
+          __typename?: "TaxedMoney";
+          gross: { __typename?: "Money"; amount: number; currency: string };
+        };
+        variant: {
+          __typename?: "ProductVariant";
+          name: string;
+          id: string;
+          product: {
+            __typename?: "Product";
+            id: string;
+            name: string;
+            slug: string;
+            thumbnail?: { __typename?: "Image"; url: string; alt?: string | null } | null;
+            category?: { __typename?: "Category"; name: string } | null;
+          };
+          pricing?: {
+            __typename?: "VariantPricingInfo";
+            price?: {
+              __typename?: "TaxedMoney";
+              gross: { __typename?: "Money"; amount: number; currency: string };
+            } | null;
+          } | null;
+        };
+      }>;
+      totalPrice: {
+        __typename?: "TaxedMoney";
+        gross: { __typename?: "Money"; amount: number; currency: string };
+      };
+    } | null;
+    errors: Array<{ __typename?: "CheckoutError"; field?: string | null; code: CheckoutErrorCode }>;
   } | null;
 };
 
 export type CheckoutPaymentCreateMutationVariables = Exact<{
-  checkoutToken: Scalars["UUID"]["input"];
-  paymentInput: PaymentInput;
+  id?: InputMaybe<Scalars["ID"]["input"]>;
+  input: PaymentInput;
 }>;
 
 export type CheckoutPaymentCreateMutation = {
@@ -33648,7 +33728,7 @@ export type CheckoutPaymentCreateMutation = {
 };
 
 export type CheckoutCustomerAttachMutationVariables = Exact<{
-  checkoutId: Scalars["ID"]["input"];
+  id: Scalars["ID"]["input"];
   locale: LanguageCodeEnum;
 }>;
 
@@ -33665,7 +33745,6 @@ export type CheckoutCustomerAttachMutation = {
     checkout?: {
       __typename?: "Checkout";
       id: string;
-      token: string;
       email?: string | null;
       isShippingRequired: boolean;
       voucherCode?: string | null;
@@ -33700,17 +33779,24 @@ export type CheckoutCustomerAttachMutation = {
         isDefaultShippingAddress?: boolean | null;
         country: { __typename?: "CountryDisplay"; code: string; country: string };
       } | null;
-      shippingMethod?: {
-        __typename?: "ShippingMethod";
-        id: string;
-        name: string;
-        minimumDeliveryDays?: number | null;
-        maximumDeliveryDays?: number | null;
-        translation?: { __typename?: "ShippingMethodTranslation"; id: string; name: string } | null;
-        price: { __typename?: "Money"; currency: string; amount: number };
-      } | null;
+      deliveryMethod?:
+        | {
+            __typename?: "ShippingMethod";
+            id: string;
+            name: string;
+            minimumDeliveryDays?: number | null;
+            maximumDeliveryDays?: number | null;
+            translation?: {
+              __typename?: "ShippingMethodTranslation";
+              id: string;
+              name: string;
+            } | null;
+            price: { __typename?: "Money"; currency: string; amount: number };
+          }
+        | { __typename?: "Warehouse" }
+        | null;
       user?: { __typename?: "User"; id: string; email: string } | null;
-      availableShippingMethods: Array<{
+      shippingMethods: Array<{
         __typename?: "ShippingMethod";
         id: string;
         name: string;
@@ -33779,7 +33865,6 @@ export type CheckoutCustomerAttachMutation = {
               name?: string | null;
               slug?: string | null;
               value?: string | null;
-              inputType?: AttributeInputTypeEnum | null;
               reference?: string | null;
               translation?: {
                 __typename?: "AttributeValueTranslation";
@@ -33822,7 +33907,7 @@ export type CheckoutCustomerAttachMutation = {
 };
 
 export type CheckoutEmailUpdateMutationVariables = Exact<{
-  token: Scalars["UUID"]["input"];
+  id: Scalars["ID"]["input"];
   email: Scalars["String"]["input"];
   locale: LanguageCodeEnum;
 }>;
@@ -33834,7 +33919,6 @@ export type CheckoutEmailUpdateMutation = {
     checkout?: {
       __typename?: "Checkout";
       id: string;
-      token: string;
       email?: string | null;
       isShippingRequired: boolean;
       voucherCode?: string | null;
@@ -33869,17 +33953,24 @@ export type CheckoutEmailUpdateMutation = {
         isDefaultShippingAddress?: boolean | null;
         country: { __typename?: "CountryDisplay"; code: string; country: string };
       } | null;
-      shippingMethod?: {
-        __typename?: "ShippingMethod";
-        id: string;
-        name: string;
-        minimumDeliveryDays?: number | null;
-        maximumDeliveryDays?: number | null;
-        translation?: { __typename?: "ShippingMethodTranslation"; id: string; name: string } | null;
-        price: { __typename?: "Money"; currency: string; amount: number };
-      } | null;
+      deliveryMethod?:
+        | {
+            __typename?: "ShippingMethod";
+            id: string;
+            name: string;
+            minimumDeliveryDays?: number | null;
+            maximumDeliveryDays?: number | null;
+            translation?: {
+              __typename?: "ShippingMethodTranslation";
+              id: string;
+              name: string;
+            } | null;
+            price: { __typename?: "Money"; currency: string; amount: number };
+          }
+        | { __typename?: "Warehouse" }
+        | null;
       user?: { __typename?: "User"; id: string; email: string } | null;
-      availableShippingMethods: Array<{
+      shippingMethods: Array<{
         __typename?: "ShippingMethod";
         id: string;
         name: string;
@@ -33948,7 +34039,6 @@ export type CheckoutEmailUpdateMutation = {
               name?: string | null;
               slug?: string | null;
               value?: string | null;
-              inputType?: AttributeInputTypeEnum | null;
               reference?: string | null;
               translation?: {
                 __typename?: "AttributeValueTranslation";
@@ -33992,7 +34082,7 @@ export type CheckoutEmailUpdateMutation = {
 };
 
 export type CheckoutLineUpdateMutationVariables = Exact<{
-  token?: InputMaybe<Scalars["UUID"]["input"]>;
+  checkoutId: Scalars["ID"]["input"];
   lines: Array<CheckoutLineUpdateInput> | CheckoutLineUpdateInput;
   locale: LanguageCodeEnum;
 }>;
@@ -34004,7 +34094,6 @@ export type CheckoutLineUpdateMutation = {
     checkout?: {
       __typename?: "Checkout";
       id: string;
-      token: string;
       email?: string | null;
       isShippingRequired: boolean;
       voucherCode?: string | null;
@@ -34039,17 +34128,24 @@ export type CheckoutLineUpdateMutation = {
         isDefaultShippingAddress?: boolean | null;
         country: { __typename?: "CountryDisplay"; code: string; country: string };
       } | null;
-      shippingMethod?: {
-        __typename?: "ShippingMethod";
-        id: string;
-        name: string;
-        minimumDeliveryDays?: number | null;
-        maximumDeliveryDays?: number | null;
-        translation?: { __typename?: "ShippingMethodTranslation"; id: string; name: string } | null;
-        price: { __typename?: "Money"; currency: string; amount: number };
-      } | null;
+      deliveryMethod?:
+        | {
+            __typename?: "ShippingMethod";
+            id: string;
+            name: string;
+            minimumDeliveryDays?: number | null;
+            maximumDeliveryDays?: number | null;
+            translation?: {
+              __typename?: "ShippingMethodTranslation";
+              id: string;
+              name: string;
+            } | null;
+            price: { __typename?: "Money"; currency: string; amount: number };
+          }
+        | { __typename?: "Warehouse" }
+        | null;
       user?: { __typename?: "User"; id: string; email: string } | null;
-      availableShippingMethods: Array<{
+      shippingMethods: Array<{
         __typename?: "ShippingMethod";
         id: string;
         name: string;
@@ -34118,7 +34214,6 @@ export type CheckoutLineUpdateMutation = {
               name?: string | null;
               slug?: string | null;
               value?: string | null;
-              inputType?: AttributeInputTypeEnum | null;
               reference?: string | null;
               translation?: {
                 __typename?: "AttributeValueTranslation";
@@ -34167,9 +34262,9 @@ export type CheckoutLineUpdateMutation = {
 };
 
 export type RemoveProductFromCheckoutMutationVariables = Exact<{
-  checkoutToken: Scalars["UUID"]["input"];
   lineId: Scalars["ID"]["input"];
   locale: LanguageCodeEnum;
+  id: Scalars["ID"]["input"];
 }>;
 
 export type RemoveProductFromCheckoutMutation = {
@@ -34179,7 +34274,6 @@ export type RemoveProductFromCheckoutMutation = {
     checkout?: {
       __typename?: "Checkout";
       id: string;
-      token: string;
       email?: string | null;
       isShippingRequired: boolean;
       voucherCode?: string | null;
@@ -34214,17 +34308,24 @@ export type RemoveProductFromCheckoutMutation = {
         isDefaultShippingAddress?: boolean | null;
         country: { __typename?: "CountryDisplay"; code: string; country: string };
       } | null;
-      shippingMethod?: {
-        __typename?: "ShippingMethod";
-        id: string;
-        name: string;
-        minimumDeliveryDays?: number | null;
-        maximumDeliveryDays?: number | null;
-        translation?: { __typename?: "ShippingMethodTranslation"; id: string; name: string } | null;
-        price: { __typename?: "Money"; currency: string; amount: number };
-      } | null;
+      deliveryMethod?:
+        | {
+            __typename?: "ShippingMethod";
+            id: string;
+            name: string;
+            minimumDeliveryDays?: number | null;
+            maximumDeliveryDays?: number | null;
+            translation?: {
+              __typename?: "ShippingMethodTranslation";
+              id: string;
+              name: string;
+            } | null;
+            price: { __typename?: "Money"; currency: string; amount: number };
+          }
+        | { __typename?: "Warehouse" }
+        | null;
       user?: { __typename?: "User"; id: string; email: string } | null;
-      availableShippingMethods: Array<{
+      shippingMethods: Array<{
         __typename?: "ShippingMethod";
         id: string;
         name: string;
@@ -34293,7 +34394,6 @@ export type RemoveProductFromCheckoutMutation = {
               name?: string | null;
               slug?: string | null;
               value?: string | null;
-              inputType?: AttributeInputTypeEnum | null;
               reference?: string | null;
               translation?: {
                 __typename?: "AttributeValueTranslation";
@@ -34337,7 +34437,7 @@ export type RemoveProductFromCheckoutMutation = {
 };
 
 export type CheckoutShippingAddressUpdateMutationVariables = Exact<{
-  token: Scalars["UUID"]["input"];
+  id?: InputMaybe<Scalars["ID"]["input"]>;
   address: AddressInput;
   locale: LanguageCodeEnum;
 }>;
@@ -34349,7 +34449,6 @@ export type CheckoutShippingAddressUpdateMutation = {
     checkout?: {
       __typename?: "Checkout";
       id: string;
-      token: string;
       email?: string | null;
       isShippingRequired: boolean;
       voucherCode?: string | null;
@@ -34384,17 +34483,24 @@ export type CheckoutShippingAddressUpdateMutation = {
         isDefaultShippingAddress?: boolean | null;
         country: { __typename?: "CountryDisplay"; code: string; country: string };
       } | null;
-      shippingMethod?: {
-        __typename?: "ShippingMethod";
-        id: string;
-        name: string;
-        minimumDeliveryDays?: number | null;
-        maximumDeliveryDays?: number | null;
-        translation?: { __typename?: "ShippingMethodTranslation"; id: string; name: string } | null;
-        price: { __typename?: "Money"; currency: string; amount: number };
-      } | null;
+      deliveryMethod?:
+        | {
+            __typename?: "ShippingMethod";
+            id: string;
+            name: string;
+            minimumDeliveryDays?: number | null;
+            maximumDeliveryDays?: number | null;
+            translation?: {
+              __typename?: "ShippingMethodTranslation";
+              id: string;
+              name: string;
+            } | null;
+            price: { __typename?: "Money"; currency: string; amount: number };
+          }
+        | { __typename?: "Warehouse" }
+        | null;
       user?: { __typename?: "User"; id: string; email: string } | null;
-      availableShippingMethods: Array<{
+      shippingMethods: Array<{
         __typename?: "ShippingMethod";
         id: string;
         name: string;
@@ -34463,7 +34569,6 @@ export type CheckoutShippingAddressUpdateMutation = {
               name?: string | null;
               slug?: string | null;
               value?: string | null;
-              inputType?: AttributeInputTypeEnum | null;
               reference?: string | null;
               translation?: {
                 __typename?: "AttributeValueTranslation";
@@ -34512,7 +34617,7 @@ export type CheckoutShippingAddressUpdateMutation = {
 };
 
 export type CheckoutShippingMethodUpdateMutationVariables = Exact<{
-  token: Scalars["UUID"]["input"];
+  id?: InputMaybe<Scalars["ID"]["input"]>;
   shippingMethodId: Scalars["ID"]["input"];
   locale: LanguageCodeEnum;
 }>;
@@ -34524,7 +34629,6 @@ export type CheckoutShippingMethodUpdateMutation = {
     checkout?: {
       __typename?: "Checkout";
       id: string;
-      token: string;
       email?: string | null;
       isShippingRequired: boolean;
       voucherCode?: string | null;
@@ -34559,17 +34663,24 @@ export type CheckoutShippingMethodUpdateMutation = {
         isDefaultShippingAddress?: boolean | null;
         country: { __typename?: "CountryDisplay"; code: string; country: string };
       } | null;
-      shippingMethod?: {
-        __typename?: "ShippingMethod";
-        id: string;
-        name: string;
-        minimumDeliveryDays?: number | null;
-        maximumDeliveryDays?: number | null;
-        translation?: { __typename?: "ShippingMethodTranslation"; id: string; name: string } | null;
-        price: { __typename?: "Money"; currency: string; amount: number };
-      } | null;
+      deliveryMethod?:
+        | {
+            __typename?: "ShippingMethod";
+            id: string;
+            name: string;
+            minimumDeliveryDays?: number | null;
+            maximumDeliveryDays?: number | null;
+            translation?: {
+              __typename?: "ShippingMethodTranslation";
+              id: string;
+              name: string;
+            } | null;
+            price: { __typename?: "Money"; currency: string; amount: number };
+          }
+        | { __typename?: "Warehouse" }
+        | null;
       user?: { __typename?: "User"; id: string; email: string } | null;
-      availableShippingMethods: Array<{
+      shippingMethods: Array<{
         __typename?: "ShippingMethod";
         id: string;
         name: string;
@@ -34638,7 +34749,6 @@ export type CheckoutShippingMethodUpdateMutation = {
               name?: string | null;
               slug?: string | null;
               value?: string | null;
-              inputType?: AttributeInputTypeEnum | null;
               reference?: string | null;
               translation?: {
                 __typename?: "AttributeValueTranslation";
@@ -34706,6 +34816,7 @@ export type ConfirmAccountMutation = {
 
 export type ConfirmEmailChangeMutationVariables = Exact<{
   token: Scalars["String"]["input"];
+  channel?: InputMaybe<Scalars["String"]["input"]>;
 }>;
 
 export type ConfirmEmailChangeMutation = {
@@ -34856,8 +34967,6 @@ export type AvailableProductFiltersQuery = {
             id: string;
             name?: string | null;
             slug?: string | null;
-            inputType?: AttributeInputTypeEnum | null;
-            value?: string | null;
           }>;
         }>;
         variants?: Array<{
@@ -34885,7 +34994,6 @@ export type AvailableProductFiltersQuery = {
               name?: string | null;
               slug?: string | null;
               value?: string | null;
-              inputType?: AttributeInputTypeEnum | null;
               reference?: string | null;
               translation?: {
                 __typename?: "AttributeValueTranslation";
@@ -35145,17 +35253,16 @@ export type ChannelQuery = {
   } | null;
 };
 
-export type CheckoutByTokenQueryVariables = Exact<{
-  checkoutToken: Scalars["UUID"]["input"];
+export type CheckoutFindQueryVariables = Exact<{
+  id: Scalars["ID"]["input"];
   locale: LanguageCodeEnum;
 }>;
 
-export type CheckoutByTokenQuery = {
+export type CheckoutFindQuery = {
   __typename?: "Query";
   checkout?: {
     __typename?: "Checkout";
     id: string;
-    token: string;
     email?: string | null;
     isShippingRequired: boolean;
     voucherCode?: string | null;
@@ -35190,17 +35297,24 @@ export type CheckoutByTokenQuery = {
       isDefaultShippingAddress?: boolean | null;
       country: { __typename?: "CountryDisplay"; code: string; country: string };
     } | null;
-    shippingMethod?: {
-      __typename?: "ShippingMethod";
-      id: string;
-      name: string;
-      minimumDeliveryDays?: number | null;
-      maximumDeliveryDays?: number | null;
-      translation?: { __typename?: "ShippingMethodTranslation"; id: string; name: string } | null;
-      price: { __typename?: "Money"; currency: string; amount: number };
-    } | null;
+    deliveryMethod?:
+      | {
+          __typename?: "ShippingMethod";
+          id: string;
+          name: string;
+          minimumDeliveryDays?: number | null;
+          maximumDeliveryDays?: number | null;
+          translation?: {
+            __typename?: "ShippingMethodTranslation";
+            id: string;
+            name: string;
+          } | null;
+          price: { __typename?: "Money"; currency: string; amount: number };
+        }
+      | { __typename?: "Warehouse" }
+      | null;
     user?: { __typename?: "User"; id: string; email: string } | null;
-    availableShippingMethods: Array<{
+    shippingMethods: Array<{
       __typename?: "ShippingMethod";
       id: string;
       name: string;
@@ -35265,7 +35379,6 @@ export type CheckoutByTokenQuery = {
             name?: string | null;
             slug?: string | null;
             value?: string | null;
-            inputType?: AttributeInputTypeEnum | null;
             reference?: string | null;
             translation?: {
               __typename?: "AttributeValueTranslation";
@@ -35561,6 +35674,49 @@ export type MainRightMenuQuery = {
   menu?: {
     __typename?: "Menu";
     id: string;
+    items?: Array<{
+      __typename?: "MenuItem";
+      id: string;
+      name: string;
+      url?: string | null;
+      translation?: { __typename?: "MenuItemTranslation"; id: string; name: string } | null;
+      category?: { __typename?: "Category"; id: string; slug: string } | null;
+      collection?: { __typename?: "Collection"; id: string; slug: string } | null;
+      page?: { __typename?: "Page"; id: string; slug: string } | null;
+      children?: Array<{
+        __typename?: "MenuItem";
+        id: string;
+        name: string;
+        url?: string | null;
+        children?: Array<{
+          __typename?: "MenuItem";
+          id: string;
+          name: string;
+          url?: string | null;
+          translation?: { __typename?: "MenuItemTranslation"; id: string; name: string } | null;
+          category?: { __typename?: "Category"; id: string; slug: string } | null;
+          collection?: { __typename?: "Collection"; id: string; slug: string } | null;
+          page?: { __typename?: "Page"; id: string; slug: string } | null;
+        }> | null;
+        translation?: { __typename?: "MenuItemTranslation"; id: string; name: string } | null;
+        category?: { __typename?: "Category"; id: string; slug: string } | null;
+        collection?: { __typename?: "Collection"; id: string; slug: string } | null;
+        page?: { __typename?: "Page"; id: string; slug: string } | null;
+      }> | null;
+    }> | null;
+  } | null;
+};
+
+export type MenuGetBySlugQueryVariables = Exact<{
+  slug: Scalars["String"]["input"];
+  locale: LanguageCodeEnum;
+  channel: Scalars["String"]["input"];
+}>;
+
+export type MenuGetBySlugQuery = {
+  __typename?: "Query";
+  menu?: {
+    __typename?: "Menu";
     items?: Array<{
       __typename?: "MenuItem";
       id: string;
@@ -35956,7 +36112,6 @@ export type ProductBySlugQuery = {
         name?: string | null;
         slug?: string | null;
         value?: string | null;
-        inputType?: AttributeInputTypeEnum | null;
         reference?: string | null;
         translation?: {
           __typename?: "AttributeValueTranslation";
@@ -36014,7 +36169,6 @@ export type ProductBySlugQuery = {
           name?: string | null;
           slug?: string | null;
           value?: string | null;
-          inputType?: AttributeInputTypeEnum | null;
           reference?: string | null;
           translation?: {
             __typename?: "AttributeValueTranslation";
@@ -36053,7 +36207,11 @@ export type ProductBySlugQuery = {
         __typename?: "TaxedMoneyRange";
         start?: {
           __typename?: "TaxedMoney";
-          gross: { __typename?: "Money"; currency: string; amount: number };
+          gross: { __typename?: "Money"; amount: number; currency: string };
+        } | null;
+        stop?: {
+          __typename?: "TaxedMoney";
+          gross: { __typename?: "Money"; amount: number; currency: string };
         } | null;
       } | null;
     } | null;
@@ -36159,7 +36317,6 @@ export type ProductCollectionQuery = {
             name?: string | null;
             slug?: string | null;
             value?: string | null;
-            inputType?: AttributeInputTypeEnum | null;
             reference?: string | null;
             translation?: {
               __typename?: "AttributeValueTranslation";
@@ -36201,7 +36358,6 @@ export type ProductCollectionQuery = {
               name?: string | null;
               slug?: string | null;
               value?: string | null;
-              inputType?: AttributeInputTypeEnum | null;
               reference?: string | null;
               translation?: {
                 __typename?: "AttributeValueTranslation";
@@ -36243,6 +36399,43 @@ export type ProductCollectionQuery = {
       startCursor?: string | null;
       endCursor?: string | null;
     };
+  } | null;
+};
+
+export type ProductListQueryVariables = Exact<{
+  first?: InputMaybe<Scalars["Int"]["input"]>;
+  channel: Scalars["String"]["input"];
+}>;
+
+export type ProductListQuery = {
+  __typename?: "Query";
+  products?: {
+    __typename?: "ProductCountableConnection";
+    edges: Array<{
+      __typename?: "ProductCountableEdge";
+      node: {
+        __typename?: "Product";
+        id: string;
+        name: string;
+        slug: string;
+        pricing?: {
+          __typename?: "ProductPricingInfo";
+          priceRange?: {
+            __typename?: "TaxedMoneyRange";
+            start?: {
+              __typename?: "TaxedMoney";
+              gross: { __typename?: "Money"; amount: number; currency: string };
+            } | null;
+            stop?: {
+              __typename?: "TaxedMoney";
+              gross: { __typename?: "Money"; amount: number; currency: string };
+            } | null;
+          } | null;
+        } | null;
+        category?: { __typename?: "Category"; id: string; name: string } | null;
+        thumbnail?: { __typename?: "Image"; url: string; alt?: string | null } | null;
+      };
+    }>;
   } | null;
 };
 
@@ -36355,7 +36548,6 @@ export type ProductsByAttributeQuery = {
             name?: string | null;
             slug?: string | null;
             value?: string | null;
-            inputType?: AttributeInputTypeEnum | null;
             reference?: string | null;
             translation?: {
               __typename?: "AttributeValueTranslation";
@@ -36397,7 +36589,6 @@ export type ProductsByAttributeQuery = {
               name?: string | null;
               slug?: string | null;
               value?: string | null;
-              inputType?: AttributeInputTypeEnum | null;
               reference?: string | null;
               translation?: {
                 __typename?: "AttributeValueTranslation";
@@ -36432,6 +36623,50 @@ export type ProductsByAttributeQuery = {
         }> | null;
       };
     }>;
+  } | null;
+};
+
+export type SearchProductsQueryVariables = Exact<{
+  search: Scalars["String"]["input"];
+  sortBy: ProductOrderField;
+  sortDirection: OrderDirection;
+  first: Scalars["Int"]["input"];
+  after?: InputMaybe<Scalars["String"]["input"]>;
+  channel: Scalars["String"]["input"];
+}>;
+
+export type SearchProductsQuery = {
+  __typename?: "Query";
+  products?: {
+    __typename?: "ProductCountableConnection";
+    totalCount?: number | null;
+    edges: Array<{
+      __typename?: "ProductCountableEdge";
+      cursor: string;
+      node: {
+        __typename?: "Product";
+        id: string;
+        name: string;
+        slug: string;
+        pricing?: {
+          __typename?: "ProductPricingInfo";
+          priceRange?: {
+            __typename?: "TaxedMoneyRange";
+            start?: {
+              __typename?: "TaxedMoney";
+              gross: { __typename?: "Money"; amount: number; currency: string };
+            } | null;
+            stop?: {
+              __typename?: "TaxedMoney";
+              gross: { __typename?: "Money"; amount: number; currency: string };
+            } | null;
+          } | null;
+        } | null;
+        category?: { __typename?: "Category"; id: string; name: string } | null;
+        thumbnail?: { __typename?: "Image"; url: string; alt?: string | null } | null;
+      };
+    }>;
+    pageInfo: { __typename?: "PageInfo"; endCursor?: string | null; hasNextPage: boolean };
   } | null;
 };
 
@@ -36493,30 +36728,6 @@ export type UserQuery = {
   } | null;
 };
 
-export type CurrentUserAddressesQueryVariables = Exact<{ [key: string]: never }>;
-
-export type CurrentUserAddressesQuery = {
-  __typename?: "Query";
-  me?: {
-    __typename?: "User";
-    addresses: Array<{
-      __typename?: "Address";
-      id: string;
-      phone?: string | null;
-      firstName: string;
-      lastName: string;
-      companyName: string;
-      streetAddress1: string;
-      streetAddress2: string;
-      city: string;
-      postalCode: string;
-      isDefaultBillingAddress?: boolean | null;
-      isDefaultShippingAddress?: boolean | null;
-      country: { __typename?: "CountryDisplay"; code: string; country: string };
-    }>;
-  } | null;
-};
-
 export const AttributeFilterChoiceFragmentDoc = gql`
   fragment AttributeFilterChoiceFragment on AttributeValue {
     id
@@ -36547,7 +36758,6 @@ export const AttributeFilterFragmentDoc = gql`
       }
     }
   }
-  ${AttributeFilterChoiceFragmentDoc}
 `;
 export const CategoryBasicFragmentDoc = gql`
   fragment CategoryBasicFragment on Category {
@@ -36608,8 +36818,6 @@ export const CategoryDetailsFragmentDoc = gql`
       }
     }
   }
-  ${CategoryBasicFragmentDoc}
-  ${ImageFragmentDoc}
 `;
 export const AddressDetailsFragmentDoc = gql`
   fragment AddressDetailsFragment on Address {
@@ -36650,7 +36858,6 @@ export const DeliveryMethodFragmentDoc = gql`
     minimumDeliveryDays
     maximumDeliveryDays
   }
-  ${PriceFragmentDoc}
 `;
 export const ProductMediaFragmentDoc = gql`
   fragment ProductMediaFragment on ProductMedia {
@@ -36683,7 +36890,6 @@ export const SelectedAttributeDetailsFragmentDoc = gql`
       }
       slug
       value
-      inputType
       reference
     }
   }
@@ -36733,15 +36939,10 @@ export const CheckoutLineDetailsFragmentDoc = gql`
     }
     quantity
   }
-  ${PriceFragmentDoc}
-  ${ImageFragmentDoc}
-  ${ProductMediaFragmentDoc}
-  ${SelectedAttributeDetailsFragmentDoc}
 `;
 export const CheckoutDetailsFragmentDoc = gql`
   fragment CheckoutDetailsFragment on Checkout {
     id
-    token
     email
     billingAddress {
       ...AddressDetailsFragment
@@ -36749,7 +36950,7 @@ export const CheckoutDetailsFragmentDoc = gql`
     shippingAddress {
       ...AddressDetailsFragment
     }
-    shippingMethod {
+    deliveryMethod {
       ...DeliveryMethodFragment
     }
     isShippingRequired
@@ -36757,7 +36958,7 @@ export const CheckoutDetailsFragmentDoc = gql`
       id
       email
     }
-    availableShippingMethods {
+    shippingMethods {
       ...DeliveryMethodFragment
     }
     availablePaymentGateways {
@@ -36795,10 +36996,6 @@ export const CheckoutDetailsFragmentDoc = gql`
       }
     }
   }
-  ${AddressDetailsFragmentDoc}
-  ${DeliveryMethodFragmentDoc}
-  ${CheckoutLineDetailsFragmentDoc}
-  ${PriceFragmentDoc}
 `;
 export const CollectionBasicFragmentDoc = gql`
   fragment CollectionBasicFragment on Collection {
@@ -36826,8 +37023,6 @@ export const CollectionDetailsFragmentDoc = gql`
       ...ImageFragment
     }
   }
-  ${CollectionBasicFragmentDoc}
-  ${ImageFragmentDoc}
 `;
 export const ErrorDetailsFragmentDoc = gql`
   fragment ErrorDetailsFragment on CheckoutError {
@@ -36918,7 +37113,6 @@ export const MenuItemWithChildrenFragmentDoc = gql`
     }
     url
   }
-  ${MenuItemFragmentDoc}
 `;
 export const OrderDetailsFragmentDoc = gql`
   fragment OrderDetailsFragment on Order {
@@ -36937,7 +37131,6 @@ export const OrderDetailsFragmentDoc = gql`
       }
     }
   }
-  ${PriceFragmentDoc}
 `;
 export const PageFragmentDoc = gql`
   fragment PageFragment on Page {
@@ -36993,7 +37186,30 @@ export const ProductVariantDetailsFragmentDoc = gql`
     }
     quantityAvailable
     attributes {
-      ...SelectedAttributeDetailsFragment
+      attribute {
+        id
+        slug
+        name
+        translation(languageCode: $locale) {
+          id
+          name
+        }
+        inputType
+        type
+        unit
+      }
+      values {
+        id
+        name
+        translation(languageCode: $locale) {
+          id
+          name
+          richText
+        }
+        slug
+        value
+        reference
+      }
     }
     media {
       alt
@@ -37004,23 +37220,24 @@ export const ProductVariantDetailsFragmentDoc = gql`
       onSale
       priceUndiscounted {
         gross {
-          ...PriceFragment
+          currency
+          amount
         }
       }
       discount {
         gross {
-          ...PriceFragment
+          currency
+          amount
         }
       }
       price {
         gross {
-          ...PriceFragment
+          currency
+          amount
         }
       }
     }
   }
-  ${SelectedAttributeDetailsFragmentDoc}
-  ${PriceFragmentDoc}
 `;
 export const ProductCardFragmentDoc = gql`
   fragment ProductCardFragment on Product {
@@ -37078,15 +37295,35 @@ export const ProductCardFragmentDoc = gql`
       }
     }
     attributes {
-      ...SelectedAttributeDetailsFragment
+      attribute {
+        id
+        slug
+        name
+        translation(languageCode: $locale) {
+          id
+          name
+        }
+        inputType
+        type
+        unit
+      }
+      values {
+        id
+        name
+        translation(languageCode: $locale) {
+          id
+          name
+          richText
+        }
+        slug
+        value
+        reference
+      }
     }
     variants {
       ...ProductVariantDetailsFragment
     }
   }
-  ${ImageFragmentDoc}
-  ${SelectedAttributeDetailsFragmentDoc}
-  ${ProductVariantDetailsFragmentDoc}
 `;
 export const ProductDetailsFragmentDoc = gql`
   fragment ProductDetailsFragment on Product {
@@ -37115,7 +37352,14 @@ export const ProductDetailsFragmentDoc = gql`
       priceRange {
         start {
           gross {
-            ...PriceFragment
+            amount
+            currency
+          }
+        }
+        stop {
+          gross {
+            amount
+            currency
           }
         }
       }
@@ -37130,12 +37374,37 @@ export const ProductDetailsFragmentDoc = gql`
       name
     }
   }
-  ${SelectedAttributeDetailsFragmentDoc}
-  ${CategoryBasicFragmentDoc}
-  ${ProductVariantDetailsFragmentDoc}
-  ${PriceFragmentDoc}
-  ${ProductMediaFragmentDoc}
-  ${ImageFragmentDoc}
+`;
+export const ProductListItemFragmentDoc = gql`
+  fragment ProductListItem on Product {
+    id
+    name
+    slug
+    pricing {
+      priceRange {
+        start {
+          gross {
+            amount
+            currency
+          }
+        }
+        stop {
+          gross {
+            amount
+            currency
+          }
+        }
+      }
+    }
+    category {
+      id
+      name
+    }
+    thumbnail(size: 1024, format: WEBP) {
+      url
+      alt
+    }
+  }
 `;
 export const AddressDeleteDocument = gql`
   mutation AddressDelete($id: ID!) {
@@ -37144,6 +37413,10 @@ export const AddressDeleteDocument = gql`
         addresses {
           ...AddressDetailsFragment
         }
+      }
+      errors {
+        message
+        code
       }
     }
   }
@@ -37240,12 +37513,8 @@ export type AddressSetDefaultMutationOptions = Apollo.BaseMutationOptions<
   AddressSetDefaultMutationVariables
 >;
 export const CheckoutAddProductLineDocument = gql`
-  mutation CheckoutAddProductLine(
-    $checkoutToken: UUID!
-    $variantId: ID!
-    $locale: LanguageCodeEnum!
-  ) {
-    checkoutLinesAdd(token: $checkoutToken, lines: [{ quantity: 1, variantId: $variantId }]) {
+  mutation CheckoutAddProductLine($id: ID!, $productVariantId: ID!, $locale: LanguageCodeEnum!) {
+    checkoutLinesAdd(id: $id, lines: [{ quantity: 1, variantId: $productVariantId }]) {
       checkout {
         ...CheckoutDetailsFragment
       }
@@ -37256,6 +37525,13 @@ export const CheckoutAddProductLineDocument = gql`
     }
   }
   ${CheckoutDetailsFragmentDoc}
+  ${AddressDetailsFragmentDoc}
+  ${DeliveryMethodFragmentDoc}
+  ${PriceFragmentDoc}
+  ${CheckoutLineDetailsFragmentDoc}
+  ${ImageFragmentDoc}
+  ${ProductMediaFragmentDoc}
+  ${SelectedAttributeDetailsFragmentDoc}
 `;
 export type CheckoutAddProductLineMutationFn = Apollo.MutationFunction<
   CheckoutAddProductLineMutation,
@@ -37275,8 +37551,8 @@ export type CheckoutAddProductLineMutationFn = Apollo.MutationFunction<
  * @example
  * const [checkoutAddProductLineMutation, { data, loading, error }] = useCheckoutAddProductLineMutation({
  *   variables: {
- *      checkoutToken: // value for 'checkoutToken'
- *      variantId: // value for 'variantId'
+ *      id: // value for 'id'
+ *      productVariantId: // value for 'productVariantId'
  *      locale: // value for 'locale'
  *   },
  * });
@@ -37303,8 +37579,8 @@ export type CheckoutAddProductLineMutationOptions = Apollo.BaseMutationOptions<
   CheckoutAddProductLineMutationVariables
 >;
 export const CheckoutAddPromoCodeDocument = gql`
-  mutation CheckoutAddPromoCode($token: UUID!, $promoCode: String!, $locale: LanguageCodeEnum!) {
-    checkoutAddPromoCode(token: $token, promoCode: $promoCode) {
+  mutation CheckoutAddPromoCode($id: ID, $promoCode: String!, $locale: LanguageCodeEnum!) {
+    checkoutAddPromoCode(id: $id, promoCode: $promoCode) {
       checkout {
         ...CheckoutDetailsFragment
       }
@@ -37315,6 +37591,13 @@ export const CheckoutAddPromoCodeDocument = gql`
     }
   }
   ${CheckoutDetailsFragmentDoc}
+  ${AddressDetailsFragmentDoc}
+  ${DeliveryMethodFragmentDoc}
+  ${PriceFragmentDoc}
+  ${CheckoutLineDetailsFragmentDoc}
+  ${ImageFragmentDoc}
+  ${ProductMediaFragmentDoc}
+  ${SelectedAttributeDetailsFragmentDoc}
 `;
 export type CheckoutAddPromoCodeMutationFn = Apollo.MutationFunction<
   CheckoutAddPromoCodeMutation,
@@ -37334,7 +37617,7 @@ export type CheckoutAddPromoCodeMutationFn = Apollo.MutationFunction<
  * @example
  * const [checkoutAddPromoCodeMutation, { data, loading, error }] = useCheckoutAddPromoCodeMutation({
  *   variables: {
- *      token: // value for 'token'
+ *      id: // value for 'id'
  *      promoCode: // value for 'promoCode'
  *      locale: // value for 'locale'
  *   },
@@ -37363,11 +37646,11 @@ export type CheckoutAddPromoCodeMutationOptions = Apollo.BaseMutationOptions<
 >;
 export const CheckoutBillingAddressUpdateDocument = gql`
   mutation CheckoutBillingAddressUpdate(
-    $token: UUID!
+    $id: ID
     $address: AddressInput!
     $locale: LanguageCodeEnum!
   ) {
-    checkoutBillingAddressUpdate(billingAddress: $address, token: $token) {
+    checkoutBillingAddressUpdate(billingAddress: $address, id: $id) {
       checkout {
         ...CheckoutDetailsFragment
       }
@@ -37379,6 +37662,13 @@ export const CheckoutBillingAddressUpdateDocument = gql`
     }
   }
   ${CheckoutDetailsFragmentDoc}
+  ${AddressDetailsFragmentDoc}
+  ${DeliveryMethodFragmentDoc}
+  ${PriceFragmentDoc}
+  ${CheckoutLineDetailsFragmentDoc}
+  ${ImageFragmentDoc}
+  ${ProductMediaFragmentDoc}
+  ${SelectedAttributeDetailsFragmentDoc}
 `;
 export type CheckoutBillingAddressUpdateMutationFn = Apollo.MutationFunction<
   CheckoutBillingAddressUpdateMutation,
@@ -37398,7 +37688,7 @@ export type CheckoutBillingAddressUpdateMutationFn = Apollo.MutationFunction<
  * @example
  * const [checkoutBillingAddressUpdateMutation, { data, loading, error }] = useCheckoutBillingAddressUpdateMutation({
  *   variables: {
- *      token: // value for 'token'
+ *      id: // value for 'id'
  *      address: // value for 'address'
  *      locale: // value for 'locale'
  *   },
@@ -37426,8 +37716,8 @@ export type CheckoutBillingAddressUpdateMutationOptions = Apollo.BaseMutationOpt
   CheckoutBillingAddressUpdateMutationVariables
 >;
 export const CheckoutCompleteDocument = gql`
-  mutation checkoutComplete($checkoutToken: UUID!, $paymentData: JSONString) {
-    checkoutComplete(token: $checkoutToken, paymentData: $paymentData) {
+  mutation checkoutComplete($id: ID, $paymentData: JSONString) {
+    checkoutComplete(id: $id, paymentData: $paymentData) {
       order {
         id
         status
@@ -37471,7 +37761,7 @@ export type CheckoutCompleteMutationFn = Apollo.MutationFunction<
  * @example
  * const [checkoutCompleteMutation, { data, loading, error }] = useCheckoutCompleteMutation({
  *   variables: {
- *      checkoutToken: // value for 'checkoutToken'
+ *      id: // value for 'id'
  *      paymentData: // value for 'paymentData'
  *   },
  * });
@@ -37495,15 +37785,54 @@ export type CheckoutCompleteMutationOptions = Apollo.BaseMutationOptions<
   CheckoutCompleteMutationVariables
 >;
 export const CreateCheckoutDocument = gql`
-  mutation CreateCheckout($email: String, $lines: [CheckoutLineInput!]!, $channel: String!) {
-    checkoutCreate(input: { channel: $channel, email: $email, lines: $lines }) {
+  mutation CreateCheckout($channel: String!) {
+    checkoutCreate(input: { channel: $channel, lines: [] }) {
       checkout {
         id
-        token
+        email
+        lines {
+          id
+          quantity
+          totalPrice {
+            gross {
+              amount
+              currency
+            }
+          }
+          variant {
+            product {
+              id
+              name
+              slug
+              thumbnail {
+                url
+                alt
+              }
+              category {
+                name
+              }
+            }
+            pricing {
+              price {
+                gross {
+                  amount
+                  currency
+                }
+              }
+            }
+            name
+            id
+          }
+        }
+        totalPrice {
+          gross {
+            amount
+            currency
+          }
+        }
       }
       errors {
         field
-        message
         code
       }
     }
@@ -37527,8 +37856,6 @@ export type CreateCheckoutMutationFn = Apollo.MutationFunction<
  * @example
  * const [createCheckoutMutation, { data, loading, error }] = useCreateCheckoutMutation({
  *   variables: {
- *      email: // value for 'email'
- *      lines: // value for 'lines'
  *      channel: // value for 'channel'
  *   },
  * });
@@ -37549,8 +37876,8 @@ export type CreateCheckoutMutationOptions = Apollo.BaseMutationOptions<
   CreateCheckoutMutationVariables
 >;
 export const CheckoutPaymentCreateDocument = gql`
-  mutation checkoutPaymentCreate($checkoutToken: UUID!, $paymentInput: PaymentInput!) {
-    checkoutPaymentCreate(token: $checkoutToken, input: $paymentInput) {
+  mutation checkoutPaymentCreate($id: ID, $input: PaymentInput!) {
+    checkoutPaymentCreate(id: $id, input: $input) {
       payment {
         id
         total {
@@ -37583,8 +37910,8 @@ export type CheckoutPaymentCreateMutationFn = Apollo.MutationFunction<
  * @example
  * const [checkoutPaymentCreateMutation, { data, loading, error }] = useCheckoutPaymentCreateMutation({
  *   variables: {
- *      checkoutToken: // value for 'checkoutToken'
- *      paymentInput: // value for 'paymentInput'
+ *      id: // value for 'id'
+ *      input: // value for 'input'
  *   },
  * });
  */
@@ -37610,8 +37937,8 @@ export type CheckoutPaymentCreateMutationOptions = Apollo.BaseMutationOptions<
   CheckoutPaymentCreateMutationVariables
 >;
 export const CheckoutCustomerAttachDocument = gql`
-  mutation checkoutCustomerAttach($checkoutId: ID!, $locale: LanguageCodeEnum!) {
-    checkoutCustomerAttach(id: $checkoutId) {
+  mutation checkoutCustomerAttach($id: ID!, $locale: LanguageCodeEnum!) {
+    checkoutCustomerAttach(id: $id) {
       errors {
         message
         field
@@ -37623,6 +37950,13 @@ export const CheckoutCustomerAttachDocument = gql`
     }
   }
   ${CheckoutDetailsFragmentDoc}
+  ${AddressDetailsFragmentDoc}
+  ${DeliveryMethodFragmentDoc}
+  ${PriceFragmentDoc}
+  ${CheckoutLineDetailsFragmentDoc}
+  ${ImageFragmentDoc}
+  ${ProductMediaFragmentDoc}
+  ${SelectedAttributeDetailsFragmentDoc}
 `;
 export type CheckoutCustomerAttachMutationFn = Apollo.MutationFunction<
   CheckoutCustomerAttachMutation,
@@ -37642,7 +37976,7 @@ export type CheckoutCustomerAttachMutationFn = Apollo.MutationFunction<
  * @example
  * const [checkoutCustomerAttachMutation, { data, loading, error }] = useCheckoutCustomerAttachMutation({
  *   variables: {
- *      checkoutId: // value for 'checkoutId'
+ *      id: // value for 'id'
  *      locale: // value for 'locale'
  *   },
  * });
@@ -37669,8 +38003,8 @@ export type CheckoutCustomerAttachMutationOptions = Apollo.BaseMutationOptions<
   CheckoutCustomerAttachMutationVariables
 >;
 export const CheckoutEmailUpdateDocument = gql`
-  mutation CheckoutEmailUpdate($token: UUID!, $email: String!, $locale: LanguageCodeEnum!) {
-    checkoutEmailUpdate(email: $email, token: $token) {
+  mutation CheckoutEmailUpdate($id: ID!, $email: String!, $locale: LanguageCodeEnum!) {
+    checkoutEmailUpdate(email: $email, id: $id) {
       checkout {
         ...CheckoutDetailsFragment
       }
@@ -37681,6 +38015,13 @@ export const CheckoutEmailUpdateDocument = gql`
     }
   }
   ${CheckoutDetailsFragmentDoc}
+  ${AddressDetailsFragmentDoc}
+  ${DeliveryMethodFragmentDoc}
+  ${PriceFragmentDoc}
+  ${CheckoutLineDetailsFragmentDoc}
+  ${ImageFragmentDoc}
+  ${ProductMediaFragmentDoc}
+  ${SelectedAttributeDetailsFragmentDoc}
 `;
 export type CheckoutEmailUpdateMutationFn = Apollo.MutationFunction<
   CheckoutEmailUpdateMutation,
@@ -37700,7 +38041,7 @@ export type CheckoutEmailUpdateMutationFn = Apollo.MutationFunction<
  * @example
  * const [checkoutEmailUpdateMutation, { data, loading, error }] = useCheckoutEmailUpdateMutation({
  *   variables: {
- *      token: // value for 'token'
+ *      id: // value for 'id'
  *      email: // value for 'email'
  *      locale: // value for 'locale'
  *   },
@@ -37728,11 +38069,11 @@ export type CheckoutEmailUpdateMutationOptions = Apollo.BaseMutationOptions<
 >;
 export const CheckoutLineUpdateDocument = gql`
   mutation CheckoutLineUpdate(
-    $token: UUID
+    $checkoutId: ID!
     $lines: [CheckoutLineUpdateInput!]!
     $locale: LanguageCodeEnum!
   ) {
-    checkoutLinesUpdate(token: $token, lines: $lines) {
+    checkoutLinesUpdate(id: $checkoutId, lines: $lines) {
       checkout {
         ...CheckoutDetailsFragment
       }
@@ -37742,6 +38083,13 @@ export const CheckoutLineUpdateDocument = gql`
     }
   }
   ${CheckoutDetailsFragmentDoc}
+  ${AddressDetailsFragmentDoc}
+  ${DeliveryMethodFragmentDoc}
+  ${PriceFragmentDoc}
+  ${CheckoutLineDetailsFragmentDoc}
+  ${ImageFragmentDoc}
+  ${ProductMediaFragmentDoc}
+  ${SelectedAttributeDetailsFragmentDoc}
   ${ErrorDetailsFragmentDoc}
 `;
 export type CheckoutLineUpdateMutationFn = Apollo.MutationFunction<
@@ -37762,7 +38110,7 @@ export type CheckoutLineUpdateMutationFn = Apollo.MutationFunction<
  * @example
  * const [checkoutLineUpdateMutation, { data, loading, error }] = useCheckoutLineUpdateMutation({
  *   variables: {
- *      token: // value for 'token'
+ *      checkoutId: // value for 'checkoutId'
  *      lines: // value for 'lines'
  *      locale: // value for 'locale'
  *   },
@@ -37787,12 +38135,8 @@ export type CheckoutLineUpdateMutationOptions = Apollo.BaseMutationOptions<
   CheckoutLineUpdateMutationVariables
 >;
 export const RemoveProductFromCheckoutDocument = gql`
-  mutation RemoveProductFromCheckout(
-    $checkoutToken: UUID!
-    $lineId: ID!
-    $locale: LanguageCodeEnum!
-  ) {
-    checkoutLineDelete(token: $checkoutToken, lineId: $lineId) {
+  mutation RemoveProductFromCheckout($lineId: ID!, $locale: LanguageCodeEnum!, $id: ID!) {
+    checkoutLineDelete(lineId: $lineId, id: $id) {
       checkout {
         ...CheckoutDetailsFragment
       }
@@ -37803,6 +38147,13 @@ export const RemoveProductFromCheckoutDocument = gql`
     }
   }
   ${CheckoutDetailsFragmentDoc}
+  ${AddressDetailsFragmentDoc}
+  ${DeliveryMethodFragmentDoc}
+  ${PriceFragmentDoc}
+  ${CheckoutLineDetailsFragmentDoc}
+  ${ImageFragmentDoc}
+  ${ProductMediaFragmentDoc}
+  ${SelectedAttributeDetailsFragmentDoc}
 `;
 export type RemoveProductFromCheckoutMutationFn = Apollo.MutationFunction<
   RemoveProductFromCheckoutMutation,
@@ -37822,9 +38173,9 @@ export type RemoveProductFromCheckoutMutationFn = Apollo.MutationFunction<
  * @example
  * const [removeProductFromCheckoutMutation, { data, loading, error }] = useRemoveProductFromCheckoutMutation({
  *   variables: {
- *      checkoutToken: // value for 'checkoutToken'
  *      lineId: // value for 'lineId'
  *      locale: // value for 'locale'
+ *      id: // value for 'id'
  *   },
  * });
  */
@@ -37851,11 +38202,11 @@ export type RemoveProductFromCheckoutMutationOptions = Apollo.BaseMutationOption
 >;
 export const CheckoutShippingAddressUpdateDocument = gql`
   mutation CheckoutShippingAddressUpdate(
-    $token: UUID!
+    $id: ID
     $address: AddressInput!
     $locale: LanguageCodeEnum!
   ) {
-    checkoutShippingAddressUpdate(shippingAddress: $address, token: $token) {
+    checkoutShippingAddressUpdate(shippingAddress: $address, id: $id) {
       checkout {
         ...CheckoutDetailsFragment
       }
@@ -37867,6 +38218,13 @@ export const CheckoutShippingAddressUpdateDocument = gql`
     }
   }
   ${CheckoutDetailsFragmentDoc}
+  ${AddressDetailsFragmentDoc}
+  ${DeliveryMethodFragmentDoc}
+  ${PriceFragmentDoc}
+  ${CheckoutLineDetailsFragmentDoc}
+  ${ImageFragmentDoc}
+  ${ProductMediaFragmentDoc}
+  ${SelectedAttributeDetailsFragmentDoc}
 `;
 export type CheckoutShippingAddressUpdateMutationFn = Apollo.MutationFunction<
   CheckoutShippingAddressUpdateMutation,
@@ -37886,7 +38244,7 @@ export type CheckoutShippingAddressUpdateMutationFn = Apollo.MutationFunction<
  * @example
  * const [checkoutShippingAddressUpdateMutation, { data, loading, error }] = useCheckoutShippingAddressUpdateMutation({
  *   variables: {
- *      token: // value for 'token'
+ *      id: // value for 'id'
  *      address: // value for 'address'
  *      locale: // value for 'locale'
  *   },
@@ -37915,11 +38273,11 @@ export type CheckoutShippingAddressUpdateMutationOptions = Apollo.BaseMutationOp
 >;
 export const CheckoutShippingMethodUpdateDocument = gql`
   mutation CheckoutShippingMethodUpdate(
-    $token: UUID!
+    $id: ID
     $shippingMethodId: ID!
     $locale: LanguageCodeEnum!
   ) {
-    checkoutShippingMethodUpdate(shippingMethodId: $shippingMethodId, token: $token) {
+    checkoutShippingMethodUpdate(shippingMethodId: $shippingMethodId, id: $id) {
       checkout {
         ...CheckoutDetailsFragment
       }
@@ -37931,6 +38289,13 @@ export const CheckoutShippingMethodUpdateDocument = gql`
     }
   }
   ${CheckoutDetailsFragmentDoc}
+  ${AddressDetailsFragmentDoc}
+  ${DeliveryMethodFragmentDoc}
+  ${PriceFragmentDoc}
+  ${CheckoutLineDetailsFragmentDoc}
+  ${ImageFragmentDoc}
+  ${ProductMediaFragmentDoc}
+  ${SelectedAttributeDetailsFragmentDoc}
 `;
 export type CheckoutShippingMethodUpdateMutationFn = Apollo.MutationFunction<
   CheckoutShippingMethodUpdateMutation,
@@ -37950,7 +38315,7 @@ export type CheckoutShippingMethodUpdateMutationFn = Apollo.MutationFunction<
  * @example
  * const [checkoutShippingMethodUpdateMutation, { data, loading, error }] = useCheckoutShippingMethodUpdateMutation({
  *   variables: {
- *      token: // value for 'token'
+ *      id: // value for 'id'
  *      shippingMethodId: // value for 'shippingMethodId'
  *      locale: // value for 'locale'
  *   },
@@ -38027,8 +38392,8 @@ export type ConfirmAccountMutationOptions = Apollo.BaseMutationOptions<
   ConfirmAccountMutationVariables
 >;
 export const ConfirmEmailChangeDocument = gql`
-  mutation confirmEmailChange($token: String!) {
-    confirmEmailChange(token: $token) {
+  mutation confirmEmailChange($token: String!, $channel: String) {
+    confirmEmailChange(token: $token, channel: $channel) {
       errors {
         message
         field
@@ -38056,6 +38421,7 @@ export type ConfirmEmailChangeMutationFn = Apollo.MutationFunction<
  * const [confirmEmailChangeMutation, { data, loading, error }] = useConfirmEmailChangeMutation({
  *   variables: {
  *      token: // value for 'token'
+ *      channel: // value for 'channel'
  *   },
  * });
  */
@@ -38369,8 +38735,6 @@ export const AvailableProductFiltersDocument = gql`
               id
               name
               slug
-              inputType
-              value
             }
           }
           variants {
@@ -38551,6 +38915,8 @@ export const CategoriesByMetaKeyDocument = gql`
     }
   }
   ${CategoryDetailsFragmentDoc}
+  ${CategoryBasicFragmentDoc}
+  ${ImageFragmentDoc}
 `;
 
 /**
@@ -38625,6 +38991,8 @@ export const CategoryBySlugDocument = gql`
     }
   }
   ${CategoryDetailsFragmentDoc}
+  ${CategoryBasicFragmentDoc}
+  ${ImageFragmentDoc}
 `;
 
 /**
@@ -38796,71 +39164,73 @@ export type ChannelQueryHookResult = ReturnType<typeof useChannelQuery>;
 export type ChannelLazyQueryHookResult = ReturnType<typeof useChannelLazyQuery>;
 export type ChannelSuspenseQueryHookResult = ReturnType<typeof useChannelSuspenseQuery>;
 export type ChannelQueryResult = Apollo.QueryResult<ChannelQuery, ChannelQueryVariables>;
-export const CheckoutByTokenDocument = gql`
-  query CheckoutByToken($checkoutToken: UUID!, $locale: LanguageCodeEnum!) {
-    checkout(token: $checkoutToken) {
+export const CheckoutFindDocument = gql`
+  query CheckoutFind($id: ID!, $locale: LanguageCodeEnum!) {
+    checkout(id: $id) {
       ...CheckoutDetailsFragment
     }
   }
   ${CheckoutDetailsFragmentDoc}
+  ${AddressDetailsFragmentDoc}
+  ${DeliveryMethodFragmentDoc}
+  ${PriceFragmentDoc}
+  ${CheckoutLineDetailsFragmentDoc}
+  ${ImageFragmentDoc}
+  ${ProductMediaFragmentDoc}
+  ${SelectedAttributeDetailsFragmentDoc}
 `;
 
 /**
- * __useCheckoutByTokenQuery__
+ * __useCheckoutFindQuery__
  *
- * To run a query within a React component, call `useCheckoutByTokenQuery` and pass it any options that fit your needs.
- * When your component renders, `useCheckoutByTokenQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useCheckoutFindQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCheckoutFindQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useCheckoutByTokenQuery({
+ * const { data, loading, error } = useCheckoutFindQuery({
  *   variables: {
- *      checkoutToken: // value for 'checkoutToken'
+ *      id: // value for 'id'
  *      locale: // value for 'locale'
  *   },
  * });
  */
-export function useCheckoutByTokenQuery(
-  baseOptions: Apollo.QueryHookOptions<CheckoutByTokenQuery, CheckoutByTokenQueryVariables> &
-    ({ variables: CheckoutByTokenQueryVariables; skip?: boolean } | { skip: boolean }),
+export function useCheckoutFindQuery(
+  baseOptions: Apollo.QueryHookOptions<CheckoutFindQuery, CheckoutFindQueryVariables> &
+    ({ variables: CheckoutFindQueryVariables; skip?: boolean } | { skip: boolean }),
 ) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<CheckoutByTokenQuery, CheckoutByTokenQueryVariables>(
-    CheckoutByTokenDocument,
+  return Apollo.useQuery<CheckoutFindQuery, CheckoutFindQueryVariables>(
+    CheckoutFindDocument,
     options,
   );
 }
-export function useCheckoutByTokenLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<CheckoutByTokenQuery, CheckoutByTokenQueryVariables>,
+export function useCheckoutFindLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<CheckoutFindQuery, CheckoutFindQueryVariables>,
 ) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<CheckoutByTokenQuery, CheckoutByTokenQueryVariables>(
-    CheckoutByTokenDocument,
+  return Apollo.useLazyQuery<CheckoutFindQuery, CheckoutFindQueryVariables>(
+    CheckoutFindDocument,
     options,
   );
 }
-export function useCheckoutByTokenSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    CheckoutByTokenQuery,
-    CheckoutByTokenQueryVariables
-  >,
+export function useCheckoutFindSuspenseQuery(
+  baseOptions?: Apollo.SuspenseQueryHookOptions<CheckoutFindQuery, CheckoutFindQueryVariables>,
 ) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<CheckoutByTokenQuery, CheckoutByTokenQueryVariables>(
-    CheckoutByTokenDocument,
+  return Apollo.useSuspenseQuery<CheckoutFindQuery, CheckoutFindQueryVariables>(
+    CheckoutFindDocument,
     options,
   );
 }
-export type CheckoutByTokenQueryHookResult = ReturnType<typeof useCheckoutByTokenQuery>;
-export type CheckoutByTokenLazyQueryHookResult = ReturnType<typeof useCheckoutByTokenLazyQuery>;
-export type CheckoutByTokenSuspenseQueryHookResult = ReturnType<
-  typeof useCheckoutByTokenSuspenseQuery
->;
-export type CheckoutByTokenQueryResult = Apollo.QueryResult<
-  CheckoutByTokenQuery,
-  CheckoutByTokenQueryVariables
+export type CheckoutFindQueryHookResult = ReturnType<typeof useCheckoutFindQuery>;
+export type CheckoutFindLazyQueryHookResult = ReturnType<typeof useCheckoutFindLazyQuery>;
+export type CheckoutFindSuspenseQueryHookResult = ReturnType<typeof useCheckoutFindSuspenseQuery>;
+export type CheckoutFindQueryResult = Apollo.QueryResult<
+  CheckoutFindQuery,
+  CheckoutFindQueryVariables
 >;
 export const CollectionBySlugDocument = gql`
   query CollectionBySlug($slug: String!, $channel: String!, $locale: LanguageCodeEnum!) {
@@ -38868,11 +39238,13 @@ export const CollectionBySlugDocument = gql`
       id
       ...CollectionDetailsFragment
       backgroundImage {
-        ...ImageFragment
+        url
+        alt
       }
     }
   }
   ${CollectionDetailsFragmentDoc}
+  ${CollectionBasicFragmentDoc}
   ${ImageFragmentDoc}
 `;
 
@@ -39022,6 +39394,8 @@ export const CollectionsByMetaKeyDocument = gql`
     }
   }
   ${CollectionDetailsFragmentDoc}
+  ${CollectionBasicFragmentDoc}
+  ${ImageFragmentDoc}
 `;
 
 /**
@@ -39185,6 +39559,7 @@ export const FilteringAttributesQueryDocument = gql`
     }
   }
   ${AttributeFilterFragmentDoc}
+  ${AttributeFilterChoiceFragmentDoc}
 `;
 
 /**
@@ -39395,6 +39770,7 @@ export const MainMenuDocument = gql`
     }
   }
   ${MenuItemWithChildrenFragmentDoc}
+  ${MenuItemFragmentDoc}
 `;
 
 /**
@@ -39447,6 +39823,7 @@ export const MainRightMenuDocument = gql`
     }
   }
   ${MenuItemWithChildrenFragmentDoc}
+  ${MenuItemFragmentDoc}
 `;
 
 /**
@@ -39500,6 +39877,71 @@ export type MainRightMenuSuspenseQueryHookResult = ReturnType<typeof useMainRigh
 export type MainRightMenuQueryResult = Apollo.QueryResult<
   MainRightMenuQuery,
   MainRightMenuQueryVariables
+>;
+export const MenuGetBySlugDocument = gql`
+  query MenuGetBySlug($slug: String!, $locale: LanguageCodeEnum!, $channel: String!) {
+    menu(slug: $slug, channel: $channel) {
+      items {
+        ...MenuItemWithChildrenFragment
+      }
+    }
+  }
+  ${MenuItemWithChildrenFragmentDoc}
+  ${MenuItemFragmentDoc}
+`;
+
+/**
+ * __useMenuGetBySlugQuery__
+ *
+ * To run a query within a React component, call `useMenuGetBySlugQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMenuGetBySlugQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMenuGetBySlugQuery({
+ *   variables: {
+ *      slug: // value for 'slug'
+ *      locale: // value for 'locale'
+ *      channel: // value for 'channel'
+ *   },
+ * });
+ */
+export function useMenuGetBySlugQuery(
+  baseOptions: Apollo.QueryHookOptions<MenuGetBySlugQuery, MenuGetBySlugQueryVariables> &
+    ({ variables: MenuGetBySlugQueryVariables; skip?: boolean } | { skip: boolean }),
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<MenuGetBySlugQuery, MenuGetBySlugQueryVariables>(
+    MenuGetBySlugDocument,
+    options,
+  );
+}
+export function useMenuGetBySlugLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<MenuGetBySlugQuery, MenuGetBySlugQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<MenuGetBySlugQuery, MenuGetBySlugQueryVariables>(
+    MenuGetBySlugDocument,
+    options,
+  );
+}
+export function useMenuGetBySlugSuspenseQuery(
+  baseOptions?: Apollo.SuspenseQueryHookOptions<MenuGetBySlugQuery, MenuGetBySlugQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useSuspenseQuery<MenuGetBySlugQuery, MenuGetBySlugQueryVariables>(
+    MenuGetBySlugDocument,
+    options,
+  );
+}
+export type MenuGetBySlugQueryHookResult = ReturnType<typeof useMenuGetBySlugQuery>;
+export type MenuGetBySlugLazyQueryHookResult = ReturnType<typeof useMenuGetBySlugLazyQuery>;
+export type MenuGetBySlugSuspenseQueryHookResult = ReturnType<typeof useMenuGetBySlugSuspenseQuery>;
+export type MenuGetBySlugQueryResult = Apollo.QueryResult<
+  MenuGetBySlugQuery,
+  MenuGetBySlugQueryVariables
 >;
 export const OrderDetailsQueryDocument = gql`
   query OrderDetailsQuery($token: UUID!) {
@@ -39732,6 +40174,7 @@ export const OrdersDocument = gql`
     }
   }
   ${OrderDetailsFragmentDoc}
+  ${PriceFragmentDoc}
 `;
 
 /**
@@ -40086,6 +40529,11 @@ export const ProductBySlugDocument = gql`
     }
   }
   ${ProductDetailsFragmentDoc}
+  ${SelectedAttributeDetailsFragmentDoc}
+  ${CategoryBasicFragmentDoc}
+  ${ProductVariantDetailsFragmentDoc}
+  ${ProductMediaFragmentDoc}
+  ${ImageFragmentDoc}
 `;
 
 /**
@@ -40175,6 +40623,8 @@ export const ProductCollectionDocument = gql`
     }
   }
   ${ProductCardFragmentDoc}
+  ${ImageFragmentDoc}
+  ${ProductVariantDetailsFragmentDoc}
 `;
 
 /**
@@ -40241,6 +40691,68 @@ export type ProductCollectionSuspenseQueryHookResult = ReturnType<
 export type ProductCollectionQueryResult = Apollo.QueryResult<
   ProductCollectionQuery,
   ProductCollectionQueryVariables
+>;
+export const ProductListDocument = gql`
+  query ProductList($first: Int = 9, $channel: String!) {
+    products(first: $first, channel: $channel) {
+      edges {
+        node {
+          ...ProductListItem
+        }
+      }
+    }
+  }
+  ${ProductListItemFragmentDoc}
+`;
+
+/**
+ * __useProductListQuery__
+ *
+ * To run a query within a React component, call `useProductListQuery` and pass it any options that fit your needs.
+ * When your component renders, `useProductListQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useProductListQuery({
+ *   variables: {
+ *      first: // value for 'first'
+ *      channel: // value for 'channel'
+ *   },
+ * });
+ */
+export function useProductListQuery(
+  baseOptions: Apollo.QueryHookOptions<ProductListQuery, ProductListQueryVariables> &
+    ({ variables: ProductListQueryVariables; skip?: boolean } | { skip: boolean }),
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<ProductListQuery, ProductListQueryVariables>(ProductListDocument, options);
+}
+export function useProductListLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<ProductListQuery, ProductListQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<ProductListQuery, ProductListQueryVariables>(
+    ProductListDocument,
+    options,
+  );
+}
+export function useProductListSuspenseQuery(
+  baseOptions?: Apollo.SuspenseQueryHookOptions<ProductListQuery, ProductListQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useSuspenseQuery<ProductListQuery, ProductListQueryVariables>(
+    ProductListDocument,
+    options,
+  );
+}
+export type ProductListQueryHookResult = ReturnType<typeof useProductListQuery>;
+export type ProductListLazyQueryHookResult = ReturnType<typeof useProductListLazyQuery>;
+export type ProductListSuspenseQueryHookResult = ReturnType<typeof useProductListSuspenseQuery>;
+export type ProductListQueryResult = Apollo.QueryResult<
+  ProductListQuery,
+  ProductListQueryVariables
 >;
 export const ProductPathsDocument = gql`
   query ProductPaths($after: String, $channel: String!) {
@@ -40326,6 +40838,8 @@ export const ProductsByAttributeDocument = gql`
     }
   }
   ${ProductCardFragmentDoc}
+  ${ImageFragmentDoc}
+  ${ProductVariantDetailsFragmentDoc}
 `;
 
 /**
@@ -40394,6 +40908,96 @@ export type ProductsByAttributeQueryResult = Apollo.QueryResult<
   ProductsByAttributeQuery,
   ProductsByAttributeQueryVariables
 >;
+export const SearchProductsDocument = gql`
+  query SearchProducts(
+    $search: String!
+    $sortBy: ProductOrderField!
+    $sortDirection: OrderDirection!
+    $first: Int!
+    $after: String
+    $channel: String!
+  ) {
+    products(
+      first: $first
+      after: $after
+      channel: $channel
+      sortBy: { field: $sortBy, direction: $sortDirection }
+      filter: { search: $search }
+    ) {
+      totalCount
+      edges {
+        node {
+          ...ProductListItem
+        }
+        cursor
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+  ${ProductListItemFragmentDoc}
+`;
+
+/**
+ * __useSearchProductsQuery__
+ *
+ * To run a query within a React component, call `useSearchProductsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSearchProductsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSearchProductsQuery({
+ *   variables: {
+ *      search: // value for 'search'
+ *      sortBy: // value for 'sortBy'
+ *      sortDirection: // value for 'sortDirection'
+ *      first: // value for 'first'
+ *      after: // value for 'after'
+ *      channel: // value for 'channel'
+ *   },
+ * });
+ */
+export function useSearchProductsQuery(
+  baseOptions: Apollo.QueryHookOptions<SearchProductsQuery, SearchProductsQueryVariables> &
+    ({ variables: SearchProductsQueryVariables; skip?: boolean } | { skip: boolean }),
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<SearchProductsQuery, SearchProductsQueryVariables>(
+    SearchProductsDocument,
+    options,
+  );
+}
+export function useSearchProductsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<SearchProductsQuery, SearchProductsQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<SearchProductsQuery, SearchProductsQueryVariables>(
+    SearchProductsDocument,
+    options,
+  );
+}
+export function useSearchProductsSuspenseQuery(
+  baseOptions?: Apollo.SuspenseQueryHookOptions<SearchProductsQuery, SearchProductsQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useSuspenseQuery<SearchProductsQuery, SearchProductsQueryVariables>(
+    SearchProductsDocument,
+    options,
+  );
+}
+export type SearchProductsQueryHookResult = ReturnType<typeof useSearchProductsQuery>;
+export type SearchProductsLazyQueryHookResult = ReturnType<typeof useSearchProductsLazyQuery>;
+export type SearchProductsSuspenseQueryHookResult = ReturnType<
+  typeof useSearchProductsSuspenseQuery
+>;
+export type SearchProductsQueryResult = Apollo.QueryResult<
+  SearchProductsQuery,
+  SearchProductsQueryVariables
+>;
 export const UserDocument = gql`
   query User {
     user: me {
@@ -40450,79 +41054,6 @@ export type UserQueryHookResult = ReturnType<typeof useUserQuery>;
 export type UserLazyQueryHookResult = ReturnType<typeof useUserLazyQuery>;
 export type UserSuspenseQueryHookResult = ReturnType<typeof useUserSuspenseQuery>;
 export type UserQueryResult = Apollo.QueryResult<UserQuery, UserQueryVariables>;
-export const CurrentUserAddressesDocument = gql`
-  query CurrentUserAddresses {
-    me {
-      addresses {
-        ...AddressDetailsFragment
-      }
-    }
-  }
-  ${AddressDetailsFragmentDoc}
-`;
-
-/**
- * __useCurrentUserAddressesQuery__
- *
- * To run a query within a React component, call `useCurrentUserAddressesQuery` and pass it any options that fit your needs.
- * When your component renders, `useCurrentUserAddressesQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useCurrentUserAddressesQuery({
- *   variables: {
- *   },
- * });
- */
-export function useCurrentUserAddressesQuery(
-  baseOptions?: Apollo.QueryHookOptions<
-    CurrentUserAddressesQuery,
-    CurrentUserAddressesQueryVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<CurrentUserAddressesQuery, CurrentUserAddressesQueryVariables>(
-    CurrentUserAddressesDocument,
-    options,
-  );
-}
-export function useCurrentUserAddressesLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    CurrentUserAddressesQuery,
-    CurrentUserAddressesQueryVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<CurrentUserAddressesQuery, CurrentUserAddressesQueryVariables>(
-    CurrentUserAddressesDocument,
-    options,
-  );
-}
-export function useCurrentUserAddressesSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    CurrentUserAddressesQuery,
-    CurrentUserAddressesQueryVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<CurrentUserAddressesQuery, CurrentUserAddressesQueryVariables>(
-    CurrentUserAddressesDocument,
-    options,
-  );
-}
-export type CurrentUserAddressesQueryHookResult = ReturnType<typeof useCurrentUserAddressesQuery>;
-export type CurrentUserAddressesLazyQueryHookResult = ReturnType<
-  typeof useCurrentUserAddressesLazyQuery
->;
-export type CurrentUserAddressesSuspenseQueryHookResult = ReturnType<
-  typeof useCurrentUserAddressesSuspenseQuery
->;
-export type CurrentUserAddressesQueryResult = Apollo.QueryResult<
-  CurrentUserAddressesQuery,
-  CurrentUserAddressesQueryVariables
->;
 export type AccountAddressCreateKeySpecifier = (
   | "accountErrors"
   | "address"

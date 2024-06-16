@@ -16,11 +16,11 @@
     "jsx": "preserve",
     "baseUrl": ".",
     "paths": {
-      "@/components": ["components"],
-      "@/components/*": ["components/*"],
+      "@/components": ["src/components"],
+      "@/components/*": ["src/components/*"],
       "@/saleor/api": ["saleor/api"],
       "@/graphql": ["graphql"],
-      "@/lib/*": ["lib/*"]
+      "@/lib/*": ["src/lib/*"]
     },
     "plugins": [
       {

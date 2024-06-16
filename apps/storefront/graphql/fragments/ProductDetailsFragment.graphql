@@ -24,7 +24,14 @@ fragment ProductDetailsFragment on Product {
     priceRange {
       start {
         gross {
-          ...PriceFragment
+          amount
+          currency
+        }
+      }
+      stop {
+        gross {
+          amount
+          currency
         }
       }
     }

@@ -1,5 +1,5 @@
-mutation checkoutPaymentCreate($checkoutToken: UUID!, $paymentInput: PaymentInput!) {
-  checkoutPaymentCreate(token: $checkoutToken, input: $paymentInput) {
+mutation checkoutPaymentCreate($id: ID, $input: PaymentInput!) {
+  checkoutPaymentCreate(id: $id, input: $input) {
     payment {
       id
       total {

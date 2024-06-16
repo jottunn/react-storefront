@@ -54,7 +54,30 @@ fragment ProductCardFragment on Product {
   }
   
   attributes {
-    ...SelectedAttributeDetailsFragment
+    attribute {
+      id
+      slug
+      name
+      translation(languageCode: $locale) {
+        id
+        name
+      }
+      inputType
+      type
+      unit
+    }
+    values {
+      id
+      name
+      translation(languageCode: $locale) {
+        id
+        name
+        richText
+      }
+      slug
+      value
+      reference
+    }
   }
   variants {
     ...ProductVariantDetailsFragment
