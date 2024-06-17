@@ -48,7 +48,7 @@ export default async function Footer({ className, ...rest }: FooterProps) {
     PageTypesQuery,
     { filter: any; locale: LanguageCodeEnum }
   >(PageTypesDocument, {
-    variables: { filter: { slugs: ["contact"] }, locale: DEFAULT_LOCALE },
+    variables: { filter: { slugs: ["get-in-touch"] }, locale: DEFAULT_LOCALE },
     revalidate: 60,
   });
 
@@ -61,7 +61,7 @@ export default async function Footer({ className, ...rest }: FooterProps) {
   return (
     <footer className={clsx(styles.footer, className)} {...rest}>
       <Box className={styles["footer-inner"]}>
-        <div className="grid grid-cols-4 md:grid-cols-10 gap-6 pb-8 mb-12 items-center justify-items-center w-full border-b border-dark=300 md:min-h-[90px]">
+        <div className="grid grid-cols-4 md:grid-cols-10 gap-6 py-32 mb-20 items-center justify-items-center w-full border-b border-dark=300 md:min-h-[90px]">
           {brandCollections &&
             brandCollections.collections?.edges.map((brand) => {
               return (

@@ -135,7 +135,7 @@ export function VariantSelector({
                 <span className="text-left">{messages["app.chooseSize"]}</span>
               ) : (
                 <span>
-                  {sizes && !sizes[0].name.includes("unică") && messages["size"]}
+                  {sizes && messages["app.size"]}
                   <span className="text-md font-bold ml-2">{(sizes && sizes[0].name) || ""}</span>
                 </span>
               )}

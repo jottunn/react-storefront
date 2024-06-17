@@ -10,7 +10,7 @@ import { DEFAULT_CHANNEL, DEFAULT_LOCALE } from "../regions";
 //     }).format(amount);
 
 export const formatAsMoney = (amount: number, currency: string, locale = DEFAULT_LOCALE) => {
-  const formatted = new Intl.NumberFormat("en-US", {
+  const formatted = new Intl.NumberFormat("ro-RO", {
     style: "currency",
     currency,
     minimumFractionDigits: 0,

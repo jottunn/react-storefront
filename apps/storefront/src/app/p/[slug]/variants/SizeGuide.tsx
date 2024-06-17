@@ -58,7 +58,7 @@ export default function SizeGuide({ sizeGuide, messages }: { sizeGuide: any; mes
           <div className="fixed inset-0 w-screen overflow-y-auto p-4">
             <div className="flex min-h-full items-center justify-center">
               <DialogPanel className="max-w-10xl space-y-4 border-2 bg-white p-6 md:p-12">
-                <div className="container m-auto relative text-left">
+                <div className="container m-auto relative text-left prose-2xl">
                   <button
                     type="button"
                     className="absolute top-0 right-0 z-50"

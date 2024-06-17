@@ -209,7 +209,7 @@ const ProductDetail = async ({
   );
   const recommendedProductIds = recommendedAttribute?.values.map((attr) => attr.reference);
   let recommendedProducts: string | any[] = [];
-  if (recommendedProductIds) {
+  if (recommendedProductIds && recommendedProductIds.length > 0) {
     const { products: recommendedProductsResponse } = await executeGraphQL<
       ProductCollectionQuery,
       { filter: any; channel: string; locale: string }
@@ -462,7 +462,7 @@ const ProductDetail = async ({
         </div>
       )}
       {recommendedProducts && recommendedProducts.length > 0 && (
-        <div className="container px-8 py-12 border-t">
+        <div className="container px-8 pt-44 pb-44 border-t">
           <div className="swiper-header flex justify-center items-center space-x-4">
             <h2 className="text-lg uppercase m-0 flex-1 text-left mb-8">
               {messages["app.recommendedProducts"]}

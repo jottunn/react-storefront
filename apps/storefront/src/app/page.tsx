@@ -29,6 +29,7 @@ import edjsHTML from "editorjs-html";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 import SwiperComponent from "@/components/SwiperComponent";
 import HomepageBlock from "@/components/homepage/HomepageBlock";
+import { GroupedProduct, groupProductsByColor } from "@/lib/product";
 
 const parser = edjsHTML();
 
@@ -80,7 +81,10 @@ export default async function Home() {
       revalidate: 60,
     },
   );
-  const newProducts = newProductsH ? mapEdgesToItems(newProductsH) : [];
+  let newProducts = newProductsH ? mapEdgesToItems(newProductsH) : [];
+  if (newProducts) {
+    newProducts = groupProductsByColor(newProducts as GroupedProduct[]);
+  }
 
   /** feature-products collection */
   const { collection: featuredCollection } = await executeGraphQL<
@@ -113,7 +117,11 @@ export default async function Home() {
       revalidate: 60,
     });
     featuredProducts = featuredProductsH ? mapEdgesToItems(featuredProductsH) : [];
+    if (featuredProducts) {
+      featuredProducts = groupProductsByColor(featuredProducts as GroupedProduct[]);
+    }
   }
+
   /** categories to be displayed on homepage */
   const categoryFilter: CategoryFilterInput = {
     metadata: [{ key: "Show on Homepage", value: "YES" }],
