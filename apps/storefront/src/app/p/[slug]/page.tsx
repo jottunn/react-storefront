@@ -91,19 +91,19 @@ export async function generateMetadata(
   };
 }
 
-export async function generateStaticParams() {
-  const { products } = await executeGraphQL<
-    ProductListQuery,
-    { first: number; channel: string; locale: string }
-  >(ProductListDocument, {
-    revalidate: 60,
-    variables: { first: 30, ...defaultRegionQuery() },
-    withAuth: false,
-  });
+// export async function generateStaticParams() {
+//   const { products } = await executeGraphQL<
+//     ProductListQuery,
+//     { first: number; channel: string; locale: string }
+//   >(ProductListDocument, {
+//     revalidate: 60,
+//     variables: { first: 30, ...defaultRegionQuery() },
+//     withAuth: false,
+//   });
 
-  const paths = products?.edges.map(({ node: { slug } }) => ({ slug })) || [];
-  return paths;
-}
+//   const paths = products?.edges.map(({ node: { slug } }) => ({ slug })) || [];
+//   return paths;
+// }
 
 const Page = ({
   params,
