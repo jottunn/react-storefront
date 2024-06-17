@@ -1,8 +1,9 @@
 "use client";
 
 import { Messages } from "@/lib/util";
-//@ts-expect-error
-import { useFormStatus } from "react-dom";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-ignore
+import { useFormStatus } from "react-dom/";
 
 export function AddButton({ disabled, messages }: { disabled?: boolean; messages: Messages }) {
   const { pending } = useFormStatus();

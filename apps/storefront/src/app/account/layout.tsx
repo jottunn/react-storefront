@@ -10,27 +10,15 @@ import { mapEdgesToItems } from "@/lib/maps";
 export type AccountLayoutProps = { children: ReactNode };
 
 const AccountLayout = async ({ children }: AccountLayoutProps) => {
-  let user;
-  try {
-    const result = await executeGraphQL<UserQuery, {}>(UserDocument, {
-      cache: "no-cache",
-    });
-    user = result.user;
-  } catch (error) {
-    console.error("Error fetching user data:", error);
-  }
+  const { user } = await executeGraphQL<UserQuery, {}>(UserDocument, {
+    cache: "no-cache",
+  });
 
-  let userOrders;
-  try {
-    const getOrders = await executeGraphQL<OrdersQuery, {}>(OrdersDocument, {
-      cache: "no-cache",
-    });
-    const orders = getOrders.me;
-    userOrders = mapEdgesToItems(orders?.orders);
-  } catch (error) {
-    console.error("Error fetching user orders:", error);
-  }
+  const { me: orders } = await executeGraphQL<OrdersQuery, {}>(OrdersDocument, {
+    cache: "no-cache",
+  });
 
+  const userOrders = mapEdgesToItems(orders?.orders);
   const messages = getMessages(DEFAULT_LOCALE);
 
   if (!user) {
