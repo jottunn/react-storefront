@@ -61,9 +61,11 @@ const CheckoutProviderInternal = ({ children }: { children: ReactNode }) => {
   const resetCheckout = () => setCheckoutId("");
 
   const refreshCheckout = useCallback(async () => {
-    console.log("Calling refetch...");
-    await refetch();
-    console.log("Refetch completed. Data:", data);
+    // console.log("Calling refetch...");
+    if (checkoutId) {
+      await refetch();
+    }
+    // console.log("Refetch completed. Data:", data);
   }, [refetch, data]);
 
   return (
