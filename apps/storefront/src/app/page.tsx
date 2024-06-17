@@ -94,24 +94,26 @@ export default async function Home() {
     revalidate: 60,
   });
 
-  const { products: featuredProductsH } = await executeGraphQL<
-    ProductCollectionQuery,
-    { filter: any; sortBy: any; first: number; locale: string; channel: string }
-  >(ProductCollectionDocument, {
-    variables: {
-      filter: {
-        isPublished: true,
-        stockAvailability: "IN_STOCK",
-        collections: [featuredCollection?.id],
+  let featuredProducts;
+  if (featuredCollection) {
+    const { products: featuredProductsH } = await executeGraphQL<
+      ProductCollectionQuery,
+      { filter: any; sortBy: any; first: number; locale: string; channel: string }
+    >(ProductCollectionDocument, {
+      variables: {
+        filter: {
+          isPublished: true,
+          stockAvailability: "IN_STOCK",
+          collections: [featuredCollection?.id],
+        },
+        first: 10,
+        ...defaultRegionQuery(),
+        sortBy,
       },
-      first: 10,
-      ...defaultRegionQuery(),
-      sortBy,
-    },
-    revalidate: 60,
-  });
-  const featuredProducts = featuredProductsH ? mapEdgesToItems(featuredProductsH) : [];
-
+      revalidate: 60,
+    });
+    featuredProducts = featuredProductsH ? mapEdgesToItems(featuredProductsH) : [];
+  }
   /** categories to be displayed on homepage */
   const categoryFilter: CategoryFilterInput = {
     metadata: [{ key: "Show on Homepage", value: "YES" }],

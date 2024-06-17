@@ -51,7 +51,7 @@ function Dropdown({ menuItem }: DropdownProps) {
       {!!menuItem.children?.length && (
         <div className={styles["dropdown-menu"]}>
           <div className="container pl-7">
-            <div className="grid grid-cols-3 gap-[2rem] mx-2 w-[70%]">
+            <div className="grid grid-cols-4 gap-[2rem] mx-2">
               {chunks.map((chunk, index) => (
                 <Column key={index} items={chunk} />
               ))}
