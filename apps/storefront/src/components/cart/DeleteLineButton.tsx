@@ -17,7 +17,7 @@ export const DeleteLineButton = ({ lineId }: Props) => {
   const handleDelete = async () => {
     if (isPending) return;
     startTransition(async () => {
-      const response = await deleteLineFromCheckout({ lineId, checkoutId: checkout.id });
+      const response = await deleteLineFromCheckout({ lineId, id: checkout.id });
       if (response && response.success) {
         await refreshCheckout();
       }

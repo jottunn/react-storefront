@@ -40,7 +40,7 @@ export function ProductCollection({
   messages,
   // setCounter,
   allowMore = true,
-  perPage = 30,
+  perPage,
 }: ProductCollectionProps) {
   const [productCollection, setProductCollection] = useState<ProductCollectionQuery>();
   const [isLoading, setIsLoading] = useState(false);
@@ -100,22 +100,39 @@ export function ProductCollection({
 
     try {
       // Fetch new products using the endCursor of the current product collection
-      const newProductsData = await getProductCollection(
-        productCollection?.products?.pageInfo.endCursor,
-      );
+      const newProductsData = await getProductCollection({
+        filter,
+        first: perPage,
+        ...defaultRegionQuery(),
+        ...(sortBy?.field &&
+          sortBy?.direction && {
+            sortBy: {
+              direction: sortBy.direction,
+              field: sortBy.field,
+            },
+          }),
+        after: (productCollection as any).pageInfo.endCursor,
+      });
       if (newProductsData) {
+        console.log("newProductsData", newProductsData);
         setProductCollection((prevState) => {
           // Get current products
-          const currentProducts = prevState?.products?.edges || [];
+          const currentProducts = (prevState as any)?.edges || [];
 
           // Get new products
           const newProducts = newProductsData.edges as ProductCountableEdge[];
 
           // Create a map to filter out duplicate products based on their ID
           const productMap = new Map<string, ProductCountableEdge>();
-          currentProducts.forEach((product) => {
-            productMap.set(product.node.id, product as ProductCountableEdge);
-          });
+          currentProducts.forEach(
+            (product: {
+              node: any;
+              __typename?: "ProductCountableEdge" | undefined;
+              cursor?: string;
+            }) => {
+              productMap.set(product.node.id, product as ProductCountableEdge);
+            },
+          );
           newProducts.forEach((product: ProductCountableEdge) =>
             productMap.set(product.node.id, product),
           );
@@ -125,11 +142,8 @@ export function ProductCollection({
           // Update the state with the unique merged products
           return {
             ...prevState,
-            products: {
-              ...prevState?.products,
-              edges: uniqueProducts,
-              pageInfo: newProductsData.pageInfo, // Update pageInfo with the latest from newProductsData
-            },
+            edges: uniqueProducts,
+            pageInfo: newProductsData.pageInfo, // Update pageInfo with the latest from newProductsData
           };
         });
       }
@@ -284,7 +298,7 @@ export function ProductCollection({
       {allowMore && (
         <Pagination
           onLoadMore={onLoadMore}
-          pageInfo={productCollection?.products?.pageInfo}
+          pageInfo={(productCollection as any).pageInfo}
           messages={messages}
           // itemsCount={productCollection?.products?.edges.length}
           // totalCount={productCollection?.products?.totalCount || undefined}

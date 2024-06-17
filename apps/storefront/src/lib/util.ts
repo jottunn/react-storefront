@@ -22,7 +22,7 @@ export function mapLocaleForInternalUse(locale: string): string {
   return locale;
 }
 
-export const formatAsMoney = (amount = 0, currency = "USD", locale = DEFAULT_LOCALE) =>
+export const formatAsMoney = (amount = 0, currency = "RON", locale = DEFAULT_LOCALE) =>
   new Intl.NumberFormat(locale, {
     style: "currency",
     currency,
@@ -71,7 +71,7 @@ export const formatDate = (date: Date | number) => {
 //   }).format(amount);
 
 export const formatMoney = (amount: number, currency: string) => {
-  const formatted = new Intl.NumberFormat("en-US", {
+  const formatted = new Intl.NumberFormat("ro-RO", {
     style: "currency",
     currency,
     minimumFractionDigits: 0,

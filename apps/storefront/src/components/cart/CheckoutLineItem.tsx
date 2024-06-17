@@ -36,7 +36,7 @@ export default function CheckoutLineItem({ line }: CheckoutLineItemProps) {
         quantity: newQuantity,
         lineId: line.id,
       };
-      const result = await updateLineFromCheckout({ lineUpdateInput, checkoutId: checkout.id });
+      const result = await updateLineFromCheckout({ lineUpdateInput, id: checkout.id });
 
       // TODO Handle result or errors
       if (result && result.success) {

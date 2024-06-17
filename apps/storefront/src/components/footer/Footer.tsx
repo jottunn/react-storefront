@@ -135,7 +135,7 @@ export default async function Footer({ className, ...rest }: FooterProps) {
                 </div>
               ))}
           </div>
-          <div className="no-margin-p mb-6">
+          <div className="no-margin-p mb-6 prose-2xl">
             {contactContent && (
               <>
                 <p className="font-bold text-md uppercase mb-5">{contactContent.node.title}</p>

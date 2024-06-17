@@ -59,40 +59,45 @@ export function ProductCard({ product, loading, priority, compliantVariant }: Pr
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Link href={`/p/${product.slug}`} prefetch={false} passHref legacyBehavior>
-        <a href="pass">
-          <div className="bg-white w-full aspect-1">
-            <div className="border w-full h-full relative flex items-center justify-center">
-              {thumbnailUrl && (
-                <Image
-                  alt={productDisplayName}
-                  className="transition-opacity duration-400 ease-in-out p-3"
-                  src={isHovered ? hoverImageUrl : thumbnailUrl}
-                  fill
-                  sizes="(max-width: 640px) 50vw, 33vw"
-                  priority={priority}
-                  loading={loading}
-                  style={{
-                    objectFit: "contain",
-                    opacity: isHovered && hoverImageUrl === thumbnailUrl ? 0.9 : 1,
-                  }}
-                />
-              )}
-              {product.pricing?.onSale && (
-                <div className="absolute right-2 top-2 py-1 px-2">
-                  {/* {salesPercent}% */}
-                  <TagIcon className="text-action-1 w-6 h-6" />
-                </div>
-              )}
-            </div>
+      <Link
+        href={
+          product.colorGroup && product.colorGroup !== "No Color"
+            ? `/p/${product.slug}?variant=${variant?.id}`
+            : `/p/${product.slug}`
+        }
+        prefetch={false}
+      >
+        <div className="bg-white w-full aspect-1">
+          <div className="border w-full h-full relative flex items-center justify-center">
+            {thumbnailUrl && (
+              <Image
+                alt={productDisplayName}
+                className="transition-opacity duration-400 ease-in-out p-3"
+                src={isHovered ? hoverImageUrl : thumbnailUrl}
+                fill
+                sizes="(max-width: 640px) 50vw, 33vw"
+                priority={priority}
+                loading={loading}
+                style={{
+                  objectFit: "contain",
+                  opacity: isHovered && hoverImageUrl === thumbnailUrl ? 0.9 : 1,
+                }}
+              />
+            )}
+            {product.pricing?.onSale && (
+              <div className="absolute right-2 top-2 py-1 px-2">
+                {/* {salesPercent}% */}
+                <TagIcon className="text-action-1 w-6 h-6" />
+              </div>
+            )}
           </div>
-          <p
-            className="block mt-2 text-md font-extrabold text-main text-center hover:text-gray-700 min-h-[75px] md:min-h-[50px]"
-            data-testid={`productName${product.name}`}
-          >
-            {productDisplayName}
-          </p>
-        </a>
+        </div>
+        <p
+          className="block mt-2 text-md font-extrabold text-main text-center hover:text-gray-700 min-h-[75px] md:min-h-[50px]"
+          data-testid={`productName${product.name}`}
+        >
+          {productDisplayName}
+        </p>
       </Link>
       {productBrand && (
         <p className="block text-sm font-normal text-main text-center pt-2 pb-2">{productBrand}</p>

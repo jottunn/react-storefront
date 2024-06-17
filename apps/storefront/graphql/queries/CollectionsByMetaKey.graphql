@@ -1,5 +1,5 @@
 query CollectionsByMetaKey($filter: CollectionFilterInput, $locale: LanguageCodeEnum!, $channel: String!) {
-  collections(first:3, filter: $filter, channel: $channel) {
+  collections(first:90, filter: $filter, channel: $channel) {
     edges {
         node {
             ...CollectionDetailsFragment

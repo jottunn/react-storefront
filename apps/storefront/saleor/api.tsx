@@ -34082,7 +34082,7 @@ export type CheckoutEmailUpdateMutation = {
 };
 
 export type CheckoutLineUpdateMutationVariables = Exact<{
-  checkoutId: Scalars["ID"]["input"];
+  id: Scalars["ID"]["input"];
   lines: Array<CheckoutLineUpdateInput> | CheckoutLineUpdateInput;
   locale: LanguageCodeEnum;
 }>;
@@ -38069,11 +38069,11 @@ export type CheckoutEmailUpdateMutationOptions = Apollo.BaseMutationOptions<
 >;
 export const CheckoutLineUpdateDocument = gql`
   mutation CheckoutLineUpdate(
-    $checkoutId: ID!
+    $id: ID!
     $lines: [CheckoutLineUpdateInput!]!
     $locale: LanguageCodeEnum!
   ) {
-    checkoutLinesUpdate(id: $checkoutId, lines: $lines) {
+    checkoutLinesUpdate(id: $id, lines: $lines) {
       checkout {
         ...CheckoutDetailsFragment
       }
@@ -38110,7 +38110,7 @@ export type CheckoutLineUpdateMutationFn = Apollo.MutationFunction<
  * @example
  * const [checkoutLineUpdateMutation, { data, loading, error }] = useCheckoutLineUpdateMutation({
  *   variables: {
- *      checkoutId: // value for 'checkoutId'
+ *      id: // value for 'id'
  *      lines: // value for 'lines'
  *      locale: // value for 'locale'
  *   },
@@ -39385,7 +39385,7 @@ export const CollectionsByMetaKeyDocument = gql`
     $locale: LanguageCodeEnum!
     $channel: String!
   ) {
-    collections(first: 3, filter: $filter, channel: $channel) {
+    collections(first: 90, filter: $filter, channel: $channel) {
       edges {
         node {
           ...CollectionDetailsFragment

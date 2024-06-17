@@ -48,7 +48,7 @@
 }
 
 .dropdown-link {
-  @apply text-md font-semibold text-main-1 cursor-pointer hover:underline;
+  @apply text-[1.5rem] font-regular text-main-1 leading-10 cursor-pointer hover:underline;
 }
 
 .dropdown-sublink {

@@ -278,7 +278,7 @@ export const checkoutAddPromoCodeMutation = async (args: { id: string; promoCode
 
 type removeLineFromCheckoutArgs = {
   lineId: string;
-  checkoutId: string;
+  id: string;
 };
 type RemoveProductFromCheckoutVariables = {
   id: string;
@@ -286,17 +286,14 @@ type RemoveProductFromCheckoutVariables = {
   locale: string;
 };
 
-export const deleteLineFromCheckout = async ({
-  lineId,
-  checkoutId,
-}: removeLineFromCheckoutArgs) => {
+export const deleteLineFromCheckout = async ({ lineId, id }: removeLineFromCheckoutArgs) => {
   try {
     const response = await executeGraphQL<
       RemoveProductFromCheckoutMutation,
       RemoveProductFromCheckoutVariables
     >(RemoveProductFromCheckoutDocument, {
       variables: {
-        id: checkoutId,
+        id: id,
         lineId: lineId,
         locale: defaultRegionQuery().locale,
       },
@@ -317,23 +314,23 @@ export const deleteLineFromCheckout = async ({
 
 type updateLineFromCheckoutArgs = {
   lineUpdateInput: CheckoutLineUpdateInput;
-  checkoutId: string;
+  id: string;
 };
 type CheckoutLineUpdateVariables = {
-  checkoutId: string;
+  id: string;
   lines: CheckoutLineUpdateInput[];
   locale: string;
 };
 export const updateLineFromCheckout = async ({
   lineUpdateInput,
-  checkoutId,
+  id,
 }: updateLineFromCheckoutArgs) => {
   try {
     const response = await executeGraphQL<CheckoutLineUpdateMutation, CheckoutLineUpdateVariables>(
       CheckoutLineUpdateDocument,
       {
         variables: {
-          checkoutId: checkoutId,
+          id: id,
           lines: [lineUpdateInput],
           locale: defaultRegionQuery().locale,
         },
