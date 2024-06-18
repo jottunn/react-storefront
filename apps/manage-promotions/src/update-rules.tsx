@@ -21,12 +21,14 @@ type Sale = {
 type Collection1 = {
   id: string;
   name: string;
+  parent: any;
   __typename: string;
 };
 
 type Category = {
   id: string;
   name: string;
+  parent: any;
   __typename: string;
 };
 
@@ -66,6 +68,15 @@ export const UpdateRules: React.FC = () => {
             (meta: { key: string; value: string }) => meta.key === "isBrand" && meta.value === "YES"
           )
         );
+        const filteredSalesCollections = collections.filter((collection) =>
+          collection.metadata?.some(
+            (meta: { key: string; value: string }) => meta.key === "isSale" && meta.value === "YES"
+          )
+        );
+        //filter out sales collections
+        filteredSalesCollections.forEach((saleCollection) => {
+          collections = collections.filter((collection) => collection.id !== saleCollection.id);
+        });
         // filteredBrandCollection.forEach(brandCollection => {
         //   collections = collections.filter(collection => collection.id !== brandCollection.id)
         // })
@@ -110,13 +121,35 @@ export const UpdateRules: React.FC = () => {
     fetchSalesCollectons();
   }, [client]);
 
+  const getChildrenCategories = (categoryId: string) => {
+    let currentCategory = categories.filter((categ) => categ.id === categoryId);
+    if (currentCategory[0] && currentCategory[0].parent === null) {
+      //get all children
+      const children = categories.filter(
+        (categ) => categ.parent && categ.parent.id === currentCategory[0].id
+      );
+      return children.map((child) => child.id);
+    }
+    return [];
+  };
+
   const onSubmit = async (data: any) => {
     setLoading(true);
     setSuccessMessage(null);
     // console.log('data', data);
     const errorList: string[] = [];
+    let finalCategories = [];
     for (const sale of availableSales) {
       const selectedCategories = data[`categories-${sale.id}`] || [];
+      //check if selected Category is parent, if yes, then get all children
+      for (let i = 0; i < selectedCategories.length; i++) {
+        const children = getChildrenCategories(selectedCategories[i]);
+        if (children.length > 0) {
+          finalCategories.push(...children);
+        } else {
+          finalCategories = selectedCategories;
+        }
+      }
       let selectedCollections = data[`collections-${sale.id}`] || [];
       //filter out brand collections and send them separately
       // Step 1: Create a set of IDs from brandCollections
@@ -137,6 +170,7 @@ export const UpdateRules: React.FC = () => {
           client,
           sale.id,
           selectedCategories,
+          finalCategories,
           filteredSelectedCollections,
           filteredBrandCollections,
           selectedCollections
@@ -172,9 +206,17 @@ export const UpdateRules: React.FC = () => {
           const rulesArray: Rule[] = JSON.parse(andRules);
           // console.log('rulesArray', rulesArray);
           const values = rulesArray.reduce<string[]>((acc, rule) => {
-            const fieldValues = rule[field];
+            let fieldValues = rule[field];
+            //checks in case deleted collections/categories are still in filters
             if (fieldValues) {
-              // console.log(fieldValues);
+              if (field === "collections") {
+                const allCollectionsIds = collections.map((collection) => collection.id);
+                fieldValues = fieldValues.filter((id) => allCollectionsIds.includes(id));
+              }
+              if (field === "categories") {
+                const allCategoriesIds = categories.map((category) => category.id);
+                fieldValues = fieldValues.filter((id) => allCategoriesIds.includes(id));
+              }
               return acc.concat(fieldValues.filter(Boolean));
             }
             return acc;
@@ -189,11 +231,20 @@ export const UpdateRules: React.FC = () => {
     return [];
   };
 
-  const getOptions = (obj1: (Collection | Category)[], selectedIds: string[]) => {
+  const getOptions = (obj1: (Collection | Category)[], selectedIds: string[], type?: string) => {
+    let finalSelectedIds: string[];
+    if (type === "collection") {
+      const allCollectionsIds = collections.map((collection) => collection.id);
+      finalSelectedIds = selectedIds.filter((id) => allCollectionsIds.includes(id));
+    }
+    if (type === "category") {
+      const allCategoriesIds = categories.map((category) => category.id);
+      finalSelectedIds = selectedIds.filter((id) => allCategoriesIds.includes(id));
+    }
     return obj1.map((item) => ({
       label: item.name,
       value: item.id,
-      selected: selectedIds.includes(item.id),
+      selected: finalSelectedIds.includes(item.id),
     }));
   };
 
@@ -241,10 +292,8 @@ export const UpdateRules: React.FC = () => {
               {availableSales.map((sale, index) => {
                 const collectionValues = extractValues(sale.id, "collections") || [];
                 const categoryValues = extractValues(sale.id, "categories") || [];
-                const collectionOptions = getOptions(collections, collectionValues);
-                const categoryOptions = getOptions(categories, categoryValues);
-                // console.log('collectionValues', collectionValues);
-                // console.log('categoryValues', categoryValues);
+                const collectionOptions = getOptions(collections, collectionValues, "collection");
+                const categoryOptions = getOptions(categories, categoryValues, "category");
                 return (
                   <div
                     className="grid-row"

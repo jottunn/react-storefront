@@ -4,6 +4,9 @@ query CategoriesAll {
         node {
             id
             name
+            parent {
+              id
+            }
         }
     }
   }

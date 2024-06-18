@@ -17,6 +17,7 @@ export async function addRules(
   saleId: string,
   // ruleId: string,
   selectedCategories: string[],
+  finalCategories: string[],
   selectedCollections: string[],
   brandCollections: any[],
   allCollections: string[]
@@ -84,7 +85,7 @@ export async function addRules(
       }
 
       const productsFilter: ProductFilterInput = {
-        ...(selectedCategories?.length && { categories: selectedCategories }),
+        ...(finalCategories?.length && { categories: finalCategories }),
         ...(selectedCollections?.length && { collections: selectedCollections }),
         attributes: attributesInput,
         stockAvailability: "IN_STOCK" as InputMaybe<StockAvailability>,

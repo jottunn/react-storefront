@@ -47,5 +47,5 @@ export async function publishCollection(client: Client, saleCollectionId: string
       },
     })
     .toPromise();
-  // console.log(updatedCollectionVisibility?.collectionChannelListingUpdate?.errors);
+  // console.log('updatedCollectionVisibility', updatedCollectionVisibility, saleCollectionId, channelsArray);
 }

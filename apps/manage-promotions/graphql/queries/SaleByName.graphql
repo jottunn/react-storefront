@@ -12,28 +12,28 @@ query getSaleByName ($filter: SaleFilterInput) {
                         id
                     }
                 }
-                products(first:90) {
+                products(first:500) {
                     edges {
                         node {
                         id
                         }
                     }
                 }
-                categories(first:90) {
+                categories(first:500) {
                     edges {
                         node {
                         id
                         }
                     }
                 }
-                collections(first:90) {
+                collections(first:500) {
                     edges {
                         node {
                         id
                         }
                     }
                 }
-                variants(first:90) {
+                variants(first:500) {
                      edges {
                         node {
                         id
