@@ -172,10 +172,14 @@ export const UpdateRules: React.FC = () => {
       // console.log('data', data);
       for (const sale of state.availableSales) {
         const selectedCategories = data[`categories-${sale.id}`] || [];
-        const finalCategories = selectedCategories.flatMap(
-          (category: string) => getChildrenCategories(category) || category
-        );
 
+        const finalCategories = [...selectedCategories];
+        selectedCategories.forEach((category: string) => {
+          const children = getChildrenCategories(category);
+          if (children.length > 0) {
+            finalCategories.push(...children);
+          }
+        });
         const selectedCollections = data[`collections-${sale.id}`] || [];
         // Step 1: Create a set of IDs from brandCollections
 
