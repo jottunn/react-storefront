@@ -195,6 +195,8 @@ export const UpdateRules: React.FC = () => {
         (meta: { key: string; value: string }) => meta.key === "sale" && meta.value === saleId
       )
     );
+    const allCollectionsIds = collections.map((collection) => collection.id);
+    const allCategoriesIds = categories.map((category) => category.id);
     // console.log("filteredSaleCollection", filteredSaleCollection);
     if (filteredSaleCollection.length > 0 && filteredSaleCollection[0].privateMetadata) {
       const privateMetadata = filteredSaleCollection[0].privateMetadata;
@@ -210,11 +212,9 @@ export const UpdateRules: React.FC = () => {
             //checks in case deleted collections/categories are still in filters
             if (fieldValues) {
               if (field === "collections") {
-                const allCollectionsIds = collections.map((collection) => collection.id);
                 fieldValues = fieldValues.filter((id) => allCollectionsIds.includes(id));
               }
               if (field === "categories") {
-                const allCategoriesIds = categories.map((category) => category.id);
                 fieldValues = fieldValues.filter((id) => allCategoriesIds.includes(id));
               }
               return acc.concat(fieldValues.filter(Boolean));
@@ -292,6 +292,8 @@ export const UpdateRules: React.FC = () => {
               {availableSales.map((sale, index) => {
                 const collectionValues = extractValues(sale.id, "collections") || [];
                 const categoryValues = extractValues(sale.id, "categories") || [];
+                console.log("collectionValues", collectionValues);
+                console.log("categoryValues", categoryValues);
                 const collectionOptions = getOptions(collections, collectionValues, "collection");
                 const categoryOptions = getOptions(categories, categoryValues, "category");
                 return (

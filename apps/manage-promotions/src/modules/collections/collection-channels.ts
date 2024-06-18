@@ -27,9 +27,13 @@ export async function unpublishCollection(
 
 export async function publishCollection(client: Client, saleCollectionId: string, channels: any[]) {
   let channelsArray: any[] = [];
-
-  for (let i = 0; i < channels.length; i++) {
-    const channelID = await getChannelId(client, channels[i]["slug"] || channels[i]);
+  let receivedChannel = channels;
+  if (receivedChannel.length == 0) {
+    receivedChannel.push("default-channel");
+  }
+  console.log("receivedChannel", receivedChannel);
+  for (let i = 0; i < receivedChannel.length; i++) {
+    const channelID = await getChannelId(client, receivedChannel[i]["slug"] || receivedChannel[i]);
     if (channelID) {
       let channelObj = {
         channelId: channelID as string,
@@ -39,13 +43,20 @@ export async function publishCollection(client: Client, saleCollectionId: string
     }
   }
 
-  const { data: updatedCollectionVisibility } = await client
-    .mutation(UpdateCollectionChannelDocument, {
-      id: saleCollectionId,
-      input: {
-        addChannels: channelsArray,
-      },
-    })
-    .toPromise();
-  // console.log('updatedCollectionVisibility', updatedCollectionVisibility, saleCollectionId, channelsArray);
+  if (channelsArray && channelsArray.length > 0) {
+    const { data: updatedCollectionVisibility } = await client
+      .mutation(UpdateCollectionChannelDocument, {
+        id: saleCollectionId,
+        input: {
+          addChannels: channelsArray,
+        },
+      })
+      .toPromise();
+    console.log(
+      "updatedCollectionVisibility",
+      updatedCollectionVisibility,
+      saleCollectionId,
+      channelsArray
+    );
+  }
 }
