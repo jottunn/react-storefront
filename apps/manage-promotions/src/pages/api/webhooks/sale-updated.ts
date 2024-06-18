@@ -120,7 +120,7 @@ export default saleUpdatedWebhook.createHandler(async (req, res, ctx) => {
     const currentSaleEdge = result.data?.sales?.edges.find((edge) => edge.node.name === saleName);
     const currentSale = currentSaleEdge ? currentSaleEdge.node : undefined;
     const saleId = currentSale?.id || "";
-    const saleEndDate1 = currentSale?.endDate;
+    const saleEndDate1 = currentSale?.endDate || "";
     const nowISO = new Date().toISOString();
     const nowDate = new Date(nowISO);
     const saleEndDate = new Date(saleEndDate1);

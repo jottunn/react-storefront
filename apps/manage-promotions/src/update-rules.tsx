@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useClient } from "urql";
 import { Box, Button, Multiselect, Spinner, Text } from "@saleor/macaw-ui";
 import { fetchSales } from "./modules/sales/get-sales";
@@ -36,136 +36,164 @@ type Rule = {
   collections?: string[];
   categories?: string[];
 };
-
+type State = {
+  availableSales: Sale[];
+  collections: Collection1[];
+  brandCollections: Collection1[];
+  categories: Category[];
+  saleCollections: any[];
+  loading: boolean;
+  errors: string[];
+  successMessage: string | null;
+};
 export const UpdateRules: React.FC = () => {
   const client = useClient();
-  const [availableSales, setavailableSales] = useState<Sale[]>([]);
-  const [collections, setCollections] = useState<Collection1[]>([]);
-  const [brandCollections, setBrandCollections] = useState<Collection1[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [saleCollections, setSalesCollections] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [errors, setErrors] = useState<string[]>([]);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [state, setState] = useState<State>({
+    availableSales: [],
+    collections: [],
+    brandCollections: [],
+    categories: [],
+    saleCollections: [],
+    loading: true,
+    errors: [],
+    successMessage: null,
+  });
+
   const { control, handleSubmit, setValue, reset } = useForm();
 
+  const fetchData = useCallback(async () => {
+    try {
+      const sales = await fetchSales(client, false);
+      setState((prevState) => ({ ...prevState, availableSales: sales }));
+    } catch (error) {
+      console.error("Error fetching sales:", error);
+      setState((prevState) => ({
+        ...prevState,
+        errors: [...prevState.errors, "Error fetching sales"],
+      }));
+    }
+  }, [client]);
+
+  const fetchCollectionsData = useCallback(async () => {
+    try {
+      let collections = await fetchCollections(client);
+      const filteredBrandCollection = collections.filter((collection) =>
+        collection.metadata?.some(
+          (meta: { key: string; value: string }) => meta.key === "isBrand" && meta.value === "YES"
+        )
+      );
+      const filteredSalesCollections = collections.filter((collection) =>
+        collection.metadata?.some(
+          (meta: { key: string; value: string }) => meta.key === "isSale" && meta.value === "YES"
+        )
+      );
+      //filter out sales collections
+      collections = collections.filter(
+        (collection) =>
+          !filteredSalesCollections.some((saleCollection) => saleCollection.id === collection.id)
+      );
+      // filteredBrandCollection.forEach(brandCollection => {
+      //   collections = collections.filter(collection => collection.id !== brandCollection.id)
+      // })
+      setState((prevState) => ({
+        ...prevState,
+        collections,
+        brandCollections: filteredBrandCollection,
+      }));
+    } catch (error) {
+      console.error("Error fetching collections:", error);
+      setState((prevState) => ({
+        ...prevState,
+        errors: [...prevState.errors, "Error fetching collections"],
+      }));
+    }
+  }, [client]);
+
+  const fetchCategoriesData = useCallback(async () => {
+    try {
+      const categories = await fetchCategories(client);
+      setState((prevState) => ({ ...prevState, categories, loading: false }));
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      setState((prevState) => ({
+        ...prevState,
+        loading: false,
+        errors: [...prevState.errors, "Error fetching categories"],
+      }));
+    }
+  }, [client]);
+
+  const fetchSalesCollections = useCallback(async () => {
+    try {
+      const collectionFilter: CollectionFilterInput = {
+        metadata: [{ key: "isSale", value: "YES" }],
+      };
+      const saleCollectionsArr = await fetchSaleCollections(client, collectionFilter);
+      setState((prevState) => ({
+        ...prevState,
+        saleCollections: saleCollectionsArr,
+        loading: false,
+      }));
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      setState((prevState) => ({
+        ...prevState,
+        loading: false,
+        errors: [...prevState.errors, "Error fetching categories"],
+      }));
+    }
+  }, [client]);
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const sales = await fetchSales(client, false);
-        setavailableSales(sales);
-      } catch (error) {
-        console.error("Error fetching sales:", error);
-        setErrors((prevErrors) => [...prevErrors, "Error fetching sales"]);
-      }
-    };
-
-    const fetchCollectionsData = async () => {
-      try {
-        let collections = await fetchCollections(client);
-        const filteredBrandCollection = collections.filter((collection) =>
-          collection.metadata?.some(
-            (meta: { key: string; value: string }) => meta.key === "isBrand" && meta.value === "YES"
-          )
-        );
-        const filteredSalesCollections = collections.filter((collection) =>
-          collection.metadata?.some(
-            (meta: { key: string; value: string }) => meta.key === "isSale" && meta.value === "YES"
-          )
-        );
-        //filter out sales collections
-        filteredSalesCollections.forEach((saleCollection) => {
-          collections = collections.filter((collection) => collection.id !== saleCollection.id);
-        });
-        // filteredBrandCollection.forEach(brandCollection => {
-        //   collections = collections.filter(collection => collection.id !== brandCollection.id)
-        // })
-        setBrandCollections(filteredBrandCollection);
-        setCollections(collections);
-      } catch (error) {
-        console.error("Error fetching collections:", error);
-        setErrors((prevErrors) => [...prevErrors, "Error fetching collections"]);
-      }
-    };
-
-    const fetchCategoriesData = async () => {
-      try {
-        const categories = await fetchCategories(client);
-        setCategories(categories);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-        setLoading(false);
-        setErrors((prevErrors) => [...prevErrors, "Error fetching categories"]);
-      }
-    };
-
-    const fetchSalesCollectons = async () => {
-      try {
-        const collectionFilter: CollectionFilterInput = {
-          metadata: [{ key: "isSale", value: "YES" }],
-        };
-        const saleCollectionsArr = await fetchSaleCollections(client, collectionFilter);
-        setSalesCollections(saleCollectionsArr);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-        setLoading(false);
-        setErrors((prevErrors) => [...prevErrors, "Error fetching categories"]);
-      }
-    };
-
     fetchData();
     fetchCollectionsData();
     fetchCategoriesData();
-    fetchSalesCollectons();
-  }, [client]);
+    fetchSalesCollections();
+  }, [fetchData, fetchCollectionsData, fetchCategoriesData, fetchSalesCollections]);
 
-  const getChildrenCategories = (categoryId: string) => {
-    let currentCategory = categories.filter((categ) => categ.id === categoryId);
-    if (currentCategory[0] && currentCategory[0].parent === null) {
-      //get all children
-      const children = categories.filter(
-        (categ) => categ.parent && categ.parent.id === currentCategory[0].id
-      );
-      return children.map((child) => child.id);
-    }
-    return [];
-  };
-
-  const onSubmit = async (data: any) => {
-    setLoading(true);
-    setSuccessMessage(null);
-    // console.log('data', data);
-    const errorList: string[] = [];
-    let finalCategories = [];
-    for (const sale of availableSales) {
-      const selectedCategories = data[`categories-${sale.id}`] || [];
-      //check if selected Category is parent, if yes, then get all children
-      for (let i = 0; i < selectedCategories.length; i++) {
-        const children = getChildrenCategories(selectedCategories[i]);
-        if (children.length > 0) {
-          finalCategories.push(...children);
-        } else {
-          finalCategories = selectedCategories;
-        }
+  const getChildrenCategories = useCallback(
+    (categoryId: string) => {
+      let currentCategory = state.categories.filter((categ) => categ.id === categoryId);
+      if (currentCategory[0] && currentCategory[0].parent === null) {
+        const children = state.categories.filter(
+          (categ) => categ.parent && categ.parent.id === currentCategory[0].id
+        );
+        return children.map((child) => child.id);
       }
-      let selectedCollections = data[`collections-${sale.id}`] || [];
-      //filter out brand collections and send them separately
-      // Step 1: Create a set of IDs from brandCollections
-      const brandCollectionIds = new Set(
-        brandCollections.map((brandCollection) => brandCollection.id)
-      );
-      // Step 2: Filter out collections from selectedCollections that are in brandCollections
-      const filteredSelectedCollections = selectedCollections.filter(
-        (selectedCollection: string) => !brandCollectionIds.has(selectedCollection)
-      );
-      // Step3: Get only selected brand collections
-      const filteredBrandCollections = brandCollections.filter((brandCollection) =>
-        selectedCollections.includes(brandCollection.id)
-      );
+      return [];
+    },
+    [state.categories]
+  );
 
-      if (selectedCategories.length > 0 || filteredSelectedCollections.length > 0) {
+  const onSubmit = useCallback(
+    async (data: any) => {
+      setState((prevState) => ({ ...prevState, loading: true, successMessage: null }));
+      const errorList: string[] = [];
+      // console.log('data', data);
+      for (const sale of state.availableSales) {
+        const selectedCategories = data[`categories-${sale.id}`] || [];
+        const finalCategories = selectedCategories.flatMap(
+          (category: string) => getChildrenCategories(category) || category
+        );
+
+        const selectedCollections = data[`collections-${sale.id}`] || [];
+        // Step 1: Create a set of IDs from brandCollections
+
+        const brandCollectionIds = new Set(
+          state.brandCollections.map((brandCollection) => brandCollection.id)
+        );
+        // Step 2: Filter out collections from selectedCollections that are in brandCollections
+
+        const filteredSelectedCollections = selectedCollections.filter(
+          (selectedCollection: string) => !brandCollectionIds.has(selectedCollection)
+        );
+        // Step3: Get only selected brand collections
+
+        const filteredBrandCollections = state.brandCollections.filter((brandCollection) =>
+          selectedCollections.includes(brandCollection.id)
+        );
+
+        //if (selectedCategories.length > 0 || filteredSelectedCollections.length > 0) {
         const errors = await addRules(
           client,
           sale.id,
@@ -179,88 +207,85 @@ export const UpdateRules: React.FC = () => {
         if (errors && errors.length > 0) {
           errorList.push(`Errors for sale ${sale.name}: ${errors.join(", ")}`);
         }
+        // }
       }
-    }
+      setState((prevState) => ({
+        ...prevState,
+        loading: false,
+        errors: errorList,
+        successMessage: errorList.length === 0 ? "All sales updated successfully!" : null,
+      }));
+    },
+    [client, state.availableSales, state.brandCollections, getChildrenCategories]
+  );
 
-    setLoading(false);
-    setErrors(errorList);
-    if (errorList.length === 0) {
-      setSuccessMessage("All sales updated successfully!");
-    }
-  };
-
-  const extractValues = (saleId: string, field: keyof Rule) => {
-    const filteredSaleCollection = saleCollections.filter((saleCollection) =>
-      saleCollection.metadata?.some(
-        (meta: { key: string; value: string }) => meta.key === "sale" && meta.value === saleId
-      )
-    );
-    const allCollectionsIds = collections.map((collection) => collection.id);
-    const allCategoriesIds = categories.map((category) => category.id);
-    // console.log("filteredSaleCollection", filteredSaleCollection);
-    if (filteredSaleCollection.length > 0 && filteredSaleCollection[0].privateMetadata) {
-      const privateMetadata = filteredSaleCollection[0].privateMetadata;
-      const andRulesItem = privateMetadata.find((item: { key: string }) => item.key === "AndRules");
-      if (andRulesItem) {
-        const andRules = andRulesItem.value;
-        //console.log("andRules", andRules);
-        try {
-          const rulesArray: Rule[] = JSON.parse(andRules);
-          // console.log('rulesArray', rulesArray);
-          const values = rulesArray.reduce<string[]>((acc, rule) => {
-            let fieldValues = rule[field];
-            //checks in case deleted collections/categories are still in filters
-            if (fieldValues) {
-              if (field === "collections") {
-                fieldValues = fieldValues.filter((id) => allCollectionsIds.includes(id));
+  const extractValues = useCallback(
+    (saleId: string, field: keyof Rule) => {
+      const filteredSaleCollection = state.saleCollections.filter((saleCollection) =>
+        saleCollection.metadata?.some(
+          (meta: { key: string; value: string }) => meta.key === "sale" && meta.value === saleId
+        )
+      );
+      const allIds = state[field].map((item) => item.id);
+      if (filteredSaleCollection.length > 0 && filteredSaleCollection[0].privateMetadata) {
+        const privateMetadata = filteredSaleCollection[0].privateMetadata;
+        const andRulesItem = privateMetadata.find(
+          (item: { key: string }) => item.key === "AndRules"
+        );
+        if (andRulesItem) {
+          const andRules = andRulesItem.value;
+          try {
+            const rulesArray: Rule[] = JSON.parse(andRules);
+            const values = rulesArray.reduce<string[]>((acc, rule) => {
+              let fieldValues = rule[field];
+              if (fieldValues) {
+                fieldValues = fieldValues.filter((id) => allIds.includes(id));
+                return acc.concat(fieldValues.filter(Boolean));
               }
-              if (field === "categories") {
-                fieldValues = fieldValues.filter((id) => allCategoriesIds.includes(id));
-              }
-              return acc.concat(fieldValues.filter(Boolean));
-            }
-            return acc;
-          }, []);
-          return values;
-        } catch (error) {
-          console.error("Error parsing JSON:", error);
-          return [];
+              return acc;
+            }, []);
+            return values;
+          } catch (error) {
+            console.error("Error parsing JSON:", error);
+            return [];
+          }
         }
       }
-    }
-    return [];
-  };
+      return [];
+    },
+    [state.saleCollections, state.collections, state.categories]
+  );
 
-  const getOptions = (obj1: (Collection | Category)[], selectedIds: string[], type?: string) => {
-    let finalSelectedIds: string[];
-    if (type === "collection") {
-      const allCollectionsIds = collections.map((collection) => collection.id);
-      finalSelectedIds = selectedIds.filter((id) => allCollectionsIds.includes(id));
-    }
-    if (type === "category") {
-      const allCategoriesIds = categories.map((category) => category.id);
-      finalSelectedIds = selectedIds.filter((id) => allCategoriesIds.includes(id));
-    }
-    return obj1.map((item) => ({
-      label: item.name,
-      value: item.id,
-      selected: finalSelectedIds.includes(item.id),
-    }));
-  };
+  const getOptions = useCallback(
+    (obj1: (Collection | Category)[], selectedIds: string[], type?: string) => {
+      const allIds = state[type === "collection" ? "collections" : "categories"].map(
+        (item) => item.id
+      );
+      const finalSelectedIds = selectedIds.filter((id) => allIds.includes(id));
+      return obj1.map((item) => ({
+        label: item.name,
+        value: item.id,
+        selected: finalSelectedIds.includes(item.id),
+      }));
+    },
+    [state.collections, state.categories]
+  );
 
-  useEffect(() => {
-    const defaultValues = availableSales.reduce((acc, sale) => {
+  const defaultValues = useMemo(() => {
+    return state.availableSales.reduce((acc, sale) => {
       const collectionValues = extractValues(sale.id, "collections") || [];
       const categoryValues = extractValues(sale.id, "categories") || [];
       acc[`categories-${sale.id}`] = categoryValues;
       acc[`collections-${sale.id}`] = collectionValues;
       return acc;
     }, {} as { [key: string]: any[] });
+  }, [state.availableSales, extractValues]);
 
+  useEffect(() => {
     reset(defaultValues);
-  }, [availableSales, reset]);
+  }, [defaultValues, reset]);
 
-  if (loading) {
+  if (state.loading) {
     return <Spinner />;
   }
 
@@ -271,31 +296,35 @@ export const UpdateRules: React.FC = () => {
         All other rules already added to the Discount will be removed and only below rules will be
         applied.
       </Text>
-      {errors.length > 0 && (
+      {state.errors.length > 0 && (
         <Box marginBottom={4}>
-          {errors.map((error, index) => (
+          {state.errors.map((error, index) => (
             <Text key={index} style={{ color: "red" }}>
               {error}
             </Text>
           ))}
         </Box>
       )}
-      {successMessage && (
+      {state.successMessage && (
         <Box marginBottom={4}>
-          <Text style={{ color: "green" }}>{successMessage}</Text>
+          <Text style={{ color: "green" }}>{state.successMessage}</Text>
         </Box>
       )}
       <form onSubmit={handleSubmit(onSubmit)}>
         <Box padding={4} display="flex" flexDirection="column" gap={4}>
           <Box display="flex" flexDirection="column" gap={4}>
             <div>
-              {availableSales.map((sale, index) => {
+              {state.availableSales.map((sale, index) => {
                 const collectionValues = extractValues(sale.id, "collections") || [];
                 const categoryValues = extractValues(sale.id, "categories") || [];
-                console.log("collectionValues", collectionValues);
-                console.log("categoryValues", categoryValues);
-                const collectionOptions = getOptions(collections, collectionValues, "collection");
-                const categoryOptions = getOptions(categories, categoryValues, "category");
+                // console.log("collectionValues", collectionValues);
+                // console.log("categoryValues", categoryValues);
+                const collectionOptions = getOptions(
+                  state.collections,
+                  collectionValues,
+                  "collection"
+                );
+                const categoryOptions = getOptions(state.categories, categoryValues, "category");
                 return (
                   <div
                     className="grid-row"

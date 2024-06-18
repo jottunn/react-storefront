@@ -123,6 +123,6 @@ export async function updateSalesCollectionPrivateMetadata(
       },
     })
     .toPromise();
-
+  return updatedCollection;
   //console.log("updatedCollection", updatedCollection);
 }

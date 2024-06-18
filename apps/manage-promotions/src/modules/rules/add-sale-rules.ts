@@ -22,6 +22,12 @@ export async function addRules(
   brandCollections: any[],
   allCollections: string[]
 ) {
+  console.log("add rule for ", saleId);
+  console.log("selectedCategories ", selectedCategories);
+  console.log("finalCategories ", finalCategories);
+  console.log("selectedCollections ", selectedCollections);
+  console.log("brandCollections ", brandCollections);
+  console.log("allCollections ", allCollections);
   const errors = [];
   try {
     let productIdsArray = [];
@@ -52,15 +58,24 @@ export async function addRules(
             (item: { key: string }) => item.key === "AndRules"
           );
           if (andRulesItem) {
-            const rules = JSON.parse(andRulesItem.value);
-            if (rules.categories.length === 0 && rules.collections.length === 0) {
+            const rulesParsed = JSON.parse(andRulesItem.value);
+            const rules = rulesParsed[0];
+            console.log("rules", rules);
+            if (
+              (!rules.categories || rules.categories.length === 0) &&
+              (!rules.collections || rules.collections.length === 0)
+            ) {
               return;
             }
           }
         }
-        await updateSalesCollectionPrivateMetadata(client, saleCollectionId, [
-          { key: "AndRules", value: metaValues },
-        ]);
+        const responseUpdateRules = await updateSalesCollectionPrivateMetadata(
+          client,
+          saleCollectionId,
+          [{ key: "AndRules", value: metaValues }]
+        );
+        console.log("metaValues", metaValues);
+        console.log(responseUpdateRules);
       }
     } else {
       errors.push("No Sales collection found for the updated sale.");

@@ -10,7 +10,7 @@ export async function unpublishCollection(
   let channelIDs: string[] = [];
 
   for (let i = 0; i < channels.length; i++) {
-    const channelID = await getChannelId(client, channels[i]["slug"]);
+    const channelID = await getChannelId(client, channels[i]["slug"] || channels[i]);
     if (channelID) {
       channelIDs.push(channelID as string);
     }
