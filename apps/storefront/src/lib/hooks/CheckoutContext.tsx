@@ -84,7 +84,7 @@ const CheckoutProviderInternal = ({ children }: { children: ReactNode }) => {
 
 export const CheckoutProvider = ({ children }: { children: ReactNode }) => {
   return (
-    <Suspense fallback={<Spinner />}>
+    <Suspense>
       <CheckoutProviderInternal>{children}</CheckoutProviderInternal>
     </Suspense>
   );

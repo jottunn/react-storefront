@@ -14,9 +14,7 @@ const Column: React.FC<ColumnProps> = ({ items }) => (
   <div className={styles["column"]}>
     {items.map((item) => (
       <div key={item?.id}>
-        <NavLink href={item?.url || getLinkPath(item)} className={styles["dropdown-link"]}>
-          {item?.name}
-        </NavLink>
+        <NavLink href={item?.url || getLinkPath(item)}>{item?.name}</NavLink>
         {!!item?.children?.length && (
           <ul className={styles["dropdown-ul"]}>
             {item?.children?.map((sub) => (

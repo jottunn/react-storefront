@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useUserContext } from "../../UserContext";
-import { formatPrice } from "@/lib/hooks/useRegions";
+import { formatMoney } from "@/lib/utils/formatMoney";
 import Spinner from "@/components/Spinner";
 import AddressDisplay from "@/components/checkout/address/AddressDisplay";
 import { useEffect, useState } from "react";
@@ -75,11 +75,11 @@ export default function Page({ params }: { params: { token: string } }) {
                       </div>
                     </div>
                   </td>
-                  <td>{formatPrice(line?.unitPrice.gross)}</td>
+                  <td>{formatMoney(line?.unitPrice.gross)}</td>
                   <td>{line?.quantity}</td>
                   <td>
                     <p className="mr-3 md:mr-10 text-right">
-                      {formatPrice(line?.totalPrice.gross)}
+                      {formatMoney(line?.totalPrice.gross)}
                     </p>
                   </td>
                 </tr>
@@ -92,7 +92,7 @@ export default function Page({ params }: { params: { token: string } }) {
           <div className="mt-5 text-left md:text-center">Subtotal</div>
         </div>
         <div className="text-md text-center">
-          <p className="mt-5 text-right mr-3 md:mr-10">{formatPrice(order?.subtotal.net)}</p>
+          <p className="mt-5 text-right mr-3 md:mr-10">{formatMoney(order?.subtotal.net)}</p>
         </div>
         <div className="md:col-start-3 col-span-2 border-t" />
         <div className="md:col-start-3 text-md h-16">
@@ -101,14 +101,14 @@ export default function Page({ params }: { params: { token: string } }) {
           </div>
         </div>
         <div className="text-md text-center">
-          <p className="mt-5 text-right mr-3 md:mr-10">{formatPrice(order?.shippingPrice.gross)}</p>
+          <p className="mt-5 text-right mr-3 md:mr-10">{formatMoney(order?.shippingPrice.gross)}</p>
         </div>
         <div className="md:col-start-3 col-span-2 border-t" />
         <div className="md:col-start-3 text-md font-semibold h-16">
           <div className="mt-5 text-left md:text-center">Total</div>
         </div>
         <div className="text-md font-semibold text-center">
-          <p className="mt-5 text-right mr-3 md:mr-10">{formatPrice(order?.total.gross)}</p>
+          <p className="mt-5 text-right mr-3 md:mr-10">{formatMoney(order?.total.gross)}</p>
         </div>
 
         {!!order?.billingAddress && (

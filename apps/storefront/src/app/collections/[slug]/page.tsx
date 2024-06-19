@@ -52,12 +52,12 @@ export default async function Page({ params }: { params: { slug: string } }) {
           <div className="container flex gap-2 flex-wrap text-left py-4 px-8 ">
             <Link
               href="/"
-              className="text-sm mt-2 font-medium text-gray-600 cursor-pointer text-center hover:text-green-600"
+              className="text-xs md:text-sm mt-2 font-medium text-gray-600 cursor-pointer text-center hover:text-green-600"
             >
               Home
             </Link>{" "}
-            <span className="text-gray-600 mt-2 text-base">/</span>
-            <span className="text-sm mt-2 font-medium text-gray-400">
+            <span className="text-gray-600 md:mt-2 text-base">/</span>
+            <span className="text-xs md:text-sm mt-2 font-medium text-gray-400">
               {translate(collection, "name")}
             </span>
           </div>

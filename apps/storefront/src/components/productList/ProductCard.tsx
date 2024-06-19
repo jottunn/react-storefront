@@ -10,7 +10,7 @@ import { ATTR_COLOR_COMMERCIAL_SLUG } from "@/lib/const";
 import { ProductVariant } from "@/saleor/api";
 import { TagIcon } from "@heroicons/react/24/outline";
 import { useProductInfo } from "@/lib/hooks/useProductInfo";
-import { formatPrice } from "@/lib/hooks/useRegions";
+import { formatMoney } from "@/lib/utils/formatMoney";
 
 export interface ProductCardProps {
   product: GroupedProduct;
@@ -106,30 +106,39 @@ export function ProductCard({ product, loading, priority, compliantVariant }: Pr
       <p className="block text-main text-center font-normal mb-6">
         <span className="text-md">
           {isPriceRange
-            ? product.pricing?.priceRange?.start?.gross.amount !==
-              product.pricing?.priceRange?.stop?.gross.amount
-              ? formatPrice(product.pricing?.priceRange?.start?.gross) +
+            ? product.pricing?.priceRange?.start?.gross &&
+              product.pricing?.priceRange?.stop?.gross &&
+              product.pricing?.priceRange?.start?.gross.amount !==
+                product.pricing?.priceRange?.stop?.gross.amount
+              ? formatMoney(product.pricing?.priceRange?.start?.gross) +
                 " - " +
-                formatPrice(product.pricing?.priceRange?.stop?.gross)
-              : formatPrice(product.pricing?.priceRange?.start?.gross)
-            : variant && formatPrice(variant.pricing?.price?.gross)}
+                formatMoney(product.pricing?.priceRange?.stop?.gross)
+              : product.pricing?.priceRange?.start?.gross &&
+                formatMoney(product.pricing?.priceRange?.start?.gross)
+            : variant &&
+              variant.pricing?.price?.gross &&
+              formatMoney(variant.pricing?.price?.gross)}
         </span>
         {isPriceRange && product.pricing?.onSale ? (
           <span className="text-sm ml-2 opacity-75">
             <s>
-              {product.pricing?.priceRangeUndiscounted?.start?.gross.amount !==
-              product.pricing?.priceRangeUndiscounted?.stop?.gross.amount
-                ? formatPrice(product.pricing?.priceRangeUndiscounted?.start?.gross) +
+              {product.pricing?.priceRangeUndiscounted?.start?.gross &&
+              product.pricing?.priceRangeUndiscounted?.stop?.gross &&
+              product.pricing?.priceRangeUndiscounted?.start?.gross.amount !==
+                product.pricing?.priceRangeUndiscounted?.stop?.gross.amount
+                ? formatMoney(product.pricing?.priceRangeUndiscounted?.start?.gross) +
                   " - " +
-                  formatPrice(product.pricing?.priceRangeUndiscounted?.stop?.gross)
-                : formatPrice(product.pricing?.priceRangeUndiscounted?.start?.gross)}
+                  formatMoney(product.pricing?.priceRangeUndiscounted?.stop?.gross)
+                : product.pricing?.priceRangeUndiscounted?.start?.gross &&
+                  formatMoney(product.pricing?.priceRangeUndiscounted?.start?.gross)}
             </s>
           </span>
         ) : (
           variant &&
-          variant.pricing?.onSale && (
+          variant.pricing?.onSale &&
+          variant.pricing.priceUndiscounted?.gross && (
             <span className="text-sm ml-2 opacity-75">
-              <s>{formatPrice(variant.pricing.priceUndiscounted?.gross)}</s>
+              <s>{formatMoney(variant.pricing.priceUndiscounted?.gross)}</s>
             </span>
           )
         )}

@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { CheckoutDetailsFragment } from "@/saleor/api";
 
 import { CompleteCheckoutButton } from "../CompleteCheckoutButton";
-import { formatPrice } from "@/lib/hooks/useRegions";
+import { formatMoney } from "@/lib/utils/formatMoney";
 import { Messages } from "@/lib/util";
 import { checkoutCompleteMutation, checkoutPaymentCreateMutation } from "../actions";
 import { BASE_URL } from "@/lib/const";
@@ -32,7 +32,7 @@ export function DummyCreditCardSection({
   const router = useRouter();
   const [isPaymentProcessing, setIsPaymentProcessing] = useState(false);
   const totalPrice = checkout.totalPrice?.gross;
-  const payLabel = `${messages["app.checkout.paymentButton"]}${formatPrice(totalPrice)}`;
+  const payLabel = `${messages["app.checkout.paymentButton"]}${formatMoney(totalPrice)}`;
 
   const defaultValues = {
     cardNumber: "4242 4242 4242 4242",

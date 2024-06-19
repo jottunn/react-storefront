@@ -1,15 +1,6 @@
 import React from "react";
-import { CheckoutLineDetailsFragment } from "@/saleor/api";
 import CheckoutLineItem from "./CheckoutLineItem";
 import { useCheckout } from "@/lib/hooks/CheckoutContext";
-
-export interface CheckoutProductListProps {
-  checkout: {
-    id: string;
-    lines: (CheckoutLineDetailsFragment | null)[];
-  };
-  refreshCart: (updatedCheckout: any) => Promise<void>;
-}
 
 export function CheckoutProductList() {
   const { checkout } = useCheckout();

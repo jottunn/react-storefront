@@ -7,17 +7,16 @@ import invariant from "ts-invariant";
 import { usePathname } from "next/navigation";
 import NavIconButton from "../nav/NavIconButton";
 import { CheckoutProductList } from "./CheckoutProductList";
-import { formatPrice } from "@/lib/hooks/useRegions";
+import { formatMoney } from "@/lib/utils/formatMoney";
 import CheckoutLink from "./CheckoutLink";
 import { useCheckout } from "@/lib/hooks/CheckoutContext";
+import { Messages } from "@/lib/util";
 
 interface CartModalProps {
   messages: { [key: string]: string };
 }
-
 export default function CartModal({ messages }: CartModalProps) {
   const { checkout, refreshCheckout } = useCheckout();
-  console.log("checkout", checkout);
   const pathname = usePathname();
   const counter =
     checkout?.lines?.reduce(
@@ -40,12 +39,14 @@ export default function CartModal({ messages }: CartModalProps) {
     if (counter > 0 && counter !== counterO && !cartModalOpen) {
       setCartModalOpen(true);
       setCounterO(counter);
+    } else {
+      setCartModalOpen(false);
     }
   }, [counter]);
 
   const saleorApiUrl = process.env.NEXT_PUBLIC_API_URI;
   invariant(saleorApiUrl, "Missing NEXT_PUBLIC_API_URI");
-  if (pathname === "/checkout/") {
+  if (pathname === "/checkout/" || pathname === "/order") {
     return null;
   }
   return (
@@ -115,14 +116,14 @@ export default function CartModal({ messages }: CartModalProps) {
                           suppressHydrationWarning={true}
                           className="text-right text-base text-black dark:text-white"
                         >
-                          {formatPrice(checkout.subtotalPrice?.tax)}
+                          {formatMoney(checkout.subtotalPrice?.tax)}
                         </p>
                       </div>
                     </div>
                     <div className="mb-3 flex items-center justify-between border-b border-neutral-200 pb-1 pt-1 dark:border-neutral-700">
                       <p>{messages["app.checkout.shipping"]}</p>
                       {checkout.shippingPrice?.gross ? (
-                        formatPrice(checkout.shippingPrice?.gross)
+                        formatMoney(checkout.shippingPrice?.gross)
                       ) : (
                         <p className="text-right">{messages["app.checkout.shippingInfo"]}</p>
                       )}
@@ -133,7 +134,7 @@ export default function CartModal({ messages }: CartModalProps) {
                         suppressHydrationWarning={true}
                         className="text-right text-base text-black dark:text-white"
                       >
-                        {formatPrice(checkout.totalPrice.gross)}
+                        {formatMoney(checkout.totalPrice.gross)}
                       </p>
                     </div>
                   </div>

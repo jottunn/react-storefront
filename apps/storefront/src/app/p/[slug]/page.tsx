@@ -13,8 +13,6 @@ import {
   ProductBySlugQuery,
   ProductCollectionDocument,
   ProductCollectionQuery,
-  ProductListDocument,
-  ProductListQuery,
 } from "@/saleor/api";
 import Image from "next/image";
 import { executeGraphQL } from "@/lib/graphql";
@@ -22,7 +20,8 @@ import { notFound } from "next/navigation";
 import edjsHTML from "editorjs-html";
 import * as Checkout from "@/lib/checkout";
 import invariant from "ts-invariant";
-import { formatMoney, formatMoneyRange } from "@/lib/util";
+import { formatMoney } from "@/lib/utils/formatMoney";
+import { formatMoneyRange } from "@/lib/utils/formatMoneyRange";
 import { type WithContext, type Product } from "schema-dts";
 import { AddButton } from "./AddButton";
 import xss from "xss";
@@ -35,7 +34,6 @@ import { ATTR_COLOR_COMMERCIAL_SLUG, ATTR_GHID_MARIMI } from "@/lib/const";
 import Link from "next/link";
 import VariantSelector from "./variants/VariantSelector";
 import { getMessages } from "@/lib/util";
-import { AvailabilityMessage } from "./AvailabilityMessage";
 import Spinner from "@/components/Spinner";
 import { GroupedProduct, groupProductsByColor } from "@/lib/product";
 import SwiperComponent from "@/components/SwiperComponent";
@@ -138,6 +136,8 @@ const ProductDetail = async ({
   if (!product) {
     notFound();
   }
+
+  console.log(product);
   const messages = getMessages(defaultRegionQuery().locale);
   const firstImage = product.thumbnail;
   const base64 = firstImage && (await getBase64(firstImage.url));
@@ -254,10 +254,7 @@ const ProductDetail = async ({
 
   const isAvailable = variants?.some((variant) => variant.quantityAvailable) ?? false;
   const price = selectedVariant?.pricing?.price?.gross
-    ? formatMoney(
-        selectedVariant.pricing.price.gross.amount,
-        selectedVariant.pricing.price.gross.currency,
-      )
+    ? formatMoney(selectedVariant.pricing.price.gross)
     : isAvailable
       ? formatMoneyRange({
           start: product?.pricing?.priceRange?.start?.gross,
@@ -308,20 +305,20 @@ const ProductDetail = async ({
       <div className="container text-left pt-4 pb-8 px-8 space-x-2">
         <Link
           href="/"
-          className="text-sm mt-2 font-medium text-gray-600 cursor-pointer text-center hover:text-green-600"
+          className="text-xs md:text-sm mt-2 font-medium text-gray-600 cursor-pointer text-center hover:text-green-600"
         >
           Home
         </Link>{" "}
-        <span className="text-gray-600 mt-2 text-base">/</span>
+        <span className="text-gray-600 md:mt-2 text-base">/</span>
         {categoryAncestors.map((parent) => (
           <React.Fragment key={parent.slug}>
             <Link
               href={`/c/${parent.slug}`}
-              className="text-sm mt-2 font-medium text-gray-600 cursor-pointer text-center hover:text-green-600"
+              className="text-xs md:text-sm mt-2 font-medium text-gray-600 cursor-pointer text-center hover:text-green-600"
             >
               {translate(parent, "name")}
             </Link>
-            <span className="text-gray-600 text-md mt-2">/</span>
+            <span className="text-gray-600 text-md md:mt-2">/</span>
           </React.Fragment>
         ))}
         {!!product.category?.slug && (
@@ -352,7 +349,7 @@ const ProductDetail = async ({
         </div>
         <div className="space-y-5 m-auto mt-6 md:mt-40 md:mb-20 w-full">
           <h1
-            className="text-4xl font-bold tracking-tight text-gray-800 text-center"
+            className="text-4xl font-bold tracking-tight text-main text-center px-10 leading-[3rem]"
             data-testid="productName"
           >
             {translate(product, "name")}{" "}
@@ -396,19 +393,14 @@ const ProductDetail = async ({
               {product.variants?.[0]?.pricing?.onSale && (
                 <span className="text-lg ml-2 opacity-75">
                   {product.variants[0].pricing.priceUndiscounted && (
-                    <s>
-                      {formatMoney(
-                        product.variants[0].pricing.priceUndiscounted.gross.amount,
-                        product.variants[0].pricing.priceUndiscounted.gross.currency,
-                      )}
-                    </s>
+                    <s>{formatMoney(product.variants[0].pricing.priceUndiscounted.gross)}</s>
                   )}
                 </span>
               )}
             </h2>
           )}
 
-          {variants && (
+          {variants && isAvailable && (
             <VariantSelector
               selectedVariant={selectedVariant}
               product={product}
@@ -417,12 +409,19 @@ const ProductDetail = async ({
               sizeGuide={sizeGuide}
             />
           )}
-          <AvailabilityMessage isAvailable={isAvailable} />
-          <div className="mt-8 block">
-            <form action={addItem} className="m-auto text-center">
-              <AddButton disabled={isAddToCartButtonDisabled} messages={messages} />
-            </form>
-          </div>
+          {!isAvailable && (
+            <p className="text-md text-center font-semibold text-red-500 uppercase">
+              {messages["app.product.soldOut"]}
+            </p>
+          )}
+
+          {isAvailable && (
+            <div className="mt-8 block">
+              <form action={addItem} className="m-auto text-center">
+                <AddButton disabled={isAddToCartButtonDisabled} messages={messages} />
+              </form>
+            </div>
+          )}
         </div>
       </div>
       <div className="container pb-12 px-8">

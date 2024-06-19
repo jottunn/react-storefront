@@ -41,4 +41,12 @@ fragment CheckoutLineDetailsFragment on CheckoutLine {
     }
   }
   quantity
+  problems {
+    ... on CheckoutLineProblemInsufficientStock {
+      availableQuantity
+    }
+    ... on CheckoutLineProblemVariantNotAvailable {
+      __typename
+    }
+  }
 }

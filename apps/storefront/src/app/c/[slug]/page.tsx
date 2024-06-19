@@ -56,27 +56,27 @@ export default async function Page({ params }: { params: { slug: string } }) {
   return (
     <>
       <header className="border-b border-main-6">
-        <div className="bg-main-7 border-b mb-8">
+        <div className="bg-main-7 border-b md:mb-8">
           <div className="container flex gap-2 flex-wrap text-left py-4 px-8 ">
             <Link
               href="/"
-              className="text-sm mt-2 font-medium text-gray-600 cursor-pointer text-center hover:text-green-600"
+              className="text-xs md:text-sm mt-2 font-medium text-gray-600 cursor-pointer text-center hover:text-green-600"
             >
               Home
             </Link>{" "}
-            <span className="text-gray-600 mt-2 text-base">/</span>
+            <span className="text-gray-600 mt-1 md:mt-2 text-base">/</span>
             {parents.map((parent, i) => (
               <Fragment key={parent.slug}>
                 <Link
                   href={`/c/${parent.slug}`}
-                  className="text-sm mt-2 font-medium text-gray-600 cursor-pointer text-center hover:text-green-600"
+                  className="text-xs md:text-sm mt-2 font-medium text-gray-600 cursor-pointer text-center hover:text-green-600"
                 >
                   {parent.label}
                 </Link>
-                <span className="text-gray-600 mt-2 text-base">/</span>
+                <span className="text-gray-600 mt-1 md:mt-2 text-base">/</span>
               </Fragment>
             ))}
-            <span className="text-sm mt-2 font-medium text-gray-400">
+            <span className="text-xs md:text-sm mt-2 font-medium text-gray-400">
               {translate(category, "name")}
             </span>
           </div>

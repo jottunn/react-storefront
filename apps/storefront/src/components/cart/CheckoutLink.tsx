@@ -8,6 +8,7 @@ type Props = {
 };
 
 const CheckoutLink = ({ disabled, checkoutId, className = "", btnName }: Props) => {
+  console.log("btnName", btnName);
   return (
     <a
       data-testid="CheckoutLink"

@@ -1,9 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { CheckoutDetailsFragment } from "@/saleor/api";
 import { Messages } from "@/lib/util";
-import { formatPrice } from "@/lib/hooks/useRegions";
+import { formatMoney } from "@/lib/utils/formatMoney";
 import { checkoutAddPromoCodeMutation } from "../actions";
 import { useCheckout } from "@/lib/hooks/CheckoutContext";
 
@@ -34,6 +33,7 @@ export function CartSummary({ messages }: CartSummaryProps) {
       id: checkout.id,
       promoCode: formData.promoCode,
     });
+    console.log("addPromoCodeData", addPromoCodeData);
     if (addPromoCodeData?.errors) {
       setErrorForm("promoCode", { message: addPromoCodeData.errors[0].message || "Error" });
     } else if (addPromoCodeData?.checkout) {
@@ -83,31 +83,31 @@ export function CartSummary({ messages }: CartSummaryProps) {
                   <br />
                   <small>{checkout.discountName}</small>
                 </dt>
-                <dd className="font-medium text-gray-900">{formatPrice(checkout.discount)}</dd>
+                <dd className="font-medium text-gray-900">{formatMoney(checkout.discount)}</dd>
               </div>
             )}
             <div className="py-2 flex items-center justify-between">
               <dt className="text-gray-600">{messages["app.checkout.subtotal"]}</dt>
               <dd className="font-medium text-gray-900">
-                {formatPrice(checkout.subtotalPrice?.net)}
+                {formatMoney(checkout.subtotalPrice?.net)}
               </dd>
             </div>
             <div className="py-2 flex items-center justify-between">
               <dt className="text-gray-600">{messages["app.checkout.shipping"]}</dt>
               <dd className="font-medium text-gray-900">
-                {formatPrice(checkout.shippingPrice?.gross)}
+                {formatMoney(checkout.shippingPrice?.gross)}
               </dd>
             </div>
             <div className="py-2 flex items-center justify-between">
               <dt className="text-gray-600">{messages["app.checkout.tax"]}</dt>
               <dd className="font-medium text-gray-900">
-                {formatPrice(checkout.subtotalPrice?.tax)}
+                {formatMoney(checkout.subtotalPrice?.tax)}
               </dd>
             </div>
             <div className="pt-4 flex items-center justify-between border-t border-gray-300">
               <dt className="text-lg font-bold text-gray-900">{messages["app.checkout.total"]}</dt>
               <dd className="text-lg font-bold text-gray-900">
-                {formatPrice(checkout.totalPrice?.gross)}
+                {formatMoney(checkout.totalPrice?.gross)}
               </dd>
             </div>
           </dl>

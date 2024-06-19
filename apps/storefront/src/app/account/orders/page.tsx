@@ -3,7 +3,7 @@
 import React from "react";
 import { redirect, useRouter } from "next/navigation";
 import { useUserContext } from "../UserContext";
-import { formatPrice } from "@/lib/hooks/useRegions";
+import { formatMoney } from "@/lib/utils/formatMoney";
 
 export default function OrderPage() {
   const { user, orders, messages } = useUserContext();
@@ -34,7 +34,7 @@ export default function OrderPage() {
             <td>{order?.number}</td>
             <td>{order.created.slice(0, 10)}</td>
             <td className="hidden md:table-cell">{messages[order.status]}</td>
-            <td>{formatPrice(order.total.gross)}</td>
+            <td>{formatMoney(order.total.gross)}</td>
           </tr>
         ))}
       </tbody>

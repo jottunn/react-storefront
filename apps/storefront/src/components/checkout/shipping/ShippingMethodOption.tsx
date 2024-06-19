@@ -2,7 +2,7 @@ import { Label, Radio, Description } from "@headlessui/react";
 import clsx from "clsx";
 import { translate } from "@/lib/translations";
 import { DeliveryMethodFragment } from "@/saleor/api";
-import { formatPrice } from "@/lib/hooks/useRegions";
+import { formatMoney } from "@/lib/utils/formatMoney";
 
 export interface ShippingMethodOptionProps {
   method: DeliveryMethodFragment;
@@ -33,7 +33,7 @@ export function ShippingMethodOption({ method }: ShippingMethodOptionProps) {
                 {method.minimumDeliveryDays || 2}-{method.maximumDeliveryDays || 14} business days
               </Description>
               <Description as="span" className="mt-6 text-sm font-medium text-gray-900">
-                {formatPrice(method.price)}
+                {formatMoney(method.price)}
               </Description>
             </div>
           </div>

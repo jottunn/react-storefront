@@ -30,7 +30,7 @@ export function PageHero({ title, description, pills = [], parents = [] }: PageH
           </div>
         )}
         {pills.length > 0 && (
-          <div className="flex gap-2 flex-wrap items-center justify-center mt-5 mb-4">
+          <div className="hidden md:flex md:gap-2 md:flex-wrap md:items-center md:justify-center md:mt-5 mb-4">
             {pills.map((pill) => (
               <Link
                 key={pill.label}

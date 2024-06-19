@@ -32385,6 +32385,10 @@ export type CheckoutDetailsFragment = {
       } | null;
       translation?: { __typename?: "ProductVariantTranslation"; id: string; name: string } | null;
     };
+    problems?: Array<
+      | { __typename?: "CheckoutLineProblemInsufficientStock"; availableQuantity?: number | null }
+      | { __typename: "CheckoutLineProblemVariantNotAvailable" }
+    > | null;
   }>;
   discount?: { __typename?: "Money"; currency: string; amount: number } | null;
   subtotalPrice: {
@@ -32466,6 +32470,10 @@ export type CheckoutLineDetailsFragment = {
     } | null;
     translation?: { __typename?: "ProductVariantTranslation"; id: string; name: string } | null;
   };
+  problems?: Array<
+    | { __typename?: "CheckoutLineProblemInsufficientStock"; availableQuantity?: number | null }
+    | { __typename: "CheckoutLineProblemVariantNotAvailable" }
+  > | null;
 };
 
 export type CollectionBasicFragment = {
@@ -33223,6 +33231,13 @@ export type CheckoutAddProductLineMutation = {
             name: string;
           } | null;
         };
+        problems?: Array<
+          | {
+              __typename?: "CheckoutLineProblemInsufficientStock";
+              availableQuantity?: number | null;
+            }
+          | { __typename: "CheckoutLineProblemVariantNotAvailable" }
+        > | null;
       }>;
       discount?: { __typename?: "Money"; currency: string; amount: number } | null;
       subtotalPrice: {
@@ -33402,6 +33417,13 @@ export type CheckoutAddPromoCodeMutation = {
             name: string;
           } | null;
         };
+        problems?: Array<
+          | {
+              __typename?: "CheckoutLineProblemInsufficientStock";
+              availableQuantity?: number | null;
+            }
+          | { __typename: "CheckoutLineProblemVariantNotAvailable" }
+        > | null;
       }>;
       discount?: { __typename?: "Money"; currency: string; amount: number } | null;
       subtotalPrice: {
@@ -33577,6 +33599,13 @@ export type CheckoutBillingAddressUpdateMutation = {
             name: string;
           } | null;
         };
+        problems?: Array<
+          | {
+              __typename?: "CheckoutLineProblemInsufficientStock";
+              availableQuantity?: number | null;
+            }
+          | { __typename: "CheckoutLineProblemVariantNotAvailable" }
+        > | null;
       }>;
       discount?: { __typename?: "Money"; currency: string; amount: number } | null;
       subtotalPrice: {
@@ -33887,6 +33916,13 @@ export type CheckoutCustomerAttachMutation = {
             name: string;
           } | null;
         };
+        problems?: Array<
+          | {
+              __typename?: "CheckoutLineProblemInsufficientStock";
+              availableQuantity?: number | null;
+            }
+          | { __typename: "CheckoutLineProblemVariantNotAvailable" }
+        > | null;
       }>;
       discount?: { __typename?: "Money"; currency: string; amount: number } | null;
       subtotalPrice: {
@@ -34061,6 +34097,13 @@ export type CheckoutEmailUpdateMutation = {
             name: string;
           } | null;
         };
+        problems?: Array<
+          | {
+              __typename?: "CheckoutLineProblemInsufficientStock";
+              availableQuantity?: number | null;
+            }
+          | { __typename: "CheckoutLineProblemVariantNotAvailable" }
+        > | null;
       }>;
       discount?: { __typename?: "Money"; currency: string; amount: number } | null;
       subtotalPrice: {
@@ -34236,6 +34279,13 @@ export type CheckoutLineUpdateMutation = {
             name: string;
           } | null;
         };
+        problems?: Array<
+          | {
+              __typename?: "CheckoutLineProblemInsufficientStock";
+              availableQuantity?: number | null;
+            }
+          | { __typename: "CheckoutLineProblemVariantNotAvailable" }
+        > | null;
       }>;
       discount?: { __typename?: "Money"; currency: string; amount: number } | null;
       subtotalPrice: {
@@ -34416,6 +34466,13 @@ export type RemoveProductFromCheckoutMutation = {
             name: string;
           } | null;
         };
+        problems?: Array<
+          | {
+              __typename?: "CheckoutLineProblemInsufficientStock";
+              availableQuantity?: number | null;
+            }
+          | { __typename: "CheckoutLineProblemVariantNotAvailable" }
+        > | null;
       }>;
       discount?: { __typename?: "Money"; currency: string; amount: number } | null;
       subtotalPrice: {
@@ -34591,6 +34648,13 @@ export type CheckoutShippingAddressUpdateMutation = {
             name: string;
           } | null;
         };
+        problems?: Array<
+          | {
+              __typename?: "CheckoutLineProblemInsufficientStock";
+              availableQuantity?: number | null;
+            }
+          | { __typename: "CheckoutLineProblemVariantNotAvailable" }
+        > | null;
       }>;
       discount?: { __typename?: "Money"; currency: string; amount: number } | null;
       subtotalPrice: {
@@ -34771,6 +34835,13 @@ export type CheckoutShippingMethodUpdateMutation = {
             name: string;
           } | null;
         };
+        problems?: Array<
+          | {
+              __typename?: "CheckoutLineProblemInsufficientStock";
+              availableQuantity?: number | null;
+            }
+          | { __typename: "CheckoutLineProblemVariantNotAvailable" }
+        > | null;
       }>;
       discount?: { __typename?: "Money"; currency: string; amount: number } | null;
       subtotalPrice: {
@@ -35397,6 +35468,10 @@ export type CheckoutFindQuery = {
         } | null;
         translation?: { __typename?: "ProductVariantTranslation"; id: string; name: string } | null;
       };
+      problems?: Array<
+        | { __typename?: "CheckoutLineProblemInsufficientStock"; availableQuantity?: number | null }
+        | { __typename: "CheckoutLineProblemVariantNotAvailable" }
+      > | null;
     }>;
     discount?: { __typename?: "Money"; currency: string; amount: number } | null;
     subtotalPrice: {
@@ -36938,6 +37013,14 @@ export const CheckoutLineDetailsFragmentDoc = gql`
       }
     }
     quantity
+    problems {
+      ... on CheckoutLineProblemInsufficientStock {
+        availableQuantity
+      }
+      ... on CheckoutLineProblemVariantNotAvailable {
+        __typename
+      }
+    }
   }
 `;
 export const CheckoutDetailsFragmentDoc = gql`

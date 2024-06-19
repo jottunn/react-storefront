@@ -1,5 +1,5 @@
 import { ProductCardFragment } from "@/saleor/api";
-import { formatPrice } from "./useRegions";
+import { formatMoney } from "@/lib/utils/formatMoney";
 
 export const useProductInfo = () => {
   /**
@@ -26,7 +26,7 @@ export const useProductInfo = () => {
         const lowestPrice = prices.reduce((minPrice, price) => {
           return price && minPrice && price.amount < minPrice.amount ? price : minPrice;
         });
-        return formatPrice(lowestPrice);
+        if (lowestPrice) return formatMoney(lowestPrice);
       }
     }
 

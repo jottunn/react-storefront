@@ -5,7 +5,7 @@ import { CheckoutDetailsFragment } from "@/saleor/api";
 
 import { CompleteCheckoutButton } from "../CompleteCheckoutButton";
 import { Messages } from "@/lib/util";
-import { formatPrice } from "@/lib/hooks/useRegions";
+import { formatMoney } from "@/lib/utils/formatMoney";
 import { checkoutCompleteMutation, checkoutPaymentCreateMutation } from "../actions";
 import { BASE_URL } from "@/lib/const";
 
@@ -20,7 +20,7 @@ export function CashOnDeliverySection({ checkout, messages }: CashOnDeliverySect
   const router = useRouter();
   const [isPaymentProcessing, setIsPaymentProcessing] = useState(false);
   const totalPrice = checkout.totalPrice?.gross;
-  const payLabel = `${messages["app.checkout.paymentButton"]}${formatPrice(totalPrice)}`;
+  const payLabel = `${messages["app.checkout.paymentButton"]}${formatMoney(totalPrice)}`;
 
   const redirectToOrderDetailsPage = async () => {
     router.push("/order");

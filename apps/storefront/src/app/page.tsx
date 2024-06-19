@@ -30,6 +30,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 import SwiperComponent from "@/components/SwiperComponent";
 import HomepageBlock from "@/components/homepage/HomepageBlock";
 import { GroupedProduct, groupProductsByColor } from "@/lib/product";
+import getBase64 from "@/lib/generateBlurPlaceholder";
 
 const parser = edjsHTML();
 
@@ -172,7 +173,10 @@ export default async function Home() {
 
   const content = page && "content" in page ? translate(page, "content") : null;
   const parsedContent = content ? parser.parse(JSON.parse(content)).join("") : "";
-
+  const base64 =
+    bannerAttribute?.values[0]?.name &&
+    (await getBase64(`${UPLOAD_FOLDER ?? ""}/${bannerAttribute.values[0].name}`));
+  const placeholder = base64 || null;
   return (
     <>
       {bannerAttribute && (
@@ -195,6 +199,9 @@ export default async function Home() {
                         sizes="100vw"
                         priority={true}
                         loading={"eager"}
+                        {...(placeholder !== null
+                          ? { placeholder: "blur", blurDataURL: placeholder }
+                          : {})}
                       />
                     )}
                   </div>

@@ -281,7 +281,7 @@ export function ProductCollection({
 
   return (
     <>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-6" data-testid="productsList">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-8 md:ml-6" data-testid="productsList">
         {products.map((product: any, index) => (
           <ProductCard
             key={`${product.id}-${product.variants?.[0]?.id || index}`}

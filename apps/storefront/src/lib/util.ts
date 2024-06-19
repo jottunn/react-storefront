@@ -22,12 +22,6 @@ export function mapLocaleForInternalUse(locale: string): string {
   return locale;
 }
 
-export const formatAsMoney = (amount = 0, currency = "RON", locale = DEFAULT_LOCALE) =>
-  new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency,
-  }).format(amount);
-
 // Returns true for non nullable values
 export function notNullable<TValue>(value: TValue | null | undefined): value is TValue {
   return value !== null && value !== undefined;
@@ -62,52 +56,6 @@ export const parseEditorJSData = (jsonStringData?: string): DataProp | null => {
 
 export const formatDate = (date: Date | number) => {
   return new Intl.DateTimeFormat("en-US", { dateStyle: "medium" }).format(date);
-};
-
-// export const formatMoney = (amount: number, currency: string) =>
-//   new Intl.NumberFormat("en-US", {
-//     style: "currency",
-//     currency,
-//   }).format(amount);
-
-export const formatMoney = (amount: number, currency: string) => {
-  const formatted = new Intl.NumberFormat("ro-RO", {
-    style: "currency",
-    currency,
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-  }).format(amount);
-
-  // Check if the amount has a fractional part
-  const [integerPart, fractionalPart] = formatted.split(".");
-  if (fractionalPart === "00" || !fractionalPart) {
-    return integerPart;
-  }
-
-  return formatted;
-};
-
-export const formatMoneyRange = (
-  range: {
-    start?: { amount: number; currency: string } | null;
-    stop?: { amount: number; currency: string } | null;
-  } | null,
-) => {
-  const { start, stop } = range || {};
-  // console.log('range', range);
-  const startMoney = start ? formatMoney(start.amount, start.currency) : "";
-  const stopMoney = stop ? formatMoney(stop.amount, stop.currency) : "";
-
-  if (!startMoney && !stopMoney) {
-    // Handle case where both start and stop are null/undefined
-    return "N/A"; // Or whatever fallback you prefer
-  }
-
-  if (startMoney === stopMoney || !stopMoney) {
-    return startMoney;
-  }
-  // Ensure that both startMoney and stopMoney are strings before concatenation
-  return `${startMoney || ""} - ${stopMoney || ""}`;
 };
 
 export function getHrefForVariant({

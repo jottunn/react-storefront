@@ -313,7 +313,7 @@ export function FilteredProductList({
               leaveFrom="translate-x-0"
               leaveTo="translate-x-[-100%]"
             >
-              <DialogPanel className="fixed bottom-0 left-0 top-0 flex h-full w-[310px] flex-col border-l border-neutral-200 bg-white/90 p-6 text-black backdrop-blur-xl md:w-[430px]">
+              <DialogPanel className="fixed bottom-0 left-0 top-0 flex h-full w-[310px] flex-col border-l border-neutral-200 bg-white/90 p-6 pb-12 text-black backdrop-blur-xl md:w-[430px] overflow-x-hidden overflow-y-auto">
                 <div className="flex justify-between justify-start w-full items-center mb-6">
                   <span className="text-md font-bold">FILTERS</span>
                   <button title="Close" aria-label="Close cart" onClick={closeModal} type="button">

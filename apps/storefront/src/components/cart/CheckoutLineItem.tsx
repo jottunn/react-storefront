@@ -8,9 +8,10 @@ import { CheckoutLineDetailsFragment, ErrorDetailsFragment } from "@/saleor/api"
 
 import { ATTR_COLOR_COMMERCIAL_SLUG } from "@/lib/const";
 import { DeleteLineButton } from "./DeleteLineButton";
-import { formatPrice } from "@/lib/hooks/useRegions";
+import { formatMoney } from "@/lib/utils/formatMoney";
 import { useCheckout } from "@/lib/hooks/CheckoutContext";
 import { updateLineFromCheckout } from "../checkout/actions";
+import { translate } from "@/lib/translations";
 
 interface CheckoutLineItemProps {
   line: CheckoutLineDetailsFragment;
@@ -22,10 +23,20 @@ export default function CheckoutLineItem({ line }: CheckoutLineItemProps) {
     return null;
   }
   const [quantity, setQuantity] = React.useState<number>();
-  const [errors, setErrors] = React.useState<ErrorDetailsFragment[] | null>(null);
+  const [errors, setErrors] = React.useState<any[] | null>();
 
   React.useEffect(() => {
     if (!line) return;
+    const availableQuantity =
+      line.problems && line.problems?.[0] && (line.problems?.[0] as any).availableQuantity;
+    if (availableQuantity !== undefined && line.quantity && availableQuantity < line.quantity) {
+      const error = {
+        field: "quantity",
+        message: `Could not add items O/S. Only ${availableQuantity} remaining in stock.`,
+        code: "INSUFFICIENT_STOCK",
+      };
+      setErrors([...[error]]);
+    }
     setQuantity(line.quantity);
   }, [line]);
 
@@ -69,8 +80,8 @@ export default function CheckoutLineItem({ line }: CheckoutLineItemProps) {
   return (
     <li className="flex flex-col py-4 border-b border-neutral-200 dark:border-neutral-700">
       <div
-        className="items-center mb-2 md:space-x-4 cursor-pointer md:grid md:grid-cols-[80px_auto_1fr]"
-        data-testid={`cartProductItem${line?.variant.product.name}`}
+        className="items-center mb-2 md:space-x-4 cursor-pointer grid grid-cols-[80px_auto_1fr]"
+        data-testid={`cartProductItem${line.variant.product.name}`}
       >
         <Link href={getProductLink()} passHref legacyBehavior>
           <a href="pass">
@@ -93,21 +104,19 @@ export default function CheckoutLineItem({ line }: CheckoutLineItemProps) {
           <Link href={getProductLink()} passHref legacyBehavior>
             <a href="pass">
               <p className="text-md text-white-500 dark:text-white-400 hover:text-action-1 break-words">
-                {/* {translate(line?.variant.product, "name")} */}
-                {line?.variant.product.name}
+                {translate(line.variant.product, "name")}
               </p>
             </a>
           </Link>
           <p
             className="text-md text-neutral-800 dark:text-neutral-400 break-words"
-            data-testid={`cartVariantItem${line?.variant.name}`}
+            data-testid={`cartVariantItem${line.variant.name}`}
           >
-            {/* {translate(line?.variant, "name")}*/}
-            {line.variant.name}
+            {translate(line.variant, "name")}
             {`${colorAttrName}`}
           </p>
 
-          {!line?.variant.product.isAvailableForPurchase && (
+          {!line.variant.product.isAvailableForPurchase && (
             <span className="text-red-500 font-bold">
               Product is not available for purchase anymore
             </span>
@@ -115,24 +124,28 @@ export default function CheckoutLineItem({ line }: CheckoutLineItemProps) {
         </div>
         <div className="flex h-16 flex-col justify-between items-end">
           <p className="flex justify-end space-y-2 text-right text-md">
-            {formatPrice(line?.totalPrice?.gross)}
+            {formatMoney(line.totalPrice?.gross)}
           </p>
-          <input
-            type="number"
-            className={clsx(
-              "h-8 md:mt-2 w-20 md:w-16 block border-gray-300 rounded-md text-base bg-transparent",
-              errors && "border-red-500",
-            )}
-            value={quantity || ""}
-            onFocus={() => {
-              setErrors(null);
-            }}
-            onChange={handleQuantityChange}
-            min={1}
-            required
-            disabled={false}
-            pattern="[0-9]*"
-          />
+          {line.variant.quantityAvailable && line.variant.quantityAvailable > 1 ? (
+            <input
+              type="number"
+              className={clsx(
+                "h-8 md:mt-2 w-20 md:w-16 block border-gray-300 rounded-md text-base bg-transparent",
+                errors && "border-red-500",
+              )}
+              value={quantity || ""}
+              onFocus={() => {
+                setErrors(null);
+              }}
+              onChange={handleQuantityChange}
+              min={1}
+              required
+              disabled={false}
+              pattern="[0-9]*"
+            />
+          ) : (
+            <p className="text-md">{quantity}</p>
+          )}
         </div>
       </div>
 

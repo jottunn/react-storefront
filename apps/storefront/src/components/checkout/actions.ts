@@ -3,6 +3,7 @@
 import { executeGraphQL } from "@/lib/graphql";
 import { defaultRegionQuery } from "@/lib/regions";
 import {
+  CheckoutAddPromoCodeDocument,
   CheckoutAddPromoCodeMutation,
   CheckoutBillingAddressUpdateDocument,
   CheckoutBillingAddressUpdateMutation,
@@ -256,7 +257,7 @@ export const checkoutAddPromoCodeMutation = async (args: { id: string; promoCode
         promoCode: String;
         locale: string;
       }
-    >(CheckoutCompleteDocument, {
+    >(CheckoutAddPromoCodeDocument, {
       variables: {
         id: id,
         promoCode: promoCode,
@@ -264,6 +265,7 @@ export const checkoutAddPromoCodeMutation = async (args: { id: string; promoCode
       },
       cache: "no-cache",
     });
+    console.log("response", response);
 
     if (response.checkoutAddPromoCode?.errors.length) {
       const customError = response.checkoutAddPromoCode.errors as any;

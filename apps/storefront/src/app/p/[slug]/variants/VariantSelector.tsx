@@ -7,7 +7,8 @@ import {
   ProductVariantDetailsFragment,
 } from "@/saleor/api";
 import { ATTR_COLOR_SLUG } from "@/lib/const";
-import { Messages, formatMoney } from "@/lib/util";
+import { Messages } from "@/lib/util";
+import { formatMoney } from "@/lib/utils/formatMoney";
 import VariantSelectorClient from "./VariantSelectorClient";
 import SizeGuide from "./SizeGuide";
 import { VariantColorSelector } from "./VariantColorSelector";
@@ -75,20 +76,13 @@ export function VariantSelector({
         {selectedVariant ? (
           <h2 className="text-xl font-bold tracking-tight text-gray-800 text-center">
             <span>
-              {selectedVariant.pricing?.price &&
-                formatMoney(
-                  selectedVariant.pricing.price.gross.amount,
-                  selectedVariant.pricing.price.gross.currency,
-                )}
+              {selectedVariant.pricing?.price && formatMoney(selectedVariant.pricing.price.gross)}
             </span>
             {selectedVariant?.pricing?.onSale && (
               <span className="text-lg ml-2 opacity-75">
                 <s>
                   {selectedVariant.pricing.priceUndiscounted &&
-                    formatMoney(
-                      selectedVariant.pricing.priceUndiscounted.gross.amount,
-                      selectedVariant.pricing.priceUndiscounted.gross.currency,
-                    )}
+                    formatMoney(selectedVariant.pricing.priceUndiscounted.gross)}
                 </s>
               </span>
             )}
@@ -100,10 +94,7 @@ export function VariantSelector({
               <span className="text-lg ml-2 opacity-75">
                 <s>
                   {product.variants?.[0].pricing.priceUndiscounted &&
-                    formatMoney(
-                      product.variants[0].pricing.priceUndiscounted.gross.amount,
-                      product.variants[0].pricing.priceUndiscounted.gross.currency,
-                    )}
+                    formatMoney(product.variants[0].pricing.priceUndiscounted.gross)}
                 </s>
               </span>
             )}
@@ -135,8 +126,10 @@ export function VariantSelector({
                 <span className="text-left">{messages["app.chooseSize"]}</span>
               ) : (
                 <span>
-                  {sizes && messages["app.size"]}
-                  <span className="text-md font-bold ml-2">{(sizes && sizes[0].name) || ""}</span>
+                  {sizes && sizes[0] && messages["app.size"]}
+                  <span className="text-md font-bold ml-2">
+                    {(sizes && sizes[0] && sizes[0].name) || ""}
+                  </span>
                 </span>
               )}
             </p>

@@ -47,10 +47,6 @@
   @apply mt-2;
 }
 
-.dropdown-link {
-  @apply text-[1.5rem] font-regular text-main-1 leading-10 cursor-pointer hover:underline;
-}
-
 .dropdown-sublink {
   @apply text-sm text-main-1 cursor-pointer leading-[1rem] ml-2 hover:underline;
 }
