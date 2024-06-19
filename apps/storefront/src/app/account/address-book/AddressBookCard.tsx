@@ -5,13 +5,17 @@ import AddressDisplay from "@/components/checkout/address/AddressDisplay";
 import { AddressDetailsFragment } from "@/saleor/api";
 import { useUserContext } from "../UserContext";
 import { deleteAddressMutation, setAddressDefaultMutation } from "src/app/actions";
+import { useEffect, useState } from "react";
 
 export interface AddressBookCardProps {
   address: AddressDetailsFragment;
+  onAddressChange: (updatedAddress: any) => void;
 }
 
-export function AddressBookCard({ address }: AddressBookCardProps) {
+export function AddressBookCard({ address, onAddressChange }: AddressBookCardProps) {
   const { messages } = useUserContext();
+  const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   let cardHeader = "";
   if (address.isDefaultShippingAddress && address.isDefaultBillingAddress) {
     cardHeader = messages["app.preferences.addressbook.defaultBillingShipping"];
@@ -22,15 +26,29 @@ export function AddressBookCard({ address }: AddressBookCardProps) {
   }
 
   const onDeleteAddress = async (addressId: string) => {
-    await deleteAddressMutation({ id: addressId });
+    const response = await deleteAddressMutation({ id: addressId });
+    if (response?.success) {
+      setSuccessMessage(messages["app.preferences.addressbook.success"]);
+      onAddressChange(response.addresses);
+    } else {
+      setError(messages[response?.errors[0]?.code] || response?.errors[0]?.code);
+    }
   };
 
   const setDefaultAddress = async (addressId: string, type: string) => {
-    await setAddressDefaultMutation({ id: addressId, type: type });
+    const response = await setAddressDefaultMutation({ id: addressId, type: type });
+    if (response?.success) {
+      setSuccessMessage(messages["app.preferences.addressbook.success"]);
+      onAddressChange(response.addresses);
+    } else {
+      setError(messages[response?.errors[0]?.code] || response?.errors[0]?.code);
+    }
   };
 
   return (
     <div className="justify-between flex flex-col checkout-section-container md:mx-2 mb-2">
+      {error && <p className="text-red-500">{error}</p>}
+      {successMessage && <p className="text-action-1 text-md">{successMessage}</p>}
       {!!cardHeader && <p className="text-md font-semibold mb-1">{cardHeader}</p>}
       <AddressDisplay address={address} />
       {!address.isDefaultBillingAddress && (

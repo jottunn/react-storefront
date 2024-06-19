@@ -33073,6 +33073,24 @@ export type AddressSetDefaultMutation = {
       message?: string | null;
       code: AccountErrorCode;
     }>;
+    user?: {
+      __typename?: "User";
+      addresses: Array<{
+        __typename?: "Address";
+        id: string;
+        phone?: string | null;
+        firstName: string;
+        lastName: string;
+        companyName: string;
+        streetAddress1: string;
+        streetAddress2: string;
+        city: string;
+        postalCode: string;
+        isDefaultBillingAddress?: boolean | null;
+        isDefaultShippingAddress?: boolean | null;
+        country: { __typename?: "CountryDisplay"; code: string; country: string };
+      }>;
+    } | null;
   } | null;
 };
 
@@ -37550,8 +37568,14 @@ export const AddressSetDefaultDocument = gql`
         message
         code
       }
+      user {
+        addresses {
+          ...AddressDetailsFragment
+        }
+      }
     }
   }
+  ${AddressDetailsFragmentDoc}
 `;
 export type AddressSetDefaultMutationFn = Apollo.MutationFunction<
   AddressSetDefaultMutation,
@@ -38803,7 +38827,7 @@ export const AvailableProductFiltersDocument = gql`
     $channel: String
     $locale: LanguageCodeEnum!
   ) {
-    products(filter: $filter, channel: $channel, first: 100) {
+    products(filter: $filter, channel: $channel, first: 400) {
       edges {
         cursor
         node {

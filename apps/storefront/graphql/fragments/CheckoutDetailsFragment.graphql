@@ -52,9 +52,4 @@ fragment CheckoutDetailsFragment on Checkout {
       ...PriceFragment
     }
   }
-  problems {
-    {
-      
-    }
-  }
 }

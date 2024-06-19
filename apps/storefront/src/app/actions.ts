@@ -323,7 +323,7 @@ export const setAddressDefaultMutation = async (args: { id: string; type: string
       const customError = response.accountSetDefaultAddress.errors as any;
       return { success: false, errors: customError.map((error: { code: any }) => error.code) };
     }
-    return { success: true };
+    return { success: true, addresses: response.accountSetDefaultAddress?.user?.addresses };
   } catch (error) {
     console.error("Failed to set default adresss:", error);
     return;

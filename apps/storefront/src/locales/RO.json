@@ -69,6 +69,7 @@
   "app.preferences.navigation.addressBook": "Agendă de adrese",
   "app.preferences.navigation.orders": "Comenzi",
   "app.preferences.profile": "Informații cont",
+  "app.preferences.addressbook.success": "Modificările au fost salvate cu succes.",
   "app.preferences.addressbook.defaultBilling": "Adresa de facturare implicită",
   "app.preferences.addressbook.defaultBillingShipping": "Adresa implicită de facturare și livrare",
   "app.preferences.addressbook.defaultShipping": "Adresa de livrare implicită",

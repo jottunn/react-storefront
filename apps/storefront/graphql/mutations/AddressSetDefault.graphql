@@ -5,5 +5,10 @@ mutation AddressSetDefault($addressID: ID!, $userID: ID!, $addressType: AddressT
       message
       code
     }
+    user {
+      addresses {
+        ...AddressDetailsFragment
+      }
+    }
   }
 }

@@ -1,5 +1,5 @@
 query AvailableProductFilters( $filter: ProductFilterInput, $channel: String, $locale: LanguageCodeEnum!) {
-  products( filter:  $filter, channel: $channel, first: 100) {
+  products( filter:  $filter, channel: $channel, first: 400) {
    edges {
     cursor
       node {
