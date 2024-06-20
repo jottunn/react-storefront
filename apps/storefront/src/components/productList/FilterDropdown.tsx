@@ -76,15 +76,29 @@ export function FilterDropdown({
                       option.inputType === "SWATCH" ? "w-8 h-8" : "w-5 h-5",
                       option.inputType === "SWATCH" ? "rounded-full" : "rounded-sm",
                       option.chosen && option.inputType !== "SWATCH"
-                        ? "border-transparent"
+                        ? "border border-brand"
                         : "border border-gray-400",
                       option.chosen && option.inputType !== "SWATCH"
-                        ? "bg-brand"
+                        ? "bg-gray-100"
                         : "bg-transparent",
                     )}
                     aria-hidden="true"
                     style={option.inputType === "SWATCH" ? { backgroundColor: option.value } : {}}
                   >
+                    {option.chosen && option.inputType !== "SWATCH" && (
+                      <svg
+                        className="absolute inset-0 w-6 h-6 m-auto text-action-1"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M19.916 4.626a.75.75 0 01.208 1.04l-9 13.5a.75.75 0 01-1.154.114l-6-6a.75.75 0 011.06-1.06l5.353 5.353 8.493-12.739a.75.75 0 011.04-.208z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    )}
                     {option.inputType === "SWATCH" &&
                       option.chosen &&
                       option.label !== "multicolor" && (
@@ -141,7 +155,7 @@ export function FilterDropdown({
                       </svg>
                     )}
                   </span>
-                  <span className="capitalize">{option.label}</span>
+                  <span className="capitalize text-left">{option.label}</span>
                 </button>
               ))}
             </DisclosurePanel>

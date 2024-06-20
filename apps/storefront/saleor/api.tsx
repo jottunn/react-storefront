@@ -35093,6 +35093,7 @@ export type AvailableProductFiltersQuery = {
             }>;
           }>;
         }> | null;
+        category?: { __typename?: "Category"; id: string; slug: string; name: string } | null;
       };
     }>;
   } | null;
@@ -38849,6 +38850,11 @@ export const AvailableProductFiltersDocument = gql`
             attributes {
               ...SelectedAttributeDetailsFragment
             }
+          }
+          category {
+            id
+            slug
+            name
           }
         }
       }

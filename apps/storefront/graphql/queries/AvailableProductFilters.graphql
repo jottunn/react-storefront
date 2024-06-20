@@ -22,6 +22,11 @@ query AvailableProductFilters( $filter: ProductFilterInput, $channel: String, $l
              ...SelectedAttributeDetailsFragment
             }
         }
+        category {
+          id
+          slug
+          name
+        }
       }
     }
   }

@@ -9,7 +9,7 @@ import {
   ProductVariant,
   SelectedAttribute,
 } from "@/saleor/api";
-import { ATTR_BRAND_REF, ATTR_COLOR_COMMERCIAL_SLUG, ATTR_GHID_MARIMI } from "@/lib/const";
+import { ATTR_COLOR_COMMERCIAL_SLUG, ATTR_GHID_MARIMI } from "@/lib/const";
 import { Dialog, DialogPanel, Transition, TransitionChild } from "@headlessui/react";
 
 import { Messages } from "@/lib/util";
@@ -28,6 +28,7 @@ import SortingDropdown from "./SortingDropdown";
 import FilterDropdowns from "./FilterDropdowns";
 import { getAvailableFilters } from "src/app/actions";
 import ProductCollection from "./ProductCollection";
+import isEqual from "lodash/isEqual";
 
 export interface FilteredProductListProps {
   brand?: string;
@@ -68,29 +69,28 @@ export function FilteredProductList({
   const setSortBy = (value: UrlSorting | undefined | null) =>
     setSortByQuery(serializeQuerySort(value));
 
-  // const [inStockFilter, setInStockFilter] = useQueryState(
-  //   "inStock",
-  //   queryTypes.boolean.withDefault(false)
-  // );
   // New state for managing attribute filters
   const [attributeFilters, setAttributeFilters] = useState<Attribute1[]>([]);
+  const [categoryFilters, setCategoryFilters] = useState<any[]>([]);
   const [productsFilter, setProductsFilter] = useState<ProductFilterInput>();
   const pills: FilterPill[] = getPillsData(queryFilters, attributeFilters);
 
   // console.log('render filtered list', categoryIDs);
-  const debouncedProductsFilter = useDebouncedValue(productsFilter, 50);
+  const debouncedProductsFilter = useDebouncedValue(productsFilter, 500);
 
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const openModal = () => setFilterModalOpen(true);
   const closeModal = () => setFilterModalOpen(false);
+
   const aggregateAttributesFromProducts = (products: ProductCountableEdge[]) => {
     const attributesMap = new Map<string, Attribute1>();
+    const categoriesMap = new Map<string, any>();
+
     products?.forEach((product) => {
       // Aggregate attributes from the product
       product.node.attributes.forEach((attribute: SelectedAttribute) => {
         if (
           attribute.attribute.slug !== ATTR_GHID_MARIMI &&
-          attribute.attribute.slug !== ATTR_BRAND_REF &&
           attribute.attribute.slug !== "recommended"
         ) {
           addAttributeToMap(attributesMap, attribute);
@@ -108,13 +108,27 @@ export function FilteredProductList({
           });
         }
       });
+
+      // Aggregate categories from the product, only if in Collection pages
+      if (
+        collectionIDs &&
+        collectionIDs.length > 0 &&
+        product.node.category &&
+        !categoriesMap.has(product.node.category.id)
+      ) {
+        categoriesMap.set(product.node.category.id, product.node.category);
+      }
     });
 
     // Convert Map values to array and map each attribute to include values as an array
-    return Array.from(attributesMap.values()).map((attr) => ({
+    const attributes = Array.from(attributesMap.values()).map((attr) => ({
       ...attr,
       values: Array.from(attr.values),
     }));
+
+    // Convert Map values to array for categories
+    const categories = Array.from(categoriesMap.values());
+    return { attributes, categories };
   };
 
   const addAttributeToMap = (
@@ -146,15 +160,20 @@ export function FilteredProductList({
 
   const fetchAvailableFilters = useCallback(async () => {
     try {
-      const products = await getAvailableFilters(productsFilter as ProductFilterInput);
+      const products = await getAvailableFilters(debouncedProductsFilter as ProductFilterInput);
       if (products) {
         const avFilter = aggregateAttributesFromProducts(products.edges as ProductCountableEdge[]);
-        setAttributeFilters(avFilter);
+        if (avFilter["attributes"] && avFilter["attributes"].length > 0) {
+          setAttributeFilters(avFilter["attributes"]);
+        }
+        if (avFilter["categories"] && avFilter["categories"].length > 0) {
+          setCategoryFilters(avFilter["categories"]);
+        }
       }
     } catch (err) {
       console.error("Failed to fetch filters:", err);
     }
-  }, [productsFilter]);
+  }, [debouncedProductsFilter]);
 
   useEffect(() => {
     if (debouncedProductsFilter !== undefined) {
@@ -163,7 +182,25 @@ export function FilteredProductList({
   }, [debouncedProductsFilter, fetchAvailableFilters]);
 
   useEffect(() => {
-    const attrS = queryFilters.filter((filter) => filter.values?.length);
+    // console.log("queryFilters", queryFilters);
+    const attrS = queryFilters.filter(
+      (filter) => filter.slug !== "categorie" && filter.values?.length,
+    );
+    const selectedCategories = queryFilters.filter(
+      (filter) => filter.slug === "categorie" && filter.values?.length,
+    );
+    if (selectedCategories && selectedCategories.length > 0) {
+      const selectedCategoryNames = selectedCategories[0].values;
+      const selectedCategoryIDs = selectedCategoryNames
+        ? categoryFilters
+            .filter((category) => selectedCategoryNames.includes(category.slug))
+            .map((category) => category.id)
+        : [];
+      if ((categoryIDs && categoryIDs.length === 0) || !categoryIDs) {
+        categoryIDs = selectedCategoryIDs;
+      }
+    }
+
     if (brand) {
       attrS.push({
         slug: "brand",
@@ -183,7 +220,10 @@ export function FilteredProductList({
     };
 
     // Only update productsFilter state if it's different from the current state
-    if (JSON.stringify(newProductsFilter) !== JSON.stringify(productsFilter)) {
+    // if (JSON.stringify(newProductsFilter) !== JSON.stringify(productsFilter)) {
+    //   setProductsFilter(newProductsFilter);
+    // }
+    if (!isEqual(newProductsFilter, productsFilter)) {
       setProductsFilter(newProductsFilter);
     }
 
@@ -237,10 +277,6 @@ export function FilteredProductList({
       scroll: false,
       shallow: true,
     });
-    // await setInStockFilter(null, {
-    //   scroll: false,
-    //   shallow: true,
-    // });
   };
 
   if (!productsFilter) {
@@ -287,6 +323,7 @@ export function FilteredProductList({
         <div className="hidden md:block">
           <FilterDropdowns
             attributeFilters={attributeFilters}
+            categoryFilters={categoryFilters}
             addAttributeFilter={addAttributeFilter}
             pills={pills}
           />
@@ -338,6 +375,7 @@ export function FilteredProductList({
                 </div>
                 <FilterDropdowns
                   attributeFilters={attributeFilters}
+                  categoryFilters={categoryFilters}
                   addAttributeFilter={addAttributeFilter}
                   pills={pills}
                 />

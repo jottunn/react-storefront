@@ -163,7 +163,7 @@ const ProductDetail = async ({
       CollectionBySlugDocument,
       {
         variables: { slug: brandAttribute?.values[0]?.slug || "", ...defaultRegionQuery() },
-        revalidate: 60,
+        revalidate: 60 * 60 * 24,
       },
     ));
   const commercialColorAttr = selectedVariant?.attributes.find(

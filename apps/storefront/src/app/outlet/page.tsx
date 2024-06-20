@@ -63,7 +63,7 @@ export default async function Page() {
                     >
                       <Image
                         alt={collection.name}
-                        className="transition-opacity duration-400 ease-in-out"
+                        className="transition-opacity duration-400 ease-in-out hover:brightness-125 hover:contrast-115 transition-all duration-30"
                         src={collection.backgroundImage.url}
                         width={300}
                         height={300}

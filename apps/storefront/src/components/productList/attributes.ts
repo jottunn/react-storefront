@@ -52,6 +52,22 @@ export const getFilterOptions = (
   }));
 };
 
+export const getCategoryFilterOptions = (
+  categories: any[],
+  appliedFilters: FilterPill[],
+): FilterDropdownOption[] => {
+  return categories.map((category) => ({
+    chosen: !!appliedFilters.find(
+      (pill) => pill.attributeSlug === "categorie" && pill.choiceSlug === category.slug,
+    ),
+    id: category.id,
+    label: translate(category, "name") || category.id,
+    slug: category.slug || category.id,
+    value: category.name || "",
+    inputType: "category",
+  }));
+};
+
 export const parseQueryAttributeFilters = (query: string): UrlFilter[] => {
   const filters = query.split(";").flatMap((attributeWithValues) => {
     const splitted = attributeWithValues.split(".");

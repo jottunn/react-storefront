@@ -76,6 +76,7 @@ export default async function Footer({ className, ...rest }: FooterProps) {
                       alt={brand.node.name}
                       width={200}
                       height={200}
+                      className="hover:brightness-125 hover:contrast-115 transition-all duration-30"
                     />
                   ) : (
                     brand.node.name
