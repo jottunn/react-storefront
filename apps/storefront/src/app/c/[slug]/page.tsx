@@ -8,28 +8,47 @@ import { translate } from "@/lib/translations";
 import { mapEdgesToItems } from "@/lib/maps";
 import FilteredProductList from "@/components/productList/FilteredProductList";
 import { getMessages } from "@/lib/util";
-import { Fragment } from "react";
-import Link from "next/link";
+import { STOREFRONT_NAME } from "@/lib/const";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import Script from "next/script";
 
-export const generateMetadata = async (
-  { params }: { params: { slug: string } },
-  parent: ResolvingMetadata,
-): Promise<Metadata> => {
+export const generateMetadata = async ({
+  params,
+}: {
+  params: { slug: string };
+}): Promise<Metadata> => {
   const response = await executeGraphQL<any, { slug: string; locale: LanguageCodeEnum }>(
     CategoryBySlugDocument,
     {
       variables: { slug: params.slug, locale: DEFAULT_LOCALE },
-      revalidate: 60,
+      revalidate: 60 * 60 * 24,
     },
   );
   const category = response.category;
 
-  //TODOcreate a generic description if seodescription is missing - use children
-  //create a geneirc title if seotitle is missing
-  //add image and other meta
   return {
-    title: category && (category.seoTitle || category.name),
-    description: category && category.seoDescription,
+    title: category && (category.seoTitle || `${category.name} | ${STOREFRONT_NAME}`),
+    description:
+      category && (category.seoDescription || `${category.name} pe magazinul online Surmont.ro`),
+    alternates: {
+      canonical: process.env.NEXT_PUBLIC_STOREFRONT_URL
+        ? process.env.NEXT_PUBLIC_STOREFRONT_URL + `/c/${encodeURIComponent(params.slug)}`
+        : undefined,
+    },
+    openGraph: {
+      title: category && (category.seoTitle || `${category.name} | ${STOREFRONT_NAME}`),
+      description:
+        category && (category.seoDescription || `${category.name} pe magazinul online Surmont.ro`),
+      images: category &&
+        category.backgroundImage && [
+          {
+            url: category.backgroundImage.url,
+            width: "670",
+            height: "425",
+            alt: category.backgroundImage.alt || category.name,
+          },
+        ],
+    },
   };
 };
 
@@ -53,33 +72,36 @@ export default async function Page({ params }: { params: { slug: string } }) {
     slug: parentCategory.slug,
   }));
 
+  const breadcrumbItems = [{ name: "Home", href: "/" }];
+  parents.forEach((parent) => {
+    breadcrumbItems.push({
+      name: parent.label,
+      href: `/c/${parent.slug}`,
+    });
+  });
+  breadcrumbItems.push({ name: translate(category, "name"), href: "" });
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: breadcrumbItems.map((item, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: item.name,
+      item: item.href ? `${process.env.NEXT_PUBLIC_STOREFRONT_URL}${item.href}` : undefined,
+    })),
+  };
   return (
     <>
+      <Script
+        type="application/ld+json"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd),
+        }}
+      />
       <header className="border-b border-main-6">
         <div className="bg-main-7 border-b md:mb-8">
-          <div className="container flex gap-2 flex-wrap text-left py-4 px-8 ">
-            <Link
-              href="/"
-              className="text-xs md:text-sm mt-2 font-medium text-gray-600 cursor-pointer text-center hover:text-green-600"
-            >
-              Home
-            </Link>{" "}
-            <span className="text-gray-600 mt-1 md:mt-2 text-base">/</span>
-            {parents.map((parent, i) => (
-              <Fragment key={parent.slug}>
-                <Link
-                  href={`/c/${parent.slug}`}
-                  className="text-xs md:text-sm mt-2 font-medium text-gray-600 cursor-pointer text-center hover:text-green-600"
-                >
-                  {parent.label}
-                </Link>
-                <span className="text-gray-600 mt-1 md:mt-2 text-base">/</span>
-              </Fragment>
-            ))}
-            <span className="text-xs md:text-sm mt-2 font-medium text-gray-400">
-              {translate(category, "name")}
-            </span>
-          </div>
+          <Breadcrumbs items={breadcrumbItems} />
         </div>
         <div className="container px-8 p-4">
           <PageHero
@@ -89,7 +111,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
               label: translate(subcategory, "name"),
               slug: subcategory.slug,
             }))}
-            parents={parents}
+            messages={messages}
           />
         </div>
       </header>

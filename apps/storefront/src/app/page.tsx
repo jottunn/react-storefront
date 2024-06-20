@@ -29,7 +29,6 @@ import edjsHTML from "editorjs-html";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 import SwiperComponent from "@/components/SwiperComponent";
 import HomepageBlock from "@/components/homepage/HomepageBlock";
-import { GroupedProduct, groupProductsByColor } from "@/lib/product";
 import getBase64 from "@/lib/generateBlurPlaceholder";
 
 const parser = edjsHTML();
@@ -54,6 +53,16 @@ function getMetadataValue(metadataArray: any[], key: any) {
   const item = metadataArray.find((metadata) => metadata.key === key);
   return item ? item.value : null; // Return null if the key is not found
 }
+
+const getNumColumns = (length: number) => {
+  let numColumns = 3;
+  if (length < 3) {
+    numColumns = 2;
+  } else if (length % 4 === 0) {
+    numColumns = 4;
+  }
+  return numColumns;
+};
 
 export default async function Home() {
   const messages = getMessages(DEFAULT_LOCALE);
@@ -83,9 +92,6 @@ export default async function Home() {
     },
   );
   let newProducts = newProductsH ? mapEdgesToItems(newProductsH) : [];
-  if (newProducts) {
-    newProducts = groupProductsByColor(newProducts as GroupedProduct[]);
-  }
 
   /** feature-products collection */
   const { collection: featuredCollection } = await executeGraphQL<
@@ -118,9 +124,6 @@ export default async function Home() {
       revalidate: 60,
     });
     featuredProducts = featuredProductsH ? mapEdgesToItems(featuredProductsH) : [];
-    if (featuredProducts) {
-      featuredProducts = groupProductsByColor(featuredProducts as GroupedProduct[]);
-    }
   }
 
   /** categories to be displayed on homepage */
@@ -138,6 +141,7 @@ export default async function Home() {
     revalidate: 60,
   });
   const homepageCategories = categories ? mapEdgesToItems(categories) : [];
+  const numColumnsHPCategories = getNumColumns(homepageCategories.length);
 
   /** collections to be displayed on homepage */
   const collectionFilter: CollectionFilterInput = {
@@ -154,7 +158,9 @@ export default async function Home() {
     },
     revalidate: 60,
   });
+
   const homepageCollections = collections ? mapEdgesToItems(collections) : [];
+  const numColumnsHPCollections = getNumColumns(homepageCollections.length);
 
   const bannerAttribute =
     page && "attributes" in page
@@ -177,6 +183,7 @@ export default async function Home() {
     bannerAttribute?.values[0]?.name &&
     (await getBase64(`${UPLOAD_FOLDER ?? ""}/${bannerAttribute.values[0].name}`));
   const placeholder = base64 || null;
+
   return (
     <>
       {bannerAttribute && (
@@ -253,14 +260,18 @@ export default async function Home() {
       )}
       <div className="container block">
         {homepageCollections && homepageCollections.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-20 mb-40">
+          <div
+            className={`grid grid-cols-1 md:grid-cols-${numColumnsHPCollections} gap-4 mt-20 mb-40`}
+          >
             {homepageCollections.map((collection) => (
               <HomepageBlock key={collection.id} item={collection} type="collection" />
             ))}
           </div>
         )}
         {homepageCategories && homepageCategories.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-20 mb-40">
+          <div
+            className={`grid grid-cols-1 md:grid-cols-${numColumnsHPCategories} gap-4 mt-20 mb-40`}
+          >
             {homepageCategories.map((category) => (
               <HomepageBlock key={category.id} item={category} type="category" />
             ))}

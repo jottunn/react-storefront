@@ -13,6 +13,7 @@ export interface RegisterFormData {
   password: string;
   gdprConsent: boolean;
 }
+
 export default function RegisterForm({ messages }: FormProps) {
   const router = useRouter();
   const [confirmPassword, setConfirmPassword] = useState("");

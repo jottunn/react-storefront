@@ -59,14 +59,7 @@ export function ProductCard({ product, loading, priority, compliantVariant }: Pr
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Link
-        href={
-          product.colorGroup && product.colorGroup !== "No Color"
-            ? `/p/${product.slug}?variant=${variant?.id}`
-            : `/p/${product.slug}`
-        }
-        prefetch={false}
-      >
+      <Link href={`/p/${product.slug}?variant=${variant?.id}`} prefetch={false}>
         <div className="bg-white w-full aspect-1">
           <div className="border w-full h-full relative flex items-center justify-center">
             {thumbnailUrl && (

@@ -33,7 +33,7 @@ export function CartSummary({ messages }: CartSummaryProps) {
       id: checkout.id,
       promoCode: formData.promoCode,
     });
-    console.log("addPromoCodeData", addPromoCodeData);
+    // console.log("addPromoCodeData", addPromoCodeData);
     if (addPromoCodeData?.errors) {
       setErrorForm("promoCode", { message: addPromoCodeData.errors[0].message || "Error" });
     } else if (addPromoCodeData?.checkout) {

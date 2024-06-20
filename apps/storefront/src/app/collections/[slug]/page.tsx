@@ -8,26 +8,49 @@ import { translate } from "@/lib/translations";
 import FilteredProductList from "@/components/productList/FilteredProductList";
 import { getMessages } from "@/lib/util";
 import Link from "next/link";
+import { STOREFRONT_NAME } from "@/lib/const";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import Script from "next/script";
 
-export const generateMetadata = async (
-  { params }: { params: { slug: string } },
-  parent: ResolvingMetadata,
-): Promise<Metadata> => {
+export const generateMetadata = async ({
+  params,
+}: {
+  params: { slug: string };
+}): Promise<Metadata> => {
   const response = await executeGraphQL<
     CollectionBySlugQuery,
     { slug: string; locale: LanguageCodeEnum; channel: string }
   >(CollectionBySlugDocument, {
     variables: { slug: params.slug, ...defaultRegionQuery() },
-    revalidate: 60,
+    revalidate: 60 * 60 * 24,
   });
-  const collection = response.collection;
+  const collection = response.collection as any;
 
-  //TODOcreate a generic description if seodescription is missing - use children
-  //create a geneirc title if seotitle is missing
-  //add image and other meta
   return {
-    title: collection && (collection.seoTitle || collection.name),
-    description: collection && collection.seoDescription,
+    title: collection && (collection.seoTitle || `${collection.name} | ${STOREFRONT_NAME}`),
+    description:
+      collection &&
+      (collection.seoDescription || `${collection.name} pe magazinul online Surmont.ro`),
+    alternates: {
+      canonical: process.env.NEXT_PUBLIC_STOREFRONT_URL
+        ? process.env.NEXT_PUBLIC_STOREFRONT_URL + `/c/${encodeURIComponent(params.slug)}`
+        : undefined,
+    },
+    openGraph: {
+      title: collection && (collection.seoTitle || `${collection.name} | ${STOREFRONT_NAME}`),
+      description:
+        collection &&
+        (collection.seoDescription || `${collection.name} pe magazinul online Surmont.ro`),
+      images: collection &&
+        collection.backgroundImage && [
+          {
+            url: collection.backgroundImage.url,
+            width: "600",
+            height: "485",
+            alt: collection.backgroundImage.alt || collection.name,
+          },
+        ],
+    },
   };
 };
 
@@ -45,22 +68,30 @@ export default async function Page({ params }: { params: { slug: string } }) {
   }
   const messages = getMessages(DEFAULT_LOCALE);
 
+  const breadcrumbItems = [{ name: "Home", href: "/" }, { name: translate(collection, "name") }];
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: breadcrumbItems.map((item, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: item.name,
+      item: item.href ? `${process.env.NEXT_PUBLIC_STOREFRONT_URL}${item.href}` : undefined,
+    })),
+  };
+
   return (
     <>
+      <Script
+        type="application/ld+json"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd),
+        }}
+      />
       <header className="mb-4 border-b border-main-6">
-        <div className="bg-main-7 border-b mb-8">
-          <div className="container flex gap-2 flex-wrap text-left py-4 px-8 ">
-            <Link
-              href="/"
-              className="text-xs md:text-sm mt-2 font-medium text-gray-600 cursor-pointer text-center hover:text-green-600"
-            >
-              Home
-            </Link>{" "}
-            <span className="text-gray-600 md:mt-2 text-base">/</span>
-            <span className="text-xs md:text-sm mt-2 font-medium text-gray-400">
-              {translate(collection, "name")}
-            </span>
-          </div>
+        <div className="bg-main-7 border-b md:mb-8">
+          <Breadcrumbs items={breadcrumbItems} />
         </div>
         <div className="container px-8 p-4">
           <PageHero

@@ -16,7 +16,6 @@ export function Pagination({
   totalCount,
   messages,
 }: PaginationProps) {
-  console.log("pagination", pageInfo);
   if (!pageInfo || !pageInfo?.hasNextPage) {
     return null;
   }

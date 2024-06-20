@@ -114,7 +114,7 @@ export function ProductCollection({
         after: (productCollection as any).pageInfo.endCursor,
       });
       if (newProductsData) {
-        console.log("newProductsData", newProductsData);
+        // console.log("newProductsData", newProductsData);
         setProductCollection((prevState) => {
           // Get current products
           const currentProducts = (prevState as any)?.edges || [];

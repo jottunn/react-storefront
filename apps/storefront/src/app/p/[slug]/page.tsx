@@ -18,13 +18,13 @@ import Image from "next/image";
 import { executeGraphQL } from "@/lib/graphql";
 import { notFound } from "next/navigation";
 import edjsHTML from "editorjs-html";
+import xss from "xss";
 import * as Checkout from "@/lib/checkout";
 import invariant from "ts-invariant";
 import { formatMoney } from "@/lib/utils/formatMoney";
 import { formatMoneyRange } from "@/lib/utils/formatMoneyRange";
 import { type WithContext, type Product } from "schema-dts";
 import { AddButton } from "./AddButton";
-import xss from "xss";
 import { ProductGallery } from "./media/ProductGallery";
 import getBase64 from "@/lib/generateBlurPlaceholder";
 import clsx from "clsx";
@@ -37,7 +37,9 @@ import { getMessages } from "@/lib/util";
 import Spinner from "@/components/Spinner";
 import { GroupedProduct, groupProductsByColor } from "@/lib/product";
 import SwiperComponent from "@/components/SwiperComponent";
-const parser = edjsHTML();
+import Breadcrumbs from "@/components/Breadcrumbs";
+import Script from "next/script";
+const edjsParser = edjsHTML();
 
 export async function generateMetadata(
   {
@@ -137,7 +139,6 @@ const ProductDetail = async ({
     notFound();
   }
 
-  console.log(product);
   const messages = getMessages(defaultRegionQuery().locale);
   const firstImage = product.thumbnail;
   const base64 = firstImage && (await getBase64(firstImage.url));
@@ -153,8 +154,10 @@ const ProductDetail = async ({
     !product.isAvailableForPurchase ||
     (product.variants && product.variants.length > 1 && !selectedVariantID) ||
     selectedVariant?.quantityAvailable === 0;
+
   const descriptionT = translate(product, "description");
-  const description = descriptionT ? parser.parse(JSON.parse(descriptionT)) : null;
+  const description = descriptionT ? edjsParser.parse(JSON.parse(descriptionT)) : null;
+
   const categoryAncestors = mapEdgesToItems(product.category?.ancestors);
   const brandAttribute = product.attributes.find((attr) => attr.attribute.slug === "brand");
   const brandCollection =
@@ -294,6 +297,30 @@ const ProductDetail = async ({
         }),
   };
 
+  const breadcrumbItems = [{ name: "Home", href: "/" }];
+  categoryAncestors.forEach((parent) => {
+    breadcrumbItems.push({
+      name: parent.name,
+      href: `/c/${product.category.slug}`,
+    });
+  });
+  !!product.category?.slug &&
+    breadcrumbItems.push({
+      name: product.category.name,
+      href: `/c/${product.category.slug}`,
+    });
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: breadcrumbItems.map((item, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: item.name,
+      item: item.href ? `${process.env.NEXT_PUBLIC_STOREFRONT_URL}${item.href}` : undefined,
+    })),
+  };
+
   return (
     <main>
       <script
@@ -302,35 +329,15 @@ const ProductDetail = async ({
           __html: JSON.stringify(productJsonLd),
         }}
       />
-      <div className="container text-left pt-4 pb-8 px-8 space-x-2">
-        <Link
-          href="/"
-          className="text-xs md:text-sm mt-2 font-medium text-gray-600 cursor-pointer text-center hover:text-green-600"
-        >
-          Home
-        </Link>{" "}
-        <span className="text-gray-600 md:mt-2 text-base">/</span>
-        {categoryAncestors.map((parent) => (
-          <React.Fragment key={parent.slug}>
-            <Link
-              href={`/c/${parent.slug}`}
-              className="text-xs md:text-sm mt-2 font-medium text-gray-600 cursor-pointer text-center hover:text-green-600"
-            >
-              {translate(parent, "name")}
-            </Link>
-            <span className="text-gray-600 text-md md:mt-2">/</span>
-          </React.Fragment>
-        ))}
-        {!!product.category?.slug && (
-          <>
-            <Link
-              href={`/c/${product.category.slug}`}
-              className="text-sm mt-2 font-medium text-gray-600 cursor-pointer text-center hover:text-green-600"
-            >
-              {translate(product.category, "name")}
-            </Link>
-          </>
-        )}
+      <Script
+        type="application/ld+json"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd),
+        }}
+      />
+      <div className="container text-left pt-2 pb-8 space-x-2 pl-0">
+        <Breadcrumbs items={breadcrumbItems} />
       </div>
       <div
         className={clsx(

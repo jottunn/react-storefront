@@ -1,21 +1,20 @@
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { executeGraphQL } from "@/lib/graphql";
-import {
-  SearchProductsDocument,
-  ProductOrderField,
-  OrderDirection,
-  SearchProductsQuery,
-} from "@/saleor/api";
+import { SearchProductsDocument, SearchProductsQuery } from "@/saleor/api";
 import { ProductsPerPage } from "../config";
-import { ProductCollection } from "@/components/productList/ProductCollection";
 import { DEFAULT_CHANNEL, DEFAULT_LOCALE } from "@/lib/regions";
 import FilteredProductList from "@/components/productList/FilteredProductList";
-import messages from "@/components/translations";
 import { getMessages } from "@/lib/util";
-
+import { STOREFRONT_NAME } from "@/lib/const";
+const messages = getMessages(DEFAULT_LOCALE);
 export const metadata = {
-  title: "Search products",
-  description: "Search products Surmont",
+  title: `${messages["app.search.searchTitle"]} | ${STOREFRONT_NAME}`,
+  description: `${messages["app.search.searchTitle"]} - Surmont.ro`,
+  alternates: {
+    canonical: process.env.NEXT_PUBLIC_STOREFRONT_URL
+      ? process.env.NEXT_PUBLIC_STOREFRONT_URL + `/search`
+      : undefined,
+  },
 };
 
 export default async function Page({
@@ -27,7 +26,6 @@ export default async function Page({
 }) {
   const cursor = typeof searchParams.cursor === "string" ? searchParams.cursor : null;
   const searchValue = searchParams.query;
-  const messages = getMessages(DEFAULT_LOCALE);
   if (!searchValue) {
     redirect("/");
   }
@@ -72,13 +70,6 @@ export default async function Page({
             </h1>
 
             {products && <FilteredProductList productsIDs={productsIds} messages={messages} />}
-            {/* <Pagination
-                            pageInfo={{
-                                ...products.pageInfo,
-                                basePathname: `/search`,
-                                urlSearchParams: newSearchParams,
-                            }}
-                        /> */}
           </div>
         ) : (
           <h1 className="mx-auto pb-8 text-center text-xl font-semibold">Nothing found :(</h1>

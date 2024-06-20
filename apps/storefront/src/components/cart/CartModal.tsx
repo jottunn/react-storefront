@@ -47,7 +47,7 @@ export default function CartModal({ messages }: CartModalProps) {
 
   const saleorApiUrl = process.env.NEXT_PUBLIC_API_URI;
   invariant(saleorApiUrl, "Missing NEXT_PUBLIC_API_URI");
-  if (pathname === "/checkout/" || pathname === "/order/") {
+  if (pathname === "/checkout" || pathname === "/order") {
     return null;
   }
   return (

@@ -12,6 +12,20 @@ import { getMessages } from "@/lib/util";
 import { executeGraphQL } from "@/lib/graphql";
 import { mapEdgesToItems } from "@/lib/maps";
 import PageHero from "@/components/PageHero";
+import { Metadata } from "next";
+import { STOREFRONT_NAME } from "@/lib/const";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import Script from "next/script";
+
+export const metadata = {
+  title: `Reduceri | ${STOREFRONT_NAME}`,
+  description: "Reduceri la Surmont.ro",
+  alternates: {
+    canonical: process.env.NEXT_PUBLIC_STOREFRONT_URL
+      ? process.env.NEXT_PUBLIC_STOREFRONT_URL + `/outlet`
+      : undefined,
+  },
+};
 
 export default async function Page() {
   const { collections } = await executeGraphQL<
@@ -30,24 +44,32 @@ export default async function Page() {
   const outletCollections = mapEdgesToItems(collections);
   const collectionsIds = outletCollections && outletCollections.map((collect) => collect.id);
   const messages = getMessages(DEFAULT_LOCALE);
-
+  const breadcrumbItems = [
+    { name: "Home", href: "/" },
+    { name: messages["app.search.outletTitle"] },
+  ];
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: breadcrumbItems.map((item, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: item.name,
+      item: item.href ? `${process.env.NEXT_PUBLIC_STOREFRONT_URL}${item.href}` : undefined,
+    })),
+  };
   return (
     <>
-      {/*TODO <BaseSeo /> */}
-      <header className="mb-4 pb-8 border-b border-main-6">
-        <div className="bg-main-7 border-b mb-8">
-          <div className="container flex gap-2 flex-wrap text-left py-4 px-8 ">
-            <Link
-              href="/"
-              className="text-sm mt-2 font-medium text-gray-600 cursor-pointer text-center hover:text-green-600"
-            >
-              Home
-            </Link>{" "}
-            <span className="text-gray-600 mt-2 text-base">/</span>
-            <span className="text-sm mt-2 font-medium text-gray-400">
-              {messages["app.search.outletTitle"]}
-            </span>
-          </div>
+      <Script
+        type="application/ld+json"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd),
+        }}
+      />
+      <header className="mb-4 border-b border-main-6">
+        <div className="bg-main-7 border-b md:mb-8">
+          <Breadcrumbs items={breadcrumbItems} />
         </div>
         <div className="container px-8">
           <PageHero title={messages["app.search.outletTitle"]} description="" />

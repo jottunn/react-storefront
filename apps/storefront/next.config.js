@@ -18,7 +18,7 @@ module.exports = withBundleAnalyzer({
     ],
     formats: ["image/avif", "image/webp"],
   },
-  trailingSlash: true,
+  trailingSlash: false,
   i18n: {
     locales: ["en", "ro"],
     defaultLocale: "ro",

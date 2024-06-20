@@ -171,7 +171,6 @@ export async function getAvailableFilters(productsFilter: ProductFilterInput) {
       filter: productsFilter,
       ...defaultRegionQuery(),
     },
-    cache: "force-cache",
     revalidate: 60 * 60,
   });
   return products;

@@ -130,6 +130,8 @@
   "app.ui.productCounter": "{currentItemsCount} din {totalItemsCount}",
   "app.ui.removeButton": "Elimină",
   "app.ui.saveButton": "Salvează",
+  "app.ui.readmore": "Citește mai mult",
+  "app.ui.hide": "Ascunde",
   "NOT_FOUND": "Nu există niciun cont asociat acestei adrese de email.",
   "INVALID_CREDENTIALS": "Credențiale invalide",
   "PERMISSION_DENIED": "Nu aveți permisiunea de a efectua această acțiune.",

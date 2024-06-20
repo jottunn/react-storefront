@@ -1,7 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import { CategoryDetailsFragment, CollectionDetailsFragment } from "@/saleor/api";
-import getLinkPath from "@/lib/menus";
 
 export interface HomepageBlockProps {
   item: CategoryDetailsFragment | CollectionDetailsFragment;
@@ -9,7 +8,6 @@ export interface HomepageBlockProps {
 }
 
 export default function HomepageBlock({ item, type }: HomepageBlockProps) {
-  const jsonData = item.description ? JSON.parse(item.description) : "";
   return (
     <div>
       <div className="relative">
@@ -36,9 +34,7 @@ export default function HomepageBlock({ item, type }: HomepageBlockProps) {
           </Link>
         )}
       </div>
-      {jsonData && jsonData.blocks.length > 0 && jsonData.blocks[0].data && (
-        <p className="text-sm pt-2">{jsonData.blocks[0].data.text.replace("<br>", "")}</p>
-      )}
+      {item.backgroundImage?.alt && <p className="text-sm pt-2">{item.backgroundImage?.alt}</p>}
     </div>
   );
 }
