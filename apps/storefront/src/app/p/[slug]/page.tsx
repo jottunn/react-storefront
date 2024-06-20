@@ -301,7 +301,7 @@ const ProductDetail = async ({
   categoryAncestors.forEach((parent) => {
     breadcrumbItems.push({
       name: parent.name,
-      href: `/c/${product.category.slug}`,
+      href: `/c/${parent.slug}`,
     });
   });
   !!product.category?.slug &&
