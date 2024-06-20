@@ -28,7 +28,7 @@ import SortingDropdown from "./SortingDropdown";
 import FilterDropdowns from "./FilterDropdowns";
 import { getAvailableFilters } from "src/app/actions";
 import ProductCollection from "./ProductCollection";
-import isEqual from "lodash/isEqual";
+import isEqual from "lodash.isequal";
 
 export interface FilteredProductListProps {
   brand?: string;

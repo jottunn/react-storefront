@@ -1,4 +1,3 @@
-import { DataProp } from "editorjs-blocks-react-renderer";
 import fs from "fs";
 import path from "path";
 import { DEFAULT_LOCALE } from "src/lib/regions";
@@ -26,33 +25,6 @@ export function mapLocaleForInternalUse(locale: string): string {
 export function notNullable<TValue>(value: TValue | null | undefined): value is TValue {
   return value !== null && value !== undefined;
 }
-
-export const parseEditorJSData = (jsonStringData?: string): DataProp | null => {
-  if (!jsonStringData) {
-    return null;
-  }
-  let data;
-  try {
-    data = JSON.parse(jsonStringData);
-  } catch (e) {
-    return null;
-  }
-
-  if (!data.blocks?.length) {
-    // No data to render
-    return null;
-  }
-
-  // Path for compatibility with data from older version od EditorJS
-  if (!data.time) {
-    data.time = Date.now().toString();
-  }
-  if (!data.version) {
-    data.version = "2.22.2";
-  }
-
-  return data;
-};
 
 export const formatDate = (date: Date | number) => {
   return new Intl.DateTimeFormat("en-US", { dateStyle: "medium" }).format(date);

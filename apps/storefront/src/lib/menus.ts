@@ -9,7 +9,7 @@ export const getLinkPath = (item: MenuItemFragment): string => {
   }
 
   if (item.page) {
-    return `/page/${item.page.slug}`;
+    return `/${item.page.slug}`;
   }
   return "/";
 };
