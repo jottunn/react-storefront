@@ -1,6 +1,6 @@
 {
   "name": "@saleor/react-hook-form-macaw",
-  "version": "0.2.6",
+  "version": "0.2.8",
   "scripts": {
     "build-storybook": "storybook build",
     "check-types": "tsc --noEmit",
@@ -39,5 +39,6 @@
   "peerDependencies": {
     "react": "18.2.0",
     "react-dom": "18.2.0"
-  }
+  },
+  "type": "module"
 }

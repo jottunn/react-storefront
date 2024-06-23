@@ -14,6 +14,7 @@
     "build:manage-promotions": "pnpm run build --filter=manage-promotions...",
     "build:manage-stock": "pnpm run build --filter=manage-stock...",
     "build:search": "pnpm run build --filter=search...",
+    "build:emails-and-messages": "pnpm run build --filter=emails-and-messages...",
     "start": "env-cmd --no-override -f .env env-cmd --no-override -f .env.local --fallback turbo run start --parallel --cache-dir=.turbo",
     "start:saleor-app-checkout": "pnpm run start --filter=saleor-app-checkout...",
     "start:storefront": "pnpm run start --filter=storefront...",
@@ -21,6 +22,7 @@
     "start:manage-promotions": "pnpm run start --filter=manage-promotions...",
     "start:manage-stock": "pnpm run start --filter=manage-stock...",
     "start:search": "pnpm run start --filter=search...",
+    "start:emails-and-messages": "pnpm run start --filter=emails-and-messages...",
     "generate": "env-cmd --no-override -f .env env-cmd --no-override -f .env.local --fallback turbo run generate --cache-dir=.turbo",
     "dev": "env-cmd --no-override -f .env env-cmd --no-override -f .env.local --fallback pnpm run _dev",
     "/*": "https://github.com/vercel/turborepo/issues/460",
@@ -55,7 +57,9 @@
     "@opentelemetry/sdk-trace-base": "1.18.1",
     "@opentelemetry/sdk-trace-node": "1.18.1",
     "@opentelemetry/semantic-conventions": "1.18.1",
-    "@saleor/app-sdk": "0.47.2"
+    "@saleor/app-sdk": "0.50.1",
+    "@sentry/cli": "2.32.1",
+    "@sentry/nextjs": "7.117.0"
   },
   "devDependencies": {
     "cypress": "13.9.0",
@@ -72,7 +76,7 @@
     "node": ">=16.0.0",
     "pnpm": ">=8"
   },
-  "packageManager": "pnpm@9.1.2",
+  "packageManager": "pnpm@9.1.4",
   "pnpm": {
     "overrides": {
       "@urql/exchange-auth>@urql/core": "^4.0.2",

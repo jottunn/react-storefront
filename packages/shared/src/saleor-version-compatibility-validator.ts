@@ -1,4 +1,4 @@
-const semver = require("semver");
+import semver from "semver";
 
 export class SaleorVersionCompatibilityValidator {
   constructor(private appRequiredVersion: string) {}

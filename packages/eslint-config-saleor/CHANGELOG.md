@@ -1,5 +1,19 @@
 # eslint-config-saleor
 
+## 0.4.9
+
+### Patch Changes
+
+- 37ecb246: Update pnpm to 9.2.0 version. It means that we also dropped support for Node.js less than 16.
+- c4dcb863: Add createLogger rule. Right now we don't allow imports from @saleor/apps-logger directly. Use your app logger instead to create logger instance.
+
+## 0.4.8
+
+### Patch Changes
+
+- 64d88b24: Update packages to ESM. See node [docs](https://nodejs.org/api/esm.html) for more info.
+- 5cbd3b63: Updated @saleor/app-sdk package to 0.50.1
+
 ## 0.4.7
 
 ### Patch Changes

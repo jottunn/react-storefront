@@ -1,0 +1,20 @@
+{
+  "name": "@saleor/sentry-utils",
+  "version": "0.2.2",
+  "scripts": {
+    "check-types": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
+  },
+  "devDependencies": {
+    "eslint-config-saleor": "workspace:*",
+    "typescript": "5.1.6"
+  },
+  "exports": {
+    ".": {
+      "default": "./index.ts"
+    }
+  },
+  "main": "index.ts",
+  "type": "module"
+}
