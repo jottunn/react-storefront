@@ -37,7 +37,7 @@ export default function MediaGallery({ data }: { data: SlidShowProps }) {
             const imageUrl = getStrapiMedia(fadeImage.attributes.url);
             mediaGalleryMap.push({
               url: imageUrl,
-              alt: fadeImage.attributes.alternativeText || "",
+              alt: fadeImage?.attributes?.alternativeText || "",
             });
             return (
               <div
@@ -50,8 +50,9 @@ export default function MediaGallery({ data }: { data: SlidShowProps }) {
                     className="w-full h-96 object-cover rounded-lg"
                     height={400}
                     width={600}
-                    alt={fadeImage.attributes.alternativeText || ""}
+                    alt={fadeImage?.attributes?.alternativeText || ""}
                     src={imageUrl}
+                    unoptimized={true}
                   />
                 )}
               </div>

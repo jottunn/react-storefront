@@ -6,6 +6,7 @@ import { LanguageCodeEnum, PageDocument, PageFragment, PageQuery } from "@/saleo
 import PageSaleor from "./PageSaleor";
 import { DEFAULT_LOCALE, defaultRegionQuery } from "@/lib/regions";
 import PageStrapi from "./PageStrapi";
+import { notFound } from "next/navigation";
 
 type Props = {
   params: {
@@ -33,19 +34,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: saleorPage.page.seoDescription || `${saleorPage.page.title} - Surmont.ro`,
     };
   }
-  const strapiPage = await getPageBySlug(params.slug, params.lang);
+  try {
+    const strapiPage = await getPageBySlug(params.slug, params.lang);
 
-  if (strapiPage.data && strapiPage.data[0] && !strapiPage.data[0].attributes?.seo) {
-    return {
-      title: `${strapiPage.data[0].attributes.pageName} | ${STOREFRONT_NAME}`,
-      description: `${strapiPage.data[0].attributes.pageName} - Surmont.ro`,
-    };
-  } else {
-    const metadata = strapiPage.data[0] && strapiPage.data[0].attributes.seo;
-    return {
-      title: metadata && metadata.metaTitle,
-      description: metadata && metadata.metaDescription,
-    };
+    if (strapiPage.data && strapiPage.data[0] && !strapiPage.data[0].attributes?.seo) {
+      return {
+        title: `${strapiPage.data[0].attributes.pageName} | ${STOREFRONT_NAME}`,
+        description: `${strapiPage.data[0].attributes.pageName} - Surmont.ro`,
+      };
+    } else {
+      const metadata = strapiPage.data[0] && strapiPage.data[0].attributes.seo;
+      return {
+        title: metadata && metadata.metaTitle,
+        description: metadata && metadata.metaDescription,
+      };
+    }
+  } catch (error) {
+    console.error("Failed to fetch current user:", error);
+    return notFound();
   }
 }
 

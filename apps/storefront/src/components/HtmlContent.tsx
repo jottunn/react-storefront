@@ -8,7 +8,7 @@ interface HtmlContentProps {
 }
 
 export default function HtmlContent({ data, htmlContent }: HtmlContentProps) {
-  const content = data ? data.richText : htmlContent.columnContent;
+  const content = data ? data.richText : htmlContent?.columnContent;
   if (!content) return null;
   const sanitizedContent = xss(content, {
     whiteList: {

@@ -1,9 +1,9 @@
-// eslint-disable-next-line
 const withBundleAnalyzer = require("@next/bundle-analyzer")({
-  enabled: process.env.ANALYZE === "true",
+  enabled: process.env.ANALYZE === "false",
 });
 
 const apiURL = new URL(process.env.NEXT_PUBLIC_API_URI);
+const strapiURL = new URL(process.env.NEXT_PUBLIC_STRAPI_URL);
 const allowedImageDomains = process.env.NEXT_PUBLIC_ALLOWED_IMAGE_DOMAINS
   ? process.env.NEXT_PUBLIC_ALLOWED_IMAGE_DOMAINS.split(",")
   : [];
@@ -14,8 +14,15 @@ module.exports = withBundleAnalyzer({
   images: {
     remotePatterns: [
       { hostname: apiURL.hostname },
+      {
+        protocol: "http",
+        hostname: strapiURL.hostname,
+        port: "",
+        pathname: "/uploads/**",
+      },
       ...allowedImageDomains.map((domain) => ({ hostname: domain })),
     ],
+
     formats: ["image/avif", "image/webp"],
   },
   trailingSlash: false,
@@ -70,16 +77,5 @@ module.exports = withBundleAnalyzer({
       },
     ];
   },
-  // },
-  // async redirects() {
-  //   return [
-  //     {
-  //       source: "/:channel/:locale/account/",
-  //       destination: "/[channel]/[locale]/account/preferences",
-  //       permanent: true,
-  //     },
-  //   ];
-  // },
-
   experimental: {},
 });
