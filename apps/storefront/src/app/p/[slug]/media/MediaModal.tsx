@@ -54,7 +54,7 @@ const MediaModal = ({ galleryMedia, closeModal, currentIndex, placeholder }: Ima
           {galleryMedia.map((media, index) => (
             <SwiperSlide key={index}>
               <div className="flex items-center justify-center h-full">
-                {media.type === "IMAGE" ? (
+                {media.type !== "VIDEO" ? (
                   // <Image
                   //   className="m-auto"
                   //   src={media.url}

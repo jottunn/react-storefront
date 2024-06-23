@@ -35,7 +35,7 @@ export async function executeGraphQL<Result, Variables>(
   // Logging the query and variables for debugging
   // console.log('operation', operation);
   // console.log("GraphQL Query:", queryString);
-  //console.log("Variables:", variables);
+  // console.log("Variables:", variables);
 
   const input = {
     method: "POST",

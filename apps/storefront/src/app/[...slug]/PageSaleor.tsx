@@ -1,57 +1,30 @@
 import React from "react";
-import { defaultRegionQuery } from "@/lib/regions";
-import { LanguageCodeEnum, PageDocument, PageQuery } from "@/saleor/api";
-import { executeGraphQL } from "@/lib/graphql";
-import { Metadata } from "next";
+import { PageFragment } from "@/saleor/api";
 import edjsHTML from "editorjs-html";
 import { translate } from "@/lib/translations";
-import { notFound } from "next/navigation";
-import { STOREFRONT_NAME } from "@/lib/const";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Script from "next/script";
 import xss from "xss";
 const edjsParser = edjsHTML();
 
-export const generateMetadata = async ({
-  params,
-}: {
-  params: { slug: string };
-}): Promise<Metadata> => {
-  const response = await executeGraphQL<
-    PageQuery,
-    { slug: string; locale: LanguageCodeEnum; channel: string }
-  >(PageDocument, {
-    variables: { slug: params.slug, ...defaultRegionQuery() },
-    revalidate: 60 * 60 * 24,
-  });
-  const page = response.page as any;
-
-  return {
-    title: page && (page.seoTitle || `${page.title} | ${STOREFRONT_NAME}`),
-    description: page && (page.seoDescription || `${page.title} - Surmont.ro`),
-    alternates: {
-      canonical: process.env.NEXT_PUBLIC_STOREFRONT_URL
-        ? process.env.NEXT_PUBLIC_STOREFRONT_URL + `/${encodeURIComponent(params.slug)}`
-        : undefined,
-    },
-  };
+type Props = {
+  page: PageFragment;
 };
+export default function PageSaleor({ page }: Props) {
+  // const { page } = await executeGraphQL<
+  //   PageQuery,
+  //   { slug: string; locale: LanguageCodeEnum; channel: string }
+  // >(PageDocument, {
+  //   variables: {
+  //     slug: params.slug,
+  //     ...defaultRegionQuery(),
+  //   },
+  //   revalidate: 60,
+  // });
 
-export default async function Page({ params }: { params: { slug: string } }) {
-  const { page } = await executeGraphQL<
-    PageQuery,
-    { slug: string; locale: LanguageCodeEnum; channel: string }
-  >(PageDocument, {
-    variables: {
-      slug: params.slug,
-      ...defaultRegionQuery(),
-    },
-    revalidate: 60,
-  });
-
-  if (!page) {
-    notFound();
-  }
+  // if (!page) {
+  //   notFound();
+  // }
 
   const content = page && "content" in page ? translate(page, "content") : null;
   const parsedContent = content ? edjsParser.parse(JSON.parse(content)).join("") : "";
@@ -87,7 +60,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
         </div>
       </header>
       <main className="pt-6 px-8 pb-12 prose-2xl container">
-        <h1 className="text-4xl font-bold" data-testid={`titleOf${page.title}`}>
+        <h1 className="text-4xl font-bold pb-6" data-testid={`titleOf${page.title}`}>
           {page.title}
         </h1>
         <div dangerouslySetInnerHTML={{ __html: xss(parsedContent) }} />
