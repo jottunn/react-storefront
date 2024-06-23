@@ -76,7 +76,6 @@
     "@types/url-join": "4.0.3",
     "autoprefixer": "10.4.19",
     "eslint": "9.2.0",
-    "eslint-config-checkout": "workspace:*",
     "formik": "^2.4.5",
     "nookies": "^2.5.2",
     "pathpida": "0.22.0",
