@@ -1,6 +1,5 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { metadataToAlgoliaAttribute } from "./metadata-to-algolia-attribute";
-import { map } from "zod";
 
 describe("metadataToAlgoliaAttribute", () => {
   it("Maps string attribute", () => {

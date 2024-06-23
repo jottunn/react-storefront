@@ -93,6 +93,7 @@ enum AccountErrorCode {
   OUT_OF_SCOPE_PERMISSION
   OUT_OF_SCOPE_USER
   PASSWORD_ENTIRELY_NUMERIC
+  PASSWORD_RESET_ALREADY_REQUESTED
   PASSWORD_TOO_COMMON
   PASSWORD_TOO_SHORT
   PASSWORD_TOO_SIMILAR
@@ -3230,6 +3231,7 @@ enum CheckoutErrorCode {
   EMAIL_NOT_SET
   GIFT_CARD_NOT_APPLICABLE
   GRAPHQL_ERROR
+  INACTIVE_PAYMENT
   INSUFFICIENT_STOCK
   INVALID
   INVALID_SHIPPING_METHOD
@@ -20683,6 +20685,13 @@ type Shop {
   Requires one of the following permissions: MANAGE_SETTINGS.
   """
   reserveStockDurationAuthenticatedUser: Int
+
+  """
+  Minor Saleor API version.
+  
+  Added in Saleor 3.5.
+  """
+  schemaVersion: String!
 
   """
   List of staff notification recipients.

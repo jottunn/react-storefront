@@ -157,6 +157,7 @@ export enum AccountErrorCode {
   OutOfScopePermission = "OUT_OF_SCOPE_PERMISSION",
   OutOfScopeUser = "OUT_OF_SCOPE_USER",
   PasswordEntirelyNumeric = "PASSWORD_ENTIRELY_NUMERIC",
+  PasswordResetAlreadyRequested = "PASSWORD_RESET_ALREADY_REQUESTED",
   PasswordTooCommon = "PASSWORD_TOO_COMMON",
   PasswordTooShort = "PASSWORD_TOO_SHORT",
   PasswordTooSimilar = "PASSWORD_TOO_SIMILAR",
@@ -3044,6 +3045,7 @@ export enum CheckoutErrorCode {
   EmailNotSet = "EMAIL_NOT_SET",
   GiftCardNotApplicable = "GIFT_CARD_NOT_APPLICABLE",
   GraphqlError = "GRAPHQL_ERROR",
+  InactivePayment = "INACTIVE_PAYMENT",
   InsufficientStock = "INSUFFICIENT_STOCK",
   Invalid = "INVALID",
   InvalidShippingMethod = "INVALID_SHIPPING_METHOD",
@@ -18977,6 +18979,12 @@ export type Shop = {
    * Requires one of the following permissions: MANAGE_SETTINGS.
    */
   reserveStockDurationAuthenticatedUser?: Maybe<Scalars["Int"]["output"]>;
+  /**
+   * Minor Saleor API version.
+   *
+   * Added in Saleor 3.5.
+   */
+  schemaVersion: Scalars["String"]["output"];
   /**
    * List of staff notification recipients.
    *

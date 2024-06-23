@@ -1,5 +1,94 @@
 # saleor-app-search
 
+## 1.22.4
+
+### Patch Changes
+
+- Updated dependencies [6f2d6abb]
+  - @saleor/apps-otel@1.3.0
+
+## 1.22.3
+
+### Patch Changes
+
+- fbdbaa28: Remove custom Next.js + Sentry error. It was causing non existing paths to be reported as 500 instead of 404. We catch Sentry errors in implicit anyway in api routes.
+- Updated dependencies [fbdbaa28]
+  - @saleor/sentry-utils@0.2.2
+
+## 1.22.2
+
+### Patch Changes
+
+- 00cdf64b: Added packages optimization, via Next.js configuration. This should decrease cold starts due to smaller bundle size
+- 2f59041c: Reverted shared Sentry configuration (init() part). It was not working properly - source maps were not properly assigned. Now configuration is not shared, but repeated in every app separately
+- Updated dependencies [2f59041c]
+  - @saleor/sentry-utils@0.2.1
+
+## 1.22.1
+
+### Patch Changes
+
+- 0c4ba39f: Update next.js config after Sentry rollback.
+- Updated dependencies [0c4ba39f]
+- Updated dependencies [0c4ba39f]
+- Updated dependencies [5c851a6c]
+  - @saleor/apps-otel@1.2.2
+  - @saleor/apps-logger@1.2.8
+
+## 1.22.0
+
+### Minor Changes
+
+- c4dcb863: Remove Pino logger library. It was already deprecated but for non migrated apps it was causing build errors. Right now we have one logger - @saleor/app-logger pkg.
+- 1a9912f5: Setup Sentry inside Next.js instrumentation file. It ensures that Sentry works properly for serverless environment.
+- b9957b11: Removed the functionality that automatically disabled webhooks when Algolia responded with errors.
+  This behavior was unstable, and we received reports that webhooks were being randomly disabled, even when the credentials were correct.
+
+  To ensure apps operate reliably, webhooks are now managed as follows:
+
+  - After installation, if the app is not configured, webhooks are disabled.
+  - When the configuration is saved, the app validates Algolia credentials. Invalid credentials cannot be saved.
+  - Once valid credentials are saved, webhooks are enabled.
+  - Webhooks will remain enabled, even if tokens are rotated.
+
+### Patch Changes
+
+- b9957b11: Wrapped API routes with logger context utility. Now it will pass all attributes down to every log emitted during the request. It automatically adds attributes like saleorApiUrl or event to OTEL logs
+- 37ecb246: Update pnpm to 9.2.0 version. It means that we also dropped support for Node.js less than 16.
+- cc047b1d: Downgraded Sentry package to v7. Previous upgrade to 8.x cause Sentry to conflict with Open Telemetry setup and Sentry was not working
+- Updated dependencies [37ecb246]
+- Updated dependencies [c4dcb863]
+- Updated dependencies [1a9912f5]
+  - @saleor/apps-logger@1.2.7
+  - @saleor/apps-otel@1.2.1
+  - @saleor/react-hook-form-macaw@0.2.8
+  - @saleor/sentry-utils@0.2.0
+  - @saleor/apps-shared@1.11.0
+  - @saleor/apps-ui@1.2.6
+  - @saleor/webhook-utils@0.1.3
+
+## 1.21.7
+
+### Patch Changes
+
+- e8c9d7c7: Added bunch of logs at level INFO. Now app will log much more operations. Previously majority of logs were TRACE or DEBUG level
+
+## 1.21.6
+
+### Patch Changes
+
+- 64d88b24: Update packages to ESM. See node [docs](https://nodejs.org/api/esm.html) for more info.
+- 5cbd3b63: Updated @saleor/app-sdk package to 0.50.1
+- Updated dependencies [64d88b24]
+- Updated dependencies [5cbd3b63]
+- Updated dependencies [e1ea31be]
+  - @saleor/react-hook-form-macaw@0.2.7
+  - @saleor/webhook-utils@0.1.2
+  - @saleor/apps-logger@1.2.6
+  - @saleor/apps-shared@1.10.3
+  - @saleor/apps-otel@1.2.0
+  - @saleor/apps-ui@1.2.5
+
 ## 1.21.5
 
 ### Patch Changes
