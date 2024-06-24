@@ -17,23 +17,27 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const currentSlug = params.slug[params.slug.length - 1];
-  const saleorPage = await executeGraphQL<
-    PageQuery,
-    { slug: string; locale: LanguageCodeEnum; channel: string }
-  >(PageDocument, {
-    variables: {
-      slug: currentSlug,
-      ...defaultRegionQuery(),
-    },
-    revalidate: 60,
-  });
-
-  if (saleorPage.page) {
-    return {
-      title: saleorPage.page.seoTitle || `${saleorPage.page.title} | ${STOREFRONT_NAME}`,
-      description: saleorPage.page.seoDescription || `${saleorPage.page.title} - Surmont.ro`,
-    };
+  try {
+    const saleorPage = await executeGraphQL<
+      PageQuery,
+      { slug: string; locale: LanguageCodeEnum; channel: string }
+    >(PageDocument, {
+      variables: {
+        slug: currentSlug,
+        ...defaultRegionQuery(),
+      },
+      revalidate: 60,
+    });
+    if (saleorPage.page) {
+      return {
+        title: saleorPage.page.seoTitle || `${saleorPage.page.title} | ${STOREFRONT_NAME}`,
+        description: saleorPage.page.seoDescription || `${saleorPage.page.title} - Surmont.ro`,
+      };
+    }
+  } catch (error) {
+    console.error("Failed to fetch saleor page:", error);
   }
+
   try {
     const strapiPage = await getPageBySlug(params.slug, params.lang);
 
@@ -50,7 +54,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       };
     }
   } catch (error) {
-    console.error("Failed to fetch current user:", error);
+    console.error("Failed to fetch strapi page:", error);
     return notFound();
   }
 }

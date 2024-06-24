@@ -203,7 +203,7 @@ export default async function Home() {
                         alt={buttonText || ""}
                         className="absolute h-full w-full inset-0 object-cover object-center"
                         fill
-                        sizes="100vw"
+                        sizes="(max-width: 640px) 100vw, 100vw"
                         priority={true}
                         loading={"eager"}
                         {...(placeholder !== null

@@ -8,7 +8,7 @@ interface HtmlContentProps {
 }
 
 export default function HtmlContent({ data, htmlContent }: HtmlContentProps) {
-  const content = data ? data.richText : htmlContent?.columnContent;
+  const content = data ? data.richText : htmlContent?.columnContent || htmlContent;
   if (!content) return null;
   const sanitizedContent = xss(content, {
     whiteList: {
@@ -35,9 +35,9 @@ export default function HtmlContent({ data, htmlContent }: HtmlContentProps) {
       colgroup: ["width", "border", "bgcolor"],
       thead: ["style"],
       tbody: ["style"],
-      tr: ["style", "bgcolor", "valign", "align"],
-      th: ["style", "colspan", "rowspan", "bgcolor", "valign", "align"],
-      td: ["style", "colspan", "rowspan", "bgcolor", "valign", "align"],
+      tr: ["style", "bgcolor", "valign", "align", "height"],
+      th: ["style", "colspan", "rowspan", "bgcolor", "valign", "align", "height"],
+      td: ["style", "colspan", "rowspan", "bgcolor", "valign", "align", "height"],
     },
     css: {
       whiteList: {
@@ -49,8 +49,20 @@ export default function HtmlContent({ data, htmlContent }: HtmlContentProps) {
         "font-style": true,
         "text-decoration": true,
         padding: true,
+        "padding-top": true,
+        "padding-bottom": true,
+        "padding-right": true,
+        "padding-left": true,
         margin: true,
+        "margin-top": true,
+        "margin-bottom": true,
+        "margin-right": true,
+        "margin-left": true,
         border: true,
+        "border-top": true,
+        "border-bottom": true,
+        "border-right": true,
+        "border-left": true,
         "border-radius": true,
         width: true,
         height: true,

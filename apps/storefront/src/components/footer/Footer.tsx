@@ -87,7 +87,7 @@ export default async function Footer({ className, ...rest }: FooterProps) {
             })}
         </div>
         <div className={styles["footer-grid"]}>
-          <div className="grid grid-cols-3 gap-4 w-full mb-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full mb-4">
             {footerNavLinks &&
               footerNavLinks.menu &&
               footerNavLinks.menu.items &&
@@ -139,48 +139,55 @@ export default async function Footer({ className, ...rest }: FooterProps) {
                   </ul>
                 </div>
               ))}
-          </div>
-          <div className="no-margin-p mb-6 prose-2xl">
-            {contactContent && (
-              <>
-                <p className="font-bold text-md uppercase mb-5">{contactContent.node.title}</p>
-                {contactParsedContent &&
-                  contactParsedContent.map((content: any) => (
-                    <div key={content} dangerouslySetInnerHTML={{ __html: xss(content) }} />
-                  ))}
-              </>
-            )}
-            <br />
-            <div className="mt-8 flex space-x-4">
-              {contactFb && (
-                <a
-                  href={contactFb?.value || "#"}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="hover:opacity-85"
-                >
-                  <img src="/facebook.svg" alt="Facebook" width="25" height="25" loading="lazy" />
-                </a>
+
+            <div className="no-margin-p mb-6 prose-2xl">
+              {contactContent && (
+                <>
+                  <p className="font-bold text-md uppercase mb-5">{contactContent.node.title}</p>
+                  {contactParsedContent &&
+                    contactParsedContent.map((content: any) => (
+                      <div key={content} dangerouslySetInnerHTML={{ __html: xss(content) }} />
+                    ))}
+                </>
               )}
-              {contactInsta && (
-                <a
-                  href={contactInsta?.value || "#"}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="hover:opacity-85"
-                >
-                  <img src="/instagram.svg" alt="Instagram" width="25" height="25" loading="lazy" />
-                </a>
-              )}
+              <div className="flex space-x-4">
+                {contactFb && (
+                  <a
+                    href={contactFb?.value || "#"}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="hover:opacity-85"
+                  >
+                    <img src="/facebook.svg" alt="Facebook" width="25" height="25" loading="lazy" />
+                  </a>
+                )}
+                {contactInsta && (
+                  <a
+                    href={contactInsta?.value || "#"}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="hover:opacity-85"
+                  >
+                    <img
+                      src="/instagram.svg"
+                      alt="Instagram"
+                      width="25"
+                      height="25"
+                      loading="lazy"
+                    />
+                  </a>
+                )}
+              </div>
             </div>
           </div>
           <div key="social-footer" className="md:text-right">
-            <a className="mb-2 inline-block">
-              <img
+            <a href="#" className="mb-2 inline-block">
+              <Image
                 src={"/visa-master-card-logos.jpg"}
                 alt="visa mastercard"
                 width="232"
                 height="54"
+                priority={false}
               />
             </a>
             <a
@@ -189,16 +196,15 @@ export default async function Footer({ className, ...rest }: FooterProps) {
               rel="noreferrer"
               className="mb-2 inline-block"
             >
-              <img src={"/sal.svg"} alt="sal" width="180" height="45" />
+              <Image src={"/sal.svg"} alt="sal" width="180" height="45" priority={false} />
             </a>
-            <br />
             <a
               href="https://ec.europa.eu/consumers/odr/main/index.cfm?event=main.home2.show&lng=RO"
               target="_blank"
               rel="noreferrer"
               className="mb-2 inline-block"
             >
-              <img src={"/sol.svg"} alt="sol" width="180" height="45" />
+              <Image src={"/sol.svg"} alt="sol" width="180" height="45" priority={false} />
             </a>
           </div>
         </div>

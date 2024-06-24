@@ -1,5 +1,5 @@
 "use client";
-import { getStrapiMedia } from "@/lib/strapi/api-helpers";
+import { generateSrcset, getStrapiMedia } from "@/lib/strapi/api-helpers";
 import Image from "next/image";
 import { useState } from "react";
 import MediaModal from "src/app/p/[slug]/media/MediaModal";
@@ -10,6 +10,9 @@ interface Image {
     alternativeText: string | null;
     caption: string | null;
     url: string;
+    formats: any;
+    width: number;
+    height: number;
   };
 }
 
@@ -35,6 +38,9 @@ export default function MediaGallery({ data }: { data: SlidShowProps }) {
         {data.mediaGallery &&
           data.mediaGallery.data.map((fadeImage: Image, index) => {
             const imageUrl = getStrapiMedia(fadeImage.attributes.url);
+            const smallImage = fadeImage?.attributes?.formats && fadeImage.attributes.formats.small;
+            const imageUrlSmall = smallImage && smallImage.url && getStrapiMedia(smallImage.url);
+
             mediaGalleryMap.push({
               url: imageUrl,
               alt: fadeImage?.attributes?.alternativeText || "",
@@ -45,16 +51,13 @@ export default function MediaGallery({ data }: { data: SlidShowProps }) {
                 onClick={() => handleImageClick(index)}
                 className="cursor-pointer m-auto hover:brightness-125 hover:contrast-115 transition-all duration-30"
               >
-                {imageUrl && (
-                  <Image
-                    className="w-full h-96 object-cover rounded-lg"
-                    height={400}
-                    width={600}
-                    alt={fadeImage?.attributes?.alternativeText || ""}
-                    src={imageUrl}
-                    unoptimized={true}
-                  />
-                )}
+                <img
+                  src={imageUrlSmall || imageUrl}
+                  className="w-full h-96 object-cover rounded-lg"
+                  height={smallImage ? smallImage.height : fadeImage.attributes.height}
+                  width={smallImage ? smallImage.width : fadeImage.attributes.width}
+                  alt={fadeImage?.attributes?.alternativeText || ""}
+                />
               </div>
             );
           })}

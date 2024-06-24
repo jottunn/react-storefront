@@ -42,12 +42,13 @@ export default function RegisterForm({ messages }: FormProps) {
     const result = await register(formData);
     if (result.errors) {
       // Unable to sign in.
-      result.errors.forEach((e: { field: string; code: any }) => {
+      result.errors.forEach((e: any) => {
         if (e.field === "email") {
           setErrorForm("email", { message: e?.code || "error" });
         } else if (e.field === "password") {
           setErrorForm("password", { message: e?.code || "error" });
         } else {
+          setErrorForm("email", { message: e?.code || "error" });
           console.error("Registration error:", e);
         }
       });
@@ -62,7 +63,6 @@ export default function RegisterForm({ messages }: FormProps) {
       <div>
         <h1 className="text-2xl font-bold">{messages["app.register.header"]}</h1>
       </div>
-
       <div className="grid grid-cols-2 gap-4 mt-4">
         <div className="my-3">
           <label htmlFor="lastName" className="block text-md mb-2 uppercase">

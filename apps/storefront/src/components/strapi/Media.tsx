@@ -1,5 +1,4 @@
-import { getStrapiMedia } from "@/lib/strapi/api-helpers";
-import Image from "next/image";
+import { generateSrcset, getStrapiMedia } from "@/lib/strapi/api-helpers";
 
 interface MediaProps {
   singleMedia: {
@@ -9,6 +8,9 @@ interface MediaProps {
         url: string;
         name: string;
         alternativeText: string;
+        caption: string;
+        width: number;
+        height: number;
       };
     };
   };
@@ -16,15 +18,20 @@ interface MediaProps {
 
 export default function Media({ data }: { data: MediaProps }) {
   const imgUrl = getStrapiMedia(data?.singleMedia?.data?.attributes?.url);
+  const srcSet = generateSrcset(data?.singleMedia?.data?.attributes);
   return (
-    <div className="flex items-center justify-center mt-8 lg:mt-0 h-72 sm:h-80 lg:h-96 xl:h-112 2xl:h-128">
+    <div className="block">
       <img
         src={imgUrl || ""}
+        srcSet={srcSet}
+        sizes="(max-width: 640px) 100vw, 100vw"
         alt={data?.singleMedia?.data?.attributes?.alternativeText || ""}
-        className="object-cover w-full h-full rounded-lg overflow-hidden"
-        width={400}
-        height={400}
+        width={data?.singleMedia?.data?.attributes?.width || "400"}
+        height={data?.singleMedia?.data?.attributes?.height || "400"}
       />
+      {data?.singleMedia?.data?.attributes?.caption && (
+        <p className="text-base my-2">{data?.singleMedia?.data?.attributes?.caption}</p>
+      )}
     </div>
   );
 }

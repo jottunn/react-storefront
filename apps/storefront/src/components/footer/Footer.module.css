@@ -32,12 +32,15 @@
   min-height: 30px;
 }
 
+.footer-grid {
+  text-align: left;
+}
+
 @screen md {
   .footer-grid {
     max-width: 100%;
     display: grid;
     grid-gap: 1rem;
-    text-align: left;
-    grid-template-columns: 3fr 2fr 1fr;
+    grid-template-columns: 3fr 1fr;
   }
 }

@@ -355,15 +355,6 @@ const ProductDetail = async ({
           />
         </div>
         <div className="space-y-6 m-auto mt-6 md:mt-40 md:mb-20 w-full">
-          <h1
-            className="text-4xl leading-3rem] md:text-[3.5rem] md:leading-[4rem] font-bold tracking-tight text-main text-center px-10 !mb-10"
-            data-testid="productName"
-          >
-            {translate(product, "name")}{" "}
-            {commercialColorAttr?.values[0]?.name && (
-              <span className="font-semibold block">{commercialColorAttr?.values[0]?.name}</span>
-            )}
-          </h1>
           {brandAttribute && (
             <Link
               href={`/collections/${brandAttribute?.values[0]?.slug}`}
@@ -392,6 +383,17 @@ const ProductDetail = async ({
               )}
             </Link>
           )}
+          <h1
+            className="text-4xl leading-3rem] md:text-[3.5rem] md:leading-[4rem] font-bold tracking-tight text-main text-center px-10 !mb-10"
+            data-testid="productName"
+          >
+            {translate(product, "name")}{" "}
+            {commercialColorAttr?.values[0]?.name && (
+              <span className="font-semibold block mt-2">
+                {commercialColorAttr?.values[0]?.name}
+              </span>
+            )}
+          </h1>
 
           {product.variants?.length === 0 && (
             <h2 className="text-xl font-bold tracking-tight text-gray-800 text-center">

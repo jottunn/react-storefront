@@ -90,8 +90,7 @@ export async function register(formData: RegisterFormData | any) {
   );
 
   if (response?.accountRegister?.errors?.length) {
-    const customError = response.accountRegister.errors as any;
-    return { success: false, errors: customError.map((error: { code: any }) => error.code) };
+    return { success: false, errors: response.accountRegister.errors };
   }
 
   return { success: true };
