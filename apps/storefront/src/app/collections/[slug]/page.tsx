@@ -101,7 +101,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
         </div>
       </header>
       <main>
-        <div className="container px-8 mt-4 mb-40">
+        <div className="container px-8 mt-4 mb-40 min-h-[600px]">
           <FilteredProductList collectionIDs={[collection.id]} messages={messages} />
         </div>
       </main>

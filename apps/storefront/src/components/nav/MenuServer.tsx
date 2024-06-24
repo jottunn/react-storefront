@@ -16,7 +16,7 @@ export default async function MenuServer({ children }: ServerMenuProps) {
     MenuGetBySlugDocument,
     {
       variables: { slug: "navbar", ...defaultRegionQuery() },
-      revalidate: 60 * 60 * 24,
+      revalidate: 60 * 60,
     },
   );
 
@@ -24,7 +24,7 @@ export default async function MenuServer({ children }: ServerMenuProps) {
     MenuGetBySlugDocument,
     {
       variables: { slug: "navbar-right", ...defaultRegionQuery() },
-      revalidate: 60 * 60 * 24,
+      revalidate: 60 * 60,
     },
   );
 

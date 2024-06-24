@@ -346,7 +346,7 @@ const ProductDetail = async ({
       >
         <div className="h-full relative">
           {product.variants?.[0]?.pricing?.onSale && (
-            <TagIcon className="text-action-1 w-6 h-6 absolute right-4 top-4" />
+            <TagIcon className="text-action-1 w-6 h-6 absolute right-4 top-4 z-50" />
           )}
           <ProductGallery
             placeholder={placeholder}
@@ -354,17 +354,16 @@ const ProductDetail = async ({
             selectedVariant={selectedVariant}
           />
         </div>
-        <div className="space-y-5 m-auto mt-6 md:mt-40 md:mb-20 w-full">
+        <div className="space-y-6 m-auto mt-6 md:mt-40 md:mb-20 w-full">
           <h1
-            className="text-4xl font-bold tracking-tight text-main text-center px-10 leading-[3rem]"
+            className="text-4xl leading-3rem] md:text-[3.5rem] md:leading-[4rem] font-bold tracking-tight text-main text-center px-10 !mb-10"
             data-testid="productName"
           >
             {translate(product, "name")}{" "}
-            {commercialColorAttr?.values[0]?.name
-              ? " - " + commercialColorAttr?.values[0]?.name
-              : ""}
+            {commercialColorAttr?.values[0]?.name && (
+              <span className="font-semibold block">{commercialColorAttr?.values[0]?.name}</span>
+            )}
           </h1>
-
           {brandAttribute && (
             <Link
               href={`/collections/${brandAttribute?.values[0]?.slug}`}

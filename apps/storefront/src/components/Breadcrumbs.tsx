@@ -35,8 +35,10 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items }) => {
                 <meta itemProp="position" content={(i + 1).toString()} />
               </span>
             )}
-            {i < items.length - 1 && (
+            {i < items.length - 1 ? (
               <span className="text-gray-600 mt-1 md:mt-2 text-base ml-2">/</span>
+            ) : (
+              <span className="text-gray-600 mt-1 md:mt-2 text-base ml-2"></span>
             )}
           </div>
         ))}

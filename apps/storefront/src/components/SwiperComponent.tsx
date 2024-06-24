@@ -50,6 +50,7 @@ export default function SwiperComponent({
             product={product as GroupedProduct}
             priority={false}
             loading="lazy"
+            isSwiper={true}
           />
         </SwiperSlide>
       ))}

@@ -11,15 +11,23 @@ import { ProductVariant } from "@/saleor/api";
 import { TagIcon } from "@heroicons/react/24/outline";
 import { useProductInfo } from "@/lib/hooks/useProductInfo";
 import { formatMoney } from "@/lib/utils/formatMoney";
+import clsx from "clsx";
 
 export interface ProductCardProps {
   product: GroupedProduct;
   loading: "eager" | "lazy";
   priority?: boolean;
   compliantVariant?: ProductVariant;
+  isSwiper?: boolean;
 }
 
-export function ProductCard({ product, loading, priority, compliantVariant }: ProductCardProps) {
+export function ProductCard({
+  product,
+  loading,
+  priority,
+  compliantVariant,
+  isSwiper,
+}: ProductCardProps) {
   const { getProductBrand } = useProductInfo();
   const productBrand = getProductBrand(product);
   const [isHovered, setIsHovered] = useState(false); // State to track hover
@@ -86,7 +94,10 @@ export function ProductCard({ product, loading, priority, compliantVariant }: Pr
           </div>
         </div>
         <p
-          className="block mt-2 text-md font-extrabold text-main text-center hover:text-gray-700 min-h-[75px] md:min-h-[50px]"
+          className={clsx(
+            "block mt-2 font-extrabold text-main text-center hover:text-gray-700 min-h-[75px]",
+            isSwiper ? "text-base md:min-h-[75px]" : "text-md md:min-h-[50px]",
+          )}
           data-testid={`productName${product.name}`}
         >
           {productDisplayName}

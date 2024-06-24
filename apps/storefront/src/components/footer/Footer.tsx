@@ -27,7 +27,7 @@ export default async function Footer({ className, ...rest }: FooterProps) {
     { slug: string; channel: string; locale: string }
   >(FooterMenuDocument, {
     variables: { slug: "navbar", ...defaultRegionQuery() },
-    revalidate: 60 * 60 * 24,
+    revalidate: 60 * 60,
   });
 
   const brandCollections = await executeGraphQL<
@@ -57,6 +57,7 @@ export default async function Footer({ className, ...rest }: FooterProps) {
   const contactParsedContent =
     contactContent?.node.content && parser.parse(JSON.parse(contactContent.node.content));
   const contactFb = contactContent?.node?.metadata.find((m) => m.key === "facebook");
+  const contactInsta = contactContent?.node?.metadata.find((m) => m.key === "instagram");
 
   return (
     <footer className={clsx(styles.footer, className)} {...rest}>
@@ -86,8 +87,11 @@ export default async function Footer({ className, ...rest }: FooterProps) {
             })}
         </div>
         <div className={styles["footer-grid"]}>
-          <div className="grid grid-cols-2 gap-4 w-full mb-4">
+          <div className="grid grid-cols-3 gap-4 w-full mb-4">
             {footerNavLinks &&
+              footerNavLinks.menu &&
+              footerNavLinks.menu.items &&
+              footerNavLinks.menu?.items.length > 0 &&
               footerNavLinks.menu?.items?.map((item) => (
                 <div className="" key={item?.id}>
                   {item?.url ? (
@@ -146,8 +150,30 @@ export default async function Footer({ className, ...rest }: FooterProps) {
                   ))}
               </>
             )}
+            <br />
+            <div className="mt-8 flex space-x-4">
+              {contactFb && (
+                <a
+                  href={contactFb?.value || "#"}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:opacity-85"
+                >
+                  <img src="/facebook.svg" alt="Facebook" width="25" height="25" loading="lazy" />
+                </a>
+              )}
+              {contactInsta && (
+                <a
+                  href={contactInsta?.value || "#"}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:opacity-85"
+                >
+                  <img src="/instagram.svg" alt="Instagram" width="25" height="25" loading="lazy" />
+                </a>
+              )}
+            </div>
           </div>
-          <div>&nbsp;</div>
           <div key="social-footer" className="md:text-right">
             <a className="mb-2 inline-block">
               <img
@@ -174,14 +200,6 @@ export default async function Footer({ className, ...rest }: FooterProps) {
             >
               <img src={"/sol.svg"} alt="sol" width="180" height="45" />
             </a>
-            <br />
-            <div className="mt-8 inline-block">
-              {contactFb && (
-                <a href={contactFb?.value || "#"} target="_blank" rel="noreferrer">
-                  <img src="/facebook.svg" alt="facebook" width="20" height="20" />
-                </a>
-              )}
-            </div>
           </div>
         </div>
 
