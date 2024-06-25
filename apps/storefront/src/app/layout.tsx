@@ -9,7 +9,11 @@ import { CheckoutProvider } from "@/lib/hooks/CheckoutContext";
 import Footer from "@/components/footer/Footer";
 import BackToTopButton from "@/components/BackToTopButton";
 
-const openSans = localFont({ src: "../../public/fonts/OpenSans-VariableFont_wdth,wght.ttf" });
+const openSans = localFont({
+  src: "../../public/fonts/OpenSans-VariableFont_wdth,wght.ttf",
+  preload: true,
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: process.env.NEXT_PUBLIC_STOREFRONT_NAME,
@@ -23,8 +27,8 @@ export default function RootLayout(props: { children: ReactNode }) {
   const { children } = props;
 
   return (
-    <html lang="ro" className="min-h-dvh">
-      <body className={`${openSans.className} min-h-dvh`}>
+    <html lang="ro" className={`${openSans.className} min-h-dvh`}>
+      <body className={`min-h-dvh`}>
         <AuthProvider>
           <CheckoutProvider>
             {/* @ts-expect-error Async Server Component */}

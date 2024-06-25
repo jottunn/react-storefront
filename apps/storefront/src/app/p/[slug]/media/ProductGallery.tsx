@@ -53,6 +53,7 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
       mainSwiperRef.current.swiper.slideTo(index);
     }
   };
+
   // Update active index on slide change
   const onSlideChange = () => {
     if (mainSwiperRef.current) {
@@ -72,26 +73,24 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
                 style={{ minHeight: "250px" }}
               >
                 {media.type === "IMAGE" && (
-                  <Image
-                    className="cursor-pointer m-auto"
-                    src={media.url}
-                    alt={`Image ${index}`}
-                    width={300}
-                    height={250}
-                    priority={index === 0}
-                    loading={index < 1 ? "eager" : "lazy"}
-                    style={{ objectFit: "contain" }}
-                    onClick={() => handleImageClick(index)}
-                  />
+                  <div className="relative w-full h-[350px] md:h-[700px] border flex items-center justify-center">
+                    <Image
+                      className="cursor-pointer m-auto"
+                      src={media.url}
+                      alt={`Image ${index}`}
+                      fill
+                      style={{ objectFit: "contain" }}
+                      priority={index === 0}
+                      loading={index < 1 ? "eager" : "lazy"}
+                      onClick={() => handleImageClick(index)}
+                    />
+                  </div>
                 )}
-
                 {media.type === "VIDEO" && (
                   <div className="aspect-w-16 aspect-h-9">
                     <iframe
                       title={media.alt || "Video"}
-                      src={`https://www.youtube.com/embed/${
-                        getYouTubeIDFromURL(media.url) as string
-                      }`}
+                      src={`https://www.youtube.com/embed/${getYouTubeIDFromURL(media.url) as string}`}
                       className="w-full h-full"
                       loading="lazy"
                       allowFullScreen
@@ -104,7 +103,7 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
         </div>
       ) : (
         <div
-          className="mb-2 w-full"
+          className="mb-2 w-full h-full"
           style={{
             scrollSnapType: "both mandatory",
           }}
@@ -130,33 +129,37 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
                 {galleryMedia.map((media, index) => (
                   <SwiperSlide key={media.url} onClick={() => handleImageClick(index)}>
                     {media.type === "IMAGE" && (
-                      <Image
-                        src={media.url}
-                        alt={media.alt}
-                        width={700}
-                        height={550}
-                        className="p-6 mx-auto"
-                        style={{ objectFit: "contain" }}
-                        role="button"
-                        tabIndex={-2}
-                        priority={index === 0}
-                        loading={index < 5 ? "eager" : "lazy"}
-                        {...(placeholder !== null
-                          ? { placeholder: "blur", blurDataURL: placeholder }
-                          : {})}
-                      />
+                      <div className="relative w-full h-[350px] md:h-[700px] border flex items-center justify-center">
+                        <Image
+                          src={media.url}
+                          alt={media.alt}
+                          fill
+                          style={{ objectFit: "contain" }}
+                          className="p-6 mx-auto"
+                          role="button"
+                          tabIndex={-2}
+                          priority={index === 0}
+                          loading={index < 5 ? "eager" : "lazy"}
+                          {...(placeholder !== null
+                            ? { placeholder: "blur", blurDataURL: placeholder }
+                            : {})}
+                        />
+                      </div>
                     )}
                     {media.type === "VIDEO" && (
-                      <div role="button" tabIndex={-2}>
-                        {
-                          <img
-                            src={media.thumbnailUrl || ""}
-                            alt={media.alt}
-                            style={{ objectFit: "cover", minHeight: "50vh" }}
-                            sizes="(max-width: 768px) 100vw, 33vw"
-                            loading="lazy"
-                          />
-                        }
+                      <div
+                        role="button"
+                        tabIndex={-2}
+                        className="relative w-full h-[350px] md:h-[700px] border flex items-center justify-center"
+                      >
+                        <Image
+                          src={media.thumbnailUrl || ""}
+                          alt={media.alt}
+                          fill
+                          style={{ objectFit: "contain" }}
+                          className="p-6 mx-auto"
+                          loading="lazy"
+                        />
                         <div className="transition duration-500 ease-in-out transform hover:-translate-y-1 hover:scale-110 absolute top-0 w-full h-full flex justify-center items-center bg-transparent">
                           <PlayIcon className="h-12 w-12" />
                         </div>
@@ -187,16 +190,14 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
                     )}
                     {media.type === "VIDEO" && (
                       <div role="button" tabIndex={-2} className="relative">
-                        {
-                          <img
-                            src={media.thumbnailUrl || ""}
-                            alt={media.alt}
-                            width={106}
-                            height={106}
-                            style={{ objectFit: "cover", minHeight: "106px" }}
-                            loading="lazy"
-                          />
-                        }
+                        <Image
+                          src={media.thumbnailUrl || ""}
+                          alt={media.alt}
+                          width={106}
+                          height={106}
+                          style={{ objectFit: "cover", minHeight: "106px" }}
+                          loading="lazy"
+                        />
                         <div className="transition duration-500 ease-in-out transform hover:-translate-y-1 hover:scale-110 absolute top-0 w-full h-full flex justify-center items-center bg-transparent">
                           <PlayIcon className="h-12 w-12" />
                         </div>
@@ -210,40 +211,43 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
             galleryMedia.map((media, index) => (
               <div
                 key={media.url}
-                className="border mb-6"
+                className="mb-6"
                 style={{ scrollSnapAlign: "start" }}
                 onClick={() => handleImageClick(index)}
               >
                 {media.type === "IMAGE" && (
-                  <Image
-                    src={media.url}
-                    alt={media.alt}
-                    width={700}
-                    height={700}
-                    style={{ objectFit: "contain" }}
-                    className="block mx-auto p-6"
-                    role="button"
-                    tabIndex={-2}
-                    priority={index === 0}
-                    loading={index < 3 ? "eager" : "lazy"}
-                    {...(placeholder !== null
-                      ? { placeholder: "blur", blurDataURL: placeholder }
-                      : {})}
-                  />
+                  <div className="relative w-full h-[350px] md:h-[700px] border flex items-center justify-center">
+                    <Image
+                      src={media.url}
+                      alt={media.alt}
+                      fill
+                      style={{ objectFit: "contain" }}
+                      className="block mx-auto p-6"
+                      role="button"
+                      tabIndex={-2}
+                      priority={index === 0}
+                      loading={index < 3 ? "eager" : "lazy"}
+                      {...(placeholder !== null
+                        ? { placeholder: "blur", blurDataURL: placeholder }
+                        : {})}
+                    />
+                  </div>
                 )}
                 {media.type === "VIDEO" && (
-                  <div role="button" tabIndex={-2}>
-                    {
-                      <img
-                        src={media.thumbnailUrl || ""}
-                        alt={media.alt}
-                        style={{ objectFit: "cover" }}
-                        sizes="(max-width: 768px) 100vw, 33vw"
-                        loading="lazy"
-                      />
-                    }
-
-                    <div className="transition duration-500 ease-in-out transform hover:-translate-y-1 hover:scale-110 absolute w-full h-full flex justify-center items-center bg-transparent">
+                  <div
+                    role="button"
+                    tabIndex={-2}
+                    className="relative w-full h-[350px] md:h-[700px] border flex items-center justify-center"
+                  >
+                    <Image
+                      src={media.thumbnailUrl || ""}
+                      alt={media.alt}
+                      fill
+                      style={{ objectFit: "contain" }}
+                      className="p-6 mx-auto"
+                      loading="lazy"
+                    />
+                    <div className="transition duration-500 ease-in-out transform hover:-translate-y-1 hover:scale-110 absolute top-0 w-full h-full flex justify-center items-center bg-transparent">
                       <PlayIcon className="h-12 w-12" />
                     </div>
                   </div>

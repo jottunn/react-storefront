@@ -342,7 +342,7 @@ const ProductDetail = async ({
           "grid grid-cols-1 gap-[2rem] md:grid-cols-3 md:gap-[4rem] lg:gap-[10rem] max-h-full container px-8 pb-4",
         )}
       >
-        <div className="h-full relative md:col-span-2">
+        <div className="h-full relative md:col-span-2 flex items-center justify-center">
           {product.variants?.[0]?.pricing?.onSale && (
             <TagIcon className="text-action-1 w-6 h-6 absolute right-4 top-4 z-30" />
           )}
@@ -352,7 +352,7 @@ const ProductDetail = async ({
             selectedVariant={selectedVariant}
           />
         </div>
-        <div className="space-y-6 mt-6 md:mt-20 md:mb-20 w-full">
+        <div className="space-y-6 mt-12 w-full">
           {brandAttribute && (
             <Link
               href={`/collections/${brandAttribute?.values[0]?.slug}`}
@@ -385,14 +385,14 @@ const ProductDetail = async ({
             className="text-4xl leading-[3rem] md:text-[3rem] md:leading-[3.5rem] font-bold tracking-tight text-main text-left !mb-10"
             data-testid="productName"
           >
-            {translate(product, "name")}{" "}
+            {translate(product, "name")}
           </h1>
 
           {product.variants?.length === 0 && (
-            <p className="text-xl font-bold tracking-tight text-gray-800 text-center">
+            <p className="text-lg md:text-xl font-bold tracking-tight text-gray-800 text-center">
               <span>{price}</span>
               {product.variants?.[0]?.pricing?.onSale && (
-                <span className="text-lg ml-2 opacity-75">
+                <span className="text-md ml-2 opacity-75">
                   {product.variants[0].pricing.priceUndiscounted && (
                     <s>{formatMoney(product.variants[0].pricing.priceUndiscounted.gross)}</s>
                   )}

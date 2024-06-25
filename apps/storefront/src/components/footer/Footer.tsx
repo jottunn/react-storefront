@@ -97,14 +97,9 @@ export default async function Footer({ className, ...rest }: FooterProps) {
               footerNavLinks.menu?.items?.map((item) => (
                 <div className="" key={item?.id}>
                   {item?.url ? (
-                    <a
-                      href={item.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className={styles["menu-heading"]}
-                    >
+                    <Link href={item.url} rel="noreferrer" className={styles["menu-heading"]}>
                       {item?.name}
-                    </a>
+                    </Link>
                   ) : (
                     <Link href={getLinkPath(item)} passHref legacyBehavior>
                       <a href="pass" className={styles["menu-heading"]}>
@@ -116,24 +111,21 @@ export default async function Footer({ className, ...rest }: FooterProps) {
                     {item?.children?.map((sub) => (
                       <li key={sub?.id}>
                         {sub?.url ? (
-                          <a
+                          <Link
                             href={sub.url}
-                            target="_blank"
                             rel="noreferrer"
                             className={styles["menu-link"]}
                             data-testid={`footerExternalLinks${sub?.name}`}
                           >
                             {sub?.name}
-                          </a>
+                          </Link>
                         ) : (
-                          <Link href={getLinkPath(sub)} passHref legacyBehavior>
-                            <a
-                              href="pass"
-                              className={styles["menu-link"]}
-                              data-testid={`footerInternalLinks${sub?.name}`}
-                            >
-                              {sub?.name}
-                            </a>
+                          <Link
+                            href={getLinkPath(sub)}
+                            className={styles["menu-link"]}
+                            data-testid={`footerInternalLinks${sub?.name}`}
+                          >
+                            {sub?.name}
                           </Link>
                         )}
                       </li>
@@ -187,8 +179,8 @@ export default async function Footer({ className, ...rest }: FooterProps) {
           </div>
         </div>
 
-        <div className="flex items-start items-center pt-8 border-t border-main-6">
-          <p className="text-sm text-main-2 flex-grow text-left">
+        <div className="md:flex items-start items-center pt-8 border-t border-main-6">
+          <p className="text-sm text-main-2 flex-grow text-left mb-4">
             © Copyright {new Date().getFullYear()} Surmont Shop. Toate drepturile rezervate.
           </p>
           <div className="flex justify-center space-x-4">
