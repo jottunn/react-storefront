@@ -10,7 +10,6 @@ import {
   FooterMenuDocument,
   FooterMenuQuery,
   LanguageCodeEnum,
-  PageFragment,
   PageTypesDocument,
   PageTypesQuery,
 } from "@/saleor/api";
@@ -19,9 +18,12 @@ import { DEFAULT_LOCALE, defaultRegionQuery } from "@/lib/regions";
 import getLinkPath from "@/lib/menus";
 import edjsHTML from "editorjs-html";
 import xss from "xss";
+import NewsletterSubscribe from "../Newsletter/NewsletterSubscribe";
 export type FooterProps = HTMLAttributes<HTMLElement>;
+import { getMessages } from "src/lib/util";
 
 export default async function Footer({ className, ...rest }: FooterProps) {
+  const messages = getMessages(DEFAULT_LOCALE, "app.nwl");
   const footerNavLinks = await executeGraphQL<
     FooterMenuQuery,
     { slug: string; channel: string; locale: string }
@@ -180,7 +182,16 @@ export default async function Footer({ className, ...rest }: FooterProps) {
               </div>
             </div>
           </div>
-          <div key="social-footer" className="md:text-right">
+          <div key="nwl">
+            <NewsletterSubscribe messages={messages} />
+          </div>
+        </div>
+
+        <div className="flex items-start items-center pt-8 border-t border-main-6">
+          <p className="text-sm text-main-2 flex-grow text-left">
+            © Copyright {new Date().getFullYear()} Surmont Shop. Toate drepturile rezervate.
+          </p>
+          <div className="flex justify-center space-x-4">
             <a href="#" className="mb-2 inline-block">
               <Image
                 src={"/visa-master-card-logos.jpg"}
@@ -207,12 +218,6 @@ export default async function Footer({ className, ...rest }: FooterProps) {
               <Image src={"/sol.svg"} alt="sol" width="180" height="45" priority={false} />
             </a>
           </div>
-        </div>
-
-        <div className="flex items-start items-center mt-24 border-t border-main-6">
-          <p className="text-sm text-main-3 flex-grow text-left">
-            © Copyright {new Date().getFullYear()} Surmont Shop. Toate drepturile rezervate.
-          </p>
         </div>
       </Box>
     </footer>

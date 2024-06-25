@@ -1,6 +1,5 @@
 "use client";
 
-import messages from "@/components/translations";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { passwordChange } from "src/app/actions";
