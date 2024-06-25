@@ -24,6 +24,7 @@ fragment ProductCardFragment on Product {
     url
     alt
     type
+    sortOrder
   }
   pricing {
     onSale

@@ -438,8 +438,8 @@ const ProductDetail = async ({
             <p className="text-md mt-8 font-bold text-black-500 uppercase">
               {messages["app.product.description"]}
             </p>
-            {description.map((content) => (
-              <div key={content} dangerouslySetInnerHTML={{ __html: xss(content) }} />
+            {description.map((content, i) => (
+              <div key={i} dangerouslySetInnerHTML={{ __html: xss(content) }} />
             ))}
           </div>
         )}

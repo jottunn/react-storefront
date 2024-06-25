@@ -36,6 +36,7 @@ fragment ProductVariantDetailsFragment on ProductVariant {
     alt
     type
     url(size: 800, format: WEBP)
+    sortOrder
   }
   pricing {
     onSale

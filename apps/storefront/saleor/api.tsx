@@ -42,7 +42,7 @@ export type Scalars = {
 /**
  * Create a new address for the customer.
  *
- * Requires one of the following permissions: AUTHENTICATED_USER.
+ * Requires one of following set of permissions: AUTHENTICATED_USER or AUTHENTICATED_APP + IMPERSONATE_USER.
  *
  * Triggers the following webhook events:
  * - CUSTOMER_UPDATED (async): A customer account was updated.
@@ -443,7 +443,7 @@ export type AccountSetPasswordRequested = Event & {
 /**
  * Updates the account of the logged-in user.
  *
- * Requires one of the following permissions: AUTHENTICATED_USER.
+ * Requires one of following set of permissions: AUTHENTICATED_USER or AUTHENTICATED_APP + IMPERSONATE_USER.
  *
  * Triggers the following webhook events:
  * - CUSTOMER_UPDATED (async): A customer account was updated.
@@ -10824,7 +10824,7 @@ export type Mutation = {
   /**
    * Create a new address for the customer.
    *
-   * Requires one of the following permissions: AUTHENTICATED_USER.
+   * Requires one of following set of permissions: AUTHENTICATED_USER or AUTHENTICATED_APP + IMPERSONATE_USER.
    *
    * Triggers the following webhook events:
    * - CUSTOMER_UPDATED (async): A customer account was updated.
@@ -10885,7 +10885,7 @@ export type Mutation = {
   /**
    * Updates the account of the logged-in user.
    *
-   * Requires one of the following permissions: AUTHENTICATED_USER.
+   * Requires one of following set of permissions: AUTHENTICATED_USER or AUTHENTICATED_APP + IMPERSONATE_USER.
    *
    * Triggers the following webhook events:
    * - CUSTOMER_UPDATED (async): A customer account was updated.
@@ -13323,6 +13323,7 @@ export type Mutation = {
 };
 
 export type MutationAccountAddressCreateArgs = {
+  customerId?: InputMaybe<Scalars["ID"]["input"]>;
   input: AddressInput;
   type?: InputMaybe<AddressTypeEnum>;
 };
@@ -13355,6 +13356,7 @@ export type MutationAccountSetDefaultAddressArgs = {
 };
 
 export type MutationAccountUpdateArgs = {
+  customerId?: InputMaybe<Scalars["ID"]["input"]>;
   input: AccountInput;
 };
 
@@ -16625,6 +16627,12 @@ export type OrderLine = Node &
      * Note: this API is currently in Feature Preview and can be subject to changes at later point.
      */
     isGift?: Maybe<Scalars["Boolean"]["output"]>;
+    /**
+     * Returns True, if the line unit price was overridden.
+     *
+     * Added in Saleor 3.14.
+     */
+    isPriceOverridden?: Maybe<Scalars["Boolean"]["output"]>;
     /** Whether the product variant requires shipping. */
     isShippingRequired: Scalars["Boolean"]["output"];
     /**
@@ -27925,7 +27933,7 @@ export type TaxableObject = {
   lines: Array<TaxableObjectLine>;
   /** Determines if prices contain entered tax.. */
   pricesEnteredWithTax: Scalars["Boolean"]["output"];
-  /** The price of shipping method. */
+  /** The price of shipping method, includes shipping voucher discount if applied. */
   shippingPrice: Money;
   /** The source object related to this tax object. */
   sourceObject: TaxSourceObject;
@@ -27952,9 +27960,9 @@ export type TaxableObjectLine = {
   quantity: Scalars["Int"]["output"];
   /** The source line related to this tax line. */
   sourceLine: TaxSourceLine;
-  /** Price of the order line. */
+  /** Price of the order line. The price includes catalogue promotions, specific product and applied once per order voucher discounts. The price does not include the entire order discount. */
   totalPrice: Money;
-  /** Price of the single item in the order line. */
+  /** Price of the single item in the order line. The price includes catalogue promotions, specific product and applied once per order voucher discounts. The price does not include the entire order discount. */
   unitPrice: Money;
   /** The variant name. */
   variantName: Scalars["String"]["output"];
@@ -28424,7 +28432,12 @@ export type TransactionInitializeError = {
 };
 
 /** An enumeration. */
-export type TransactionInitializeErrorCode = "GRAPHQL_ERROR" | "INVALID" | "NOT_FOUND" | "UNIQUE";
+export type TransactionInitializeErrorCode =
+  | "CHECKOUT_COMPLETION_IN_PROGRESS"
+  | "GRAPHQL_ERROR"
+  | "INVALID"
+  | "NOT_FOUND"
+  | "UNIQUE";
 
 /**
  * Event sent when user starts processing the payment.
@@ -28720,6 +28733,7 @@ export type TransactionProcessError = {
 
 /** An enumeration. */
 export type TransactionProcessErrorCode =
+  | "CHECKOUT_COMPLETION_IN_PROGRESS"
   | "GRAPHQL_ERROR"
   | "INVALID"
   | "MISSING_PAYMENT_APP"
@@ -32348,6 +32362,7 @@ export type CheckoutDetailsFragment = {
         url: string;
         alt: string;
         type: ProductMediaType;
+        sortOrder?: number | null;
       }> | null;
       attributes: Array<{
         __typename?: "SelectedAttribute";
@@ -32433,6 +32448,7 @@ export type CheckoutLineDetailsFragment = {
       url: string;
       alt: string;
       type: ProductMediaType;
+      sortOrder?: number | null;
     }> | null;
     attributes: Array<{
       __typename?: "SelectedAttribute";
@@ -32667,6 +32683,7 @@ export type ProductCardFragment = {
     url: string;
     alt: string;
     type: ProductMediaType;
+    sortOrder?: number | null;
   }> | null;
   pricing?: {
     __typename?: "ProductPricingInfo";
@@ -32747,6 +32764,7 @@ export type ProductCardFragment = {
       alt: string;
       type: ProductMediaType;
       url: string;
+      sortOrder?: number | null;
     }> | null;
     pricing?: {
       __typename?: "VariantPricingInfo";
@@ -32871,6 +32889,7 @@ export type ProductDetailsFragment = {
       alt: string;
       type: ProductMediaType;
       url: string;
+      sortOrder?: number | null;
     }> | null;
     pricing?: {
       __typename?: "VariantPricingInfo";
@@ -32908,6 +32927,7 @@ export type ProductDetailsFragment = {
     url: string;
     alt: string;
     type: ProductMediaType;
+    sortOrder?: number | null;
   }> | null;
   thumbnail?: { __typename?: "Image"; url: string; alt?: string | null } | null;
 };
@@ -32940,6 +32960,7 @@ export type ProductMediaFragment = {
   url: string;
   alt: string;
   type: ProductMediaType;
+  sortOrder?: number | null;
 };
 
 export type ProductVariantDetailsFragment = {
@@ -32980,6 +33001,7 @@ export type ProductVariantDetailsFragment = {
     alt: string;
     type: ProductMediaType;
     url: string;
+    sortOrder?: number | null;
   }> | null;
   pricing?: {
     __typename?: "VariantPricingInfo";
@@ -33204,6 +33226,7 @@ export type CheckoutAddProductLineMutation = {
             url: string;
             alt: string;
             type: ProductMediaType;
+            sortOrder?: number | null;
           }> | null;
           attributes: Array<{
             __typename?: "SelectedAttribute";
@@ -33390,6 +33413,7 @@ export type CheckoutAddPromoCodeMutation = {
             url: string;
             alt: string;
             type: ProductMediaType;
+            sortOrder?: number | null;
           }> | null;
           attributes: Array<{
             __typename?: "SelectedAttribute";
@@ -33572,6 +33596,7 @@ export type CheckoutBillingAddressUpdateMutation = {
             url: string;
             alt: string;
             type: ProductMediaType;
+            sortOrder?: number | null;
           }> | null;
           attributes: Array<{
             __typename?: "SelectedAttribute";
@@ -33889,6 +33914,7 @@ export type CheckoutCustomerAttachMutation = {
             url: string;
             alt: string;
             type: ProductMediaType;
+            sortOrder?: number | null;
           }> | null;
           attributes: Array<{
             __typename?: "SelectedAttribute";
@@ -34070,6 +34096,7 @@ export type CheckoutEmailUpdateMutation = {
             url: string;
             alt: string;
             type: ProductMediaType;
+            sortOrder?: number | null;
           }> | null;
           attributes: Array<{
             __typename?: "SelectedAttribute";
@@ -34252,6 +34279,7 @@ export type CheckoutLineUpdateMutation = {
             url: string;
             alt: string;
             type: ProductMediaType;
+            sortOrder?: number | null;
           }> | null;
           attributes: Array<{
             __typename?: "SelectedAttribute";
@@ -34439,6 +34467,7 @@ export type RemoveProductFromCheckoutMutation = {
             url: string;
             alt: string;
             type: ProductMediaType;
+            sortOrder?: number | null;
           }> | null;
           attributes: Array<{
             __typename?: "SelectedAttribute";
@@ -34621,6 +34650,7 @@ export type CheckoutShippingAddressUpdateMutation = {
             url: string;
             alt: string;
             type: ProductMediaType;
+            sortOrder?: number | null;
           }> | null;
           attributes: Array<{
             __typename?: "SelectedAttribute";
@@ -34808,6 +34838,7 @@ export type CheckoutShippingMethodUpdateMutation = {
             url: string;
             alt: string;
             type: ProductMediaType;
+            sortOrder?: number | null;
           }> | null;
           attributes: Array<{
             __typename?: "SelectedAttribute";
@@ -35450,6 +35481,7 @@ export type CheckoutFindQuery = {
           url: string;
           alt: string;
           type: ProductMediaType;
+          sortOrder?: number | null;
         }> | null;
         attributes: Array<{
           __typename?: "SelectedAttribute";
@@ -36277,6 +36309,7 @@ export type ProductBySlugQuery = {
         alt: string;
         type: ProductMediaType;
         url: string;
+        sortOrder?: number | null;
       }> | null;
       pricing?: {
         __typename?: "VariantPricingInfo";
@@ -36314,6 +36347,7 @@ export type ProductBySlugQuery = {
       url: string;
       alt: string;
       type: ProductMediaType;
+      sortOrder?: number | null;
     }> | null;
     thumbnail?: { __typename?: "Image"; url: string; alt?: string | null } | null;
   } | null;
@@ -36366,6 +36400,7 @@ export type ProductCollectionQuery = {
           url: string;
           alt: string;
           type: ProductMediaType;
+          sortOrder?: number | null;
         }> | null;
         pricing?: {
           __typename?: "ProductPricingInfo";
@@ -36466,6 +36501,7 @@ export type ProductCollectionQuery = {
             alt: string;
             type: ProductMediaType;
             url: string;
+            sortOrder?: number | null;
           }> | null;
           pricing?: {
             __typename?: "VariantPricingInfo";
@@ -36597,6 +36633,7 @@ export type ProductsByAttributeQuery = {
           url: string;
           alt: string;
           type: ProductMediaType;
+          sortOrder?: number | null;
         }> | null;
         pricing?: {
           __typename?: "ProductPricingInfo";
@@ -36697,6 +36734,7 @@ export type ProductsByAttributeQuery = {
             alt: string;
             type: ProductMediaType;
             url: string;
+            sortOrder?: number | null;
           }> | null;
           pricing?: {
             __typename?: "VariantPricingInfo";
@@ -36958,6 +36996,7 @@ export const ProductMediaFragmentDoc = gql`
     url
     alt
     type
+    sortOrder
   }
 `;
 export const SelectedAttributeDetailsFragmentDoc = gql`
@@ -37317,6 +37356,7 @@ export const ProductVariantDetailsFragmentDoc = gql`
       alt
       type
       url(size: 800, format: WEBP)
+      sortOrder
     }
     pricing {
       onSale
@@ -37368,6 +37408,7 @@ export const ProductCardFragmentDoc = gql`
       url
       alt
       type
+      sortOrder
     }
     pricing {
       onSale
@@ -47375,6 +47416,7 @@ export type OrderLineKeySpecifier = (
   | "digitalContentUrl"
   | "id"
   | "isGift"
+  | "isPriceOverridden"
   | "isShippingRequired"
   | "metadata"
   | "metafield"
@@ -47415,6 +47457,7 @@ export type OrderLineFieldPolicy = {
   digitalContentUrl?: FieldPolicy<any> | FieldReadFunction<any>;
   id?: FieldPolicy<any> | FieldReadFunction<any>;
   isGift?: FieldPolicy<any> | FieldReadFunction<any>;
+  isPriceOverridden?: FieldPolicy<any> | FieldReadFunction<any>;
   isShippingRequired?: FieldPolicy<any> | FieldReadFunction<any>;
   metadata?: FieldPolicy<any> | FieldReadFunction<any>;
   metafield?: FieldPolicy<any> | FieldReadFunction<any>;

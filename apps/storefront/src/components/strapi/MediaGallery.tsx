@@ -36,6 +36,8 @@ export default function MediaGallery({ data }: { data: SlidShowProps }) {
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 py-12">
         {data.mediaGallery &&
+          data.mediaGallery.data &&
+          data.mediaGallery.data.length > 0 &&
           data.mediaGallery.data.map((fadeImage: Image, index) => {
             const imageUrl = getStrapiMedia(fadeImage.attributes.url);
             const smallImage = fadeImage?.attributes?.formats && fadeImage.attributes.formats.small;
@@ -58,6 +60,9 @@ export default function MediaGallery({ data }: { data: SlidShowProps }) {
                   width={smallImage ? smallImage.width : fadeImage.attributes.width}
                   alt={fadeImage?.attributes?.alternativeText || ""}
                 />
+                {fadeImage.attributes?.caption && (
+                  <p className="text-base my-2">{fadeImage?.attributes?.caption}</p>
+                )}
               </div>
             );
           })}

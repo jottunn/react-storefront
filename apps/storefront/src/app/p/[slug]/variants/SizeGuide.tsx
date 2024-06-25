@@ -9,6 +9,7 @@ import { UPLOAD_FOLDER } from "@/lib/const";
 import edjsHTML from "editorjs-html";
 import { Messages } from "@/lib/util";
 import { translate } from "@/lib/translations";
+import ZoomPanImage from "../media/ZoomPanImage";
 const parser = edjsHTML();
 
 export default function SizeGuide({ sizeGuide, messages }: { sizeGuide: any; messages: Messages }) {
@@ -57,16 +58,16 @@ export default function SizeGuide({ sizeGuide, messages }: { sizeGuide: any; mes
         >
           <div className="fixed inset-0 w-screen overflow-y-auto p-4">
             <div className="flex min-h-full items-center justify-center">
-              <DialogPanel className="max-w-10xl space-y-4 border-2 bg-white p-6 md:p-12">
+              <DialogPanel className="max-w-10xl space-y-4 border-2 bg-white p-6 md:p-12 relative">
+                <button
+                  type="button"
+                  className="absolute top-4 right-4 z-50"
+                  aria-label="Close"
+                  onClick={() => setShowSizeGuideModal(false)}
+                >
+                  <XMarkIcon className="w-10 h-10 text-gray-900 bg-gray-100 border border-gray-900 hover:text-red-900 hover:border-red-900" />
+                </button>
                 <div className="container m-auto relative text-left prose-2xl">
-                  <button
-                    type="button"
-                    className="absolute top-0 right-0 z-50"
-                    aria-label="Close"
-                    onClick={() => setShowSizeGuideModal(false)}
-                  >
-                    <XMarkIcon className="w-10 h-10 text-gray-900 bg-gray-100 border border-gray-900 hover:text-red-900 hover:border-red-900" />
-                  </button>
                   <div dangerouslySetInnerHTML={{ __html: parsedContent }} />
                   {sizeGuide.page.attributes &&
                     sizeGuide.page.attributes.map(
@@ -74,15 +75,10 @@ export default function SizeGuide({ sizeGuide, messages }: { sizeGuide: any; mes
                         attribute: { name: React.Key | null | undefined };
                         values: { name: any }[];
                       }) => (
-                        <Image
-                          key={attr?.attribute.name}
+                        <ZoomPanImage
+                          key={attr?.values?.[0]?.name}
                           src={`${UPLOAD_FOLDER ?? ""}/${attr?.values?.[0]?.name ?? ""}`}
                           alt={sizeGuide.page.title}
-                          width={1200}
-                          height={400}
-                          style={{ objectFit: "contain", padding: "4rem 0" }}
-                          priority={false}
-                          loading="lazy"
                         />
                       ),
                     )}

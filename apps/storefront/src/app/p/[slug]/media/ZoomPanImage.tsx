@@ -31,9 +31,11 @@ const ZoomPanImage = ({ src, alt }: ZoomPanImageProps) => {
               className="m-auto"
               src={src}
               alt={alt}
-              width={1000}
-              height={1000}
-              loading={"lazy"}
+              width={0}
+              height={0}
+              sizes="100vw"
+              style={{ width: "100%", height: "auto" }}
+              loading="lazy"
               unoptimized
             />
           </TransformComponent>

@@ -43,14 +43,27 @@ export function ProductCard({
   const colorName = variantAttr?.values[0]?.name || ""; // Fallback to an empty string if color is undefined
   // Construct the string, ensuring that undefined values are handled.
   const productDisplayName = `${productName}${colorName ? ` - ${colorName}` : ""}`;
-  // Find the first and second image, falling back to the first if only one exists
-  let thumbnailUrl = product.media?.[0]?.url || "";
+  // Find the first and second image, falling back to the thumbnail if only one exists
+  let thumbnailUrl = product.thumbnail?.url || "";
   let hoverImageUrl = product.media?.[1]?.url || thumbnailUrl; // Use the second image or fallback to the first
-
   // If variant has images, use those instead
   if (variant && variant.media && variant.media.length > 0) {
-    thumbnailUrl = variant.media[0].url;
-    hoverImageUrl = variant.media.length > 1 ? variant.media[1].url : thumbnailUrl; // Fallback to the first if only one exists
+    //sort media by sortOrder
+    const sortedMedia = variant.media.sort((a, b) => {
+      if (a.type === "IMAGE" && b.type === "IMAGE") {
+        if (typeof a.sortOrder === "number" && typeof b.sortOrder === "number") {
+          return a.sortOrder - b.sortOrder;
+        } else {
+          return 30;
+        }
+      } else {
+        return 30;
+      }
+    });
+    if (sortedMedia && sortedMedia.length > 0) {
+      thumbnailUrl = sortedMedia[0].url;
+      hoverImageUrl = sortedMedia.length > 1 ? sortedMedia[1].url : thumbnailUrl; // Fallback to the first if only one exists
+    }
   }
 
   let isPriceRange = false;
