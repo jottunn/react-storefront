@@ -18,6 +18,7 @@ export default function HtmlContent({ data, htmlContent }: HtmlContentProps) {
       em: ["style"],
       strong: ["style"],
       p: ["style"],
+      hr: [],
       br: [],
       ul: ["style"],
       ol: ["style"],
@@ -79,5 +80,7 @@ export default function HtmlContent({ data, htmlContent }: HtmlContentProps) {
       },
     },
   });
-  return <div dangerouslySetInnerHTML={{ __html: sanitizedContent }} className="text-base" />;
+  return (
+    <div dangerouslySetInnerHTML={{ __html: sanitizedContent }} className="text-base prose-2xl" />
+  );
 }

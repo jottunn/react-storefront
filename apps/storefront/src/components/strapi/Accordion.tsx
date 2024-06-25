@@ -4,13 +4,13 @@ import HtmlContent from "../HtmlContent";
 
 export default function Accordion({ data }: any) {
   return (
-    <div className="container pl-6 pb-14 mx-auto">
+    <div className="container pb-14 mx-auto">
       <div className="mx-auto w-full divide-y divide-gray/5">
         {data.accordionElement &&
           data.accordionElement.length > 0 &&
           data.accordionElement.map((elem: any) => (
-            <Disclosure as="div" className="p-6" key={elem.id}>
-              <DisclosureButton className="group flex w-full items-center justify-between">
+            <Disclosure as="div" key={elem.id}>
+              <DisclosureButton className="group flex w-full items-center justify-between p-6">
                 <span className="text-md font-bold group-data-[hover]:text-main-1">
                   {elem?.title}
                 </span>
