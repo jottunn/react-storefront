@@ -6,11 +6,16 @@ import { ATTR_COLOR_SLUG } from "@/lib/const";
 export interface VariantSelectorProps {
   product: ProductDetailsFragment;
   currentColor?: string;
+  commercialColorAttr?: any;
 }
 
-export function VariantColorSelector({ product, currentColor }: VariantSelectorProps) {
+export function VariantColorSelector({
+  product,
+  currentColor,
+  commercialColorAttr,
+}: VariantSelectorProps) {
   const processedColors = new Set<string>();
-  const defaultMedia = product.media?.[0] || { url: "", alt: "Default Image" };
+  const defaultMedia = product.thumbnail || { url: "", alt: product.name };
 
   const colorOptions =
     product.variants?.flatMap((variant) => {
@@ -29,7 +34,27 @@ export function VariantColorSelector({ product, currentColor }: VariantSelectorP
             })
             .map((value) => {
               const isSelectedColor = currentColor === value.name;
-              const variantMedia = variant.media?.[0] || defaultMedia;
+              let variantMedia = defaultMedia;
+              if (variant.media && variant.media.length > 0) {
+                //sort media by sortOrder
+                const sortedMedia = variant.media.sort((a, b) => {
+                  if (a.type === "IMAGE" && b.type === "IMAGE") {
+                    if (typeof a.sortOrder === "number" && typeof b.sortOrder === "number") {
+                      return a.sortOrder - b.sortOrder;
+                    } else {
+                      return 30;
+                    }
+                  } else {
+                    return 30;
+                  }
+                });
+                if (sortedMedia && sortedMedia.length > 0) {
+                  variantMedia = {
+                    url: sortedMedia[0].url,
+                    alt: sortedMedia[0].alt || product.name,
+                  };
+                }
+              }
               const imgElement = (
                 <div
                   key={`thumb-${variant.id.toString()}-${value.name || ""}`}
@@ -40,7 +65,9 @@ export function VariantColorSelector({ product, currentColor }: VariantSelectorP
                   <Image
                     src={variantMedia.url}
                     alt={
-                      variant.media?.[0] ? variantMedia.alt : `${product.name} ${value.name ?? ""}`
+                      variantMedia && variantMedia.alt
+                        ? variantMedia.alt
+                        : `${product.name} ${value.name ?? ""}`
                     }
                     width="80"
                     height="80"
@@ -65,11 +92,15 @@ export function VariantColorSelector({ product, currentColor }: VariantSelectorP
     }) || [];
 
   return (
-    <div
-      className="flex flex-wrap gap-3 my-6 justify-items-center justify-center"
-      key={"colorsof" + product.id}
-    >
-      {colorOptions}
-    </div>
+    <>
+      {commercialColorAttr?.values[0]?.name && (
+        <h2 className="block mt-8 mb-2 text-lg uppercase">
+          {commercialColorAttr?.values[0]?.name}
+        </h2>
+      )}
+      <div className="flex flex-wrap gap-3 mb-6" key={"colorsof" + product.id}>
+        {colorOptions}
+      </div>
+    </>
   );
 }

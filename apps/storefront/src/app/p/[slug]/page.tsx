@@ -30,7 +30,7 @@ import getBase64 from "@/lib/generateBlurPlaceholder";
 import clsx from "clsx";
 import { ChevronLeftIcon, ChevronRightIcon, TagIcon } from "@heroicons/react/24/outline";
 import { mapEdgesToItems } from "@/lib/maps";
-import { ATTR_COLOR_COMMERCIAL_SLUG, ATTR_GHID_MARIMI } from "@/lib/const";
+import { ATTR_GHID_MARIMI } from "@/lib/const";
 import Link from "next/link";
 import VariantSelector from "./variants/VariantSelector";
 import { getMessages } from "@/lib/util";
@@ -169,9 +169,7 @@ const ProductDetail = async ({
         revalidate: 60 * 60 * 24,
       },
     ));
-  const commercialColorAttr = selectedVariant?.attributes.find(
-    (attr) => attr.attribute.slug === ATTR_COLOR_COMMERCIAL_SLUG,
-  );
+
   const attribute = product.attributes.find((attr) => attr.attribute.slug === ATTR_GHID_MARIMI);
   const pageId = attribute?.values?.[0]?.reference;
   const sizeGuide =
@@ -341,12 +339,12 @@ const ProductDetail = async ({
       </div>
       <div
         className={clsx(
-          "grid grid-cols-1 gap-[2rem] md:gap-[3rem] max-h-full container px-8 md:grid-cols-2 pb-4",
+          "grid grid-cols-1 gap-[2rem] md:grid-cols-3 md:gap-[4rem] lg:gap-[10rem] max-h-full container px-8 pb-4",
         )}
       >
-        <div className="h-full relative">
+        <div className="h-full relative md:col-span-2">
           {product.variants?.[0]?.pricing?.onSale && (
-            <TagIcon className="text-action-1 w-6 h-6 absolute right-4 top-4 z-50" />
+            <TagIcon className="text-action-1 w-6 h-6 absolute right-4 top-4 z-30" />
           )}
           <ProductGallery
             placeholder={placeholder}
@@ -354,11 +352,11 @@ const ProductDetail = async ({
             selectedVariant={selectedVariant}
           />
         </div>
-        <div className="space-y-6 m-auto mt-6 md:mt-40 md:mb-20 w-full">
+        <div className="space-y-6 mt-6 md:mt-20 md:mb-20 w-full">
           {brandAttribute && (
             <Link
               href={`/collections/${brandAttribute?.values[0]?.slug}`}
-              className="text-md mt-2 font-medium text-gray-600 cursor-pointer text-center hover:text-green-600 block"
+              className="text-md mt-2 font-medium text-gray-600 cursor-pointer text-left hover:text-green-600 block"
             >
               {brandCollection &&
               brandCollection.collection &&
@@ -384,19 +382,14 @@ const ProductDetail = async ({
             </Link>
           )}
           <h1
-            className="text-4xl leading-3rem] md:text-[3.5rem] md:leading-[4rem] font-bold tracking-tight text-main text-center px-10 !mb-10"
+            className="text-4xl leading-[3rem] md:text-[3rem] md:leading-[3.5rem] font-bold tracking-tight text-main text-left !mb-10"
             data-testid="productName"
           >
             {translate(product, "name")}{" "}
-            {commercialColorAttr?.values[0]?.name && (
-              <span className="font-semibold block mt-2">
-                {commercialColorAttr?.values[0]?.name}
-              </span>
-            )}
           </h1>
 
           {product.variants?.length === 0 && (
-            <h2 className="text-xl font-bold tracking-tight text-gray-800 text-center">
+            <p className="text-xl font-bold tracking-tight text-gray-800 text-center">
               <span>{price}</span>
               {product.variants?.[0]?.pricing?.onSale && (
                 <span className="text-lg ml-2 opacity-75">
@@ -405,7 +398,7 @@ const ProductDetail = async ({
                   )}
                 </span>
               )}
-            </h2>
+            </p>
           )}
 
           {variants && isAvailable && (
@@ -418,14 +411,14 @@ const ProductDetail = async ({
             />
           )}
           {!isAvailable && (
-            <p className="text-md text-center font-semibold text-red-500 uppercase">
+            <p className="text-md text-left font-semibold text-red-500 uppercase">
               {messages["app.product.soldOut"]}
             </p>
           )}
 
           {isAvailable && (
             <div className="mt-8 block">
-              <form action={addItem} className="m-auto text-center">
+              <form action={addItem} className="m-auto text-left">
                 <AddButton disabled={isAddToCartButtonDisabled} messages={messages} />
               </form>
             </div>

@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Dialog, DialogPanel, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/solid";
-import Image from "next/image";
 import React from "react";
 import { UPLOAD_FOLDER } from "@/lib/const";
 import edjsHTML from "editorjs-html";
@@ -21,7 +20,7 @@ export default function SizeGuide({ sizeGuide, messages }: { sizeGuide: any; mes
   const parsedContent = content ? parser.parse(JSON.parse(content)).join("") : "";
   return (
     <>
-      <div className="flex justify-start items-end py-6">
+      <div className="flex justify-start items-end md:py-6">
         <div className="min-w-[180px] w-full">
           <a
             href="#"
@@ -29,7 +28,7 @@ export default function SizeGuide({ sizeGuide, messages }: { sizeGuide: any; mes
               e.preventDefault();
               setShowSizeGuideModal(true);
             }}
-            className="text-sm hover:text-action-1 font-bold py-4"
+            className="text-md hover:text-action-1 font-semibold py-4"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -58,7 +57,7 @@ export default function SizeGuide({ sizeGuide, messages }: { sizeGuide: any; mes
         >
           <div className="fixed inset-0 w-screen overflow-y-auto p-4">
             <div className="flex min-h-full items-center justify-center">
-              <DialogPanel className="max-w-10xl space-y-4 border-2 bg-white p-6 md:p-12 relative">
+              <DialogPanel className="max-w-10xl space-y-4 border-2 bg-white p-4 md:pt-12 relative">
                 <button
                   type="button"
                   className="absolute top-4 right-4 z-50"
@@ -68,7 +67,6 @@ export default function SizeGuide({ sizeGuide, messages }: { sizeGuide: any; mes
                   <XMarkIcon className="w-10 h-10 text-gray-900 bg-gray-100 border border-gray-900 hover:text-red-900 hover:border-red-900" />
                 </button>
                 <div className="container m-auto relative text-left prose-2xl">
-                  <div dangerouslySetInnerHTML={{ __html: parsedContent }} />
                   {sizeGuide.page.attributes &&
                     sizeGuide.page.attributes.map(
                       (attr: {
@@ -82,6 +80,8 @@ export default function SizeGuide({ sizeGuide, messages }: { sizeGuide: any; mes
                         />
                       ),
                     )}
+                  <hr />
+                  <div dangerouslySetInnerHTML={{ __html: parsedContent }} className="mt-6" />
                 </div>
               </DialogPanel>
             </div>

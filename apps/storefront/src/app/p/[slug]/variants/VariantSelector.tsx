@@ -6,7 +6,7 @@ import {
   ProductVariant,
   ProductVariantDetailsFragment,
 } from "@/saleor/api";
-import { ATTR_COLOR_SLUG } from "@/lib/const";
+import { ATTR_COLOR_COMMERCIAL_SLUG, ATTR_COLOR_SLUG } from "@/lib/const";
 import { Messages } from "@/lib/util";
 import { formatMoney } from "@/lib/utils/formatMoney";
 import VariantSelectorClient from "./VariantSelectorClient";
@@ -64,7 +64,9 @@ export function VariantSelector({
   const sizes = currentColor
     ? getGroupedVariants(currentColor, variants as ProductVariant[])
     : variants;
-
+  const commercialColorAttr = selectedVariant?.attributes.find(
+    (attr) => attr.attribute.slug === ATTR_COLOR_COMMERCIAL_SLUG,
+  );
   // Skip displaying selector when theres no variant
   if (!variants || variants.length === 0) {
     return null;
@@ -74,7 +76,7 @@ export function VariantSelector({
     <>
       <div className="w-full">
         {selectedVariant ? (
-          <h2 className="text-xl font-bold tracking-tight text-gray-800 text-center">
+          <p className="text-xl font-semibold tracking-tight text-gray-800 text-left">
             <span>
               {selectedVariant.pricing?.price && formatMoney(selectedVariant.pricing.price.gross)}
             </span>
@@ -86,9 +88,9 @@ export function VariantSelector({
                 </s>
               </span>
             )}
-          </h2>
+          </p>
         ) : (
-          <h2 className="text-xl font-bold tracking-tight text-gray-800 text-center">
+          <p className="text-xl font-semibold tracking-tight text-gray-800 text-left">
             <span>{price}</span>
             {product.variants?.[0]?.pricing?.onSale && (
               <span className="text-lg ml-2 opacity-75">
@@ -98,30 +100,25 @@ export function VariantSelector({
                 </s>
               </span>
             )}
-          </h2>
+          </p>
         )}
 
         {product.variants && product.variants?.length > 1 && (
-          <VariantColorSelector product={product} currentColor={currentColor} />
+          <VariantColorSelector
+            product={product}
+            currentColor={currentColor}
+            commercialColorAttr={commercialColorAttr}
+          />
         )}
 
         <div
-          className={clsx("m-auto mb-6 justify-center", {
+          className={clsx("m-auto mb-6 mt-6", {
             "grid grid-cols-2 gap-[50px]": sizeGuide,
             flex: !sizeGuide,
           })}
         >
-          <div
-            className={clsx("flex flex-col justify-center md:py-6", {
-              "items-end": sizeGuide,
-            })}
-          >
-            <p
-              className={clsx(
-                "text-md font-semibold mb-2",
-                sizeGuide ? "text-left" : "text-center",
-              )}
-            >
+          <div className="flex flex-col md:py-6 items-start">
+            <p className="text-md font-semibold mb-2 text-left">
               {sizes && sizes.length > 1 ? (
                 <span className="text-left">{messages["app.chooseSize"]}</span>
               ) : (

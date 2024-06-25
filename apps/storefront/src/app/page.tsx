@@ -99,7 +99,7 @@ export default async function Home() {
     { slug: string; channel: string; locale: LanguageCodeEnum }
   >(CollectionBySlugDocument, {
     variables: {
-      slug: "featured-products",
+      slug: "produse-recomandate",
       ...defaultRegionQuery(),
     },
     revalidate: 60,
@@ -184,6 +184,12 @@ export default async function Home() {
     (await getBase64(`${UPLOAD_FOLDER ?? ""}/${bannerAttribute.values[0].name}`));
   const placeholder = base64 || null;
 
+  const featuredCollectionText =
+    (featuredCollection && translate(featuredCollection, "description")) || "";
+  const parsedFeaturedCollectionText = featuredCollectionText
+    ? parser.parse(JSON.parse(featuredCollectionText))
+    : "";
+
   return (
     <>
       {bannerAttribute && (
@@ -234,13 +240,14 @@ export default async function Home() {
       <div className="container mb-14 mx-auto max-w-[800px] text-center prose-2xl">
         <div dangerouslySetInnerHTML={{ __html: parsedContent }} />
       </div>
+
       {featuredCollection && featuredProducts && (
-        <div className="container px-8 pb-24">
+        <div className="container px-8 py-24">
           <div className="swiper-header flex justify-center items-center space-x-4">
-            <h2 className="text-lg uppercase m-0 flex-1 text-left mb-8">
-              {messages["app.featuredProducts"]}
+            <h2 className="text-lg uppercase m-0 flex-1 text-left">
+              {translate(featuredCollection, "name") || messages["app.featuredProducts"]}
             </h2>
-            <div className="swiper-navigation flex mb-8">
+            <div className="swiper-navigation flex">
               <button className="swiper-button-prev-featured custom-prev inline-flex justify-center items-center w-10 h-10 border border-gray-600 hover:border-gray-700 disabled:border-gray-200 rounded-full transition-colors cursor-pointer">
                 <ChevronLeftIcon className="h-6 w-6 text-gray-500" />
               </button>
@@ -248,6 +255,9 @@ export default async function Home() {
                 <ChevronRightIcon className="h-6 w-6 text-gray-500" />
               </button>
             </div>
+          </div>
+          <div className="prose-2xl mb-8">
+            <div dangerouslySetInnerHTML={{ __html: parsedFeaturedCollectionText }} />
           </div>
           <div>
             <SwiperComponent

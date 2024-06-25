@@ -20,9 +20,9 @@ export interface PageHeroProps {
 const edjsParser = edjsHTML();
 
 export function PageHero({ title, description, pills = [], messages }: PageHeroProps) {
-  const cleanedDecsriptionT = description && JSON.parse(description);
-  const excerpt = cleanedDecsriptionT && edjsParser.parseBlock(cleanedDecsriptionT.blocks[0]);
-  const parsedDescription = cleanedDecsriptionT ? edjsParser.parse(cleanedDecsriptionT) : null;
+  const cleanedDescriptionT = description && JSON.parse(description);
+  const excerpt = cleanedDescriptionT && edjsParser.parseBlock(cleanedDescriptionT.blocks[0]);
+  const parsedDescription = cleanedDescriptionT ? edjsParser.parse(cleanedDescriptionT) : null;
   const remainingBlocks = parsedDescription ? parsedDescription.slice(1) : null;
 
   return (
@@ -37,7 +37,7 @@ export function PageHero({ title, description, pills = [], messages }: PageHeroP
             dangerouslySetInnerHTML={{ __html: xss(excerpt) }}
           />
         )}
-        {cleanedDecsriptionT && cleanedDecsriptionT.blocks.length > 1 && parsedDescription && (
+        {cleanedDescriptionT && cleanedDescriptionT.blocks.length > 1 && parsedDescription && (
           <Disclosure>
             {({ open }) => (
               <>

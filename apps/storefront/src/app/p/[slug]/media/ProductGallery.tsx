@@ -119,6 +119,7 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
                 slidesPerView={1}
                 spaceBetween={10}
                 keyboard={true}
+                className="border"
                 style={
                   {
                     "--swiper-navigation-color": "#0b9446",
@@ -134,6 +135,7 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
                         alt={media.alt}
                         width={700}
                         height={550}
+                        className="p-6 mx-auto"
                         style={{ objectFit: "contain" }}
                         role="button"
                         tabIndex={-2}
@@ -208,7 +210,7 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
             galleryMedia.map((media, index) => (
               <div
                 key={media.url}
-                className="aspect-w-1 aspect-h-1 border mb-6"
+                className="border mb-6"
                 style={{ scrollSnapAlign: "start" }}
                 onClick={() => handleImageClick(index)}
               >
@@ -219,6 +221,7 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
                     width={700}
                     height={700}
                     style={{ objectFit: "contain" }}
+                    className="block mx-auto p-6"
                     role="button"
                     tabIndex={-2}
                     priority={index === 0}
