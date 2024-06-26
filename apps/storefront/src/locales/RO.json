@@ -136,6 +136,7 @@
   "app.nwl.gdpr": "Sunt de acord cu prelucrarea datelor personale conform",
   "app.nwl.errGdpr": "Trebuie să accepți termenii GDPR pentru a te abona",
   "app.nwl.succes": "Te-ai abonat cu succes la newsletter!",
+  "app.nwl.exist": "Deja esti abonat la newsletter-ul nostru.",
   "app.nwl.email": "Adresa ta de email",
   "app.nwl.err": "A apărut o eroare. Te rugăm să încerci din nou.",
   "app.nwl.btn": "Înscrie-te",

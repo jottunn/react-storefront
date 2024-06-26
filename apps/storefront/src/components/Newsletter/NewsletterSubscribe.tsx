@@ -4,6 +4,7 @@ import { useState, FormEvent } from "react";
 import axios from "axios";
 import { Messages } from "@/lib/util";
 import Link from "next/link";
+import Spinner from "../Spinner";
 interface NewsletterSubscribeProps {
   messages: Messages;
 }
@@ -12,23 +13,36 @@ const NewsletterSubscribe = ({ messages }: NewsletterSubscribeProps) => {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
   const [name, setName] = useState<string>("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     if (name) {
+      setLoading(false);
       setMessage({ text: messages["app.nwl.err"], type: "error" });
       return;
     }
     if (!agreedToTerms) {
+      setLoading(false);
       setMessage({ text: messages["app.nwl.errGdpr"], type: "error" });
       return;
     }
     try {
-      const response = await axios.post("/api/subscribe", { email });
-      setMessage({ text: response.data.message, type: "success" });
+      const response: any = await axios.post("/api/subscribe", { email });
+      setLoading(false);
+      if (
+        response.data.message === "duplicate_parameter" ||
+        response.message === "duplicate_parameter"
+      ) {
+        setMessage({ text: messages["app.nwl.exist"], type: "error" });
+      } else {
+        setMessage({ text: messages["app.nwl.succes"], type: "success" });
+      }
       setEmail("");
       setAgreedToTerms(false);
     } catch (error) {
+      setLoading(false);
       setMessage({ text: messages["app.nwl.err"], type: "error" });
     }
   };
@@ -53,12 +67,16 @@ const NewsletterSubscribe = ({ messages }: NewsletterSubscribeProps) => {
             placeholder="Please enter your name"
           />
         </div>
-        <button
-          type="submit"
-          className="bg-black text-white p-2 text-base hover:opacity-75 transition-opacity uppercase"
-        >
-          {messages["app.nwl.btn"]}
-        </button>
+        {loading ? (
+          <Spinner />
+        ) : (
+          <button
+            type="submit"
+            className="bg-black text-white p-2 text-base hover:opacity-75 transition-opacity uppercase"
+          >
+            {messages["app.nwl.btn"]}
+          </button>
+        )}
       </form>
       <div className="mt-2 flex items-start">
         <input
@@ -76,7 +94,7 @@ const NewsletterSubscribe = ({ messages }: NewsletterSubscribeProps) => {
       </div>
       {message && (
         <p
-          className={`mt-4 text-left text-base font-bold ${message.type === "error" ? "text-red-500" : "text-green-500"}`}
+          className={`mt-4 text-left text-base font-bold ${message.type === "error" ? "text-red-500" : "text-action-1"}`}
         >
           {message.text}
         </p>
