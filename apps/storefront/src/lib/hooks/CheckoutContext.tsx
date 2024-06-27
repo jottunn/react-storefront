@@ -11,7 +11,6 @@ import isEqual from "lodash.isequal";
 interface CheckoutContextType {
   checkout: Checkout | null;
   checkoutId: string;
-  loading: boolean;
   refreshCheckout: any;
   resetCheckout: any;
 }
@@ -34,10 +33,10 @@ const CheckoutProviderInternal = ({ children }: { children: ReactNode }) => {
   }
   const [checkoutId, setCheckoutId] = useState<string | null>(checkoutIdFromUrl);
   const [checkout, setCheckout] = useState<Checkout | null>();
-  const [loading, setLoading] = useState(false);
 
+  // console.log('render context')
   useEffect(() => {
-    if (checkoutIdFromUrl) {
+    if (checkoutIdFromUrl != checkoutId) {
       setCheckoutId(checkoutIdFromUrl);
     }
   }, [checkoutIdFromUrl]);
@@ -45,22 +44,18 @@ const CheckoutProviderInternal = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (!checkoutId) return;
     const fetchCheckout = async () => {
-      if (!checkoutId) return;
       try {
         const data = await find(checkoutId);
         if (data) {
           setCheckout(data as Checkout);
         }
-        setLoading(false);
       } catch (error) {
         console.error("Failed to fetch checkout:", error);
       } finally {
-        setLoading(false);
       }
     };
-    setLoading(true);
     fetchCheckout();
-  }, [checkoutId]);
+  }, []);
 
   const refreshCheckout = async () => {
     if (!checkoutId) return;
@@ -79,7 +74,7 @@ const CheckoutProviderInternal = ({ children }: { children: ReactNode }) => {
   return (
     <CheckoutContext.Provider
       value={{
-        loading: loading,
+        // loading: loading,
         checkoutId: checkoutId || "",
         checkout: checkout as Checkout,
         resetCheckout,

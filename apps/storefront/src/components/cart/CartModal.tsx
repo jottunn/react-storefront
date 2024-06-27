@@ -1,7 +1,7 @@
 "use client";
 
 import { Dialog, DialogPanel, Transition, TransitionChild } from "@headlessui/react";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { CheckoutLineDetailsFragment } from "@/saleor/api";
 import invariant from "ts-invariant";
 import { usePathname } from "next/navigation";
@@ -18,43 +18,49 @@ interface CartModalProps {
 export default function CartModal({ messages }: CartModalProps) {
   const { checkout, refreshCheckout } = useCheckout();
   const pathname = usePathname();
-  const counter =
-    checkout?.lines?.reduce(
-      (amount: number, line?: CheckoutLineDetailsFragment | null) =>
-        line ? amount + line.quantity : amount,
-      0,
-    ) || 0;
-
-  const [cartModalOpen, setCartModalOpen] = useState(false);
-  const [counterO, setCounterO] = useState(counter);
-
-  const openCart = () => setCartModalOpen(true);
-  const closeCart = () => setCartModalOpen(false);
-
-  useEffect(() => {
-    refreshCheckout();
-  });
-
-  useEffect(() => {
-    if (counter > 0 && counter !== counterO && !cartModalOpen) {
-      setCartModalOpen(true);
-      setCounterO(counter);
-    }
-    if (counter === 0) {
-      setCartModalOpen(false);
-    }
-  }, [counter]);
-
-  useEffect(() => {
-    const newCounter =
+  const counter = useMemo(
+    () =>
       checkout?.lines?.reduce(
         (amount: number, line?: CheckoutLineDetailsFragment | null) =>
           line ? amount + line.quantity : amount,
         0,
-      ) || 0;
+      ) || 0,
+    [checkout],
+  );
 
-    setCounterO(newCounter);
-  }, [checkout]);
+  const [cartModalOpen, setCartModalOpen] = useState(false);
+  const [counterO, setCounterO] = useState(counter);
+
+  const openCart = useCallback(() => setCartModalOpen(true), []);
+  const closeCart = useCallback(() => setCartModalOpen(false), []);
+
+  useEffect(() => {
+    refreshCheckout();
+  }, [refreshCheckout]);
+
+  useEffect(() => {
+    if (counter > counterO && !cartModalOpen) {
+      setCartModalOpen(true);
+      setCounterO(counter);
+    } else if (counter === 0 && cartModalOpen) {
+      setCartModalOpen(false);
+    }
+  }, [counter, counterO, cartModalOpen]);
+
+  useEffect(() => {
+    if (checkout) {
+      const newCounter =
+        checkout?.lines?.reduce(
+          (amount: number, line?: CheckoutLineDetailsFragment | null) =>
+            line ? amount + line.quantity : amount,
+          0,
+        ) || 0;
+
+      if (newCounter !== counterO) {
+        setCounterO(newCounter);
+      }
+    }
+  }, [checkout, counterO]);
 
   const saleorApiUrl = process.env.NEXT_PUBLIC_API_URI;
   invariant(saleorApiUrl, "Missing NEXT_PUBLIC_API_URI");

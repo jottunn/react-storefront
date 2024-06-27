@@ -18,7 +18,6 @@ export async function getIdFromCookies(channel: string) {
 export async function saveIdToCookie(channel: string, checkoutId: string) {
   const storefrontUrl = process.env.NEXT_PUBLIC_STOREFRONT_URL || "";
   const shouldUseHttps = storefrontUrl.startsWith("https");
-  console.log("shouldUseHttps", shouldUseHttps);
   const cookieName = `checkoutId-${channel}`;
   cookies().set(cookieName, checkoutId, {
     sameSite: "lax",
@@ -40,12 +39,10 @@ export async function find(checkoutId: string) {
           },
         )
       : { checkout: null };
-    //console.log(checkout);
+    // console.log('checkout find', checkout);
     return checkout;
   } catch {
     // we ignore invalid ID or checkout not found
-    console.log("not found");
-    //remove from cookie
     return null;
   }
 }

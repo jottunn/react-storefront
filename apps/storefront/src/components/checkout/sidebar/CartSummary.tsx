@@ -16,7 +16,7 @@ export interface CartSummaryProps {
 }
 
 export function CartSummary({ messages }: CartSummaryProps) {
-  const { checkout, refreshCheckout, loading } = useCheckout();
+  const { checkout, refreshCheckout } = useCheckout();
   const [editPromoCode] = useState(false);
 
   const {
@@ -44,10 +44,6 @@ export function CartSummary({ messages }: CartSummaryProps) {
 
   if (!checkout) {
     return;
-  }
-
-  if (loading) {
-    return <Spinner />;
   }
 
   return (

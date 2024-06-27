@@ -4,6 +4,7 @@ import { defaultRegionQuery } from "@/lib/regions";
 import { translate } from "@/lib/translations";
 import {
   CheckoutAddProductLineDocument,
+  CheckoutAddProductLineMutation,
   CollectionBySlugDocument,
   CollectionBySlugQuery,
   LanguageCodeEnum,
@@ -235,7 +236,7 @@ const ProductDetail = async ({
       checkoutId: checkoutId,
       channel: defaultRegionQuery().channel,
     });
-    // console.log('checkout', checkout);
+    console.log("checkout", checkout);
     invariant(checkout, "This should never happen");
 
     Checkout.saveIdToCookie(defaultRegionQuery().channel, checkout.id);
@@ -243,7 +244,10 @@ const ProductDetail = async ({
     if (!selectedVariantID) {
       return;
     }
-    await executeGraphQL(CheckoutAddProductLineDocument, {
+    const addProducts = await executeGraphQL<
+      CheckoutAddProductLineMutation,
+      { id: string; locale: LanguageCodeEnum; productVariantId: string }
+    >(CheckoutAddProductLineDocument, {
       variables: {
         id: checkout.id,
         productVariantId: decodeURIComponent(selectedVariantID),
@@ -251,6 +255,7 @@ const ProductDetail = async ({
       },
       cache: "no-cache",
     });
+    console.log(addProducts.checkoutLinesAdd?.errors);
   }
 
   const isAvailable = variants?.some((variant) => variant.quantityAvailable) ?? false;

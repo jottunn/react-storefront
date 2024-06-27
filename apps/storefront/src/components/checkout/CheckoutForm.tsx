@@ -51,10 +51,8 @@ const sectionsManager = (checkout?: CheckoutDetailsFragment): CollapsedSections 
 
 function CheckoutForm({ messages, user }: CheckoutFormProps) {
   const [sameAddress, setSameAddress] = useState(true);
-  const { checkout, loading } = useCheckout();
-  if (loading) {
-    return <Spinner />;
-  }
+  const { checkout } = useCheckout();
+
   if (!checkout) {
     return null;
   }

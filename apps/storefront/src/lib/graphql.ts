@@ -70,8 +70,9 @@ export async function executeGraphQL<Result, Variables>(
   const body = await response.json();
 
   if ("errors" in body) {
-    //throw new GraphQLError(body);
-    console.log(body.errors);
+    // console.log("GraphQL Query:", queryString);
+    throw new GraphQLError(body);
+    //console.log(body.errors);
   }
 
   return body.data;

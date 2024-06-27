@@ -32315,7 +32315,6 @@ export type CheckoutDetailsFragment = {
       }
     | { __typename?: "Warehouse" }
     | null;
-  user?: { __typename?: "User"; id: string; email: string } | null;
   shippingMethods: Array<{
     __typename?: "ShippingMethod";
     id: string;
@@ -33183,7 +33182,6 @@ export type CheckoutAddProductLineMutation = {
           }
         | { __typename?: "Warehouse" }
         | null;
-      user?: { __typename?: "User"; id: string; email: string } | null;
       shippingMethods: Array<{
         __typename?: "ShippingMethod";
         id: string;
@@ -33374,7 +33372,6 @@ export type CheckoutAddPromoCodeMutation = {
           }
         | { __typename?: "Warehouse" }
         | null;
-      user?: { __typename?: "User"; id: string; email: string } | null;
       shippingMethods: Array<{
         __typename?: "ShippingMethod";
         id: string;
@@ -33561,7 +33558,6 @@ export type CheckoutBillingAddressUpdateMutation = {
           }
         | { __typename?: "Warehouse" }
         | null;
-      user?: { __typename?: "User"; id: string; email: string } | null;
       shippingMethods: Array<{
         __typename?: "ShippingMethod";
         id: string;
@@ -33883,7 +33879,6 @@ export type CheckoutCustomerAttachMutation = {
           }
         | { __typename?: "Warehouse" }
         | null;
-      user?: { __typename?: "User"; id: string; email: string } | null;
       shippingMethods: Array<{
         __typename?: "ShippingMethod";
         id: string;
@@ -34074,7 +34069,6 @@ export type CheckoutCustomerDetachMutation = {
           }
         | { __typename?: "Warehouse" }
         | null;
-      user?: { __typename?: "User"; id: string; email: string } | null;
       shippingMethods: Array<{
         __typename?: "ShippingMethod";
         id: string;
@@ -34260,7 +34254,6 @@ export type CheckoutEmailUpdateMutation = {
           }
         | { __typename?: "Warehouse" }
         | null;
-      user?: { __typename?: "User"; id: string; email: string } | null;
       shippingMethods: Array<{
         __typename?: "ShippingMethod";
         id: string;
@@ -34447,7 +34440,6 @@ export type CheckoutLineUpdateMutation = {
           }
         | { __typename?: "Warehouse" }
         | null;
-      user?: { __typename?: "User"; id: string; email: string } | null;
       shippingMethods: Array<{
         __typename?: "ShippingMethod";
         id: string;
@@ -34639,7 +34631,6 @@ export type RemoveProductFromCheckoutMutation = {
           }
         | { __typename?: "Warehouse" }
         | null;
-      user?: { __typename?: "User"; id: string; email: string } | null;
       shippingMethods: Array<{
         __typename?: "ShippingMethod";
         id: string;
@@ -34826,7 +34817,6 @@ export type CheckoutShippingAddressUpdateMutation = {
           }
         | { __typename?: "Warehouse" }
         | null;
-      user?: { __typename?: "User"; id: string; email: string } | null;
       shippingMethods: Array<{
         __typename?: "ShippingMethod";
         id: string;
@@ -35018,7 +35008,6 @@ export type CheckoutShippingMethodUpdateMutation = {
           }
         | { __typename?: "Warehouse" }
         | null;
-      user?: { __typename?: "User"; id: string; email: string } | null;
       shippingMethods: Array<{
         __typename?: "ShippingMethod";
         id: string;
@@ -35665,7 +35654,6 @@ export type CheckoutFindQuery = {
         }
       | { __typename?: "Warehouse" }
       | null;
-    user?: { __typename?: "User"; id: string; email: string } | null;
     shippingMethods: Array<{
       __typename?: "ShippingMethod";
       id: string;
@@ -37330,10 +37318,6 @@ export const CheckoutDetailsFragmentDoc = gql`
       ...DeliveryMethodFragment
     }
     isShippingRequired
-    user {
-      id
-      email
-    }
     shippingMethods {
       ...DeliveryMethodFragment
     }

@@ -11,10 +11,6 @@ fragment CheckoutDetailsFragment on Checkout {
     ...DeliveryMethodFragment
   }
   isShippingRequired
-  user {
-		id
-		email
-	}
   shippingMethods {
     ...DeliveryMethodFragment
   }
