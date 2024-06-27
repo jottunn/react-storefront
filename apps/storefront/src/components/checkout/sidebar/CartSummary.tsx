@@ -5,6 +5,7 @@ import { Messages } from "@/lib/util";
 import { formatMoney } from "@/lib/utils/formatMoney";
 import { checkoutAddPromoCodeMutation } from "../actions";
 import { useCheckout } from "@/lib/hooks/CheckoutContext";
+import Spinner from "@/components/Spinner";
 
 export interface PromoCodeFormData {
   promoCode: string;
@@ -15,7 +16,7 @@ export interface CartSummaryProps {
 }
 
 export function CartSummary({ messages }: CartSummaryProps) {
-  const { checkout, refreshCheckout } = useCheckout();
+  const { checkout, refreshCheckout, loading } = useCheckout();
   const [editPromoCode] = useState(false);
 
   const {
@@ -44,6 +45,11 @@ export function CartSummary({ messages }: CartSummaryProps) {
   if (!checkout) {
     return;
   }
+
+  if (loading) {
+    return <Spinner />;
+  }
+
   return (
     <section>
       <div className="bg-main-7 rounded p-8 border">

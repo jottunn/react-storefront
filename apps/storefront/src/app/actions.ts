@@ -17,7 +17,6 @@ import {
   PasswordChangeMutation,
   ProductCollectionDocument,
   ProductCollectionQuery,
-  ProductCountableConnection,
   ProductFilterInput,
   RegisterDocument,
   RegisterMutation,
@@ -39,10 +38,28 @@ import { DEFAULT_CHANNEL, defaultRegionQuery } from "@/lib/regions";
 import { ResetFormData } from "./reset/ForgotPassword";
 import { ResetPasswordFormData } from "./reset/ResetPasswordForm";
 import { ConfirmData } from "./confirm/ConfirmResult";
+import * as Checkout from "@/lib/checkout";
+import { customerDetach } from "@/components/checkout/actions";
+
+// export async function onSignOutSuccess() {
+//   const checkoutId = await Checkout.getIdFromCookies(defaultRegionQuery().channel);
+//   const checkout = await Checkout.find(checkoutId);
+
+//   if (checkout) {
+//     const customerAttachResult = await customerDetach(checkout.id);
+//     if (customerAttachResult?.success === false) {
+//       // Handle checkout email update errors
+//       console.log('customerAttachResult', customerAttachResult);
+//       return;
+//     }
+//   }
+// }
 
 export async function logout() {
   "use server";
   saleorAuthClient.signOut();
+  //if checkout, remove user from checkout
+  //onSignOutSuccess();
 }
 
 export async function login(formData: LoginFormData) {

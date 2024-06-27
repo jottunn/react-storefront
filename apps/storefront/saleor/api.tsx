@@ -32419,6 +32419,10 @@ export type CheckoutDetailsFragment = {
     __typename?: "TaxedMoney";
     gross: { __typename?: "Money"; currency: string; amount: number };
   };
+  problems?: Array<
+    | { __typename?: "CheckoutLineProblemInsufficientStock"; availableQuantity?: number | null }
+    | { __typename: "CheckoutLineProblemVariantNotAvailable" }
+  > | null;
 };
 
 export type CheckoutLineDetailsFragment = {
@@ -33294,6 +33298,10 @@ export type CheckoutAddProductLineMutation = {
         __typename?: "TaxedMoney";
         gross: { __typename?: "Money"; currency: string; amount: number };
       };
+      problems?: Array<
+        | { __typename?: "CheckoutLineProblemInsufficientStock"; availableQuantity?: number | null }
+        | { __typename: "CheckoutLineProblemVariantNotAvailable" }
+      > | null;
     } | null;
     errors: Array<{
       __typename?: "CheckoutError";
@@ -33481,6 +33489,10 @@ export type CheckoutAddPromoCodeMutation = {
         __typename?: "TaxedMoney";
         gross: { __typename?: "Money"; currency: string; amount: number };
       };
+      problems?: Array<
+        | { __typename?: "CheckoutLineProblemInsufficientStock"; availableQuantity?: number | null }
+        | { __typename: "CheckoutLineProblemVariantNotAvailable" }
+      > | null;
     } | null;
     errors: Array<{ __typename?: "CheckoutError"; message?: string | null; field?: string | null }>;
   } | null;
@@ -33664,6 +33676,10 @@ export type CheckoutBillingAddressUpdateMutation = {
         __typename?: "TaxedMoney";
         gross: { __typename?: "Money"; currency: string; amount: number };
       };
+      problems?: Array<
+        | { __typename?: "CheckoutLineProblemInsufficientStock"; availableQuantity?: number | null }
+        | { __typename: "CheckoutLineProblemVariantNotAvailable" }
+      > | null;
     } | null;
     errors: Array<{
       __typename?: "CheckoutError";
@@ -33982,6 +33998,201 @@ export type CheckoutCustomerAttachMutation = {
         __typename?: "TaxedMoney";
         gross: { __typename?: "Money"; currency: string; amount: number };
       };
+      problems?: Array<
+        | { __typename?: "CheckoutLineProblemInsufficientStock"; availableQuantity?: number | null }
+        | { __typename: "CheckoutLineProblemVariantNotAvailable" }
+      > | null;
+    } | null;
+  } | null;
+};
+
+export type CheckoutCustomerDetachMutationVariables = Exact<{
+  id: Scalars["ID"]["input"];
+  locale: LanguageCodeEnum;
+}>;
+
+export type CheckoutCustomerDetachMutation = {
+  __typename?: "Mutation";
+  checkoutCustomerDetach?: {
+    __typename?: "CheckoutCustomerDetach";
+    errors: Array<{
+      __typename?: "CheckoutError";
+      message?: string | null;
+      field?: string | null;
+      code: CheckoutErrorCode;
+    }>;
+    checkout?: {
+      __typename?: "Checkout";
+      id: string;
+      email?: string | null;
+      isShippingRequired: boolean;
+      voucherCode?: string | null;
+      discountName?: string | null;
+      billingAddress?: {
+        __typename?: "Address";
+        id: string;
+        phone?: string | null;
+        firstName: string;
+        lastName: string;
+        companyName: string;
+        streetAddress1: string;
+        streetAddress2: string;
+        city: string;
+        postalCode: string;
+        isDefaultBillingAddress?: boolean | null;
+        isDefaultShippingAddress?: boolean | null;
+        country: { __typename?: "CountryDisplay"; code: string; country: string };
+      } | null;
+      shippingAddress?: {
+        __typename?: "Address";
+        id: string;
+        phone?: string | null;
+        firstName: string;
+        lastName: string;
+        companyName: string;
+        streetAddress1: string;
+        streetAddress2: string;
+        city: string;
+        postalCode: string;
+        isDefaultBillingAddress?: boolean | null;
+        isDefaultShippingAddress?: boolean | null;
+        country: { __typename?: "CountryDisplay"; code: string; country: string };
+      } | null;
+      deliveryMethod?:
+        | {
+            __typename?: "ShippingMethod";
+            id: string;
+            name: string;
+            minimumDeliveryDays?: number | null;
+            maximumDeliveryDays?: number | null;
+            translation?: {
+              __typename?: "ShippingMethodTranslation";
+              id: string;
+              name: string;
+            } | null;
+            price: { __typename?: "Money"; currency: string; amount: number };
+          }
+        | { __typename?: "Warehouse" }
+        | null;
+      user?: { __typename?: "User"; id: string; email: string } | null;
+      shippingMethods: Array<{
+        __typename?: "ShippingMethod";
+        id: string;
+        name: string;
+        minimumDeliveryDays?: number | null;
+        maximumDeliveryDays?: number | null;
+        translation?: { __typename?: "ShippingMethodTranslation"; id: string; name: string } | null;
+        price: { __typename?: "Money"; currency: string; amount: number };
+      }>;
+      availablePaymentGateways: Array<{
+        __typename?: "PaymentGateway";
+        id: string;
+        name: string;
+        config: Array<{ __typename?: "GatewayConfigLine"; field: string; value?: string | null }>;
+      }>;
+      lines: Array<{
+        __typename?: "CheckoutLine";
+        id: string;
+        quantity: number;
+        totalPrice: {
+          __typename?: "TaxedMoney";
+          gross: { __typename?: "Money"; currency: string; amount: number };
+        };
+        variant: {
+          __typename?: "ProductVariant";
+          id: string;
+          quantityAvailable?: number | null;
+          name: string;
+          product: {
+            __typename?: "Product";
+            id: string;
+            name: string;
+            slug: string;
+            isAvailableForPurchase?: boolean | null;
+            translation?: {
+              __typename?: "ProductTranslation";
+              id: string;
+              name?: string | null;
+            } | null;
+            thumbnail?: { __typename?: "Image"; url: string; alt?: string | null } | null;
+          };
+          media?: Array<{
+            __typename?: "ProductMedia";
+            url: string;
+            alt: string;
+            type: ProductMediaType;
+            sortOrder?: number | null;
+          }> | null;
+          attributes: Array<{
+            __typename?: "SelectedAttribute";
+            attribute: {
+              __typename?: "Attribute";
+              id: string;
+              slug?: string | null;
+              name?: string | null;
+              inputType?: AttributeInputTypeEnum | null;
+              type?: AttributeTypeEnum | null;
+              unit?: MeasurementUnitsEnum | null;
+              translation?: {
+                __typename?: "AttributeTranslation";
+                id: string;
+                name: string;
+              } | null;
+            };
+            values: Array<{
+              __typename?: "AttributeValue";
+              id: string;
+              name?: string | null;
+              slug?: string | null;
+              value?: string | null;
+              reference?: string | null;
+              translation?: {
+                __typename?: "AttributeValueTranslation";
+                id: string;
+                name: string;
+                richText?: string | null;
+              } | null;
+            }>;
+          }>;
+          pricing?: {
+            __typename?: "VariantPricingInfo";
+            price?: {
+              __typename?: "TaxedMoney";
+              gross: { __typename?: "Money"; currency: string; amount: number };
+            } | null;
+          } | null;
+          translation?: {
+            __typename?: "ProductVariantTranslation";
+            id: string;
+            name: string;
+          } | null;
+        };
+        problems?: Array<
+          | {
+              __typename?: "CheckoutLineProblemInsufficientStock";
+              availableQuantity?: number | null;
+            }
+          | { __typename: "CheckoutLineProblemVariantNotAvailable" }
+        > | null;
+      }>;
+      discount?: { __typename?: "Money"; currency: string; amount: number } | null;
+      subtotalPrice: {
+        __typename?: "TaxedMoney";
+        net: { __typename?: "Money"; currency: string; amount: number };
+        tax: { __typename?: "Money"; currency: string; amount: number };
+      };
+      shippingPrice: {
+        __typename?: "TaxedMoney";
+        gross: { __typename?: "Money"; currency: string; amount: number };
+      };
+      totalPrice: {
+        __typename?: "TaxedMoney";
+        gross: { __typename?: "Money"; currency: string; amount: number };
+      };
+      problems?: Array<
+        | { __typename?: "CheckoutLineProblemInsufficientStock"; availableQuantity?: number | null }
+        | { __typename: "CheckoutLineProblemVariantNotAvailable" }
+      > | null;
     } | null;
   } | null;
 };
@@ -34164,6 +34375,10 @@ export type CheckoutEmailUpdateMutation = {
         __typename?: "TaxedMoney";
         gross: { __typename?: "Money"; currency: string; amount: number };
       };
+      problems?: Array<
+        | { __typename?: "CheckoutLineProblemInsufficientStock"; availableQuantity?: number | null }
+        | { __typename: "CheckoutLineProblemVariantNotAvailable" }
+      > | null;
     } | null;
     errors: Array<{ __typename?: "CheckoutError"; field?: string | null; message?: string | null }>;
   } | null;
@@ -34347,6 +34562,10 @@ export type CheckoutLineUpdateMutation = {
         __typename?: "TaxedMoney";
         gross: { __typename?: "Money"; currency: string; amount: number };
       };
+      problems?: Array<
+        | { __typename?: "CheckoutLineProblemInsufficientStock"; availableQuantity?: number | null }
+        | { __typename: "CheckoutLineProblemVariantNotAvailable" }
+      > | null;
     } | null;
     errors: Array<{
       __typename?: "CheckoutError";
@@ -34535,6 +34754,10 @@ export type RemoveProductFromCheckoutMutation = {
         __typename?: "TaxedMoney";
         gross: { __typename?: "Money"; currency: string; amount: number };
       };
+      problems?: Array<
+        | { __typename?: "CheckoutLineProblemInsufficientStock"; availableQuantity?: number | null }
+        | { __typename: "CheckoutLineProblemVariantNotAvailable" }
+      > | null;
     } | null;
     errors: Array<{ __typename?: "CheckoutError"; field?: string | null; message?: string | null }>;
   } | null;
@@ -34718,6 +34941,10 @@ export type CheckoutShippingAddressUpdateMutation = {
         __typename?: "TaxedMoney";
         gross: { __typename?: "Money"; currency: string; amount: number };
       };
+      problems?: Array<
+        | { __typename?: "CheckoutLineProblemInsufficientStock"; availableQuantity?: number | null }
+        | { __typename: "CheckoutLineProblemVariantNotAvailable" }
+      > | null;
     } | null;
     errors: Array<{
       __typename?: "CheckoutError";
@@ -34906,6 +35133,10 @@ export type CheckoutShippingMethodUpdateMutation = {
         __typename?: "TaxedMoney";
         gross: { __typename?: "Money"; currency: string; amount: number };
       };
+      problems?: Array<
+        | { __typename?: "CheckoutLineProblemInsufficientStock"; availableQuantity?: number | null }
+        | { __typename: "CheckoutLineProblemVariantNotAvailable" }
+      > | null;
     } | null;
     errors: Array<{
       __typename?: "CheckoutError";
@@ -35538,6 +35769,10 @@ export type CheckoutFindQuery = {
       __typename?: "TaxedMoney";
       gross: { __typename?: "Money"; currency: string; amount: number };
     };
+    problems?: Array<
+      | { __typename?: "CheckoutLineProblemInsufficientStock"; availableQuantity?: number | null }
+      | { __typename: "CheckoutLineProblemVariantNotAvailable" }
+    > | null;
   } | null;
 };
 
@@ -37136,6 +37371,14 @@ export const CheckoutDetailsFragmentDoc = gql`
         ...PriceFragment
       }
     }
+    problems {
+      ... on CheckoutLineProblemInsufficientStock {
+        availableQuantity
+      }
+      ... on CheckoutLineProblemVariantNotAvailable {
+        __typename
+      }
+    }
   }
 `;
 export const CollectionBasicFragmentDoc = gql`
@@ -38150,6 +38393,72 @@ export type CheckoutCustomerAttachMutationResult =
 export type CheckoutCustomerAttachMutationOptions = Apollo.BaseMutationOptions<
   CheckoutCustomerAttachMutation,
   CheckoutCustomerAttachMutationVariables
+>;
+export const CheckoutCustomerDetachDocument = gql`
+  mutation CheckoutCustomerDetach($id: ID!, $locale: LanguageCodeEnum!) {
+    checkoutCustomerDetach(id: $id) {
+      errors {
+        message
+        field
+        code
+      }
+      checkout {
+        ...CheckoutDetailsFragment
+      }
+    }
+  }
+  ${CheckoutDetailsFragmentDoc}
+  ${AddressDetailsFragmentDoc}
+  ${DeliveryMethodFragmentDoc}
+  ${PriceFragmentDoc}
+  ${CheckoutLineDetailsFragmentDoc}
+  ${ImageFragmentDoc}
+  ${ProductMediaFragmentDoc}
+  ${SelectedAttributeDetailsFragmentDoc}
+`;
+export type CheckoutCustomerDetachMutationFn = Apollo.MutationFunction<
+  CheckoutCustomerDetachMutation,
+  CheckoutCustomerDetachMutationVariables
+>;
+
+/**
+ * __useCheckoutCustomerDetachMutation__
+ *
+ * To run a mutation, you first call `useCheckoutCustomerDetachMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCheckoutCustomerDetachMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [checkoutCustomerDetachMutation, { data, loading, error }] = useCheckoutCustomerDetachMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      locale: // value for 'locale'
+ *   },
+ * });
+ */
+export function useCheckoutCustomerDetachMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    CheckoutCustomerDetachMutation,
+    CheckoutCustomerDetachMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    CheckoutCustomerDetachMutation,
+    CheckoutCustomerDetachMutationVariables
+  >(CheckoutCustomerDetachDocument, options);
+}
+export type CheckoutCustomerDetachMutationHookResult = ReturnType<
+  typeof useCheckoutCustomerDetachMutation
+>;
+export type CheckoutCustomerDetachMutationResult =
+  Apollo.MutationResult<CheckoutCustomerDetachMutation>;
+export type CheckoutCustomerDetachMutationOptions = Apollo.BaseMutationOptions<
+  CheckoutCustomerDetachMutation,
+  CheckoutCustomerDetachMutationVariables
 >;
 export const CheckoutEmailUpdateDocument = gql`
   mutation CheckoutEmailUpdate($id: ID!, $email: String!, $locale: LanguageCodeEnum!) {

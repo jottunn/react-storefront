@@ -15,10 +15,16 @@ export function PaymentSection({ active, messages }: PaymentSectionProps) {
   const availableGateways = checkout?.availablePaymentGateways;
   const [chosenGateway, setChosenGateway] = useState("");
   const CASH_ON_DELIVERY_GATEWAY = "COD";
+  console.log("payment section", checkout);
 
-  if (!checkout) {
+  if (!checkout || (checkout && checkout.lines && checkout.lines.length === 0)) {
     return;
   }
+
+  if (checkout.problems && checkout.problems.length > 0) {
+    return <p className="text-md font-bold text-red-500">{messages["app.checkout.soldOut"]}</p>;
+  }
+
   return (
     <>
       <div className="mt-4 mb-4">

@@ -45,6 +45,17 @@ export default function CartModal({ messages }: CartModalProps) {
     }
   }, [counter]);
 
+  useEffect(() => {
+    const newCounter =
+      checkout?.lines?.reduce(
+        (amount: number, line?: CheckoutLineDetailsFragment | null) =>
+          line ? amount + line.quantity : amount,
+        0,
+      ) || 0;
+
+    setCounterO(newCounter);
+  }, [checkout]);
+
   const saleorApiUrl = process.env.NEXT_PUBLIC_API_URI;
   invariant(saleorApiUrl, "Missing NEXT_PUBLIC_API_URI");
   if (pathname === "/checkout" || pathname === "/order") {

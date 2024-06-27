@@ -11,6 +11,8 @@ import {
   CheckoutCompleteMutation,
   CheckoutCustomerAttachDocument,
   CheckoutCustomerAttachMutation,
+  CheckoutCustomerDetachDocument,
+  CheckoutCustomerDetachMutation,
   CheckoutEmailUpdateDocument,
   CheckoutEmailUpdateMutation,
   CheckoutLineUpdateDocument,
@@ -51,7 +53,7 @@ export const checkoutEmailUpdate = async ({ id, email }: updateEmailFromCheckout
       cache: "no-cache",
     });
 
-    console.log(response.checkoutEmailUpdate?.errors);
+    //console.log(response.checkoutEmailUpdate?.errors);
     if (response.checkoutEmailUpdate?.errors.length) {
       const customError = response.checkoutEmailUpdate.errors as any;
       return { success: false, errors: customError.map((error: { code: any }) => error.code) };
@@ -80,12 +82,41 @@ export const customerAttach = async (id: string) => {
       cache: "no-cache",
     });
 
-    console.log(response.checkoutCustomerAttach?.errors);
+    //console.log(response.checkoutCustomerAttach?.errors);
     if (response.checkoutCustomerAttach?.errors.length) {
       const customError = response.checkoutCustomerAttach.errors as any;
       return { success: false, errors: customError.map((error: { code: any }) => error.code) };
     }
     return { success: true, checkout: response.checkoutCustomerAttach?.checkout };
+  } catch (error) {
+    console.error("Failed to attach customer to checkout:", error);
+    return;
+  }
+};
+
+type CheckoutCustomerDetachVariables = {
+  id: string;
+  locale: string;
+};
+export const customerDetach = async (id: string) => {
+  try {
+    const response = await executeGraphQL<
+      CheckoutCustomerDetachMutation,
+      CheckoutCustomerDetachVariables
+    >(CheckoutCustomerDetachDocument, {
+      variables: {
+        id: id,
+        locale: defaultRegionQuery().locale,
+      },
+      cache: "no-cache",
+    });
+
+    //console.log(response.checkoutCustomerAttach?.errors);
+    if (response.checkoutCustomerDetach?.errors.length) {
+      const customError = response.checkoutCustomerDetach.errors as any;
+      return { success: false, errors: customError.map((error: { code: any }) => error.code) };
+    }
+    return { success: true, checkout: response.checkoutCustomerDetach?.checkout };
   } catch (error) {
     console.error("Failed to attach customer to checkout:", error);
     return;
@@ -114,7 +145,7 @@ export const checkoutBillingAddressUpdate = async (args: {
       cache: "no-cache",
     });
 
-    console.log(response.checkoutBillingAddressUpdate?.errors);
+    //console.log(response.checkoutBillingAddressUpdate?.errors);
     if (response.checkoutBillingAddressUpdate?.errors.length) {
       const customError = response.checkoutBillingAddressUpdate.errors as any;
       return { success: false, errors: customError.map((error: { code: any }) => error.code) };
@@ -148,7 +179,7 @@ export const checkoutShippingAddressUpdate = async (args: {
       cache: "no-cache",
     });
 
-    console.log("checkoutShippingAddressUpdate", response.checkoutShippingAddressUpdate?.errors);
+    //console.log("checkoutShippingAddressUpdate", response.checkoutShippingAddressUpdate?.errors);
     if (response.checkoutShippingAddressUpdate?.errors.length) {
       const customError = response.checkoutShippingAddressUpdate.errors as any;
       return { success: false, errors: customError.map((error: { code: any }) => error.code) };
@@ -265,7 +296,7 @@ export const checkoutAddPromoCodeMutation = async (args: { id: string; promoCode
       },
       cache: "no-cache",
     });
-    console.log("response", response);
+    //console.log("response", response);
 
     if (response.checkoutAddPromoCode?.errors.length) {
       const customError = response.checkoutAddPromoCode.errors as any;
@@ -301,10 +332,10 @@ export const deleteLineFromCheckout = async ({ lineId, id }: removeLineFromCheck
       },
       cache: "no-cache",
     });
-    console.log(response);
+    //console.log(response);
     if (response.checkoutLineDelete?.errors.length) {
       const customError = response.checkoutLineDelete.errors as any;
-      console.log(customError);
+      // console.log(customError);
       return { success: false, errors: customError.map((error: { code: any }) => error.code) };
     }
     return { success: true, checkout: response.checkoutLineDelete?.checkout };
@@ -340,7 +371,7 @@ export const updateLineFromCheckout = async ({
       },
     );
 
-    console.log(response.checkoutLinesUpdate?.errors);
+    //console.log(response.checkoutLinesUpdate?.errors);
     if (response.checkoutLinesUpdate?.errors.length) {
       const customError = response.checkoutLinesUpdate.errors as any;
       return { success: false, errors: customError.map((error: { code: any }) => error.code) };

@@ -230,9 +230,9 @@ const ProductDetail = async ({
   }
   async function addItem() {
     "use server";
-
+    const checkoutId = await Checkout.getIdFromCookies(defaultRegionQuery().channel);
     const checkout = await Checkout.findOrCreate({
-      checkoutId: Checkout.getIdFromCookies(defaultRegionQuery().channel),
+      checkoutId: checkoutId,
       channel: defaultRegionQuery().channel,
     });
     // console.log('checkout', checkout);

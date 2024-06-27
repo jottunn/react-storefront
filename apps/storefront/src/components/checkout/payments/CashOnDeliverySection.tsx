@@ -1,14 +1,10 @@
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-
 import { CheckoutDetailsFragment } from "@/saleor/api";
-
 import { CompleteCheckoutButton } from "../CompleteCheckoutButton";
 import { Messages } from "@/lib/util";
 import { formatMoney } from "@/lib/utils/formatMoney";
-import { checkoutCompleteMutation, checkoutPaymentCreateMutation } from "../actions";
-import { BASE_URL } from "@/lib/const";
-
+import { checkoutCompleteMutation } from "../actions";
 export const CASH_ON_DELIVERY_GATEWAY = "mirumee.payments.cod";
 
 interface CashOnDeliverySectionInterface {

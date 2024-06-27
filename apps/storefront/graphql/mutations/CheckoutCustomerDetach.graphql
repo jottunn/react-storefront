@@ -1,0 +1,12 @@
+mutation CheckoutCustomerDetach($id: ID!, $locale: LanguageCodeEnum!) {
+	checkoutCustomerDetach(id: $id) {
+		errors {
+            message
+            field
+            code
+		}
+		checkout {
+			...CheckoutDetailsFragment
+		}
+	}
+}

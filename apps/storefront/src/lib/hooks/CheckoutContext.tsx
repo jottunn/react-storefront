@@ -1,24 +1,18 @@
 "use client";
 
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-  ReactNode,
-  Suspense,
-} from "react";
+import React, { createContext, useContext, useState, useEffect, ReactNode, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { Checkout, useCheckoutFindQuery } from "@/saleor/api";
-import { DEFAULT_LOCALE, defaultRegionQuery } from "../regions";
+import { defaultRegionQuery } from "../regions";
 import { getCookie } from "../cookieUtils";
-import Spinner from "@/components/Spinner"; // Ensure you have a Spinner component
+import { Checkout } from "@/saleor/api";
+import { find } from "../checkout";
+import isEqual from "lodash.isequal";
 
 interface CheckoutContextType {
-  checkout: Checkout | undefined;
+  checkout: Checkout | null;
+  checkoutId: string;
   loading: boolean;
-  refreshCheckout: () => Promise<void>;
+  refreshCheckout: any;
   resetCheckout: any;
 }
 
@@ -39,6 +33,8 @@ const CheckoutProviderInternal = ({ children }: { children: ReactNode }) => {
     checkoutIdFromUrl = getCookie(`checkoutId-${defaultRegionQuery().channel}`) as string;
   }
   const [checkoutId, setCheckoutId] = useState<string | null>(checkoutIdFromUrl);
+  const [checkout, setCheckout] = useState<Checkout | null>();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (checkoutIdFromUrl) {
@@ -46,35 +42,48 @@ const CheckoutProviderInternal = ({ children }: { children: ReactNode }) => {
     }
   }, [checkoutIdFromUrl]);
 
-  const { data, loading, error, refetch } = useCheckoutFindQuery({
-    variables: { id: checkoutId || "", locale: DEFAULT_LOCALE },
-    skip: !checkoutId,
-    fetchPolicy: "no-cache",
-  });
-
   useEffect(() => {
-    if (error) {
-      console.error("Failed to fetch checkout:", error);
+    if (!checkoutId) return;
+    const fetchCheckout = async () => {
+      if (!checkoutId) return;
+      try {
+        const data = await find(checkoutId);
+        if (data) {
+          setCheckout(data as Checkout);
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error("Failed to fetch checkout:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    setLoading(true);
+    fetchCheckout();
+  }, [checkoutId]);
+
+  const refreshCheckout = async () => {
+    if (!checkoutId) return;
+    try {
+      const data = await find(checkoutId);
+      if (!isEqual(data, checkout)) {
+        setCheckout(data as Checkout);
+      }
+    } catch (error) {
+      console.error("Failed to refresh checkout:", error);
     }
-  }, [error]);
+  };
 
   const resetCheckout = () => setCheckoutId("");
-
-  const refreshCheckout = useCallback(async () => {
-    // console.log("Calling refetch...");
-    if (checkoutId) {
-      await refetch();
-    }
-    // console.log("Refetch completed. Data:", data);
-  }, [refetch, data]);
 
   return (
     <CheckoutContext.Provider
       value={{
-        checkout: data?.checkout as Checkout,
         loading: loading,
-        refreshCheckout,
+        checkoutId: checkoutId || "",
+        checkout: checkout as Checkout,
         resetCheckout,
+        refreshCheckout,
       }}
     >
       {children}
