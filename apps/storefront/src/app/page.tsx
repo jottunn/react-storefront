@@ -100,7 +100,7 @@ export default async function Home() {
     { slug: string; channel: string; locale: LanguageCodeEnum }
   >(CollectionBySlugDocument, {
     variables: {
-      slug: "produse-recomandate",
+      slug: "highlights",
       ...defaultRegionQuery(),
     },
     revalidate: 60,
