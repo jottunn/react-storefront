@@ -13,7 +13,7 @@ export const Navbar = async () => {
   return (
     <>
       <div className={clsx(styles.navbar)}>
-        <div className="container w-full flex py-4 md:pb-0 items-center	">
+        <div className="container w-full flex py-4 lg:pb-0 items-center	">
           <Link href="/" className={styles.logo}>
             <Image
               src="/logo-surmont.png"

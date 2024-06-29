@@ -11,7 +11,7 @@ export default function Accordion({ data }: any) {
           data.accordionElement.map((elem: any) => (
             <Disclosure as="div" key={elem.id}>
               <DisclosureButton className="group flex w-full items-center justify-between p-6">
-                <span className="text-md font-bold group-data-[hover]:text-main-1">
+                <span className="text-md font-bold group-data-[hover]:text-main-1 text-left">
                   {elem?.title}
                 </span>
                 <ChevronDownIcon className="size-5 fill-gray/60 group-data-[hover]:fill-gray/50 group-data-[open]:rotate-180" />

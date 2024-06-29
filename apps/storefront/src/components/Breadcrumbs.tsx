@@ -12,7 +12,7 @@ interface BreadcrumbsProps {
 const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items }) => {
   return (
     <div itemScope itemType="https://schema.org/BreadcrumbList">
-      <div className="container flex gap-2 flex-wrap text-left py-4 pl-8 ">
+      <div className="container flex gap-2 flex-wrap text-left py-4 pl-8">
         {items.map((item, i) => (
           <div
             key={item.name}

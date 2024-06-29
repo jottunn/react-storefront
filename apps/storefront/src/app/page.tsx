@@ -30,7 +30,6 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 import SwiperComponent from "@/components/SwiperComponent";
 import HomepageBlock from "@/components/homepage/HomepageBlock";
 import getBase64 from "@/lib/generateBlurPlaceholder";
-import Head from "next/head";
 
 const parser = edjsHTML();
 
@@ -193,15 +192,6 @@ export default async function Home() {
 
   return (
     <>
-      <Head>
-        {bannerAttribute?.values[0]?.name && (
-          <link
-            rel="preload"
-            href={`${UPLOAD_FOLDER ?? ""}/${bannerAttribute.values[0].name}`}
-            as="image"
-          />
-        )}
-      </Head>
       {bannerAttribute && (
         <div className="flex overflow-hidden not-last:mb-md !px-0 mb-28">
           <div className="flex flex-col md:flex-row w-full h-[125vw] md:max-h-[80vh]">

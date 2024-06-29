@@ -15,8 +15,21 @@ type Props = {
   };
 };
 
+export const isValidSlug = (slug: string): boolean => {
+  const invalidPatterns = [
+    /^\./, // Starts with a dot (hidden/system files)
+    /\.(env|example|json|js|ts|tsx|md|html|css|scss|png|jpg|jpeg|gif|svg|ico)$/, // Ends with specific file extensions
+  ];
+
+  return !invalidPatterns.some((pattern) => pattern.test(slug));
+};
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const currentSlug = params.slug[params.slug.length - 1];
+  if (!isValidSlug(currentSlug)) {
+    console.warn("Invalid slug attempt:", currentSlug);
+    return notFound();
+  }
   try {
     const saleorPage = await executeGraphQL<
       PageQuery,
@@ -61,6 +74,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Page({ params }: { params: { slug: string } }) {
   const currentSlug = params.slug[params.slug.length - 1];
+  if (!isValidSlug(currentSlug)) {
+    console.warn("Invalid slug attempt:", currentSlug);
+    return notFound();
+  }
   const saleorPage = await executeGraphQL<
     PageQuery,
     { slug: string; locale: LanguageCodeEnum; channel: string }

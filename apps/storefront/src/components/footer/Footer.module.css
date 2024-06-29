@@ -21,7 +21,7 @@
 }
 
 .menu-heading {
-  @apply block text-md font-bold mb-4 cursor-pointer uppercase;
+  @apply block text-[1.3rem] md:text-md font-bold mb-4 cursor-pointer uppercase;
 }
 
 .menu-link {

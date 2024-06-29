@@ -339,7 +339,7 @@ const ProductDetail = async ({
           __html: JSON.stringify(jsonLd),
         }}
       />
-      <div className="container text-left pt-2 pb-8 space-x-2 pl-0">
+      <div className="container text-left pt-2 pb-2 md:pb-8 space-x-2 pl-0">
         <Breadcrumbs items={breadcrumbItems} />
       </div>
       <div
@@ -357,7 +357,7 @@ const ProductDetail = async ({
             selectedVariant={selectedVariant}
           />
         </div>
-        <div className="space-y-6 mt-12 w-full">
+        <div className="space-y-2 mt-2 md:mt-12 w-full">
           {brandAttribute && (
             <Link
               href={`/collections/${brandAttribute?.values[0]?.slug}`}
@@ -387,7 +387,7 @@ const ProductDetail = async ({
             </Link>
           )}
           <h1
-            className="text-4xl leading-[3rem] md:text-[3rem] md:leading-[3.5rem] font-bold tracking-tight text-main text-left !mb-10"
+            className="text-4xl leading-[3rem] md:text-[3rem] md:leading-[3.5rem] font-bold tracking-tight text-main text-left !mb-4 md:!mb-10"
             data-testid="productName"
           >
             {translate(product, "name")}
@@ -443,7 +443,7 @@ const ProductDetail = async ({
         )}
       </div>
       {relatedProducts && relatedProducts.length > 0 && (
-        <div className="container px-8 pt-44 pb-44 border-t">
+        <div className="container px-8 py-12 md:py-44 border-t">
           <div className="swiper-header flex justify-center items-center space-x-4">
             <h2 className="text-lg uppercase m-0 flex-1 text-left mb-8">
               {messages["app.relatedProducts"]}

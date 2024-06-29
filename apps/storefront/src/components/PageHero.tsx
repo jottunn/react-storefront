@@ -41,11 +41,13 @@ export function PageHero({ title, description, pills = [], messages }: PageHeroP
           <Disclosure>
             {({ open }) => (
               <>
-                <DisclosureButton className="text-main-1 hover:text-action-1 text-base italic border border-transparent hover:border-b-action-1 inline-block ml-6">
+                <DisclosureButton className="text-main-1 hover:text-action-1 text-base inline-block ml-6">
                   <span className="flex">
-                    {open
-                      ? (messages && messages["app.ui.hide"]) || ""
-                      : (messages && messages["app.ui.readmore"]) || ""}
+                    <span className="border border-transparent border-b-main-1 hover:border-b-action-1">
+                      {open
+                        ? (messages && messages["app.ui.hide"]) || ""
+                        : (messages && messages["app.ui.readmore"]) || ""}
+                    </span>
                     {open ? (
                       <ChevronUpIcon className="h-5 w-5 ml-2 relative top-[2px]" />
                     ) : (

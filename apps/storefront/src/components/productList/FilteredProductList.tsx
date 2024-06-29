@@ -258,24 +258,24 @@ export function FilteredProductList({
     const existingFilter = queryFilters.find((filter) => filter.slug === attributeSlug);
     if (!existingFilter) {
       return setQueryFilters([...queryFilters, { slug: attributeSlug, values: [choiceSlug] }], {
-        scroll: false,
-        shallow: true,
+        scroll: true,
+        shallow: false,
       });
     }
 
     // if its already here, modify values list
     existingFilter.values = [...existingFilter.values, choiceSlug];
     return setQueryFilters(queryFilters, {
-      scroll: false,
-      shallow: true,
+      scroll: true,
+      shallow: false,
     });
   };
 
   const clearFilters = async () => {
     // await required when multiple query changes are applied at once
     await setQueryFilters(null, {
-      scroll: false,
-      shallow: true,
+      scroll: true,
+      shallow: false,
     });
   };
 
