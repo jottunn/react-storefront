@@ -14,7 +14,12 @@ COPY . .
 RUN jq 'del(.devDependencies.cypress)' package.json > _.json && mv _.json package.json
 RUN pnpm install
 
+# Run build for shared-apl package
+WORKDIR /app/packages/shared-apl
+RUN npm run build
+
 # Env variables
+WORKDIR /app
 RUN rm .env
 
 ARG SALEOR_API_URL
