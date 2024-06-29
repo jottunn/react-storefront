@@ -20,6 +20,7 @@ RUN npm run build
 
 # Env variables
 WORKDIR /app
+RUN pnpm install
 RUN rm .env
 
 ARG SALEOR_API_URL
