@@ -1,5 +1,6 @@
 import { SaleorApp } from "@saleor/app-sdk/saleor-app";
 import { APL, FileAPL, UpstashAPL } from "@saleor/app-sdk/APL";
+import MyAPL from "shared-apl";
 
 /**
  * By default auth data are stored in the `.auth-data.json` (FileAPL).
@@ -9,10 +10,16 @@ import { APL, FileAPL, UpstashAPL } from "@saleor/app-sdk/APL";
  * [APL documentation](https://github.com/saleor/saleor-app-sdk/blob/main/docs/apl.md)
  */
 export let apl: APL;
+const volumeConfig = {
+  fileName: "/app/apps/manage-promotions/.saleor-app-auth.json",
+};
 switch (process.env.APL) {
   case "upstash":
     // Require `UPSTASH_URL` and `UPSTASH_TOKEN` environment variables
     apl = new UpstashAPL();
+    break;
+  case "volume":
+    apl = new MyAPL(volumeConfig);
     break;
   default:
     apl = new FileAPL();
