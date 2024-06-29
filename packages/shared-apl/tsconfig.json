@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES2015", // ES5 is outdated, ES2015 is a more common choice
+    "module": "commonjs",
+    "declaration": true,
+    "outDir": "./dist",
+    "strict": true,
+    "esModuleInterop": true, // Added to ensure compatibility with CommonJS modules
+    "skipLibCheck": true, // Added to skip type checking of declaration files
+    "forceConsistentCasingInFileNames": true // Ensures consistent file naming
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}
