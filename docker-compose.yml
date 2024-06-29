@@ -5,9 +5,8 @@ services:
       context: .
       dockerfile: Dockerfile.base
       args:
-        - SALEOR_API_URL=http://localhost:8000/graphql/ # handled by nginx
+        - SALEOR_API_URL=http://localhost:8000/graphql/
         - STOREFRONT_URL=http://localhost:3000
-        - CLOUD_DEPLOYMENT_URL=
     ports:
       - 3000:3000
     networks:
@@ -19,14 +18,13 @@ services:
       context: .
       dockerfile: Dockerfile.base
       args:
-        - SALEOR_API_URL=http://localhost:8000/graphql/ # handled by nginx
-        - PRODUCTS_IMPORTER_URL=http://localhost:3004
-        - STOREFRONT_URL=http://localhost:3000
-        - CLOUD_DEPLOYMENT_URL=
+        - SALEOR_API_URL=http://localhost:8000/graphql/
     ports:
       - 3004:3004
     networks:
       - saleor-backend-tier
+    volumes:
+      - products-importer-auth-volume:/app/apps/products-importer/
     command: sh -c '(nginx &) && pnpm turbo run start --filter=products-importer...'
   manage-promotions:
     container_name: manage-promotions
@@ -34,14 +32,13 @@ services:
       context: .
       dockerfile: Dockerfile.base
       args:
-        - SALEOR_API_URL=http://localhost:8000/graphql/ # handled by nginx
-        - MANAGE_PROMOTIONS_URL=http://localhost:3005
-        - STOREFRONT_URL=http://localhost:3000
-        - CLOUD_DEPLOYMENT_URL=
+        - SALEOR_API_URL=http://localhost:8000/graphql/
     ports:
       - 3005:3005
     networks:
       - saleor-backend-tier
+    volumes:
+      - manage-promotions-auth-volume:/app/apps/manage-promotions/
     command: sh -c '(nginx &) && pnpm turbo run start --filter=manage-promotions...'
   search:
     container_name: search
@@ -49,11 +46,13 @@ services:
       context: .
       dockerfile: Dockerfile.base
       args:
-        - SALEOR_API_URL=http://localhost:8000/graphql/ # handled by nginx
+        - SALEOR_API_URL=http://localhost:8000/graphql/
     ports:
       - 3006:3006
     networks:
       - saleor-backend-tier
+    volumes:
+      - search-auth-volume:/app/apps/search/
     command: sh -c '(nginx &) && pnpm turbo run start --filter=search...'
   manage-stock:
     container_name: manage-stock
@@ -61,11 +60,13 @@ services:
       context: .
       dockerfile: Dockerfile.base
       args:
-        - SALEOR_API_URL=http://localhost:8000/graphql/ # handled by nginx
+        - SALEOR_API_URL=http://localhost:8000/graphql/
     ports:
       - 3007:3007
     networks:
       - saleor-backend-tier
+    volumes:
+      - manage-stock-auth-volume:/app/apps/manage-stock/
     command: sh -c '(nginx &) && pnpm turbo run start --filter=manage-stock...'
   emails-and-messages:
     container_name: emails-and-messages
@@ -73,12 +74,20 @@ services:
       context: .
       dockerfile: Dockerfile.base
       args:
-        - SALEOR_API_URL=http://localhost:8000/graphql/ # handled by nginx
+        - SALEOR_API_URL=http://localhost:8000/graphql/
     ports:
       - 3008:3008
     networks:
       - saleor-backend-tier
+    volumes:
+      - emails-and-messages-auth-volume:/app/apps/emails-and-messages/
     command: sh -c '(nginx &) && pnpm turbo run start --filter=emails-and-messages...'
+volumes:
+  manage-promotions-auth-volume:
+  emails-and-messages-auth-volume:
+  search-auth-volume:
+  products-importer-auth-volume:
+  manage-stock-auth-volume:
 
 networks:
   saleor-backend-tier:
