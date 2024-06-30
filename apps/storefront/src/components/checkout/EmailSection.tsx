@@ -1,14 +1,12 @@
 "use client";
 import React, { ChangeEvent, useState } from "react";
 import { useForm } from "react-hook-form";
-
-import { CheckoutDetailsFragment, User } from "@/saleor/api";
+import { User } from "@/saleor/api";
 import { Button } from "../Button";
 import { useRouter } from "next/navigation";
 import { Messages } from "@/lib/util";
 import { checkoutEmailUpdate, customerAttach } from "./actions";
 import { login, register as registerUser } from "src/app/actions";
-import { RegisterFormData } from "src/app/register/RegisterForm";
 import { useCheckout } from "@/lib/hooks/CheckoutContext";
 
 export interface EmailSectionProps {

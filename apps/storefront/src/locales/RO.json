@@ -46,6 +46,8 @@
   "app.checkout.tax": "Taxă",
   "app.checkout.total": "Total",
   "app.checkout.soldOut": "Unul sau mai multe produse nu mai exista pe stoc, te rugăm sa actualizezi cosul pentru a continua",
+  "app.checkout.processing": "Se procesează...",
+  "app.checkout.terms": "Pentru a continua trebuie sa accepti Termenii și Condițiile",
   "app.chooseSize": "Alege mărimea",
   "app.clearAll": "Resetează filtrele",
   "app.filterBy": "Filtre",

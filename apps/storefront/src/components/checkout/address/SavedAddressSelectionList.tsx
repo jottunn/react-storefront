@@ -42,7 +42,9 @@ export function SavedAddressSelectionList({
 
   return (
     <>
-      {addresses.length > 0 && <p className="mb-2">{messages["app.checkout.addressSelect"]}</p>}
+      {addresses.length > 0 && (
+        <p className="mb-2 text-base">{messages["app.checkout.addressSelect"]}</p>
+      )}
       <div className="grid grid-cols-2 mb-2">
         {addresses.map((address) => (
           <div

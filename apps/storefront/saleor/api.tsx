@@ -33688,6 +33688,7 @@ export type CheckoutBillingAddressUpdateMutation = {
 
 export type CheckoutCompleteMutationVariables = Exact<{
   id?: InputMaybe<Scalars["ID"]["input"]>;
+  metadata?: InputMaybe<Array<MetadataInput> | MetadataInput>;
   paymentData?: InputMaybe<Scalars["JSONString"]["input"]>;
 }>;
 
@@ -38092,8 +38093,8 @@ export type CheckoutBillingAddressUpdateMutationOptions = Apollo.BaseMutationOpt
   CheckoutBillingAddressUpdateMutationVariables
 >;
 export const CheckoutCompleteDocument = gql`
-  mutation checkoutComplete($id: ID, $paymentData: JSONString) {
-    checkoutComplete(id: $id, paymentData: $paymentData) {
+  mutation checkoutComplete($id: ID, $metadata: [MetadataInput!], $paymentData: JSONString) {
+    checkoutComplete(id: $id, metadata: $metadata, paymentData: $paymentData) {
       order {
         id
         status
@@ -38138,6 +38139,7 @@ export type CheckoutCompleteMutationFn = Apollo.MutationFunction<
  * const [checkoutCompleteMutation, { data, loading, error }] = useCheckoutCompleteMutation({
  *   variables: {
  *      id: // value for 'id'
+ *      metadata: // value for 'metadata'
  *      paymentData: // value for 'paymentData'
  *   },
  * });

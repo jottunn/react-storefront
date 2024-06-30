@@ -42,8 +42,6 @@ export default function CartModal({ messages }: CartModalProps) {
     if (counter > counterO && !cartModalOpen) {
       setCartModalOpen(true);
       setCounterO(counter);
-    } else if (counter === 0 && cartModalOpen) {
-      setCartModalOpen(false);
     }
   }, [counter, counterO, cartModalOpen]);
 

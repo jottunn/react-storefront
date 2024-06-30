@@ -2,12 +2,14 @@
 import React, { useState } from "react";
 import { CheckoutDetailsFragment } from "@/saleor/api";
 import EmailSection from "./EmailSection";
-import BillingAddressSection from "./BillingAddressSection";
+import BillingAddressSection from "./address/BillingAddressSection";
 import ShippingAddressSection from "./shipping/ShippingAddressSection";
 import ShippingMethodSection from "./shipping/ShippingMethodSection";
 import PaymentSection from "./payments/PaymentSection";
 import { useCheckout } from "@/lib/hooks/CheckoutContext";
 import Spinner from "../Spinner";
+import CheckoutNote from "./CheckoutNote";
+import CompleteCheckoutButton from "./CompleteCheckoutButton";
 
 interface CollapsedSections {
   billingAddress: boolean;
@@ -76,12 +78,12 @@ function CheckoutForm({ messages, user }: CheckoutFormProps) {
           <div className="col-span-full sm:col-span-12 mt-5 mb-5">
             <label>
               <input
-                className="w-4 h-4 text-action-1 bg-gray-100 border-gray-300 focus:ring-action-1 dark:focus:ring-action-1 dark:ring-offset-gray-800 focus:ring-2 dark:bg-neutral-100 dark:border-gray-600 !opacity-100"
+                className="mr-2 w-4 h-4 text-action-1 bg-gray-100 border-gray-300 focus:ring-action-1 dark:focus:ring-action-1 dark:ring-offset-gray-800 focus:ring-2 dark:bg-neutral-100 dark:border-gray-600 !opacity-100"
                 type="checkbox"
                 checked={sameAddress}
                 onChange={() => setSameAddress(!sameAddress)}
               />
-              <span className="pl-5 text-base">{messages["app.checkout.sameAsBillingButton"]}</span>
+              <span className="text-base">{messages["app.checkout.sameAsBillingButton"]}</span>
             </label>
           </div>
         )}
@@ -103,8 +105,8 @@ function CheckoutForm({ messages, user }: CheckoutFormProps) {
           <ShippingMethodSection active={!collapsedSections.deliveryMethod} messages={messages} />
         </div>
       )}
+
       <div className="checkout-section-container">
-        {/* @ts-expect-error Async Server Component  */}
         <PaymentSection active={!collapsedSections.payment} messages={messages} />
       </div>
     </section>

@@ -370,3 +370,31 @@ export const orderDetails = async (args: { token: String }) => {
     return;
   }
 };
+
+export const saveOrderMetaDataMutation = async (args: { id: string; type: string }) => {
+  const { id, type } = args;
+  try {
+    const response = await executeGraphQL<
+      SetAddressDefaultMutation,
+      {
+        id: string;
+        type: string;
+      }
+    >(SetAddressDefaultDocument, {
+      variables: {
+        id: id,
+        type: type,
+      },
+      cache: "no-cache",
+    });
+
+    if (response.accountSetDefaultAddress?.errors.length) {
+      const customError = response.accountSetDefaultAddress.errors as any;
+      return { success: false, errors: customError.map((error: { code: any }) => error.code) };
+    }
+    return { success: true, addresses: response.accountSetDefaultAddress?.user?.addresses };
+  } catch (error) {
+    console.error("Failed to set default adresss:", error);
+    return;
+  }
+};

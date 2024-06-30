@@ -24,6 +24,7 @@ import {
   CheckoutShippingAddressUpdateMutation,
   CheckoutShippingMethodUpdateDocument,
   CheckoutShippingMethodUpdateMutation,
+  MetadataInput,
   PaymentInput,
   RemoveProductFromCheckoutDocument,
   RemoveProductFromCheckoutMutation,
@@ -252,17 +253,24 @@ export const checkoutPaymentCreateMutation = async (args: { id: string; input: P
   }
 };
 
-export const checkoutCompleteMutation = async (args: { id: string }) => {
-  const { id } = args;
+export const checkoutCompleteMutation = async (args: { id: string; note: string }) => {
+  const { id, note } = args;
   try {
     const response = await executeGraphQL<
       CheckoutCompleteMutation,
       {
         id: string;
+        metadata: [MetadataInput];
       }
     >(CheckoutCompleteDocument, {
       variables: {
         id: id,
+        metadata: [
+          {
+            key: "observatii-comanda",
+            value: note,
+          },
+        ],
       },
       cache: "no-cache",
     });

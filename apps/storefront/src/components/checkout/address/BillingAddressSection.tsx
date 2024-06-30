@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { CheckoutDetailsFragment, CheckoutError, CountryCode, User } from "@/saleor/api";
-import { Button } from "../Button";
+import { Button } from "../../Button";
 import { Messages } from "@/lib/util";
-import { AddressForm, AddressFormData } from "./address/AddressForm";
-import SavedAddressSelectionList from "./address/SavedAddressSelectionList";
-import AddressDisplay from "./address/AddressDisplay";
-import { checkoutBillingAddressUpdate, checkoutShippingAddressUpdate } from "./actions";
+import { AddressForm, AddressFormData } from "./AddressForm";
+import SavedAddressSelectionList from "./SavedAddressSelectionList";
+import AddressDisplay from "./AddressDisplay";
+import { checkoutBillingAddressUpdate, checkoutShippingAddressUpdate } from "../actions";
 import { useCheckout } from "@/lib/hooks/CheckoutContext";
 
 export interface BillingAddressSection {

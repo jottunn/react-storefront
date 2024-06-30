@@ -1,5 +1,5 @@
-mutation checkoutComplete($id: ID, $paymentData: JSONString) {
-  checkoutComplete(id: $id, paymentData: $paymentData) {
+mutation checkoutComplete($id: ID, $metadata: [MetadataInput!], $paymentData: JSONString) {
+  checkoutComplete(id: $id, metadata: $metadata, paymentData: $paymentData) {
     order {
       id
       status

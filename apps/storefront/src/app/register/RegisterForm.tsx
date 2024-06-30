@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FormProps } from "../login/LoginForm";
 import { register } from "../actions";
+import Link from "next/link";
 
 export interface RegisterFormData {
   firstName: string;
@@ -148,14 +149,17 @@ export default function RegisterForm({ messages }: FormProps) {
 
       {/* GDPR Consent Checkbox */}
       <div className="my-3">
-        <label htmlFor="gdprConsent" className="flex items-start text-md">
+        <label htmlFor="gdprConsent" className="text-md">
           <input
             type="checkbox"
             id="gdprConsent"
             {...registerForm("gdprConsent")}
             className="mr-2 mt-2"
           />
-          {messages["app.login.gdprConsent"]}
+          <span className="mr-1">{messages["app.login.gdprConsent"]}</span>
+          <Link className="inline-block underline hover:text-action-1" href="/termeni-si-conditii">
+            {messages["app.nwl.terms"]}
+          </Link>
         </label>
         {!!errorsForm.gdprConsent && (
           <p className="text-sm text-red-500 pt-2"> {messages["app.login.gdprConsentErr"]}</p>
