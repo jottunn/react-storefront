@@ -141,15 +141,20 @@ const ProductDetail = async ({
   }
 
   const messages = getMessages(defaultRegionQuery().locale);
-  const firstImage = product.thumbnail;
-  const base64 = firstImage && (await getBase64(firstImage.url));
-  const placeholder = base64 || null;
   const variants = product.variants;
   const selectedVariantID = searchParams.variant;
   const selectedVariant =
     product.variants && product.variants.length > 1
       ? product?.variants?.find((v: { id: string | undefined }) => v?.id === selectedVariantID)
       : product.variants?.[0];
+
+  const firstImage = product.thumbnail;
+  const placeholder =
+    selectedVariant && selectedVariant.media && selectedVariant.media.length > 0
+      ? await getBase64(selectedVariant.media[0].url)
+      : firstImage
+        ? await getBase64(firstImage.url)
+        : null;
 
   const isAddToCartButtonDisabled =
     !product.isAvailableForPurchase ||
@@ -357,11 +362,11 @@ const ProductDetail = async ({
             selectedVariant={selectedVariant}
           />
         </div>
-        <div className="space-y-2 mt-2 md:mt-12 w-full">
+        <div className="space-y-2 md:mt-2 mb-2 md:mt-12 md:mb-4 w-full">
           {brandAttribute && (
             <Link
               href={`/collections/${brandAttribute?.values[0]?.slug}`}
-              className="text-md mt-2 font-medium text-gray-600 cursor-pointer text-left hover:text-green-600 block"
+              className="text-md md:mt-2 font-medium text-gray-600 cursor-pointer text-left hover:text-green-600 block"
             >
               {brandCollection &&
               brandCollection.collection &&
@@ -432,12 +437,16 @@ const ProductDetail = async ({
       </div>
       <div className="container pb-12 px-8">
         {description && (
-          <div className="mt-8 space-y-6 text-base">
+          <div className="mt-8 space-y-6">
             <p className="text-md mt-8 font-bold text-black-500 uppercase">
               {messages["app.product.description"]}
             </p>
             {description.map((content, i) => (
-              <div key={i} dangerouslySetInnerHTML={{ __html: xss(content) }} />
+              <div
+                className="prose prose-2xl prose-list:list-disc w-full max-w-full"
+                key={i}
+                dangerouslySetInnerHTML={{ __html: xss(content) }}
+              />
             ))}
           </div>
         )}
@@ -449,10 +458,16 @@ const ProductDetail = async ({
               {messages["app.relatedProducts"]}
             </h2>
             <div className="swiper-navigation flex mb-8">
-              <button className="swiper-button-prev-rel custom-prev inline-flex justify-center items-center w-10 h-10 border border-gray-600 hover:border-gray-700 disabled:border-gray-200 rounded-full transition-colors cursor-pointer">
+              <button
+                className="swiper-button-prev-rel custom-prev inline-flex justify-center items-center w-10 h-10 border border-gray-600 hover:border-gray-700 disabled:border-gray-200 rounded-full transition-colors cursor-pointer"
+                aria-label="Prev"
+              >
                 <ChevronLeftIcon className="h-6 w-6 text-gray-500" />
               </button>
-              <button className="swiper-button-next-rel custom-next inline-flex justify-center items-center w-10 h-10 border border-gray-600 hover:border-gray-700 disabled:border-gray-200 ml-2 rounded-full transition-colors cursor-pointer">
+              <button
+                className="swiper-button-next-rel custom-next inline-flex justify-center items-center w-10 h-10 border border-gray-600 hover:border-gray-700 disabled:border-gray-200 ml-2 rounded-full transition-colors cursor-pointer"
+                aria-label="Next"
+              >
                 <ChevronRightIcon className="h-6 w-6 text-gray-500" />
               </button>
             </div>
@@ -473,10 +488,16 @@ const ProductDetail = async ({
               {messages["app.recommendedProducts"]}
             </h2>
             <div className="swiper-navigation flex mb-8">
-              <button className="swiper-button-prev-rec custom-prev inline-flex justify-center items-center w-10 h-10 border border-gray-600 hover:border-gray-700 disabled:border-gray-200 rounded-full transition-colors cursor-pointer">
+              <button
+                className="swiper-button-prev-rec custom-prev inline-flex justify-center items-center w-10 h-10 border border-gray-600 hover:border-gray-700 disabled:border-gray-200 rounded-full transition-colors cursor-pointer"
+                aria-label="Prev"
+              >
                 <ChevronLeftIcon className="h-6 w-6 text-gray-500" />
               </button>
-              <button className="swiper-button-next-rec custom-next inline-flex justify-center items-center w-10 h-10 border border-gray-600 hover:border-gray-700 disabled:border-gray-200 ml-2 rounded-full transition-colors cursor-pointer">
+              <button
+                className="swiper-button-next-rec custom-next inline-flex justify-center items-center w-10 h-10 border border-gray-600 hover:border-gray-700 disabled:border-gray-200 ml-2 rounded-full transition-colors cursor-pointer"
+                aria-label="Next"
+              >
                 <ChevronRightIcon className="h-6 w-6 text-gray-500" />
               </button>
             </div>

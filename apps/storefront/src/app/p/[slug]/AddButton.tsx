@@ -14,6 +14,7 @@ export function AddButton({ disabled, messages }: { disabled?: boolean; messages
       type="submit"
       aria-disabled={isButtonDisabled}
       aria-busy={pending}
+      aria-label={messages["app.product.addToCart"]}
       onClick={(e) => isButtonDisabled && e.preventDefault()}
       className="w-full h-12 bg-action-1 m-auto px-6 py-3 text-md font-medium leading-6 text-white shadow hover:bg-action-2 disabled:cursor-not-allowed disabled:opacity-70 hover:disabled:bg-neutral-700 aria-disabled:cursor-not-allowed aria-disabled:opacity-70	hover:aria-disabled:bg-neutral-700"
     >

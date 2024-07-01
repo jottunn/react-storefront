@@ -19,8 +19,14 @@ export const metadata = {
 
 export default function RegisterPage() {
   return (
-    <Suspense fallback={<Spinner />}>
-      <section className="mx-auto max-w-8xl p-4">
+    <Suspense
+      fallback={
+        <div className="min-h-[400px] flex justify-center items-center">
+          <Spinner />
+        </div>
+      }
+    >
+      <section className="mx-auto max-w-8xl min-h-[400px] p-4">
         <div className="container bg-white pb-40 pt-40 flex justify-center items-center">
           <div className="w-[85%] md:w-[45%]">
             <RegisterForm messages={messages} />

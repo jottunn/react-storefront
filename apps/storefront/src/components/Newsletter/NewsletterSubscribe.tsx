@@ -80,12 +80,13 @@ const NewsletterSubscribe = ({ messages }: NewsletterSubscribeProps) => {
       </form>
       <div className="mt-2 flex items-start">
         <input
+          id="nwl-agree"
           type="checkbox"
           checked={agreedToTerms}
           onChange={(e) => setAgreedToTerms(e.target.checked)}
           className="mr-2 mt-2 text-base"
         />
-        <label className="text-gray-600 text-base text-main-1">
+        <label htmlFor="nwl-agree" className="text-gray-600 text-base text-main-1">
           {messages["app.nwl.gdpr"]}{" "}
           <Link href="/prelucrare-date-personale" className="underline hover:text-action-1">
             {messages["app.nwl.terms"]}

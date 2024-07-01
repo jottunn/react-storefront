@@ -113,7 +113,7 @@ export function VariantSelector({
 
         <div
           className={clsx("m-auto mb-6 mt-6", {
-            "grid grid-cols-2 gap-[50px]": sizeGuide,
+            "grid grid-cols-2 lg:gap-[50px]": sizeGuide,
             flex: !sizeGuide,
           })}
         >
