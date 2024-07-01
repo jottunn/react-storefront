@@ -87,3 +87,12 @@ export const getMessages = (locale: string, prefix: string = ""): Messages => {
     return {};
   }
 };
+
+/** get order value from metadata
+ * metadata key = order
+ */
+
+export const getOrderValue = (metadata: any[]) => {
+  const orderMetadata = metadata.find((meta) => meta.key === "order");
+  return orderMetadata ? parseInt(orderMetadata.value, 10) : Infinity;
+};

@@ -1,4 +1,4 @@
-import { getMessages } from "src/lib/util";
+import { getMessages, getOrderValue } from "src/lib/util";
 import { DEFAULT_LOCALE, defaultRegionQuery } from "src/lib/regions";
 import { executeGraphQL } from "@/lib/graphql";
 import {
@@ -141,6 +141,7 @@ export default async function Home() {
     revalidate: 60,
   });
   const homepageCategories = categories ? mapEdgesToItems(categories) : [];
+  homepageCategories.sort((a, b) => getOrderValue(a.metadata) - getOrderValue(b.metadata));
   const numColumnsHPCategories = getNumColumns(homepageCategories.length);
 
   /** collections to be displayed on homepage */
@@ -160,6 +161,7 @@ export default async function Home() {
   });
 
   const homepageCollections = collections ? mapEdgesToItems(collections) : [];
+  homepageCollections.sort((a, b) => getOrderValue(a.metadata) - getOrderValue(b.metadata));
   const numColumnsHPCollections = getNumColumns(homepageCollections.length);
 
   const bannerAttribute =
@@ -241,9 +243,11 @@ export default async function Home() {
           </div>
         </div>
       )}
-      <div className="container mb-14 mx-auto max-w-[800px] text-center prose-2xl">
-        <div dangerouslySetInnerHTML={{ __html: parsedContent }} />
-      </div>
+      {parsedContent && (
+        <div className="container mb-14 mx-auto max-w-[800px] text-center prose-2xl">
+          <div dangerouslySetInnerHTML={{ __html: parsedContent }} />
+        </div>
+      )}
 
       {featuredCollection && featuredProducts && (
         <div className="container px-8 py-24">

@@ -30,7 +30,7 @@ export default function HomepageBlock({ item, type }: HomepageBlockProps) {
               priority={false}
               loading={"lazy"}
             />
-            <h3 className="text-lg uppercase mt-3">{item.name}</h3>
+            <h3 className="text-md uppercase mt-3">{item.name}</h3>
           </Link>
         )}
       </div>

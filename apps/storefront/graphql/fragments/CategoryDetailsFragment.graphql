@@ -25,4 +25,8 @@ fragment CategoryDetailsFragment on Category {
       }
     }
   }
+  metadata {
+    key
+    value
+  }
 }

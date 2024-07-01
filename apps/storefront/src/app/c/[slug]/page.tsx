@@ -7,7 +7,7 @@ import PageHero from "@/components/PageHero";
 import { translate } from "@/lib/translations";
 import { mapEdgesToItems } from "@/lib/maps";
 import FilteredProductList from "@/components/productList/FilteredProductList";
-import { getMessages } from "@/lib/util";
+import { getMessages, getOrderValue } from "@/lib/util";
 import { STOREFRONT_NAME } from "@/lib/const";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Script from "next/script";
@@ -67,6 +67,8 @@ export default async function Page({ params }: { params: { slug: string } }) {
   const messages = getMessages(DEFAULT_LOCALE);
   const parentCategories = mapEdgesToItems(category?.ancestors);
   const subcategories = mapEdgesToItems(category?.children);
+  subcategories.sort((a, b) => getOrderValue(a.metadata) - getOrderValue(b.metadata));
+
   const parents = parentCategories.map((parentCategory) => ({
     label: translate(parentCategory, "name"),
     slug: parentCategory.slug,
@@ -90,6 +92,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
       item: item.href ? `${process.env.NEXT_PUBLIC_STOREFRONT_URL}${item.href}` : undefined,
     })),
   };
+
   return (
     <>
       <Script

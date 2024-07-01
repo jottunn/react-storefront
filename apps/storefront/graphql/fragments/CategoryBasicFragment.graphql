@@ -6,6 +6,10 @@ fragment CategoryBasicFragment on Category {
     id
     name
   }
+  metadata {
+    key
+    value
+  }
   ancestors(first:5) {
     edges {
       node {

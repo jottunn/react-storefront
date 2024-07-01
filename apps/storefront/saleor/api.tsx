@@ -32162,6 +32162,7 @@ export type CategoryBasicFragment = {
   name: string;
   slug: string;
   translation?: { __typename?: "CategoryTranslation"; id: string; name?: string | null } | null;
+  metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
   ancestors?: {
     __typename?: "CategoryCountableConnection";
     edges: Array<{
@@ -32210,6 +32211,7 @@ export type CategoryDetailsFragment = {
           id: string;
           name?: string | null;
         } | null;
+        metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
         ancestors?: {
           __typename?: "CategoryCountableConnection";
           edges: Array<{
@@ -32244,6 +32246,7 @@ export type CategoryDetailsFragment = {
           id: string;
           name?: string | null;
         } | null;
+        metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
         ancestors?: {
           __typename?: "CategoryCountableConnection";
           edges: Array<{
@@ -32264,6 +32267,7 @@ export type CategoryDetailsFragment = {
       };
     }>;
   } | null;
+  metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
 };
 
 export type CheckoutDetailsFragment = {
@@ -32518,6 +32522,7 @@ export type CollectionDetailsFragment = {
     name?: string | null;
   } | null;
   backgroundImage?: { __typename?: "Image"; url: string; alt?: string | null } | null;
+  metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
 };
 
 export type DeliveryMethodFragment = {
@@ -32836,6 +32841,7 @@ export type ProductDetailsFragment = {
     name: string;
     slug: string;
     translation?: { __typename?: "CategoryTranslation"; id: string; name?: string | null } | null;
+    metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
     ancestors?: {
       __typename?: "CategoryCountableConnection";
       edges: Array<{
@@ -35410,6 +35416,7 @@ export type CategoriesByMetaKeyQuery = {
                 id: string;
                 name?: string | null;
               } | null;
+              metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
               ancestors?: {
                 __typename?: "CategoryCountableConnection";
                 edges: Array<{
@@ -35444,6 +35451,7 @@ export type CategoriesByMetaKeyQuery = {
                 id: string;
                 name?: string | null;
               } | null;
+              metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
               ancestors?: {
                 __typename?: "CategoryCountableConnection";
                 edges: Array<{
@@ -35464,6 +35472,7 @@ export type CategoriesByMetaKeyQuery = {
             };
           }>;
         } | null;
+        metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
       };
     }>;
   } | null;
@@ -35505,6 +35514,7 @@ export type CategoryBySlugQuery = {
             id: string;
             name?: string | null;
           } | null;
+          metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
           ancestors?: {
             __typename?: "CategoryCountableConnection";
             edges: Array<{
@@ -35539,6 +35549,7 @@ export type CategoryBySlugQuery = {
             id: string;
             name?: string | null;
           } | null;
+          metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
           ancestors?: {
             __typename?: "CategoryCountableConnection";
             edges: Array<{
@@ -35559,6 +35570,7 @@ export type CategoryBySlugQuery = {
         };
       }>;
     } | null;
+    metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
   } | null;
 };
 
@@ -35788,6 +35800,7 @@ export type CollectionBySlugQuery = {
       description?: string | null;
       name?: string | null;
     } | null;
+    metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
   } | null;
 };
 
@@ -35840,6 +35853,7 @@ export type CollectionsByMetaKeyQuery = {
           name?: string | null;
         } | null;
         backgroundImage?: { __typename?: "Image"; url: string; alt?: string | null } | null;
+        metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
       };
     }>;
   } | null;
@@ -36477,6 +36491,7 @@ export type ProductBySlugQuery = {
       name: string;
       slug: string;
       translation?: { __typename?: "CategoryTranslation"; id: string; name?: string | null } | null;
+      metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
       ancestors?: {
         __typename?: "CategoryCountableConnection";
         edges: Array<{
@@ -37124,6 +37139,10 @@ export const CategoryBasicFragmentDoc = gql`
       id
       name
     }
+    metadata {
+      key
+      value
+    }
     ancestors(first: 5) {
       edges {
         node {
@@ -37172,6 +37191,10 @@ export const CategoryDetailsFragmentDoc = gql`
           ...CategoryBasicFragment
         }
       }
+    }
+    metadata {
+      key
+      value
     }
   }
 `;
@@ -37390,6 +37413,10 @@ export const CollectionDetailsFragmentDoc = gql`
     }
     backgroundImage {
       ...ImageFragment
+    }
+    metadata {
+      key
+      value
     }
   }
 `;
