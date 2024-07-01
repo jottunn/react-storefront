@@ -10,11 +10,13 @@ export interface SwiperComponentProps {
   products: Product[];
   prevButtonClass: string;
   nextButtonClass: string;
+  type?: string;
 }
 export default function SwiperComponent({
   products,
   prevButtonClass,
   nextButtonClass,
+  type,
 }: SwiperComponentProps) {
   return (
     <Swiper
@@ -38,7 +40,7 @@ export default function SwiperComponent({
         },
         // When the viewport width is >= 1024px
         1024: {
-          slidesPerView: 5,
+          slidesPerView: type === "featured" ? 3 : 5,
           spaceBetween: 40,
         },
       }}

@@ -15,6 +15,12 @@ const openSans = localFont({
   display: "swap",
 });
 
+const raleway = localFont({
+  src: "../../public/fonts/Raleway-VariableFont_wght.ttf",
+  preload: true,
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: process.env.NEXT_PUBLIC_STOREFRONT_NAME,
   description: process.env.NEXT_PUBLIC_STOREFRONT_NAME,
@@ -28,7 +34,7 @@ export default function RootLayout(props: { children: ReactNode }) {
 
   return (
     <html lang="ro" className={`${openSans.className} min-h-dvh`}>
-      <body className={`min-h-dvh`}>
+      <body className="min-h-dvh prose-h1:font-dark prose-h2:font-black">
         <AuthProvider>
           <CheckoutProvider>
             {/* @ts-expect-error Async Server Component */}

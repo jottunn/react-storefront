@@ -170,6 +170,8 @@ export default async function Home() {
     page && "attributes" in page
       ? page.attributes.filter((attr) => attr.attribute.inputType === "RICH_TEXT")
       : [];
+  const displayTextBanner =
+    page && "metadata" in page ? getMetadataValue(page.metadata, "Display Text") : "";
   const buttonText =
     page && "metadata" in page ? getMetadataValue(page.metadata, "Button Text") : "";
   const linkBanner =
@@ -206,7 +208,7 @@ export default async function Home() {
                       <Image
                         key="banner"
                         src={`${UPLOAD_FOLDER ?? ""}/${bannerAttribute.values[0].name}`}
-                        alt={buttonText || ""}
+                        alt={buttonText || STOREFRONT_NAME}
                         className="absolute h-full w-full inset-0 object-cover object-center"
                         fill
                         sizes="(max-width: 640px) 100vw, 100vw"
@@ -220,19 +222,21 @@ export default async function Home() {
                   </div>
                 </Link>
               </div>
-              <div className="banner-content absolute left-1/2 transform -translate-x-1/2 bottom-28 bg-black bg-opacity-85 py-10 px-18">
-                <h2 className="text-center text-lg text-white">{textBanner}</h2>
-                <p className="text-center mt-3 text-md text-white">
-                  <a
-                    rel="noreferrer"
-                    href={linkBanner}
-                    target="_self"
-                    className="hover:text-action-1"
-                  >
-                    <u>{buttonText}</u>
-                  </a>
-                </p>
-              </div>
+              {!(displayTextBanner && displayTextBanner === "NO") && (
+                <div className="banner-content absolute left-1/2 transform -translate-x-1/2 bottom-28 bg-black bg-opacity-85 py-10 px-18">
+                  <h2 className="text-center text-lg text-white">{textBanner}</h2>
+                  <p className="text-center mt-3 text-md text-white">
+                    <a
+                      rel="noreferrer"
+                      href={linkBanner}
+                      target="_self"
+                      className="hover:text-action-1"
+                    >
+                      <u>{buttonText}</u>
+                    </a>
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -264,6 +268,7 @@ export default async function Home() {
               products={featuredProducts as Product[]}
               prevButtonClass="swiper-button-prev-featured"
               nextButtonClass="swiper-button-next-featured"
+              type="featured"
             />
           </div>
         </div>

@@ -387,7 +387,7 @@ const ProductDetail = async ({
             </Link>
           )}
           <h1
-            className="text-4xl leading-[3rem] md:text-[3rem] md:leading-[3.5rem] font-bold tracking-tight text-main text-left !mb-4 md:!mb-10"
+            className="text-4xl leading-[3rem] md:text-[3rem] md:leading-[3.5rem] font-bold text-main text-left !mb-4 md:!mb-10"
             data-testid="productName"
           >
             {translate(product, "name")}

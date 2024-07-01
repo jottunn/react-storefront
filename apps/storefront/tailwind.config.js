@@ -1,4 +1,4 @@
-const getSpacing = (base /* number */, unit /* "px" | "rem" */, values /* number[] */) =>
+const getSpacing = (base, unit, values) =>
   values.reduce((acc, value) => ({ ...acc, [value]: base * value + unit }), {});
 
 const spacing = getSpacing(
@@ -90,9 +90,9 @@ module.exports = {
     },
   },
   plugins: [
-    require("@tailwindcss/forms"), // eslint-disable-line
-    require("@tailwindcss/typography"), // eslint-disable-line
-    require("@tailwindcss/aspect-ratio"), // eslint-disable-line
-    require("tailwind-scrollbar-hide"), // eslint-disable-line
+    require("@tailwindcss/forms"),
+    require("@tailwindcss/typography"),
+    require("@tailwindcss/aspect-ratio"),
+    require("tailwind-scrollbar-hide"),
   ],
 };

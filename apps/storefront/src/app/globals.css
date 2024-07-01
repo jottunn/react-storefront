@@ -47,6 +47,16 @@ html {
   align-items: center;
 }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.title-font {
+  font-family: "Raleway", sans-serif;
+}
+
 /* footer {
     background: linear-gradient(to right, #fafbdf, #28796e);
 } */
