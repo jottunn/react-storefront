@@ -18,6 +18,12 @@ interface CartModalProps {
 export default function CartModal({ messages }: CartModalProps) {
   const { checkout, refreshCheckout } = useCheckout();
   const pathname = usePathname();
+  const [cartModalOpen, setCartModalOpen] = useState(false);
+  const [prevCounter, setPrevCounter] = useState(0);
+
+  const openCart = useCallback(() => setCartModalOpen(true), []);
+  const closeCart = useCallback(() => setCartModalOpen(false), []);
+
   const counter = useMemo(
     () =>
       checkout?.lines?.reduce(
@@ -28,37 +34,21 @@ export default function CartModal({ messages }: CartModalProps) {
     [checkout],
   );
 
-  const [cartModalOpen, setCartModalOpen] = useState(false);
-  const [counterO, setCounterO] = useState(counter);
-
-  const openCart = useCallback(() => setCartModalOpen(true), []);
-  const closeCart = useCallback(() => setCartModalOpen(false), []);
-
   useEffect(() => {
     refreshCheckout();
   }, [refreshCheckout]);
 
   useEffect(() => {
-    if (counter > counterO && !cartModalOpen) {
+    if (pathname === "/checkout" || pathname === "/order") {
+      closeCart();
+      return;
+    }
+
+    if (counter > prevCounter && prevCounter !== 0) {
       setCartModalOpen(true);
-      setCounterO(counter);
     }
-  }, [counter, counterO, cartModalOpen]);
-
-  useEffect(() => {
-    if (checkout) {
-      const newCounter =
-        checkout?.lines?.reduce(
-          (amount: number, line?: CheckoutLineDetailsFragment | null) =>
-            line ? amount + line.quantity : amount,
-          0,
-        ) || 0;
-
-      if (newCounter !== counterO) {
-        setCounterO(newCounter);
-      }
-    }
-  }, [checkout, counterO]);
+    setPrevCounter(counter);
+  }, [pathname, counter, prevCounter, closeCart]);
 
   const saleorApiUrl = process.env.NEXT_PUBLIC_API_URI;
   invariant(saleorApiUrl, "Missing NEXT_PUBLIC_API_URI");
