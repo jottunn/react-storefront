@@ -40,7 +40,6 @@ import { ResetPasswordFormData } from "./reset/ResetPasswordForm";
 import { ConfirmData } from "./confirm/ConfirmResult";
 
 export async function logout() {
-  "use server";
   saleorAuthClient.signOut();
 }
 

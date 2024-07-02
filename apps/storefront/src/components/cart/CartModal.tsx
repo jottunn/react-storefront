@@ -41,20 +41,23 @@ export default function CartModal({ messages }: CartModalProps) {
   useEffect(() => {
     if (pathname === "/checkout" || pathname === "/order") {
       closeCart();
+      if (counter !== prevCounter) {
+        setPrevCounter(counter);
+      }
       return;
     }
 
-    if (counter > prevCounter && prevCounter !== 0) {
+    if (counter > prevCounter) {
       setCartModalOpen(true);
     }
     setPrevCounter(counter);
-  }, [pathname, counter, prevCounter, closeCart]);
+  }, [pathname, counter]);
 
   const saleorApiUrl = process.env.NEXT_PUBLIC_API_URI;
   invariant(saleorApiUrl, "Missing NEXT_PUBLIC_API_URI");
-  if (pathname === "/checkout" || pathname === "/order") {
-    return null;
-  }
+  // if (pathname === "/checkout" || pathname === "/order") {
+  //   return null;
+  // }
   return (
     <>
       <button aria-label="Open cart" onClick={openCart} type="button">
