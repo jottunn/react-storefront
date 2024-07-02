@@ -155,7 +155,6 @@ const ProductDetail = async ({
       : firstImage
         ? await getBase64(firstImage.url)
         : null;
-
   const isAddToCartButtonDisabled =
     !product.isAvailableForPurchase ||
     (product.variants && product.variants.length > 1 && !selectedVariantID) ||
@@ -291,7 +290,6 @@ const ProductDetail = async ({
         }
       : {
           name: product.name,
-
           description: product.seoDescription || product.name,
           offers: {
             "@type": "AggregateOffer",
@@ -366,7 +364,7 @@ const ProductDetail = async ({
           {brandAttribute && (
             <Link
               href={`/collections/${brandAttribute?.values[0]?.slug}`}
-              className="text-md md:mt-2 font-medium text-gray-600 cursor-pointer text-left hover:text-green-600 block"
+              className="text-md my-4 md:mb-6 font-medium text-gray-600 cursor-pointer text-left hover:text-green-600 block"
             >
               {brandCollection &&
               brandCollection.collection &&

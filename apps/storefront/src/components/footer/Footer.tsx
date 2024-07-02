@@ -64,7 +64,7 @@ export default async function Footer({ className, ...rest }: FooterProps) {
   return (
     <footer className={clsx(styles.footer, className)} {...rest}>
       <Box className={styles["footer-inner"]}>
-        <div className="grid grid-cols-4 md:grid-cols-10 gap-6 py-12 md:py-32 mb-20 items-center justify-items-center w-full border-b border-dark=300 md:min-h-[90px]">
+        <div className="grid grid-cols-4 md:grid-cols-8 gap-6 md:gap-12 lg:gap-20 py-12 md:py-32 mb-20 items-center justify-items-center w-full border-b border-dark=300 md:min-h-[90px]">
           {brandCollections &&
             brandCollections.collections?.edges.map((brand) => {
               return (

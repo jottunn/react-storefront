@@ -38,28 +38,10 @@ import { DEFAULT_CHANNEL, defaultRegionQuery } from "@/lib/regions";
 import { ResetFormData } from "./reset/ForgotPassword";
 import { ResetPasswordFormData } from "./reset/ResetPasswordForm";
 import { ConfirmData } from "./confirm/ConfirmResult";
-import * as Checkout from "@/lib/checkout";
-import { customerDetach } from "@/components/checkout/actions";
-
-// export async function onSignOutSuccess() {
-//   const checkoutId = await Checkout.getIdFromCookies(defaultRegionQuery().channel);
-//   const checkout = await Checkout.find(checkoutId);
-
-//   if (checkout) {
-//     const customerAttachResult = await customerDetach(checkout.id);
-//     if (customerAttachResult?.success === false) {
-//       // Handle checkout email update errors
-//       console.log('customerAttachResult', customerAttachResult);
-//       return;
-//     }
-//   }
-// }
 
 export async function logout() {
   "use server";
   saleorAuthClient.signOut();
-  //if checkout, remove user from checkout
-  //onSignOutSuccess();
 }
 
 export async function login(formData: LoginFormData) {
@@ -81,88 +63,108 @@ export async function login(formData: LoginFormData) {
 }
 
 export async function register(formData: RegisterFormData | any) {
-  interface RegisterInput {
-    firstName: string;
-    lastName: string;
-    email: string;
-    password: string;
-    redirectUrl: string;
-    channel: string;
-  }
-  const confirmUrl = `${BASE_URL}/confirm`;
-  const response = await executeGraphQL<RegisterMutation, { input: RegisterInput }>(
-    RegisterDocument,
-    {
-      variables: {
-        input: {
-          email: formData.email,
-          password: formData.password,
-          firstName: formData.firstName || "",
-          lastName: formData.lastName || "",
-          redirectUrl: confirmUrl,
-          channel: DEFAULT_CHANNEL.slug,
+  try {
+    interface RegisterInput {
+      firstName: string;
+      lastName: string;
+      email: string;
+      password: string;
+      redirectUrl: string;
+      channel: string;
+    }
+    const confirmUrl = `${BASE_URL}/confirm`;
+    const response = await executeGraphQL<RegisterMutation, { input: RegisterInput }>(
+      RegisterDocument,
+      {
+        variables: {
+          input: {
+            email: formData.email,
+            password: formData.password,
+            firstName: formData.firstName || "",
+            lastName: formData.lastName || "",
+            redirectUrl: confirmUrl,
+            channel: DEFAULT_CHANNEL.slug,
+          },
         },
       },
-    },
-  );
+    );
 
-  if (response?.accountRegister?.errors?.length) {
-    return { success: false, errors: response.accountRegister.errors };
+    if (response?.accountRegister?.errors?.length) {
+      return { success: false, errors: response.accountRegister.errors };
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to execute RegisterMutation:", error);
+    return { success: false };
   }
-
-  return { success: true };
 }
 
 export async function reset(formData: ResetPasswordFormData) {
-  const response = await saleorAuthClient.resetPassword({
-    email: formData.email,
-    password: formData.password,
-    token: formData.token,
-  });
+  try {
+    const response = await saleorAuthClient.resetPassword({
+      email: formData.email,
+      password: formData.password,
+      token: formData.token,
+    });
 
-  if (response.data?.setPassword?.errors?.length) {
-    const customError = response.data.setPassword.errors as any;
-    return { success: false, errors: customError.map((error: { code: any }) => error.code) };
+    if (response.data?.setPassword?.errors?.length) {
+      const customError = response.data.setPassword.errors as any;
+      return { success: false, errors: customError.map((error: { code: any }) => error.code) };
+    }
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to resetPassword:", error);
+    return { success: false };
   }
-  return { success: true };
 }
 
 export async function requestPasswordReset(formData: ResetFormData) {
-  const response = await executeGraphQL<
-    RequestPasswordResetMutation,
-    { email: string; channel: string; redirectUrl: string }
-  >(RequestPasswordResetDocument, {
-    variables: {
-      email: formData.email,
-      channel: DEFAULT_CHANNEL.slug,
-      redirectUrl: "/reset",
-    },
-  });
+  try {
+    const response = await executeGraphQL<
+      RequestPasswordResetMutation,
+      { email: string; channel: string; redirectUrl: string }
+    >(RequestPasswordResetDocument, {
+      variables: {
+        email: formData.email,
+        channel: DEFAULT_CHANNEL.slug,
+        redirectUrl: "/reset",
+      },
+    });
 
-  if (response?.requestPasswordReset?.errors?.length) {
-    const customError = response.requestPasswordReset.errors as any;
-    return { success: false, errors: customError.map((error: { code: any }) => error.code) };
+    if (response?.requestPasswordReset?.errors?.length) {
+      const customError = response.requestPasswordReset.errors as any;
+      return { success: false, errors: customError.map((error: { code: any }) => error.code) };
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to execute RequestPasswordResetMutation:", error);
+    return { success: false };
   }
-
-  return { success: true };
 }
 
 export async function confirmAccount(confirmData: ConfirmData) {
-  const response = await executeGraphQL<
-    ConfirmAccountMutationResult,
-    { email: string; token: string }
-  >(ConfirmAccountDocument, {
-    variables: {
-      email: confirmData.email,
-      token: confirmData.token,
-    },
-  });
+  try {
+    const response = await executeGraphQL<
+      ConfirmAccountMutationResult,
+      { email: string; token: string }
+    >(ConfirmAccountDocument, {
+      variables: {
+        email: confirmData.email,
+        token: confirmData.token,
+      },
+    });
 
-  if (response.data?.confirmAccount?.errors.length) {
-    const customError = response.data.confirmAccount.errors as any;
-    return { success: false, errors: customError.map((error: { code: any }) => error.code) };
+    if (response.data?.confirmAccount?.errors.length) {
+      const customError = response.data.confirmAccount.errors as any;
+      return { success: false, errors: customError.map((error: { code: any }) => error.code) };
+    }
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to execute ConfirmAccountMutationResult:", error);
+    return { success: false };
   }
-  return { success: true };
 }
 
 export async function getCurrentUser(): Promise<User | undefined> {
@@ -179,28 +181,37 @@ export async function getCurrentUser(): Promise<User | undefined> {
 }
 
 export async function getAvailableFilters(productsFilter: ProductFilterInput) {
-  const { products } = await executeGraphQL<
-    AvailableProductFiltersQuery,
-    { filter: ProductFilterInput; channel: string; locale: LanguageCodeEnum }
-  >(AvailableProductFiltersDocument, {
-    variables: {
-      filter: productsFilter,
-      ...defaultRegionQuery(),
-    },
-    revalidate: 60 * 60,
-  });
-  return products;
+  try {
+    const { products } = await executeGraphQL<
+      AvailableProductFiltersQuery,
+      { filter: ProductFilterInput; channel: string; locale: LanguageCodeEnum }
+    >(AvailableProductFiltersDocument, {
+      variables: {
+        filter: productsFilter,
+        ...defaultRegionQuery(),
+      },
+      revalidate: 60 * 60,
+    });
+    return products;
+  } catch (error) {
+    console.error("Failed to execute AvailableProductFiltersQuery", error);
+    return null;
+  }
 }
 
 export async function getProductCollection(queryVariables: any) {
-  const { products } = await executeGraphQL<ProductCollectionQuery, { variables: any }>(
-    ProductCollectionDocument,
-    {
-      variables: queryVariables,
-    },
-  );
-
-  return products;
+  try {
+    const { products } = await executeGraphQL<ProductCollectionQuery, { variables: any }>(
+      ProductCollectionDocument,
+      {
+        variables: queryVariables,
+      },
+    );
+    return products;
+  } catch (error) {
+    console.error("Failed to execute graphql for products query:", error);
+    return null;
+  }
 }
 
 export const requestEmailChange = async (args: {

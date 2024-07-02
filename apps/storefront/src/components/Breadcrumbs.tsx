@@ -12,7 +12,7 @@ interface BreadcrumbsProps {
 const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items }) => {
   return (
     <div itemScope itemType="https://schema.org/BreadcrumbList">
-      <div className="container flex gap-2 flex-wrap text-left py-4 pl-8">
+      <div className="container flex gap-1 md:gap-2 flex-wrap text-left py-4 pl-8">
         {items.map((item, i) => (
           <div
             key={item.name}
@@ -36,9 +36,9 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items }) => {
               </span>
             )}
             {i < items.length - 1 ? (
-              <span className="text-gray-600 mt-1 md:mt-2 text-base ml-2">/</span>
+              <span className="text-gray-600 mt-1 md:mt-2 text-base ml-1 md:ml-2">/</span>
             ) : (
-              <span className="text-gray-600 mt-1 md:mt-2 text-base ml-2"></span>
+              <span className="text-gray-600 mt-1 md:mt-2 text-base ml-0"></span>
             )}
           </div>
         ))}

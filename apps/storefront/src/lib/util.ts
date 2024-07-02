@@ -96,3 +96,16 @@ export const getOrderValue = (metadata: any[]) => {
   const orderMetadata = metadata.find((meta) => meta.key === "order");
   return orderMetadata ? parseInt(orderMetadata.value, 10) : Infinity;
 };
+
+/**
+ * function used to calculate no of grid columns for a result set
+ */
+export const getNumColumns = (length: number) => {
+  let numColumns = 3;
+  if (length < 3) {
+    numColumns = 2;
+  } else if (length % 4 === 0) {
+    numColumns = 4;
+  }
+  return numColumns;
+};

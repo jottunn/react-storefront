@@ -86,9 +86,10 @@ export function ProductCard({
             {thumbnailUrl && (
               <Image
                 alt={productDisplayName}
-                className="transition-opacity duration-400 ease-in-out p-3"
+                className="transition-opacity duration-400 ease-in-out p-3 max-h-[100%]"
                 src={isHovered ? hoverImageUrl : thumbnailUrl}
-                fill
+                width={300}
+                height={300}
                 sizes="(max-width: 640px) 50vw, 33vw"
                 priority={priority}
                 loading={loading}
@@ -109,7 +110,7 @@ export function ProductCard({
         <p
           className={clsx(
             "block mt-2 font-extrabold text-main text-center hover:text-gray-700 min-h-[75px]",
-            isSwiper ? "text-base md:min-h-[75px]" : "text-md md:min-h-[50px]",
+            isSwiper ? "text-base md:min-h-[75px]" : "text-base md:text-md md:min-h-[50px]",
           )}
           data-testid={`productName${product.name}`}
         >

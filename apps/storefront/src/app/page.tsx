@@ -1,4 +1,4 @@
-import { getMessages, getOrderValue } from "src/lib/util";
+import { getMessages, getNumColumns, getOrderValue } from "src/lib/util";
 import { DEFAULT_LOCALE, defaultRegionQuery } from "src/lib/regions";
 import { executeGraphQL } from "@/lib/graphql";
 import {
@@ -53,16 +53,6 @@ function getMetadataValue(metadataArray: any[], key: any) {
   const item = metadataArray.find((metadata) => metadata.key === key);
   return item ? item.value : null; // Return null if the key is not found
 }
-
-const getNumColumns = (length: number) => {
-  let numColumns = 3;
-  if (length < 3) {
-    numColumns = 2;
-  } else if (length % 4 === 0) {
-    numColumns = 4;
-  }
-  return numColumns;
-};
 
 export default async function Home() {
   const messages = getMessages(DEFAULT_LOCALE);
@@ -197,7 +187,7 @@ export default async function Home() {
   return (
     <>
       {bannerAttribute && (
-        <div className="flex overflow-hidden not-last:mb-md !px-0 mb-28">
+        <div className="flex overflow-hidden not-last:mb-md !px-0 mb-20 md:mb-28">
           <div className="flex flex-col md:flex-row w-full h-[125vw] md:max-h-[80vh]">
             <div className="relative overflow-hidden flex-col-reverse my-0 mx-auto w-full h-full md:flex-row">
               <div className="w-full h-full">
@@ -244,7 +234,7 @@ export default async function Home() {
         </div>
       )}
       {parsedContent && (
-        <div className="container mb-14 mx-auto max-w-[800px] text-center prose-2xl">
+        <div className="container mb-4 md:mb-14 mx-auto max-w-[800px] text-center prose-2xl">
           <div dangerouslySetInnerHTML={{ __html: parsedContent }} />
         </div>
       )}
@@ -332,7 +322,10 @@ export default async function Home() {
                 : "";
               if (parsedRichText) {
                 return (
-                  <div key={`${index}`} className="md:w-1/2 p-4 border-t border-gray-300 py-20">
+                  <div
+                    key={`${index}`}
+                    className="md:w-1/2 px-4 md:border-t md:border-gray-300 md:py-20"
+                  >
                     <div className="p-2" dangerouslySetInnerHTML={{ __html: parsedRichText }} />
                   </div>
                 );

@@ -9,7 +9,7 @@ export interface HomepageBlockProps {
 
 export default function HomepageBlock({ item, type }: HomepageBlockProps) {
   return (
-    <div>
+    <div className="mb-6 md:mb-0">
       <div className="relative">
         {type && (
           <Link
@@ -30,7 +30,7 @@ export default function HomepageBlock({ item, type }: HomepageBlockProps) {
               priority={false}
               loading={"lazy"}
             />
-            <h3 className="text-md uppercase mt-3">{item.name}</h3>
+            <h3 className="text-md uppercase mt-3 font-bold">{item.name}</h3>
           </Link>
         )}
       </div>

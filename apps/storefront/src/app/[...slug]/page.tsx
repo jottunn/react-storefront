@@ -54,6 +54,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
     const strapiPage = await getPageBySlug(params.slug, params.lang);
 
+    if (strapiPage.data && strapiPage.data.length === 0) return notFound();
+
     if (strapiPage.data && strapiPage.data[0] && !strapiPage.data[0].attributes?.seo) {
       return {
         title: `${strapiPage.data[0].attributes.pageName} | ${STOREFRONT_NAME}`,
@@ -93,7 +95,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
     return <PageSaleor page={saleorPage.page as PageFragment} />;
   }
 
-  const page = await getPageBySlug(params.slug, DEFAULT_LOCALE);
-  if (page.data && page.data.length === 0) return null;
-  return <PageStrapi page={page} />;
+  const strapiPage = await getPageBySlug(params.slug, DEFAULT_LOCALE);
+  if (strapiPage.data && strapiPage.data.length === 0) return notFound();
+  return <PageStrapi page={strapiPage} />;
 }

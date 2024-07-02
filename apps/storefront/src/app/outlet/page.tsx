@@ -6,16 +6,14 @@ import {
   CollectionsByMetaKeyQuery,
   LanguageCodeEnum,
 } from "@/saleor/api";
-import Image from "next/image";
-import Link from "next/link";
-import { getMessages } from "@/lib/util";
+import { getMessages, getNumColumns, getOrderValue } from "@/lib/util";
 import { executeGraphQL } from "@/lib/graphql";
 import { mapEdgesToItems } from "@/lib/maps";
 import PageHero from "@/components/PageHero";
-import { Metadata } from "next";
 import { STOREFRONT_NAME } from "@/lib/const";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Script from "next/script";
+import HomepageBlock from "@/components/homepage/HomepageBlock";
 
 export const metadata = {
   title: `Reduceri | ${STOREFRONT_NAME}`,
@@ -42,6 +40,11 @@ export default async function Page() {
     revalidate: 60,
   });
   const outletCollections = mapEdgesToItems(collections);
+  outletCollections.sort((a, b) => getOrderValue(a.metadata) - getOrderValue(b.metadata));
+  const outletCollectionsWithImage = outletCollections.filter(
+    (collection) => collection.backgroundImage && collection.backgroundImage.url,
+  );
+  const numColumnsHPCollections = getNumColumns(outletCollectionsWithImage.length);
   const collectionsIds = outletCollections && outletCollections.map((collect) => collect.id);
   const messages = getMessages(DEFAULT_LOCALE);
   const breadcrumbItems = [
@@ -73,27 +76,14 @@ export default async function Page() {
         </div>
         <div className="container px-8">
           <PageHero title={messages["app.search.outletTitle"]} description="" />
-          {collectionsIds.length > 0 && (
-            <div className="md:flex gap-4 justify-center mt-4">
-              {outletCollections.map((collection, index) => (
-                <div key={`sales-collection-${index}`} className="text-center my-4">
-                  {collection.backgroundImage && collection.backgroundImage.url && (
-                    <Link
-                      href={`/collections/${collection.slug}`}
-                      className="underline"
-                      aria-label={collection.name}
-                    >
-                      <Image
-                        alt={collection.name}
-                        className="transition-opacity duration-400 ease-in-out hover:brightness-125 hover:contrast-115 transition-all duration-30"
-                        src={collection.backgroundImage.url}
-                        width={300}
-                        height={300}
-                        style={{ objectFit: "contain" }}
-                      />
-                    </Link>
-                  )}
-                </div>
+          {outletCollectionsWithImage && outletCollectionsWithImage.length > 0 && (
+            <div
+              className={`grid grid-cols-1 md:grid-cols-${numColumnsHPCollections} gap-4 mt-20 mb-40 ${
+                numColumnsHPCollections === 1 ? "flex flex-col items-center" : ""
+              }`}
+            >
+              {outletCollectionsWithImage.map((collection) => (
+                <HomepageBlock key={collection.id} item={collection} type="collection" />
               ))}
             </div>
           )}

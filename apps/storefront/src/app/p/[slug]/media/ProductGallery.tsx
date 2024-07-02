@@ -154,7 +154,7 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
                       width={700}
                       height={550}
                       style={{ objectFit: "contain" }}
-                      className="p-6 mx-auto max-h-[100%]"
+                      className="p-6 mx-auto max-h-[100%] cursor-pointer"
                       priority={index === 0}
                       loading={index < 5 ? "eager" : "lazy"}
                       {...(placeholder !== null
@@ -164,7 +164,7 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
                   </div>
                 )}
                 {media.type === "VIDEO" && (
-                  <div className="relative w-full h-[350px] md:h-[700px] border flex items-center justify-center">
+                  <div className="relative w-full h-[350px] md:h-[700px] border flex items-center justify-center cursor-pointer">
                     <Image
                       src={media.thumbnailUrl || ""}
                       alt={media.alt || ""}
@@ -238,7 +238,7 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
                 width={700}
                 height={700}
                 style={{ objectFit: "contain" }}
-                className="block mx-auto p-6 max-h-[100%]"
+                className="block mx-auto p-6 max-h-[100%] cursor-pointer"
                 priority={index === 0}
                 loading={index < 3 ? "eager" : "lazy"}
                 {...(placeholder !== null ? { placeholder: "blur", blurDataURL: placeholder } : {})}
