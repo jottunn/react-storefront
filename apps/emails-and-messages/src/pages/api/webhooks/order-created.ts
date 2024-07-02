@@ -51,7 +51,7 @@ const handler: NextWebhookApiHandler<OrderCreatedWebhookPayloadFragment> = async
     return res.status(200).end();
   }
 
-  const recipientEmail = order.userEmail || order.user?.email;
+  let recipientEmail = order.userEmail || order.user?.email;
 
   if (!recipientEmail?.length) {
     logger.error(`The order ${order.number} had no email recipient set. Aborting.`);
@@ -74,6 +74,19 @@ const handler: NextWebhookApiHandler<OrderCreatedWebhookPayloadFragment> = async
     payload: { order: payload.order },
     recipientEmail,
   });
+
+  //send email to ADMIN
+  recipientEmail = process.env.ADMIN_EMAIL;
+  if (recipientEmail) {
+    await sendEventMessages({
+      authData,
+      channel,
+      client,
+      event: "ORDER_CREATED",
+      payload: { order: payload.order, isAdmin: true },
+      recipientEmail,
+    });
+  }
 
   return res.status(200).json({ message: "The event has been handled" });
 };
