@@ -58,7 +58,9 @@ export function CompleteCheckoutButton({
           children
         )}
       </button>
-      {!agreedToTerms && <p className="text-base mt-2 text-main-2"></p>}
+      {!agreedToTerms && (
+        <p className="text-base mt-2 text-main-2">{messages["app.checkout.terms"]}</p>
+      )}
     </>
   );
 }

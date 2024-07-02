@@ -25,6 +25,45 @@ export default function CheckoutLineItem({ line }: CheckoutLineItemProps) {
   const [quantity, setQuantity] = React.useState<number>();
   const [errors, setErrors] = React.useState<any[] | null>();
 
+  const handleQuantityChange = useCallback(
+    (newQuantity: number) => {
+      // const newQuantity = Math.max(1, parseInt(event.target.value, 10));
+      // console.log('newQuantity', newQuantity);
+      if (!line.variant.quantityAvailable || newQuantity <= line.variant.quantityAvailable) {
+        setQuantity(newQuantity); // Immediately update the local state for responsive UI
+        // Call the debounced function with the new quantity instead of the event
+        void debouncedOnQuantityUpdate(newQuantity);
+      }
+    },
+    [line?.variant.id],
+  );
+
+  const debouncedOnQuantityUpdate = useCallback(
+    debounce(async (newQuantity) => {
+      // Perform the update logic here, directly using newQuantity
+      const lineUpdateInput = {
+        quantity: newQuantity,
+        lineId: line.id,
+      };
+      const result = await updateLineFromCheckout({ lineUpdateInput, id: checkout.id });
+
+      // TODO Handle result or errors
+      if (result && result.success) {
+        await refreshCheckout();
+      } else {
+        setErrors([...(result?.errors || [])]);
+      }
+
+      console.log("else", result);
+    }, 300),
+    [line?.variant.id],
+  );
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newQuantity = Math.max(1, parseInt(event.target.value, 10));
+    handleQuantityChange(newQuantity);
+  };
+
   React.useEffect(() => {
     if (!line) return;
     const availableQuantity =
@@ -39,32 +78,6 @@ export default function CheckoutLineItem({ line }: CheckoutLineItemProps) {
     }
     setQuantity(line.quantity);
   }, [line]);
-
-  const debouncedOnQuantityUpdate = useCallback(
-    debounce(async (newQuantity) => {
-      // Perform the update logic here, directly using newQuantity
-      const lineUpdateInput = {
-        quantity: newQuantity,
-        lineId: line.id,
-      };
-      const result = await updateLineFromCheckout({ lineUpdateInput, id: checkout.id });
-
-      // TODO Handle result or errors
-      if (result && result.success) {
-        await refreshCheckout();
-      }
-    }, 300),
-    [line?.variant.id],
-  );
-
-  const handleQuantityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newQuantity = Math.max(1, parseInt(event.target.value, 10));
-    if (!line.variant.quantityAvailable || newQuantity <= line.variant.quantityAvailable) {
-      setQuantity(newQuantity); // Immediately update the local state for responsive UI
-      // Call the debounced function with the new quantity instead of the event
-      void debouncedOnQuantityUpdate(newQuantity);
-    }
-  };
 
   const getProductLink = () => {
     if (line?.variant) return `/p/${line.variant.product?.slug}/?variant=${line.variant.id}`;
@@ -130,14 +143,14 @@ export default function CheckoutLineItem({ line }: CheckoutLineItemProps) {
             <input
               type="number"
               className={clsx(
-                "h-8 md:mt-2 w-20 md:w-16 block border-gray-300 rounded-md text-base bg-transparent",
+                "h-8 md:mt-2 w-24 md:w-16 block border-gray-300 rounded-md text-base bg-transparent",
                 errors && "border-red-500",
               )}
               value={quantity || ""}
               onFocus={() => {
                 setErrors(null);
               }}
-              onChange={handleQuantityChange}
+              onChange={handleInputChange}
               min={1}
               required
               disabled={false}

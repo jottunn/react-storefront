@@ -19,7 +19,7 @@ const CheckoutNote: React.FC<CheckoutNoteProps> = ({
         name="checkoutNotes"
       ></textarea>
       <div className="my-3">
-        <label htmlFor="gdprConsent" className="text-md">
+        <label htmlFor="gdprConsent" className="text-base">
           <input
             type="checkbox"
             id="gdprConsent"
