@@ -45,13 +45,7 @@ export const sendSmtp = async ({
 
   logger.debug("Sending an email using MJML");
 
-  let { template: rawTemplate, subject } = eventSettings;
-
-  if (payload && payload.isAdmin) {
-    subject = "A fost inregistrata o comanda noua! 🎉";
-  }
-
-  console.log("payload", payload);
+  const { template: rawTemplate, subject } = eventSettings;
 
   const { template: emailSubject, errors: handlebarsSubjectErrors } = compileHandlebarsTemplate(
     subject,

@@ -4,17 +4,16 @@ import MyAPL from "shared-apl";
 
 export let apl: APL;
 const volumeConfig = {
-  fileName: "/app/apps/emails-and-messages/.saleor-app-auth.json",
+  fileName: "/app/apps/emails-and-messages/apl/.saleor-app-auth.json",
 };
 try {
   switch (process.env.APL) {
     case "upstash":
       apl = new UpstashAPL();
-      console.log("Using UpstashAPL");
       break;
     case "volume":
       apl = new MyAPL(volumeConfig);
-      console.log("Using MyAPL with volumeConfig:", volumeConfig);
+      console.log("Using MyAPL with volumeConfig");
       break;
     case "saleor-cloud": {
       if (!process.env.REST_APL_ENDPOINT || !process.env.REST_APL_TOKEN) {

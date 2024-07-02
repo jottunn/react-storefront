@@ -43,6 +43,7 @@ export const eventToWebhookMapping: Record<MessageEventTypes, AppWebhook> = {
   ORDER_FULLY_PAID: "orderFullyPaidWebhook",
   ORDER_REFUNDED: "orderRefundedWebhook",
   ORDER_FULFILLMENT_UPDATE: "notifyWebhook",
+  ORDER_CREATED_STAFF: "orderCreatedWebhook",
 };
 
 const logger = createLogger("WebhookManagementService");

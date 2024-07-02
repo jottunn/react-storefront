@@ -123,6 +123,23 @@ const defaultOrderCreatedMjmlTemplate = `<mjml>
   </mj-body>
 </mjml>`;
 
+const defaultOrderCreatedStaffMjmlTemplate = `<mjml>
+  <mj-body>
+    <mj-section>
+      <mj-column>
+        <mj-text font-size="16px">
+          Hello!
+        </mj-text>
+        <mj-text>
+          Order {{ order.number }} has been created.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    ${addressSection}
+    ${orderLinesSection}
+  </mj-body>
+</mjml>`;
+
 const defaultOrderFulfilledMjmlTemplate = `<mjml>
   <mj-body>
     <mj-section>
@@ -358,6 +375,7 @@ export const defaultMjmlTemplates: Record<MessageEventTypes, string> = {
   ORDER_CANCELLED: defaultOrderCancelledMjmlTemplate,
   ORDER_CONFIRMED: defaultOrderConfirmedMjmlTemplate,
   ORDER_CREATED: defaultOrderCreatedMjmlTemplate,
+  ORDER_CREATED_STAFF: defaultOrderCreatedStaffMjmlTemplate,
   ORDER_FULFILLED: defaultOrderFulfilledMjmlTemplate,
   ORDER_FULFILLMENT_UPDATE: defaultOrderFulfillmentUpdatedMjmlTemplate,
   ORDER_FULLY_PAID: defaultOrderFullyPaidMjmlTemplate,
@@ -375,6 +393,7 @@ export const defaultMjmlSubjectTemplates: Record<MessageEventTypes, string> = {
   ORDER_CANCELLED: "Order {{ order.number }} has been cancelled",
   ORDER_CONFIRMED: "Order {{ order.number }} has been confirmed",
   ORDER_CREATED: "Order {{ order.number }} has been created",
+  ORDER_CREATED_STAFF: "A fost inregistrata o comanda noua! 🎉",
   ORDER_FULFILLED: "Order {{ order.number }} has been fulfilled",
   ORDER_FULFILLMENT_UPDATE: "Fulfillment for order {{ order.number }} has been updated",
   ORDER_FULLY_PAID: "Order {{ order.number }} has been fully paid",

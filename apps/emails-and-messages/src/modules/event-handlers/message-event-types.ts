@@ -13,6 +13,7 @@ export const messageEventTypes = [
   "ORDER_FULFILLMENT_UPDATE",
   "ORDER_FULLY_PAID",
   "ORDER_REFUNDED",
+  "ORDER_CREATED_STAFF",
 ] as const;
 
 export type MessageEventTypes = (typeof messageEventTypes)[number];
@@ -32,4 +33,5 @@ export const messageEventTypesLabels: Record<MessageEventTypes, string> = {
   ORDER_FULFILLMENT_UPDATE: "Order fulfillment updated",
   ORDER_FULLY_PAID: "Order fully paid",
   ORDER_REFUNDED: "Order refunded",
+  ORDER_CREATED_STAFF: "Order created Staff email",
 };

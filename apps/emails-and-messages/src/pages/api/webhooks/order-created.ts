@@ -82,7 +82,7 @@ const handler: NextWebhookApiHandler<OrderCreatedWebhookPayloadFragment> = async
       authData,
       channel,
       client,
-      event: "ORDER_CREATED",
+      event: "ORDER_CREATED_STAFF",
       payload: { order: payload.order, isAdmin: true },
       recipientEmail,
     });

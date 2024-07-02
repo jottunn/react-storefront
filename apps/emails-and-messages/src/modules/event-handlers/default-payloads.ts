@@ -206,6 +206,10 @@ const orderCreatedPayload: OrderCreatedWebhookPayloadFragment = {
   order: exampleOrderPayload,
 };
 
+const orderCreatedStaffPayload: OrderCreatedWebhookPayloadFragment = {
+  order: exampleOrderPayload,
+};
+
 const orderConfirmedPayload: OrderConfirmedWebhookPayloadFragment = {
   order: exampleOrderPayload,
 };
@@ -597,4 +601,5 @@ export const examplePayloads: Record<MessageEventTypes, any> = {
   ORDER_FULLY_PAID: orderFullyPaidPayload,
   ORDER_FULFILLMENT_UPDATE: fulfillmentUpdatePayload,
   ORDER_REFUNDED: orderRefundedPayload,
+  ORDER_CREATED_STAFF: orderCreatedStaffPayload,
 };
