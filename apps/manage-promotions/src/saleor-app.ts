@@ -11,7 +11,7 @@ import MyAPL from "shared-apl";
  */
 export let apl: APL;
 const volumeConfig = {
-  fileName: "/app/apps/manage-promotions/.saleor-app-auth.json",
+  fileName: "/app/apps/manage-promotions/apl/.saleor-app-auth.json",
 };
 switch (process.env.APL) {
   case "upstash":

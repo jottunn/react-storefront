@@ -12,7 +12,7 @@ const aplType = process.env.APL ?? "file";
 let apl: APL;
 
 const volumeConfig = {
-  fileName: "/app/apps/search/.saleor-app-auth.json",
+  fileName: "/app/apps/search/apl/.saleor-app-auth.json",
 };
 try {
   switch (process.env.APL) {

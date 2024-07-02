@@ -24,7 +24,7 @@ services:
     networks:
       - saleor-backend-tier
     volumes:
-      - products-importer-auth-volume:/app/apps/products-importer/
+      - products-importer-auth-volume:/app/apps/products-importer/apl
     command: sh -c '(nginx &) && pnpm turbo run start --filter=products-importer...'
   manage-promotions:
     container_name: manage-promotions
@@ -38,7 +38,7 @@ services:
     networks:
       - saleor-backend-tier
     volumes:
-      - manage-promotions-auth-volume:/app/apps/manage-promotions/
+      - manage-promotions-auth-volume:/app/apps/manage-promotions/apl
     command: sh -c '(nginx &) && pnpm turbo run start --filter=manage-promotions...'
   search:
     container_name: search
@@ -52,7 +52,7 @@ services:
     networks:
       - saleor-backend-tier
     volumes:
-      - search-auth-volume:/app/apps/search/
+      - search-auth-volume:/app/apps/search/apl
     command: sh -c '(nginx &) && pnpm turbo run start --filter=search...'
   manage-stock:
     container_name: manage-stock
@@ -66,7 +66,7 @@ services:
     networks:
       - saleor-backend-tier
     volumes:
-      - manage-stock-auth-volume:/app/apps/manage-stock/
+      - manage-stock-auth-volume:/app/apps/manage-stock/apl
     command: sh -c '(nginx &) && pnpm turbo run start --filter=manage-stock...'
   emails-and-messages:
     container_name: emails-and-messages
@@ -80,7 +80,7 @@ services:
     networks:
       - saleor-backend-tier
     volumes:
-      - emails-and-messages-auth-volume:/app/apps/emails-and-messages/
+      - emails-and-messages-auth-volume:/app/apps/emails-and-messages/apl
     command: sh -c '(nginx &) && pnpm turbo run start --filter=emails-and-messages...'
 volumes:
   manage-promotions-auth-volume:
