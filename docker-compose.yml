@@ -5,8 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile.base
       args:
-        - SALEOR_API_URL=http://localhost:8000/graphql/
-        - STOREFRONT_URL=http://localhost:3000
+        - TARGET_APP=storefront
     ports:
       - 3000:3000
     networks:
@@ -18,7 +17,7 @@ services:
       context: .
       dockerfile: Dockerfile.base
       args:
-        - SALEOR_API_URL=http://localhost:8000/graphql/
+        - TARGET_APP=products-importer
     ports:
       - 3004:3004
     networks:
@@ -32,7 +31,7 @@ services:
       context: .
       dockerfile: Dockerfile.base
       args:
-        - SALEOR_API_URL=http://localhost:8000/graphql/
+        - TARGET_APP=manage-promotions
     ports:
       - 3005:3005
     networks:
@@ -46,7 +45,7 @@ services:
       context: .
       dockerfile: Dockerfile.base
       args:
-        - SALEOR_API_URL=http://localhost:8000/graphql/
+        - TARGET_APP=search
     ports:
       - 3006:3006
     networks:
@@ -60,7 +59,7 @@ services:
       context: .
       dockerfile: Dockerfile.base
       args:
-        - SALEOR_API_URL=http://localhost:8000/graphql/
+        - TARGET_APP=manage-stock
     ports:
       - 3007:3007
     networks:
@@ -74,7 +73,7 @@ services:
       context: .
       dockerfile: Dockerfile.base
       args:
-        - SALEOR_API_URL=http://localhost:8000/graphql/
+        - TARGET_APP=emails-and-messages
     ports:
       - 3008:3008
     networks:

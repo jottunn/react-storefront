@@ -59,13 +59,9 @@
     "axios": "1.7.2"
   },
   "devDependencies": {
-    "@formatjs/cli": "6.2.10",
-    "@graphql-codegen/add": "5.0.2",
-    "@graphql-codegen/cli": "5.0.2",
-    "@graphql-codegen/introspection": "4.0.3",
-    "@graphql-codegen/typescript": "4.0.6",
-    "@graphql-codegen/typescript-operations": "4.2.0",
     "@graphql-codegen/typescript-react-apollo": "4.3.0",
+    "@graphql-codegen/add": "5.0.2",
+    "@formatjs/cli": "6.2.10",
     "@next/bundle-analyzer": "14.2.3",
     "@next/env": "14.0.4",
     "@svgr/webpack": "8.1.0",
