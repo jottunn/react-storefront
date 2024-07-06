@@ -18,6 +18,7 @@ export function PaymentSection({ active, messages }: PaymentSectionProps) {
   // const availableGateways = checkout?.availablePaymentGateways;
   const [chosenGateway, setChosenGateway] = useState("");
   const [isPaymentProcessing, setIsPaymentProcessing] = useState(false);
+  const [errors, setErrors] = useState<any[] | null>(null);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const CASH_ON_DELIVERY_GATEWAY = "COD";
 
@@ -50,6 +51,7 @@ export function PaymentSection({ active, messages }: PaymentSectionProps) {
     if (checkoutComplete?.errors) {
       console.error("complete errors:", checkoutComplete.errors);
       setIsPaymentProcessing(false);
+      setErrors(checkoutComplete.errors);
       return;
     }
 
@@ -133,6 +135,15 @@ export function PaymentSection({ active, messages }: PaymentSectionProps) {
                 {payLabel}
               </CompleteCheckoutButton>
             </form>
+          )}
+          {errors && (
+            <div>
+              {errors.map((err, index) => (
+                <span className="text-red-500 text-sm font-medium" key={index}>
+                  {err.code || err}
+                </span>
+              ))}
+            </div>
           )}
         </>
       )}

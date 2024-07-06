@@ -71,8 +71,13 @@ export async function executeGraphQL<Result, Variables>(
 
   if ("errors" in body) {
     // console.log("GraphQL Query:", queryString);
-    throw new GraphQLError(body);
-    //console.log(body.errors);
+    console.log("body", body);
+    if (body.errors && body.errors[0] && body.errors[0]["message"] === "Signature has expired") {
+      console.log("body", body);
+      console.log("locations", body.errors[0].locations);
+    } else {
+      throw new GraphQLError(body);
+    }
   }
 
   return body.data;

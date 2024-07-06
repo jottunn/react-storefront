@@ -7,6 +7,6 @@ interface CartNavItemProps {
 }
 
 export default async function CartNavItemServer({ children }: CartNavItemProps) {
-  const messages = getMessages(DEFAULT_LOCALE, "app.checkout");
+  const messages = getMessages(DEFAULT_LOCALE);
   return <>{children(messages)}</>;
 }

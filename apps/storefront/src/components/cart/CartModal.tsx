@@ -10,7 +10,6 @@ import { CheckoutProductList } from "./CheckoutProductList";
 import { formatMoney } from "@/lib/utils/formatMoney";
 import CheckoutLink from "./CheckoutLink";
 import { useCheckout } from "@/lib/hooks/CheckoutContext";
-import { Messages } from "@/lib/util";
 
 interface CartModalProps {
   messages: { [key: string]: string };
@@ -55,9 +54,9 @@ export default function CartModal({ messages }: CartModalProps) {
 
   const saleorApiUrl = process.env.NEXT_PUBLIC_API_URI;
   invariant(saleorApiUrl, "Missing NEXT_PUBLIC_API_URI");
-  // if (pathname === "/checkout" || pathname === "/order") {
-  //   return null;
-  // }
+  if (pathname === "/checkout" || pathname === "/order") {
+    return null;
+  }
   return (
     <>
       <button aria-label="Open cart" onClick={openCart} type="button">
@@ -116,7 +115,7 @@ export default function CartModal({ messages }: CartModalProps) {
                 </div>
               ) : (
                 <div className="flex h-full flex-col justify-between overflow-hidden p-1">
-                  <CheckoutProductList />
+                  <CheckoutProductList messages={messages} />
                   <div className="py-4 text-sm text-neutral-500 dark:text-neutral-400">
                     <div className="mb-3 flex items-center justify-between border-b border-neutral-200 pb-1 dark:border-neutral-700">
                       <p>{messages["app.checkout.tax"]}</p>

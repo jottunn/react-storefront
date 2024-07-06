@@ -3,12 +3,18 @@ import clsx from "clsx";
 import { translate } from "@/lib/translations";
 import { DeliveryMethodFragment } from "@/saleor/api";
 import { formatMoney } from "@/lib/utils/formatMoney";
+import { Messages } from "@/lib/util";
+import edjsHTML from "editorjs-html";
 
 export interface ShippingMethodOptionProps {
   method: DeliveryMethodFragment;
+  messages: Messages;
 }
+const parser = edjsHTML();
+export function ShippingMethodOption({ method, messages }: ShippingMethodOptionProps) {
+  const description = translate(method, "description");
+  const parsedContent = description ? parser.parse(JSON.parse(description)) : "";
 
-export function ShippingMethodOption({ method }: ShippingMethodOptionProps) {
   return (
     <Radio
       key={method.id}
@@ -29,8 +35,10 @@ export function ShippingMethodOption({ method }: ShippingMethodOptionProps) {
               <Label as="span" className="block text-base font-medium text-gray-900">
                 {translate(method, "name")}
               </Label>
+              {parsedContent && <div dangerouslySetInnerHTML={{ __html: parsedContent }} />}
               <Description as="span" className="mt-1 flex items-center text-sm text-gray-500">
-                {method.minimumDeliveryDays || 2}-{method.maximumDeliveryDays || 14} business days
+                {method.minimumDeliveryDays || 1}-{method.maximumDeliveryDays || 2}{" "}
+                {messages["app.checkout.businessDays"]}
               </Description>
               <Description as="span" className="mt-6 text-sm font-medium text-gray-900">
                 {formatMoney(method.price)}

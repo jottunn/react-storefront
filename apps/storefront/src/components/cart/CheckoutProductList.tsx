@@ -1,8 +1,13 @@
 import React from "react";
 import CheckoutLineItem from "./CheckoutLineItem";
 import { useCheckout } from "@/lib/hooks/CheckoutContext";
+import { Messages } from "@/lib/util";
 
-export function CheckoutProductList() {
+interface CheckoutProductListProps {
+  messages: Messages;
+}
+
+export function CheckoutProductList({ messages }: CheckoutProductListProps) {
   const { checkout } = useCheckout();
   if (!checkout) {
     return null;
@@ -13,7 +18,7 @@ export function CheckoutProductList() {
         if (!line) {
           return null;
         }
-        return <CheckoutLineItem key={line.id} line={line} />;
+        return <CheckoutLineItem key={line.id} line={line} messages={messages} />;
       })}
     </ul>
   );

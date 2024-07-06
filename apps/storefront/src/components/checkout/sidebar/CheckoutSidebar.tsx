@@ -15,7 +15,7 @@ function CheckoutSidebar({ messages }: CheckoutSidebarProps) {
         {messages["app.checkout.orderSummary"]}
       </h1>
 
-      <CheckoutProductList />
+      <CheckoutProductList messages={messages} />
       {/* @ts-expect-error Async Server Component  */}
       <CartSummary messages={messages} />
     </section>

@@ -7,6 +7,10 @@ query AvailableShippingMethods($channel: String!, $locale: LanguageCodeEnum!) {
         id
         name
       }
+      translation(languageCode: $locale) {
+        id
+        description
+      }
       price {
         ...PriceFragment
       }

@@ -5,7 +5,6 @@ import { Messages } from "@/lib/util";
 import { formatMoney } from "@/lib/utils/formatMoney";
 import { checkoutAddPromoCodeMutation } from "../actions";
 import { useCheckout } from "@/lib/hooks/CheckoutContext";
-import Spinner from "@/components/Spinner";
 
 export interface PromoCodeFormData {
   promoCode: string;

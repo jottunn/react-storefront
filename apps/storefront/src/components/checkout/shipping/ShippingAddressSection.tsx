@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Messages } from "@/lib/util";
-import { CheckoutDetailsFragment, User } from "@/saleor/api";
+import { CheckoutError, User } from "@/saleor/api";
 import SavedAddressSelectionList from "../address/SavedAddressSelectionList";
 import { Button } from "../../Button";
 import AddressDisplay from "../address/AddressDisplay";
@@ -20,13 +20,22 @@ function ShippingAddressSection({ active, user, messages }: ShippingAddressSecti
     return;
   }
   const [editing, setEditing] = useState(false);
+  const [formErrors, setFormErrors] = useState<CheckoutError[]>([]);
+
   const updateMutation = async (formData: AddressFormData) => {
+    let errors: CheckoutError[] = [];
     const shippingResponse = await checkoutShippingAddressUpdate({
       address: { ...formData },
       id: checkout.id,
     });
-    setEditing(false);
-    return shippingResponse?.errors || [];
+    if (shippingResponse?.errors) {
+      errors = [...(shippingResponse.errors ?? [])];
+    }
+    if (!errors.length) {
+      setEditing(false);
+    }
+    setFormErrors(errors);
+    return errors;
   };
 
   return (
@@ -48,16 +57,12 @@ function ShippingAddressSection({ active, user, messages }: ShippingAddressSecti
                 user={user}
               />
             )}
-            {/* <div className="col-span-full pb-4">
-              <button type="button" className="btn-checkout-section" onClick={onSameAsBilling}>
-                {t.formatMessage(messages.sameAsBillingButton)}
-              </button>
-            </div> */}
             <AddressForm
               existingAddressData={checkout.shippingAddress || undefined}
               toggleEdit={() => setEditing(false)}
               updateAddressMutation={updateMutation}
               messages={messages}
+              errors={formErrors}
             />
           </>
         ) : (

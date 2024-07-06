@@ -21,6 +21,8 @@ function BillingAddressSection({ active, sameAddress, messages, user }: BillingA
     return;
   }
   const [editing, setEditing] = useState(!checkout.billingAddress);
+  const [formErrors, setFormErrors] = useState<CheckoutError[]>([]);
+
   useEffect(() => {
     // Automatically update shipping address when "Use same address" is checked and billing address exists.
     if (sameAddress && checkout.billingAddress) {
@@ -51,7 +53,6 @@ function BillingAddressSection({ active, sameAddress, messages, user }: BillingA
       id: checkout.id,
     });
     if (response?.errors) {
-      // Collect GraphQL or business logic errors
       errors = [...(response.errors ?? [])];
     }
 
@@ -68,7 +69,10 @@ function BillingAddressSection({ active, sameAddress, messages, user }: BillingA
         errors = [...errors, ...(shippingResponse.errors ?? [])];
       }
     }
-    setEditing(false); // Optionally update UI state based on success or error
+    if (!errors.length) {
+      setEditing(false);
+    }
+    setFormErrors(errors); // Set errors to display in the form
     return errors; // Return any errors encountered
   };
 
@@ -76,11 +80,8 @@ function BillingAddressSection({ active, sameAddress, messages, user }: BillingA
     // Assuming updateAddress performs the mutation and returns any errors as an array
     const errors = await updateAddress(formData, sameAddress);
     await refreshCheckout();
-    // You might already be handling errors inside updateAddress, in which case you can simply return them here
     return errors;
   };
-
-  // console.log(checkout.billingAddress);
 
   return (
     <>
@@ -105,6 +106,7 @@ function BillingAddressSection({ active, sameAddress, messages, user }: BillingA
               existingAddressData={checkout.billingAddress || undefined}
               toggleEdit={() => setEditing(false)}
               updateAddressMutation={handleUpdateMutation}
+              errors={formErrors}
               messages={messages}
             />
           </>

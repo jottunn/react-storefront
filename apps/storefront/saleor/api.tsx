@@ -32312,9 +32312,15 @@ export type CheckoutDetailsFragment = {
         __typename?: "ShippingMethod";
         id: string;
         name: string;
+        description?: string | null;
         minimumDeliveryDays?: number | null;
         maximumDeliveryDays?: number | null;
-        translation?: { __typename?: "ShippingMethodTranslation"; id: string; name: string } | null;
+        translation?: {
+          __typename?: "ShippingMethodTranslation";
+          id: string;
+          name: string;
+          description?: string | null;
+        } | null;
         price: { __typename?: "Money"; currency: string; amount: number };
       }
     | { __typename?: "Warehouse" }
@@ -32323,9 +32329,15 @@ export type CheckoutDetailsFragment = {
     __typename?: "ShippingMethod";
     id: string;
     name: string;
+    description?: string | null;
     minimumDeliveryDays?: number | null;
     maximumDeliveryDays?: number | null;
-    translation?: { __typename?: "ShippingMethodTranslation"; id: string; name: string } | null;
+    translation?: {
+      __typename?: "ShippingMethodTranslation";
+      id: string;
+      name: string;
+      description?: string | null;
+    } | null;
     price: { __typename?: "Money"; currency: string; amount: number };
   }>;
   availablePaymentGateways: Array<{
@@ -32346,6 +32358,7 @@ export type CheckoutDetailsFragment = {
       __typename?: "ProductVariant";
       id: string;
       quantityAvailable?: number | null;
+      quantityLimitPerCustomer?: number | null;
       name: string;
       product: {
         __typename?: "Product";
@@ -32440,6 +32453,7 @@ export type CheckoutLineDetailsFragment = {
     __typename?: "ProductVariant";
     id: string;
     quantityAvailable?: number | null;
+    quantityLimitPerCustomer?: number | null;
     name: string;
     product: {
       __typename?: "Product";
@@ -32529,9 +32543,15 @@ export type DeliveryMethodFragment = {
   __typename?: "ShippingMethod";
   id: string;
   name: string;
+  description?: string | null;
   minimumDeliveryDays?: number | null;
   maximumDeliveryDays?: number | null;
-  translation?: { __typename?: "ShippingMethodTranslation"; id: string; name: string } | null;
+  translation?: {
+    __typename?: "ShippingMethodTranslation";
+    id: string;
+    name: string;
+    description?: string | null;
+  } | null;
   price: { __typename?: "Money"; currency: string; amount: number };
 };
 
@@ -33177,12 +33197,14 @@ export type CheckoutAddProductLineMutation = {
             __typename?: "ShippingMethod";
             id: string;
             name: string;
+            description?: string | null;
             minimumDeliveryDays?: number | null;
             maximumDeliveryDays?: number | null;
             translation?: {
               __typename?: "ShippingMethodTranslation";
               id: string;
               name: string;
+              description?: string | null;
             } | null;
             price: { __typename?: "Money"; currency: string; amount: number };
           }
@@ -33192,9 +33214,15 @@ export type CheckoutAddProductLineMutation = {
         __typename?: "ShippingMethod";
         id: string;
         name: string;
+        description?: string | null;
         minimumDeliveryDays?: number | null;
         maximumDeliveryDays?: number | null;
-        translation?: { __typename?: "ShippingMethodTranslation"; id: string; name: string } | null;
+        translation?: {
+          __typename?: "ShippingMethodTranslation";
+          id: string;
+          name: string;
+          description?: string | null;
+        } | null;
         price: { __typename?: "Money"; currency: string; amount: number };
       }>;
       availablePaymentGateways: Array<{
@@ -33215,6 +33243,7 @@ export type CheckoutAddProductLineMutation = {
           __typename?: "ProductVariant";
           id: string;
           quantityAvailable?: number | null;
+          quantityLimitPerCustomer?: number | null;
           name: string;
           product: {
             __typename?: "Product";
@@ -33367,12 +33396,14 @@ export type CheckoutAddPromoCodeMutation = {
             __typename?: "ShippingMethod";
             id: string;
             name: string;
+            description?: string | null;
             minimumDeliveryDays?: number | null;
             maximumDeliveryDays?: number | null;
             translation?: {
               __typename?: "ShippingMethodTranslation";
               id: string;
               name: string;
+              description?: string | null;
             } | null;
             price: { __typename?: "Money"; currency: string; amount: number };
           }
@@ -33382,9 +33413,15 @@ export type CheckoutAddPromoCodeMutation = {
         __typename?: "ShippingMethod";
         id: string;
         name: string;
+        description?: string | null;
         minimumDeliveryDays?: number | null;
         maximumDeliveryDays?: number | null;
-        translation?: { __typename?: "ShippingMethodTranslation"; id: string; name: string } | null;
+        translation?: {
+          __typename?: "ShippingMethodTranslation";
+          id: string;
+          name: string;
+          description?: string | null;
+        } | null;
         price: { __typename?: "Money"; currency: string; amount: number };
       }>;
       availablePaymentGateways: Array<{
@@ -33405,6 +33442,7 @@ export type CheckoutAddPromoCodeMutation = {
           __typename?: "ProductVariant";
           id: string;
           quantityAvailable?: number | null;
+          quantityLimitPerCustomer?: number | null;
           name: string;
           product: {
             __typename?: "Product";
@@ -33553,12 +33591,14 @@ export type CheckoutBillingAddressUpdateMutation = {
             __typename?: "ShippingMethod";
             id: string;
             name: string;
+            description?: string | null;
             minimumDeliveryDays?: number | null;
             maximumDeliveryDays?: number | null;
             translation?: {
               __typename?: "ShippingMethodTranslation";
               id: string;
               name: string;
+              description?: string | null;
             } | null;
             price: { __typename?: "Money"; currency: string; amount: number };
           }
@@ -33568,9 +33608,15 @@ export type CheckoutBillingAddressUpdateMutation = {
         __typename?: "ShippingMethod";
         id: string;
         name: string;
+        description?: string | null;
         minimumDeliveryDays?: number | null;
         maximumDeliveryDays?: number | null;
-        translation?: { __typename?: "ShippingMethodTranslation"; id: string; name: string } | null;
+        translation?: {
+          __typename?: "ShippingMethodTranslation";
+          id: string;
+          name: string;
+          description?: string | null;
+        } | null;
         price: { __typename?: "Money"; currency: string; amount: number };
       }>;
       availablePaymentGateways: Array<{
@@ -33591,6 +33637,7 @@ export type CheckoutBillingAddressUpdateMutation = {
           __typename?: "ProductVariant";
           id: string;
           quantityAvailable?: number | null;
+          quantityLimitPerCustomer?: number | null;
           name: string;
           product: {
             __typename?: "Product";
@@ -33875,12 +33922,14 @@ export type CheckoutCustomerAttachMutation = {
             __typename?: "ShippingMethod";
             id: string;
             name: string;
+            description?: string | null;
             minimumDeliveryDays?: number | null;
             maximumDeliveryDays?: number | null;
             translation?: {
               __typename?: "ShippingMethodTranslation";
               id: string;
               name: string;
+              description?: string | null;
             } | null;
             price: { __typename?: "Money"; currency: string; amount: number };
           }
@@ -33890,9 +33939,15 @@ export type CheckoutCustomerAttachMutation = {
         __typename?: "ShippingMethod";
         id: string;
         name: string;
+        description?: string | null;
         minimumDeliveryDays?: number | null;
         maximumDeliveryDays?: number | null;
-        translation?: { __typename?: "ShippingMethodTranslation"; id: string; name: string } | null;
+        translation?: {
+          __typename?: "ShippingMethodTranslation";
+          id: string;
+          name: string;
+          description?: string | null;
+        } | null;
         price: { __typename?: "Money"; currency: string; amount: number };
       }>;
       availablePaymentGateways: Array<{
@@ -33913,6 +33968,7 @@ export type CheckoutCustomerAttachMutation = {
           __typename?: "ProductVariant";
           id: string;
           quantityAvailable?: number | null;
+          quantityLimitPerCustomer?: number | null;
           name: string;
           product: {
             __typename?: "Product";
@@ -34065,12 +34121,14 @@ export type CheckoutCustomerDetachMutation = {
             __typename?: "ShippingMethod";
             id: string;
             name: string;
+            description?: string | null;
             minimumDeliveryDays?: number | null;
             maximumDeliveryDays?: number | null;
             translation?: {
               __typename?: "ShippingMethodTranslation";
               id: string;
               name: string;
+              description?: string | null;
             } | null;
             price: { __typename?: "Money"; currency: string; amount: number };
           }
@@ -34080,9 +34138,15 @@ export type CheckoutCustomerDetachMutation = {
         __typename?: "ShippingMethod";
         id: string;
         name: string;
+        description?: string | null;
         minimumDeliveryDays?: number | null;
         maximumDeliveryDays?: number | null;
-        translation?: { __typename?: "ShippingMethodTranslation"; id: string; name: string } | null;
+        translation?: {
+          __typename?: "ShippingMethodTranslation";
+          id: string;
+          name: string;
+          description?: string | null;
+        } | null;
         price: { __typename?: "Money"; currency: string; amount: number };
       }>;
       availablePaymentGateways: Array<{
@@ -34103,6 +34167,7 @@ export type CheckoutCustomerDetachMutation = {
           __typename?: "ProductVariant";
           id: string;
           quantityAvailable?: number | null;
+          quantityLimitPerCustomer?: number | null;
           name: string;
           product: {
             __typename?: "Product";
@@ -34250,12 +34315,14 @@ export type CheckoutEmailUpdateMutation = {
             __typename?: "ShippingMethod";
             id: string;
             name: string;
+            description?: string | null;
             minimumDeliveryDays?: number | null;
             maximumDeliveryDays?: number | null;
             translation?: {
               __typename?: "ShippingMethodTranslation";
               id: string;
               name: string;
+              description?: string | null;
             } | null;
             price: { __typename?: "Money"; currency: string; amount: number };
           }
@@ -34265,9 +34332,15 @@ export type CheckoutEmailUpdateMutation = {
         __typename?: "ShippingMethod";
         id: string;
         name: string;
+        description?: string | null;
         minimumDeliveryDays?: number | null;
         maximumDeliveryDays?: number | null;
-        translation?: { __typename?: "ShippingMethodTranslation"; id: string; name: string } | null;
+        translation?: {
+          __typename?: "ShippingMethodTranslation";
+          id: string;
+          name: string;
+          description?: string | null;
+        } | null;
         price: { __typename?: "Money"; currency: string; amount: number };
       }>;
       availablePaymentGateways: Array<{
@@ -34288,6 +34361,7 @@ export type CheckoutEmailUpdateMutation = {
           __typename?: "ProductVariant";
           id: string;
           quantityAvailable?: number | null;
+          quantityLimitPerCustomer?: number | null;
           name: string;
           product: {
             __typename?: "Product";
@@ -34436,12 +34510,14 @@ export type CheckoutLineUpdateMutation = {
             __typename?: "ShippingMethod";
             id: string;
             name: string;
+            description?: string | null;
             minimumDeliveryDays?: number | null;
             maximumDeliveryDays?: number | null;
             translation?: {
               __typename?: "ShippingMethodTranslation";
               id: string;
               name: string;
+              description?: string | null;
             } | null;
             price: { __typename?: "Money"; currency: string; amount: number };
           }
@@ -34451,9 +34527,15 @@ export type CheckoutLineUpdateMutation = {
         __typename?: "ShippingMethod";
         id: string;
         name: string;
+        description?: string | null;
         minimumDeliveryDays?: number | null;
         maximumDeliveryDays?: number | null;
-        translation?: { __typename?: "ShippingMethodTranslation"; id: string; name: string } | null;
+        translation?: {
+          __typename?: "ShippingMethodTranslation";
+          id: string;
+          name: string;
+          description?: string | null;
+        } | null;
         price: { __typename?: "Money"; currency: string; amount: number };
       }>;
       availablePaymentGateways: Array<{
@@ -34474,6 +34556,7 @@ export type CheckoutLineUpdateMutation = {
           __typename?: "ProductVariant";
           id: string;
           quantityAvailable?: number | null;
+          quantityLimitPerCustomer?: number | null;
           name: string;
           product: {
             __typename?: "Product";
@@ -34627,12 +34710,14 @@ export type RemoveProductFromCheckoutMutation = {
             __typename?: "ShippingMethod";
             id: string;
             name: string;
+            description?: string | null;
             minimumDeliveryDays?: number | null;
             maximumDeliveryDays?: number | null;
             translation?: {
               __typename?: "ShippingMethodTranslation";
               id: string;
               name: string;
+              description?: string | null;
             } | null;
             price: { __typename?: "Money"; currency: string; amount: number };
           }
@@ -34642,9 +34727,15 @@ export type RemoveProductFromCheckoutMutation = {
         __typename?: "ShippingMethod";
         id: string;
         name: string;
+        description?: string | null;
         minimumDeliveryDays?: number | null;
         maximumDeliveryDays?: number | null;
-        translation?: { __typename?: "ShippingMethodTranslation"; id: string; name: string } | null;
+        translation?: {
+          __typename?: "ShippingMethodTranslation";
+          id: string;
+          name: string;
+          description?: string | null;
+        } | null;
         price: { __typename?: "Money"; currency: string; amount: number };
       }>;
       availablePaymentGateways: Array<{
@@ -34665,6 +34756,7 @@ export type RemoveProductFromCheckoutMutation = {
           __typename?: "ProductVariant";
           id: string;
           quantityAvailable?: number | null;
+          quantityLimitPerCustomer?: number | null;
           name: string;
           product: {
             __typename?: "Product";
@@ -34813,12 +34905,14 @@ export type CheckoutShippingAddressUpdateMutation = {
             __typename?: "ShippingMethod";
             id: string;
             name: string;
+            description?: string | null;
             minimumDeliveryDays?: number | null;
             maximumDeliveryDays?: number | null;
             translation?: {
               __typename?: "ShippingMethodTranslation";
               id: string;
               name: string;
+              description?: string | null;
             } | null;
             price: { __typename?: "Money"; currency: string; amount: number };
           }
@@ -34828,9 +34922,15 @@ export type CheckoutShippingAddressUpdateMutation = {
         __typename?: "ShippingMethod";
         id: string;
         name: string;
+        description?: string | null;
         minimumDeliveryDays?: number | null;
         maximumDeliveryDays?: number | null;
-        translation?: { __typename?: "ShippingMethodTranslation"; id: string; name: string } | null;
+        translation?: {
+          __typename?: "ShippingMethodTranslation";
+          id: string;
+          name: string;
+          description?: string | null;
+        } | null;
         price: { __typename?: "Money"; currency: string; amount: number };
       }>;
       availablePaymentGateways: Array<{
@@ -34851,6 +34951,7 @@ export type CheckoutShippingAddressUpdateMutation = {
           __typename?: "ProductVariant";
           id: string;
           quantityAvailable?: number | null;
+          quantityLimitPerCustomer?: number | null;
           name: string;
           product: {
             __typename?: "Product";
@@ -35004,12 +35105,14 @@ export type CheckoutShippingMethodUpdateMutation = {
             __typename?: "ShippingMethod";
             id: string;
             name: string;
+            description?: string | null;
             minimumDeliveryDays?: number | null;
             maximumDeliveryDays?: number | null;
             translation?: {
               __typename?: "ShippingMethodTranslation";
               id: string;
               name: string;
+              description?: string | null;
             } | null;
             price: { __typename?: "Money"; currency: string; amount: number };
           }
@@ -35019,9 +35122,15 @@ export type CheckoutShippingMethodUpdateMutation = {
         __typename?: "ShippingMethod";
         id: string;
         name: string;
+        description?: string | null;
         minimumDeliveryDays?: number | null;
         maximumDeliveryDays?: number | null;
-        translation?: { __typename?: "ShippingMethodTranslation"; id: string; name: string } | null;
+        translation?: {
+          __typename?: "ShippingMethodTranslation";
+          id: string;
+          name: string;
+          description?: string | null;
+        } | null;
         price: { __typename?: "Money"; currency: string; amount: number };
       }>;
       availablePaymentGateways: Array<{
@@ -35042,6 +35151,7 @@ export type CheckoutShippingMethodUpdateMutation = {
           __typename?: "ProductVariant";
           id: string;
           quantityAvailable?: number | null;
+          quantityLimitPerCustomer?: number | null;
           name: string;
           product: {
             __typename?: "Product";
@@ -35370,7 +35480,12 @@ export type AvailableShippingMethodsQuery = {
       __typename?: "ShippingMethod";
       id: string;
       name: string;
-      translation?: { __typename?: "ShippingMethodTranslation"; id: string; name: string } | null;
+      translation?: {
+        __typename?: "ShippingMethodTranslation";
+        id: string;
+        name: string;
+        description?: string | null;
+      } | null;
       price: { __typename?: "Money"; currency: string; amount: number };
     }> | null;
   };
@@ -35656,12 +35771,14 @@ export type CheckoutFindQuery = {
           __typename?: "ShippingMethod";
           id: string;
           name: string;
+          description?: string | null;
           minimumDeliveryDays?: number | null;
           maximumDeliveryDays?: number | null;
           translation?: {
             __typename?: "ShippingMethodTranslation";
             id: string;
             name: string;
+            description?: string | null;
           } | null;
           price: { __typename?: "Money"; currency: string; amount: number };
         }
@@ -35671,9 +35788,15 @@ export type CheckoutFindQuery = {
       __typename?: "ShippingMethod";
       id: string;
       name: string;
+      description?: string | null;
       minimumDeliveryDays?: number | null;
       maximumDeliveryDays?: number | null;
-      translation?: { __typename?: "ShippingMethodTranslation"; id: string; name: string } | null;
+      translation?: {
+        __typename?: "ShippingMethodTranslation";
+        id: string;
+        name: string;
+        description?: string | null;
+      } | null;
       price: { __typename?: "Money"; currency: string; amount: number };
     }>;
     availablePaymentGateways: Array<{
@@ -35694,6 +35817,7 @@ export type CheckoutFindQuery = {
         __typename?: "ProductVariant";
         id: string;
         quantityAvailable?: number | null;
+        quantityLimitPerCustomer?: number | null;
         name: string;
         product: {
           __typename?: "Product";
@@ -37227,6 +37351,7 @@ export const DeliveryMethodFragmentDoc = gql`
   fragment DeliveryMethodFragment on ShippingMethod {
     id
     name
+    description
     translation(languageCode: $locale) {
       id
       name
@@ -37236,6 +37361,10 @@ export const DeliveryMethodFragmentDoc = gql`
     }
     minimumDeliveryDays
     maximumDeliveryDays
+    translation(languageCode: $locale) {
+      id
+      description
+    }
   }
 `;
 export const ProductMediaFragmentDoc = gql`
@@ -37285,6 +37414,7 @@ export const CheckoutLineDetailsFragmentDoc = gql`
     variant {
       id
       quantityAvailable
+      quantityLimitPerCustomer
       product {
         id
         name
@@ -39303,6 +39433,10 @@ export const AvailableShippingMethodsDocument = gql`
         translation(languageCode: $locale) {
           id
           name
+        }
+        translation(languageCode: $locale) {
+          id
+          description
         }
         price {
           ...PriceFragment

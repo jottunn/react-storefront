@@ -112,7 +112,7 @@ export const customerDetach = async (id: string) => {
       cache: "no-cache",
     });
 
-    //console.log(response.checkoutCustomerAttach?.errors);
+    console.log("checkoutCustomerDetach", response.checkoutCustomerDetach?.errors);
     if (response.checkoutCustomerDetach?.errors.length) {
       const customError = response.checkoutCustomerDetach.errors as any;
       return { success: false, errors: customError.map((error: { code: any }) => error.code) };
@@ -146,12 +146,11 @@ export const checkoutBillingAddressUpdate = async (args: {
       cache: "no-cache",
     });
 
-    //console.log(response.checkoutBillingAddressUpdate?.errors);
+    console.log(response.checkoutBillingAddressUpdate?.errors);
     if (response.checkoutBillingAddressUpdate?.errors.length) {
-      const customError = response.checkoutBillingAddressUpdate.errors as any;
-      return { success: false, errors: customError.map((error: { code: any }) => error.code) };
+      return { errors: response.checkoutBillingAddressUpdate.errors };
     }
-    return { success: true, checkout: response.checkoutBillingAddressUpdate?.checkout };
+    return { checkout: response.checkoutBillingAddressUpdate?.checkout };
   } catch (error) {
     console.error("Failed to update Billing Address on checkout:", error);
     return;
@@ -180,12 +179,11 @@ export const checkoutShippingAddressUpdate = async (args: {
       cache: "no-cache",
     });
 
-    //console.log("checkoutShippingAddressUpdate", response.checkoutShippingAddressUpdate?.errors);
+    console.log("checkoutShippingAddressUpdate", response.checkoutShippingAddressUpdate?.errors);
     if (response.checkoutShippingAddressUpdate?.errors.length) {
-      const customError = response.checkoutShippingAddressUpdate.errors as any;
-      return { success: false, errors: customError.map((error: { code: any }) => error.code) };
+      return { errors: response.checkoutShippingAddressUpdate.errors };
     }
-    return { success: true, checkout: response.checkoutShippingAddressUpdate?.checkout };
+    return { checkout: response.checkoutShippingAddressUpdate?.checkout };
   } catch (error) {
     console.error("Failed to update Shipping Address on checkout:", error);
     return;
@@ -277,7 +275,13 @@ export const checkoutCompleteMutation = async (args: { id: string; note: string 
 
     if (response.checkoutComplete?.errors.length) {
       const customError = response.checkoutComplete.errors as any;
-      return { success: false, errors: customError.map((error: { code: any }) => error.code) };
+      console.log("customError", customError);
+      return {
+        success: false,
+        errors: customError.map(
+          (error: { code?: string; message?: string }) => error.code || error.message,
+        ),
+      };
     }
     return { success: true, order: response?.checkoutComplete?.order };
   } catch (error) {
@@ -304,13 +308,13 @@ export const checkoutAddPromoCodeMutation = async (args: { id: string; promoCode
       },
       cache: "no-cache",
     });
-    //console.log("response", response);
+    console.log("checkoutAddPromoCodeMutation", response);
 
     if (response.checkoutAddPromoCode?.errors.length) {
       const customError = response.checkoutAddPromoCode.errors as any;
       return { success: false, errors: customError.map((error: { code: any }) => error.code) };
     }
-    return { success: true, checkout: response?.checkoutAddPromoCode?.checkout };
+    return { checkout: response?.checkoutAddPromoCode?.checkout };
   } catch (error) {
     console.error("Failed to add Promo Code on checkout:", error);
     return;

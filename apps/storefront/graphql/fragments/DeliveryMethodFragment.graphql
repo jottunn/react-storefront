@@ -1,6 +1,7 @@
 fragment DeliveryMethodFragment on ShippingMethod {
   id
   name
+  description
   translation(languageCode: $locale) {
     id
     name
@@ -10,4 +11,8 @@ fragment DeliveryMethodFragment on ShippingMethod {
   }
   minimumDeliveryDays
   maximumDeliveryDays
+  translation(languageCode: $locale) {
+    id
+    description
+  }
 }

@@ -8,6 +8,7 @@ fragment CheckoutLineDetailsFragment on CheckoutLine {
   variant {
     id
     quantityAvailable
+    quantityLimitPerCustomer
     product {
       id
       name

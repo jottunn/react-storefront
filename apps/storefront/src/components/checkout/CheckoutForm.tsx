@@ -7,9 +7,6 @@ import ShippingAddressSection from "./shipping/ShippingAddressSection";
 import ShippingMethodSection from "./shipping/ShippingMethodSection";
 import PaymentSection from "./payments/PaymentSection";
 import { useCheckout } from "@/lib/hooks/CheckoutContext";
-import Spinner from "../Spinner";
-import CheckoutNote from "./CheckoutNote";
-import CompleteCheckoutButton from "./CompleteCheckoutButton";
 
 interface CollapsedSections {
   billingAddress: boolean;

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { AddressDetailsFragment, CheckoutError, CountryCode } from "@/saleor/api";
 import { CountrySelect } from "./CountrySelect";
@@ -23,6 +23,7 @@ export interface AddressFormProps {
   toggleEdit: () => void;
   updateAddressMutation: (address: AddressFormData) => Promise<CheckoutError[]>;
   messages: Messages;
+  errors?: CheckoutError[];
 }
 
 export function AddressForm({
@@ -30,6 +31,7 @@ export function AddressForm({
   toggleEdit,
   updateAddressMutation,
   messages,
+  errors,
 }: AddressFormProps) {
   const {
     register: registerAddress,
@@ -51,15 +53,28 @@ export function AddressForm({
     },
   });
 
+  useEffect(() => {
+    console.log(errors);
+    if (errors && errors.length > 0) {
+      errors.forEach((e) => {
+        setErrorAddress(e.field as keyof AddressFormData, {
+          type: "manual",
+          message: e.message || "Invalid value",
+        });
+      });
+    }
+  }, [errors, setErrorAddress]);
+
   const onAddressFormSubmit = handleSubmitAddress(async (formData: AddressFormData) => {
     const errors = await updateAddressMutation(formData);
     // Assign errors to the form fields
     if (errors.length > 0) {
       errors.forEach((e) =>
         setErrorAddress(e.field as keyof AddressFormData, {
-          message: e.message || "",
+          message: e.message || "Invalid Value",
         }),
       );
+      console.log("errors", errors);
       return;
     }
 
@@ -87,7 +102,7 @@ export function AddressForm({
                 pattern: /^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/i,
               })}
             />
-            {!!errorsAddress.phone && <p>{errorsAddress.phone.message}</p>}
+            {!!errorsAddress.phone && <p className="text-red-500">{errorsAddress.phone.message}</p>}
           </div>
         </div>
 
@@ -105,7 +120,9 @@ export function AddressForm({
                 required: true,
               })}
             />
-            {!!errorsAddress.firstName && <p>{errorsAddress.firstName.message}</p>}
+            {!!errorsAddress.firstName && (
+              <p className="text-red-500">{errorsAddress.firstName.message}</p>
+            )}
           </div>
         </div>
 
@@ -123,7 +140,9 @@ export function AddressForm({
                 required: true,
               })}
             />
-            {!!errorsAddress.lastName && <p>{errorsAddress.lastName.message}</p>}
+            {!!errorsAddress.lastName && (
+              <p className="text-red-500">{errorsAddress.lastName.message}</p>
+            )}
           </div>
         </div>
 
@@ -139,7 +158,9 @@ export function AddressForm({
               spellCheck={false}
               {...registerAddress("companyName")}
             />
-            {!!errorsAddress.companyName && <p>{errorsAddress.companyName.message}</p>}
+            {!!errorsAddress.companyName && (
+              <p className="text-red-500">{errorsAddress.companyName.message}</p>
+            )}
           </div>
         </div>
 
@@ -151,11 +172,11 @@ export function AddressForm({
           </label>
           <Controller
             name="country"
-            control={control} // This comes from useForm
-            rules={{ required: "Country selection is required." }}
+            control={control}
+            rules={{ required: messages["app.checkout.countryFieldRequired"] }}
             render={({ field, fieldState: { error } }) => (
               <>
-                <CountrySelect only={availableShippingCountries} {...field} />
+                <CountrySelect only={availableShippingCountries} {...field} messages={messages} />
                 {error && <p className="text-red-500">{error.message}</p>}
               </>
             )}
@@ -176,7 +197,9 @@ export function AddressForm({
                 required: true,
               })}
             />
-            {!!errorsAddress.streetAddress1 && <p>{errorsAddress.streetAddress1.message}</p>}
+            {!!errorsAddress.streetAddress1 && (
+              <p className="text-red-500">{errorsAddress.streetAddress1.message}</p>
+            )}
           </div>
         </div>
 
@@ -192,7 +215,7 @@ export function AddressForm({
               spellCheck={false}
               {...registerAddress("city", { required: true })}
             />
-            {!!errorsAddress.city && <p>{errorsAddress.city.message}</p>}
+            {!!errorsAddress.city && <p className="text-red-500">{errorsAddress.city.message}</p>}
           </div>
         </div>
 
@@ -211,7 +234,9 @@ export function AddressForm({
                 required: true,
               })}
             />
-            {!!errorsAddress.postalCode && <p>{errorsAddress.postalCode.message}</p>}
+            {!!errorsAddress.postalCode && (
+              <p className="text-red-500">{errorsAddress.postalCode.message}</p>
+            )}
           </div>
         </div>
         <div className="col-span-full">

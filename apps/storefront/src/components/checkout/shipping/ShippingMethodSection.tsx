@@ -1,6 +1,6 @@
 import { RadioGroup } from "@headlessui/react";
-import React, { useState } from "react";
-import { CheckoutDetailsFragment, ErrorDetailsFragment, ShippingMethod } from "@/saleor/api";
+import React, { useEffect, useState } from "react";
+import { ErrorDetailsFragment, ShippingMethod } from "@/saleor/api";
 import { Button } from "../../Button";
 import { Messages } from "@/lib/util";
 import { checkoutShippingMethodUpdate } from "../actions";
@@ -20,9 +20,21 @@ export function ShippingMethodSection({ active, messages }: ShippingMethodSectio
     return;
   }
 
-  const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState(checkout.deliveryMethod);
-  const [editing, setEditing] = useState(!checkout.deliveryMethod);
+  const availableShippingMethods = checkout.shippingMethods.filter(notNullable) || [];
+  const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState(
+    checkout.deliveryMethod ||
+      (availableShippingMethods.length === 1 && availableShippingMethods[0]),
+  );
+  const [editing, setEditing] = useState(
+    !checkout.deliveryMethod && availableShippingMethods.length > 1,
+  );
   const [errors, setErrors] = React.useState<ErrorDetailsFragment[] | null>(null);
+
+  useEffect(() => {
+    if (!checkout.deliveryMethod && availableShippingMethods.length === 1) {
+      handleChange(availableShippingMethods[0]);
+    }
+  }, [availableShippingMethods, checkout.deliveryMethod]);
 
   const handleChange = async (method: ShippingMethod) => {
     const response = await checkoutShippingMethodUpdate({
@@ -41,8 +53,6 @@ export function ShippingMethodSection({ active, messages }: ShippingMethodSectio
     setEditing(false);
     setErrors(null);
   };
-
-  const availableShippingMethods = checkout.shippingMethods.filter(notNullable) || [];
 
   return (
     <>
@@ -75,11 +85,12 @@ export function ShippingMethodSection({ active, messages }: ShippingMethodSectio
             <RadioGroup value={selectedDeliveryMethod} onChange={handleChange} className="pb-4">
               <div className="mt-4 grid grid-cols-2 gap-2">
                 {availableShippingMethods.map((method) => {
-                  // todo: Investigate why filter did not excluded non existing methods
                   if (!method) {
                     return null;
                   }
-                  return <ShippingMethodOption method={method} key={method.id} />;
+                  return (
+                    <ShippingMethodOption method={method} key={method.id} messages={messages} />
+                  );
                 })}
               </div>
             </RadioGroup>
@@ -87,15 +98,20 @@ export function ShippingMethodSection({ active, messages }: ShippingMethodSectio
         ) : (
           <section className="flex justify-between items-center mb-4">
             {!!checkout.deliveryMethod && (
-              <ShippingMethodDisplay method={checkout.deliveryMethod as ShippingMethod} />
-            )}
-            <div className="flex justify-between items-center">
-              <Button
-                onClick={() => setEditing(true)}
-                label={messages["app.ui.changeButton"]}
-                variant="secondary"
+              <ShippingMethodDisplay
+                method={checkout.deliveryMethod as ShippingMethod}
+                messages={messages}
               />
-            </div>
+            )}
+            {availableShippingMethods.length > 1 && (
+              <div className="flex justify-between items-center">
+                <Button
+                  onClick={() => setEditing(true)}
+                  label={messages["app.ui.changeButton"]}
+                  variant="secondary"
+                />
+              </div>
+            )}
           </section>
         ))}
     </>

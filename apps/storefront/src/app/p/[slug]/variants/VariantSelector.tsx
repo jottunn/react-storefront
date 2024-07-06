@@ -58,17 +58,19 @@ export function VariantSelector({
   sizeGuide,
 }: VariantSelectorProps) {
   const { variants } = product;
-  const availableVariants = variants && variants.filter((variant) => variant.quantityAvailable);
+  const availableVariants =
+    variants &&
+    variants.filter((variant) => variant.quantityAvailable || variant.id === selectedVariant?.id);
   // console.log('availableVariants', availableVariants);
   const currentColor = selectedVariant ? getColorOfVariant(selectedVariant) : "";
   const sizes = currentColor
-    ? getGroupedVariants(currentColor, variants as ProductVariant[])
-    : variants;
+    ? getGroupedVariants(currentColor, availableVariants as ProductVariant[])
+    : availableVariants;
   const commercialColorAttr = selectedVariant?.attributes.find(
     (attr) => attr.attribute.slug === ATTR_COLOR_COMMERCIAL_SLUG,
   );
   // Skip displaying selector when theres no variant
-  if (!variants || variants.length === 0) {
+  if (!availableVariants || availableVariants.length === 0) {
     return null;
   }
 
@@ -103,7 +105,7 @@ export function VariantSelector({
           </p>
         )}
 
-        {product.variants && product.variants?.length > 1 && (
+        {availableVariants && availableVariants.length > 1 && (
           <VariantColorSelector
             product={product}
             currentColor={currentColor}

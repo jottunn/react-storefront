@@ -236,13 +236,23 @@ const ProductDetail = async ({
   async function addItem() {
     "use server";
     const checkoutId = await Checkout.getIdFromCookies(defaultRegionQuery().channel);
-    const checkout = await Checkout.findOrCreate({
+    const resultCheckoutCreate = await Checkout.findOrCreate({
       checkoutId: checkoutId,
       channel: defaultRegionQuery().channel,
     });
-    console.log("checkout", checkout);
-    invariant(checkout, "This should never happen");
 
+    if (resultCheckoutCreate.errors) {
+      console.error("Error in checkout creation/retrieval:", resultCheckoutCreate.errors[0]);
+      throw new Error(resultCheckoutCreate.errors[0]);
+    }
+    console.log("Checkout after findOrCreate:", resultCheckoutCreate.checkout);
+    const checkout = resultCheckoutCreate.checkout;
+
+    if (!checkout) {
+      console.error("Checkout is null after findOrCreate");
+      throw new Error("Unable to create or retrieve checkout");
+    }
+    //invariant(checkout, "This should never happen");
     Checkout.saveIdToCookie(defaultRegionQuery().channel, checkout.id);
 
     if (!selectedVariantID) {
@@ -409,7 +419,7 @@ const ProductDetail = async ({
             </p>
           )}
 
-          {variants && isAvailable && (
+          {variants && (
             <VariantSelector
               selectedVariant={selectedVariant}
               product={product}
@@ -419,7 +429,7 @@ const ProductDetail = async ({
             />
           )}
           {!isAvailable && (
-            <p className="text-md text-left font-semibold text-red-500 uppercase">
+            <p className="text-base text-left font-semibold text-red-500 uppercase">
               {messages["app.product.soldOut"]}
             </p>
           )}
@@ -428,6 +438,11 @@ const ProductDetail = async ({
             <div className="mt-8 block">
               <form action={addItem} className="m-auto text-left">
                 <AddButton disabled={isAddToCartButtonDisabled} messages={messages} />
+                {selectedVariant?.quantityAvailable === 0 && (
+                  <p className="text-base text-left font-semibold text-red-500 pt-2">
+                    {messages["app.product.soldOutVariant"]}
+                  </p>
+                )}
               </form>
             </div>
           )}

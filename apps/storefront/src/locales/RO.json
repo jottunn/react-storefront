@@ -20,6 +20,8 @@
   "app.checkout.cityField": "Oraș",
   "app.checkout.companyNameField": "Numele companiei",
   "app.checkout.countryField": "Țară",
+  "app.checkout.countryFieldRequired": "Trebuie selectată țara",
+  "app.checkout.countryFieldSelect": "Alege țara",
   "app.checkout.cvcField": "CVC",
   "app.checkout.discount": "Reducere",
   "app.checkout.discountCode": "Cod de reducere",
@@ -40,6 +42,7 @@
   "app.checkout.shippingAddressCardHeader": "Adresa de livrare",
   "app.checkout.shippingInfo": "Calculat la finalizarea comenzii",
   "app.checkout.shippingMethodCardHeader": "Metoda de livrare",
+  "app.checkout.businessDays": "zile lucratoare",
   "app.checkout.subtotal": "Subtotal",
   "app.checkout.note": "Adaugă comentarii la comanda ta",
   "app.checkout.noteTitle": "Observații comandă",
@@ -48,6 +51,7 @@
   "app.checkout.soldOut": "Unul sau mai multe produse nu mai exista pe stoc, te rugăm sa actualizezi cosul pentru a continua",
   "app.checkout.processing": "Se procesează...",
   "app.checkout.terms": "Pentru a continua trebuie sa accepti Termenii și Condițiile",
+  "app.checkout.unavailable": "Produsul nu mai este disponibil",
   "app.chooseSize": "Alege mărimea",
   "app.clearAll": "Resetează filtrele",
   "app.filterBy": "Filtre",
@@ -92,7 +96,8 @@
   "app.product.adding": "Se procesează...",
   "app.product.attributes": "Atribute",
   "app.product.description": "Descriere",
-  "app.product.soldOut": "Vândut!",
+  "app.product.soldOut": "Produsul nu mai este in stoc",
+  "app.product.soldOutVariant": "Varianta selectata nu mai este pe stoc",
   "app.product.variantNotChosen": "Alege o variantă",
   "app.quantity": "Cantitate",
   "app.region.channelField": "Canal",
@@ -166,5 +171,7 @@
   "CANCELED": "ANULATA",
   "EXPIRED": "EXPIRATA",
   "UNCONFIRMED": "NECONFIRMATA",
-  "INSUFFICIENT_STOCK": "Stoc epuizat"
+  "INSUFFICIENT_STOCK": "Stoc epuizat",
+  "QUANTITY_GREATER_THAN_LIMIT": "Stoc insuficient pentru cantitatea introdusa",
+  "app.checkout.maxQ": "Cantitatea maxima ce poate fi comandata: "
 }

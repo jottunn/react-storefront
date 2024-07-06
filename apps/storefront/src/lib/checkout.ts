@@ -54,11 +54,32 @@ export async function findOrCreate({
   checkoutId?: string;
   channel: string;
 }) {
-  if (!checkoutId) {
-    return (await create({ channel })).checkoutCreate?.checkout;
+  try {
+    if (!checkoutId) {
+      const createResult = await create({ channel });
+      if (createResult.checkoutCreate?.errors.length) {
+        console.error("Error creating checkout:", createResult.checkoutCreate.errors);
+        const customError = createResult.checkoutCreate.errors as any;
+        return { errors: customError.map((error: { code: any }) => error.code) };
+      }
+      return { checkout: createResult.checkoutCreate?.checkout };
+    }
+    const checkout = await find(checkoutId);
+    if (!checkout) {
+      const createResult = await create({ channel });
+      if (createResult?.checkoutCreate?.errors.length) {
+        const customError = createResult.checkoutCreate.errors as any;
+        console.error("Error creating checkout:", createResult?.checkoutCreate.errors);
+        return { errors: customError.map((error: { code: any }) => error.code) };
+      }
+      return { checkout: createResult.checkoutCreate?.checkout };
+    }
+
+    return { checkout: checkout };
+  } catch (error) {
+    console.error("Error in findOrCreate:", error);
+    return { errors: ["An error occurred while creating or retrieving the checkout."] };
   }
-  const checkout = await find(checkoutId);
-  return checkout || (await create({ channel })).checkoutCreate?.checkout;
 }
 
 export const create = ({ channel }: { channel: string }) =>

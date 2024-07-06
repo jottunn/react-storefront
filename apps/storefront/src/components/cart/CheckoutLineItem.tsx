@@ -2,7 +2,7 @@
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import debounce from "lodash.debounce";
 import { CheckoutLineDetailsFragment, ErrorDetailsFragment } from "@/saleor/api";
 
@@ -12,31 +12,71 @@ import { formatMoney } from "@/lib/utils/formatMoney";
 import { useCheckout } from "@/lib/hooks/CheckoutContext";
 import { updateLineFromCheckout } from "../checkout/actions";
 import { translate } from "@/lib/translations";
+import { Messages } from "@/lib/util";
 
 interface CheckoutLineItemProps {
   line: CheckoutLineDetailsFragment;
+  messages: Messages;
 }
 
-export default function CheckoutLineItem({ line }: CheckoutLineItemProps) {
+export default function CheckoutLineItem({ line, messages }: CheckoutLineItemProps) {
   const { checkout, refreshCheckout } = useCheckout();
   if (!checkout || !line) {
     return null;
   }
-  const [quantity, setQuantity] = React.useState<number>();
-  const [errors, setErrors] = React.useState<any[] | null>();
+  const [quantity, setQuantity] = useState<number>(line.quantity);
+  const [errors, setErrors] = useState<any[] | null>();
+
+  useEffect(() => {
+    if (!line) return;
+
+    const availableQuantity =
+      line.problems && line.problems?.[0] && (line.problems?.[0] as any).availableQuantity;
+
+    if (availableQuantity !== undefined && line.quantity && availableQuantity < line.quantity) {
+      const error = {
+        field: "quantity",
+        message:
+          availableQuantity === 0
+            ? messages["app.product.soldOutVariant"]
+            : messages["QUANTITY_GREATER_THAN_LIMIT"],
+        code: "INSUFFICIENT_STOCK",
+      };
+      setErrors([...[error]]);
+    }
+
+    if (!line.problems) {
+      const maxQuantity = line.variant.quantityLimitPerCustomer || 1;
+      if (quantity > maxQuantity) {
+        setErrors(["QUANTITY_GREATER_THAN_LIMIT"]);
+      }
+    }
+  }, [line]);
 
   const handleQuantityChange = useCallback(
     (newQuantity: number) => {
-      // const newQuantity = Math.max(1, parseInt(event.target.value, 10));
-      // console.log('newQuantity', newQuantity);
-      if (!line.variant.quantityAvailable || newQuantity <= line.variant.quantityAvailable) {
-        setQuantity(newQuantity); // Immediately update the local state for responsive UI
-        // Call the debounced function with the new quantity instead of the event
+      if (
+        !line.variant.quantityAvailable ||
+        newQuantity <= line.variant.quantityAvailable ||
+        (line.variant.quantityLimitPerCustomer &&
+          newQuantity <= line.variant.quantityLimitPerCustomer)
+      ) {
         void debouncedOnQuantityUpdate(newQuantity);
+      } else {
+        setErrors(["QUANTITY_GREATER_THAN_LIMIT"]);
       }
+      setQuantity(newQuantity);
     },
     [line?.variant.id],
   );
+
+  const handleInputBlur = () => {
+    const maxQuantity =
+      line.variant.quantityLimitPerCustomer || line.variant.quantityAvailable || 1;
+    if (quantity > maxQuantity) {
+      setErrors(["QUANTITY_GREATER_THAN_LIMIT"]);
+    }
+  };
 
   const debouncedOnQuantityUpdate = useCallback(
     debounce(async (newQuantity) => {
@@ -47,14 +87,14 @@ export default function CheckoutLineItem({ line }: CheckoutLineItemProps) {
       };
       const result = await updateLineFromCheckout({ lineUpdateInput, id: checkout.id });
 
-      // TODO Handle result or errors
       if (result && result.success) {
         await refreshCheckout();
+        setErrors([]);
       } else {
         setErrors([...(result?.errors || [])]);
       }
 
-      console.log("else", result);
+      console.log("debouncedOnQuantityUpdate", result);
     }, 300),
     [line?.variant.id],
   );
@@ -63,21 +103,6 @@ export default function CheckoutLineItem({ line }: CheckoutLineItemProps) {
     const newQuantity = Math.max(1, parseInt(event.target.value, 10));
     handleQuantityChange(newQuantity);
   };
-
-  React.useEffect(() => {
-    if (!line) return;
-    const availableQuantity =
-      line.problems && line.problems?.[0] && (line.problems?.[0] as any).availableQuantity;
-    if (availableQuantity !== undefined && line.quantity && availableQuantity < line.quantity) {
-      const error = {
-        field: "quantity",
-        message: `Could not add items O/S. Only ${availableQuantity} remaining in stock.`,
-        code: "INSUFFICIENT_STOCK",
-      };
-      setErrors([...[error]]);
-    }
-    setQuantity(line.quantity);
-  }, [line]);
 
   const getProductLink = () => {
     if (line?.variant) return `/p/${line.variant.product?.slug}/?variant=${line.variant.id}`;
@@ -130,27 +155,28 @@ export default function CheckoutLineItem({ line }: CheckoutLineItemProps) {
           </p>
 
           {!line.variant.product.isAvailableForPurchase && (
-            <span className="text-red-500 font-bold">
-              Product is not available for purchase anymore
-            </span>
+            <span className="text-red-500 font-bold">{messages["app.checkout.unavailable"]};</span>
           )}
         </div>
         <div className="flex h-16 flex-col justify-between items-end">
           <p className="flex justify-end space-y-2 text-right text-md">
             {formatMoney(line.totalPrice?.gross)}
           </p>
-          {line.variant.quantityAvailable && line.variant.quantityAvailable > 1 ? (
+          {(line.variant.quantityLimitPerCustomer && line.variant.quantityLimitPerCustomer > 1) ||
+          !line.variant.quantityLimitPerCustomer ||
+          (!line.variant.quantityLimitPerCustomer &&
+            line.variant.quantityAvailable &&
+            line.variant.quantityAvailable > 1) ||
+          (errors && errors?.length > 0) ? (
             <input
               type="number"
               className={clsx(
                 "h-8 md:mt-2 w-24 md:w-16 block border-gray-300 rounded-md text-base bg-transparent",
-                errors && "border-red-500",
+                errors && errors.length > 0 && "border-red-500",
               )}
-              value={quantity || ""}
-              onFocus={() => {
-                setErrors(null);
-              }}
+              value={quantity}
               onChange={handleInputChange}
+              onBlur={handleInputBlur}
               min={1}
               required
               disabled={false}
@@ -166,9 +192,18 @@ export default function CheckoutLineItem({ line }: CheckoutLineItemProps) {
         <DeleteLineButton lineId={line.id} />
         {errors && (
           <div>
-            {errors.map((err) => (
-              <span className="text-red-500 text-sm font-medium" key={err.field}>
-                {err.message}
+            {errors.map((err, index) => (
+              <span className="text-red-500 text-sm font-medium" key={index}>
+                {err.message || messages[err]}
+                {err && err === "QUANTITY_GREATER_THAN_LIMIT" && (
+                  <>
+                    <br />
+                    <span>{messages["app.checkout.maxQ"]}</span>
+                    <strong>
+                      {line.variant.quantityLimitPerCustomer || line.variant.quantityAvailable || 1}
+                    </strong>
+                  </>
+                )}
               </span>
             ))}
           </div>

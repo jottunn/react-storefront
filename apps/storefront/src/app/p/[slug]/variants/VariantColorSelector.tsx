@@ -94,7 +94,7 @@ export function VariantColorSelector({
   return (
     <>
       {commercialColorAttr?.values[0]?.name && (
-        <h2 className="block mt-8 mb-2 text-md uppercase">
+        <h2 className="block mt-8 mb-2 text-md uppercase text-main-1">
           {commercialColorAttr?.values[0]?.name}
         </h2>
       )}
