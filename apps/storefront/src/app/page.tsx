@@ -270,7 +270,7 @@ export default async function Home() {
       <div className="container block">
         {homepageCollections && homepageCollections.length > 0 && (
           <div
-            className={`grid grid-cols-1 md:grid-cols-${numColumnsHPCollections} gap-4 mt-20 mb-40`}
+            className={`grid grid-cols-1 md:grid-cols-${numColumnsHPCollections} gap-4 mt-20 md:mb-40`}
           >
             {homepageCollections.map((collection) => (
               <HomepageBlock key={collection.id} item={collection} type="collection" />
