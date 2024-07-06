@@ -1,6 +1,6 @@
 "use client";
 import { useQueryState } from "next-usequerystate";
-import { Fragment, useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import {
   OrderDirection,
   ProductCountableEdge,
@@ -81,6 +81,8 @@ export function FilteredProductList({
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const openModal = () => setFilterModalOpen(true);
   const closeModal = () => setFilterModalOpen(false);
+  const filtersSectionRef = useRef<HTMLDivElement>(null);
+  const isDesktop = () => window.innerWidth >= 768;
 
   const aggregateAttributesFromProducts = (products: ProductCountableEdge[]) => {
     const attributesMap = new Map<string, Attribute1>();
@@ -227,6 +229,15 @@ export function FilteredProductList({
       setProductsFilter(newProductsFilter);
     }
 
+    // Scroll to filters section when filters change
+    if (isDesktop() && filtersSectionRef.current) {
+      const filtersSectionTop = filtersSectionRef.current.offsetTop;
+      window.scrollTo({
+        top: filtersSectionTop - 150 - 50,
+        behavior: "smooth",
+      });
+    }
+
     // Eslint does not recognize stringified queryFilters, so we have to ignore it
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(queryFilters), categoryIDs, collectionIDs, brand, productsIDs, search]);
@@ -258,7 +269,7 @@ export function FilteredProductList({
     const existingFilter = queryFilters.find((filter) => filter.slug === attributeSlug);
     if (!existingFilter) {
       return setQueryFilters([...queryFilters, { slug: attributeSlug, values: [choiceSlug] }], {
-        scroll: true,
+        scroll: false,
         shallow: false,
       });
     }
@@ -266,7 +277,7 @@ export function FilteredProductList({
     // if its already here, modify values list
     existingFilter.values = [...existingFilter.values, choiceSlug];
     return setQueryFilters(queryFilters, {
-      scroll: true,
+      scroll: false,
       shallow: false,
     });
   };
@@ -274,7 +285,7 @@ export function FilteredProductList({
   const clearFilters = async () => {
     // await required when multiple query changes are applied at once
     await setQueryFilters(null, {
-      scroll: true,
+      scroll: false,
       shallow: false,
     });
   };
@@ -285,7 +296,10 @@ export function FilteredProductList({
 
   return (
     <>
-      <div className="flex flex-wrap md:flex-nowrap items-center justify-start w-full mb-8">
+      <div
+        ref={filtersSectionRef}
+        className="flex flex-wrap md:flex-nowrap items-center justify-start w-full mb-8 scroll-margin-top"
+      >
         <div className="inline md:flex md:flex-none md:w-[250px] justify-between mb-8 md:mb-0 mr-8 order-1">
           <div className="hidden md:flex flex-grow align-center md:align-start ">
             <FilterIconLabel messages={messages} />

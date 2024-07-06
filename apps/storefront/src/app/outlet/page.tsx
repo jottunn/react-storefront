@@ -74,11 +74,11 @@ export default async function Page() {
         <div className="bg-main-7 border-b md:mb-8">
           <Breadcrumbs items={breadcrumbItems} />
         </div>
-        <div className="container px-8">
+        <div className="container px-8 pt-4">
           <PageHero title={messages["app.search.outletTitle"]} description="" />
           {outletCollectionsWithImage && outletCollectionsWithImage.length > 0 && (
             <div
-              className={`grid grid-cols-1 md:grid-cols-${numColumnsHPCollections} gap-4 mt-20 mb-40 ${
+              className={`grid grid-cols-1 md:grid-cols-${numColumnsHPCollections} gap-4 mt-4 mb-20 md:mt-20 md:mb-40 ${
                 numColumnsHPCollections === 1 ? "flex flex-col items-center" : ""
               }`}
             >
