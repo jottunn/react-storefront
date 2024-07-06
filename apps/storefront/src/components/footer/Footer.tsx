@@ -21,6 +21,7 @@ import xss from "xss";
 import NewsletterSubscribe from "../Newsletter/NewsletterSubscribe";
 export type FooterProps = HTMLAttributes<HTMLElement>;
 import { getMessages } from "src/lib/util";
+import SvgSprite from "../SvgSprite";
 
 export default async function Footer({ className, ...rest }: FooterProps) {
   const messages = getMessages(DEFAULT_LOCALE, "app.nwl");
@@ -63,6 +64,7 @@ export default async function Footer({ className, ...rest }: FooterProps) {
 
   return (
     <footer className={clsx(styles.footer, className)} {...rest}>
+      <SvgSprite />
       <Box className={styles["footer-inner"]}>
         <div className="grid grid-cols-4 md:grid-cols-8 gap-6 md:gap-12 lg:gap-20 py-12 md:py-32 mb-20 items-center justify-items-center w-full border-b border-dark=300 md:min-h-[90px]">
           {brandCollections &&
@@ -154,7 +156,9 @@ export default async function Footer({ className, ...rest }: FooterProps) {
                     rel="noreferrer"
                     className="hover:opacity-85"
                   >
-                    <img src="/facebook.svg" alt="Facebook" width="25" height="25" loading="lazy" />
+                    <svg width="25" height="25">
+                      <use xlinkHref="#facebook-icon" />
+                    </svg>
                   </a>
                 )}
                 {contactInsta && (
@@ -164,13 +168,9 @@ export default async function Footer({ className, ...rest }: FooterProps) {
                     rel="noreferrer"
                     className="hover:opacity-85"
                   >
-                    <img
-                      src="/instagram.svg"
-                      alt="Instagram"
-                      width="25"
-                      height="25"
-                      loading="lazy"
-                    />
+                    <svg width="25" height="25">
+                      <use xlinkHref="#instagram-icon" />
+                    </svg>
                   </a>
                 )}
               </div>
