@@ -10,7 +10,6 @@ import {
 import { updateProductsSales } from "../sales/sale-crud";
 import { fetchSaleCollections } from "../collections/get-sale-collections";
 import { updateSalesCollectionPrivateMetadata } from "../collections/collection-crud";
-import { l } from "vite/dist/node/types.d-aGj9QkWt";
 
 export async function addRules(
   client: Client,

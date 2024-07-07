@@ -11,6 +11,9 @@ RUN pnpm install
 WORKDIR /app/packages/shared-apl
 RUN npm run build
 
+WORKDIR /app
+RUN pnpm install
+
 # Build the target app
 ARG TARGET_APP
 WORKDIR /app/apps/${TARGET_APP}
