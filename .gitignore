@@ -47,5 +47,6 @@ cypress/videos
 
 .auth_token
 .saleor-app-auth.json
+.eslintcache
 
 **/content/compiled-locales
