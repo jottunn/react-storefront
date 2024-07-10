@@ -148,7 +148,7 @@ export default async function Footer({ className, ...rest }: FooterProps) {
                     ))}
                 </>
               )}
-              <div className="flex space-x-4">
+              <div className="flex space-x-4 mt-4">
                 {contactFb && (
                   <a
                     href={contactFb?.value || "#"}

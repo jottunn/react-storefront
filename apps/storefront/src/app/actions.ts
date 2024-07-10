@@ -26,6 +26,8 @@ import {
   RequestPasswordResetMutation,
   SetAddressDefaultDocument,
   SetAddressDefaultMutation,
+  SetPasswordDocument,
+  SetPasswordMutation,
   User,
   UserDocument,
   UserQuery,
@@ -99,22 +101,46 @@ export async function register(formData: RegisterFormData | any) {
   }
 }
 
-export async function reset(formData: ResetPasswordFormData) {
-  try {
-    const response = await saleorAuthClient.resetPassword({
-      email: formData.email,
-      password: formData.password,
-      token: formData.token,
-    });
+// export async function reset(formData: ResetPasswordFormData) {
+//   try {
+//     const response = await saleorAuthClient.resetPassword({
+//       email: formData.email,
+//       password: formData.password,
+//       token: formData.token,
+//     });
 
-    if (response.data?.setPassword?.errors?.length) {
-      const customError = response.data.setPassword.errors as any;
+//     if (response.data?.setPassword?.errors?.length) {
+//       const customError = response.data.setPassword.errors as any;
+//       return { success: false, errors: customError.map((error: { code: any }) => error.code) };
+//     }
+//     return { success: true };
+//   } catch (error) {
+//     console.error("Failed to resetPassword:", error);
+//     return { success: false };
+//   }
+// }
+
+export async function setPassword(formData: ResetPasswordFormData) {
+  try {
+    const response = await executeGraphQL<
+      SetPasswordMutation,
+      { email: string; password: string; token: string }
+    >(SetPasswordDocument, {
+      variables: {
+        email: formData.email,
+        password: formData.password,
+        token: formData.token,
+      },
+    });
+    console.log("setPassword", response.setPassword?.errors);
+    if (response?.setPassword?.errors?.length) {
+      const customError = response.setPassword.errors as any;
       return { success: false, errors: customError.map((error: { code: any }) => error.code) };
     }
     return { success: true };
   } catch (error) {
-    console.error("Failed to resetPassword:", error);
-    return { success: false };
+    console.error("Failed to execute setPasswordMutation:", error);
+    return { success: false, errors: ["INVALID"] };
   }
 }
 
@@ -127,10 +153,10 @@ export async function requestPasswordReset(formData: ResetFormData) {
       variables: {
         email: formData.email,
         channel: DEFAULT_CHANNEL.slug,
-        redirectUrl: "/reset",
+        redirectUrl: `${BASE_URL}/reset`,
       },
     });
-
+    // console.log('requestPasswordReset', response.requestPasswordReset?.errors);
     if (response?.requestPasswordReset?.errors?.length) {
       const customError = response.requestPasswordReset.errors as any;
       return { success: false, errors: customError.map((error: { code: any }) => error.code) };

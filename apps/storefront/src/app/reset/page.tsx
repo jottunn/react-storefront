@@ -4,6 +4,8 @@ import { getMessages } from "@/lib/util";
 import { DEFAULT_LOCALE } from "@/lib/regions";
 import ForgotPassword from "./ForgotPassword";
 import { STOREFRONT_NAME } from "@/lib/const";
+import ResetForm from "./ResetPasswordForm";
+import ResetPageClient from "./ResetPageClient";
 
 const messages = getMessages(DEFAULT_LOCALE);
 export const metadata = {
@@ -26,9 +28,7 @@ export default function ResetPage() {
     >
       <section className="mx-auto max-w-8xl p-4 min-h-[400px]">
         <div className="container bg-white pb-40 pt-40 flex justify-center items-center">
-          <div className="w-[85%] md:w-[45%]">
-            <ForgotPassword messages={messages} />
-          </div>
+          <ResetPageClient messages={messages} />
         </div>
       </section>
     </Suspense>

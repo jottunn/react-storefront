@@ -309,6 +309,7 @@ export type AccountErrorCode =
   | "JWT_MISSING_TOKEN"
   | "JWT_SIGNATURE_EXPIRED"
   | "LEFT_NOT_MANAGEABLE_PERMISSION"
+  | "LOGIN_ATTEMPT_DELAYED"
   | "MISSING_CHANNEL_SLUG"
   | "NOT_FOUND"
   | "OUT_OF_SCOPE_GROUP"
@@ -320,7 +321,8 @@ export type AccountErrorCode =
   | "PASSWORD_TOO_SHORT"
   | "PASSWORD_TOO_SIMILAR"
   | "REQUIRED"
-  | "UNIQUE";
+  | "UNIQUE"
+  | "UNKNOWN_IP_ADDRESS";
 
 /** Fields required to update the user. */
 export type AccountInput = {
@@ -35395,6 +35397,25 @@ export type RequestPasswordResetMutation = {
   } | null;
 };
 
+export type SetPasswordMutationVariables = Exact<{
+  email: Scalars["String"]["input"];
+  password: Scalars["String"]["input"];
+  token: Scalars["String"]["input"];
+}>;
+
+export type SetPasswordMutation = {
+  __typename?: "Mutation";
+  setPassword?: {
+    __typename?: "SetPassword";
+    errors: Array<{
+      __typename?: "AccountError";
+      code: AccountErrorCode;
+      message?: string | null;
+      field?: string | null;
+    }>;
+  } | null;
+};
+
 export type AvailableProductFiltersQueryVariables = Exact<{
   filter?: InputMaybe<ProductFilterInput>;
   channel?: InputMaybe<Scalars["String"]["input"]>;
@@ -39314,6 +39335,56 @@ export type RequestPasswordResetMutationResult =
 export type RequestPasswordResetMutationOptions = Apollo.BaseMutationOptions<
   RequestPasswordResetMutation,
   RequestPasswordResetMutationVariables
+>;
+export const SetPasswordDocument = gql`
+  mutation setPassword($email: String!, $password: String!, $token: String!) {
+    setPassword(email: $email, password: $password, token: $token) {
+      errors {
+        code
+        message
+        field
+      }
+    }
+  }
+`;
+export type SetPasswordMutationFn = Apollo.MutationFunction<
+  SetPasswordMutation,
+  SetPasswordMutationVariables
+>;
+
+/**
+ * __useSetPasswordMutation__
+ *
+ * To run a mutation, you first call `useSetPasswordMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSetPasswordMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [setPasswordMutation, { data, loading, error }] = useSetPasswordMutation({
+ *   variables: {
+ *      email: // value for 'email'
+ *      password: // value for 'password'
+ *      token: // value for 'token'
+ *   },
+ * });
+ */
+export function useSetPasswordMutation(
+  baseOptions?: Apollo.MutationHookOptions<SetPasswordMutation, SetPasswordMutationVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<SetPasswordMutation, SetPasswordMutationVariables>(
+    SetPasswordDocument,
+    options,
+  );
+}
+export type SetPasswordMutationHookResult = ReturnType<typeof useSetPasswordMutation>;
+export type SetPasswordMutationResult = Apollo.MutationResult<SetPasswordMutation>;
+export type SetPasswordMutationOptions = Apollo.BaseMutationOptions<
+  SetPasswordMutation,
+  SetPasswordMutationVariables
 >;
 export const AvailableProductFiltersDocument = gql`
   query AvailableProductFilters(

@@ -1,69 +1,68 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { FormProps } from "../login/LoginForm";
-import { reset } from "../actions";
+import { setPassword } from "../actions";
 
 export interface ResetPasswordFormData {
   email: string;
   token: string;
   password: string;
+  confirmPassword: string;
 }
+
 export default function ResetForm({ messages }: FormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const emailQ = searchParams.get("email");
-
-  const [email, setEmail] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-
   const {
     register,
-    formState: { errors: errorsForm },
-    setError: setErrorForm,
-    handleSubmit: handleSubmitForm,
+    handleSubmit,
+    watch,
+    formState: { errors },
   } = useForm<ResetPasswordFormData>();
 
   useEffect(() => {
-    // Clear form when navigating away or token changes
     return () => {
-      setEmail("");
-      setNewPassword("");
-      setConfirmPassword("");
       setError("");
     };
   }, [token]);
+  console.log("render", error);
 
-  const handleResetSubmit = handleSubmitForm(async (formData: ResetPasswordFormData) => {
-    if (newPassword !== confirmPassword) {
-      setError("INVALID");
+  const handleResetSubmit = async (formData: ResetPasswordFormData) => {
+    if (formData.password !== formData.confirmPassword) {
+      setError(messages["passwordsDoNotMatch"]);
       return;
     }
 
     if (!emailQ || !token) {
-      setError("");
+      setError("Invalid email or token");
       return;
     }
     setIsSubmitting(true);
-    formData["email"] = emailQ;
-    formData["token"] = token;
-    const result = await reset(formData);
+    formData.email = emailQ;
+    formData.token = token;
 
+    const result = await setPassword(formData);
     if (result.errors?.length) {
       const customError = result.errors[0] as any;
-      setError(customError?.code || "");
+      setError(customError || "ERROR");
     } else {
       router.push("/account");
     }
     setIsSubmitting(false);
-  });
+  };
+
+  // Watch confirmPassword value to validate password
+  const confirmPassword = watch("confirmPassword");
 
   return (
-    <form onSubmit={handleResetSubmit}>
+    <form onSubmit={handleSubmit(handleResetSubmit)}>
       <h1 className="text-md">
         {messages["app.login.forgotPasswordHeadline"]}
         <span className="font-semibold ml-2">{emailQ}</span>{" "}
@@ -72,23 +71,35 @@ export default function ResetForm({ messages }: FormProps) {
       <div className="mt-5">
         <input
           type="password"
-          value={newPassword}
           id="password"
           className="px-4 w-full border-2 py-2 rounded-md text-sm outline-none"
-          onChange={(e) => setNewPassword(e.target.value)}
           placeholder={messages["app.preferences.changePassword.newPasswordFieldLabel"]}
+          {...register("password", {
+            required: "Password is required",
+            minLength: {
+              value: 8,
+              message: messages["PASSWORD_TOO_SHORT"],
+            },
+            validate: (value) => value === confirmPassword || messages["passwordsDoNotMatch"],
+          })}
           required
         />
+        {errors.password && (
+          <p className="text-red-700 font-bold text-sm mt-1">{errors.password.message}</p>
+        )}
       </div>
       <div className="mt-5">
         <input
           type="password"
-          value={confirmPassword}
+          id="confirmPassword"
           className="px-4 w-full border-2 py-2 rounded-md text-sm outline-none"
-          onChange={(e) => setConfirmPassword(e.target.value)}
           placeholder={messages["app.preferences.newPassword.header"]}
+          {...register("confirmPassword", { required: "Confirm Password is required" })}
           required
         />
+        {errors.confirmPassword && (
+          <p className="text-red-700 font-bold text-sm mt-1">{errors.confirmPassword.message}</p>
+        )}
       </div>
       <div className="mt-5">
         <button
