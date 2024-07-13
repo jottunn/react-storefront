@@ -2,6 +2,7 @@ import { createManifestHandler } from "@saleor/app-sdk/handlers/next";
 import { AppManifest } from "@saleor/app-sdk/types";
 
 import packageJson from "../../../package.json";
+import { productVariantStockUpdatedWebhook } from "./webhooks/stock-updated";
 
 /**
  * App SDK helps with the valid Saleor App Manifest creation. Read more:
@@ -43,7 +44,7 @@ export default createManifestHandler({
        * Easiest way to create webhook is to use app-sdk
        * https://github.com/saleor/saleor-app-sdk/blob/main/docs/saleor-webhook.md
        */
-      webhooks: [],
+      webhooks: [productVariantStockUpdatedWebhook.getWebhookManifest(apiBaseURL)],
       /**
        * Optionally, extend Dashboard with custom UIs
        * https://docs.saleor.io/docs/3.x/developer/extending/apps/extending-dashboard-with-apps

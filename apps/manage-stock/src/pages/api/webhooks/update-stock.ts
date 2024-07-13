@@ -27,13 +27,17 @@ export default async (
     return res.status(500).json({ error: "Failed to retrieve valid authentication data" });
   }
 
+  if (!sku || quantity === undefined || quantity === null) {
+    return res.status(400).json({ error: "stock information missing" });
+  }
+
+  if (quantity < 0) {
+    return res.status(500).json({ error: "Quantity can't be negative" });
+  }
+
   const client = createClient(authData[0]["saleorApiUrl"], async () => ({
     token: authData[0]["token"],
   }));
-
-  if (!sku || !quantity) {
-    return res.status(400).json({ error: "stock information missing" });
-  }
 
   let warehouseId = "";
 
@@ -79,13 +83,16 @@ export default async (
         "Error updating stock:",
         result.error || result.data.productVariantStocksUpdate.errors
       );
-      return res.status(500).json({ error: "Failed to update stock in Saleor" });
+      return res
+        .status(500)
+        .json({
+          error: "Failed to update stock in Saleor. Please check that correct info is provided.",
+        });
     }
-
-    // Respond to indicate success
-    return res.status(200).json({ message: "Stock updated successfully" });
   } catch (error) {
     console.error("Error handling stock update:", error);
-    return res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error - Error handling stock update" });
   }
+
+  return res.status(200).json({ message: "Stock updated successfully" });
 };
