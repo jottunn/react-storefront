@@ -7,10 +7,10 @@ import {
   useCreateNewCollectionMutation,
   useCreateProductsMutation,
   useUpdateProductMutation,
-  useCreateProductVariantMutation,
   useCreateBulkProductVariantMutation,
   useAssignCollectionToChannelMutation,
   useCollectionAddProductsMutation,
+  useUpdateProductVariantMutation,
 } from "../../../../generated/graphql";
 import { useClient } from "urql";
 import {
@@ -27,7 +27,6 @@ import {
 import { productCache } from "./productCache";
 import { productInputIdsCache } from "./productInputIdsCache";
 import { createSlug, convertDescriereToEditorJS, getFileExtension } from "../../../lib/utils";
-
 export const ProductsImporterView = () => {
   const [uploading, setUploading] = useState(false);
   const [errors, setErrors] = useState(new Set());
@@ -35,6 +34,7 @@ export const ProductsImporterView = () => {
   const [importedPics, setImportedPics] = useState([]);
   const inputRef = useRef();
 
+  const [mutationUpdateProductVariant, updateProductVariant] = useUpdateProductVariantMutation();
   const [mutationResultAddProductMedia, addProductMedia] = useCreateProductMediaMutation();
   const [mutationResultAssignMediaToVariant, assignMediaToVariant] =
     useAssignMediaToVariantMutation();
@@ -51,6 +51,7 @@ export const ProductsImporterView = () => {
     useCollectionAddProductsMutation();
 
   const client = useClient();
+  const CHUNK_SIZE = 60;
 
   /**
    * retrieve product details either from productCache or by querying, by product title
@@ -114,11 +115,36 @@ export const ProductsImporterView = () => {
    * @param {*} file
    */
 
-  const handleProductMediaAssignment = async (productDetails, mediaId, currentVariantColor) => {
+  const handleProductMediaAssignment = async (productDetails, media, currentVariantColor) => {
+    const mediaId = media.id;
+    const mediaUrl = media.url;
     try {
       const variantIds = await findProductVariantIds(productDetails, currentVariantColor);
       for (let i = 0; i < variantIds.length; i++) {
-        await assignMedia(variantIds[i], mediaId);
+        const assigResult = await assignMedia(variantIds[i], mediaId);
+        console.log("assigResult", assigResult);
+        //generate placeholders and saved to metadata with key blurPlaceholderPic
+        if (assigResult && mediaUrl) {
+          const placeholder = await fetch(
+            `/api/getBase64?imageUrl=${encodeURIComponent(mediaUrl)}`
+          );
+          const { base64 } = await placeholder.json();
+          try {
+            const savePlaceholder = await updateProductVariant({
+              id: variantIds[i],
+              input: {
+                metadata: [
+                  {
+                    key: "blurPlaceholderPic",
+                    value: base64,
+                  },
+                ],
+              },
+            });
+          } catch (error) {
+            console.log("Error saving blur placeholder: " + error.message);
+          }
+        }
       }
     } catch (error) {
       handleErrors("Error handling product media assignment: " + error.message);
@@ -132,7 +158,7 @@ export const ProductsImporterView = () => {
    */
   const assignMedia = useCallback(async (variantId, mediaId) => {
     try {
-      const result2 = await assignMediaToVariant({
+      const resultAssignMedia = await assignMediaToVariant({
         variantId: variantId,
         mediaId: mediaId,
       });
@@ -140,6 +166,7 @@ export const ProductsImporterView = () => {
       //media has been assigned to variant
       //clear file input
       inputRef.current.value = "";
+      return resultAssignMedia;
     } catch (error) {
       // Handle errors
       handleErrors("Error assigning media to variant " + error.message);
@@ -162,7 +189,7 @@ export const ProductsImporterView = () => {
         });
         setUploading(false);
         // Handle the result here if needed
-        return result.data.productMediaCreate.media.id;
+        return result.data.productMediaCreate.media;
       } catch (error) {
         // Handle errors
         console.error(error);
@@ -195,13 +222,13 @@ export const ProductsImporterView = () => {
     try {
       const productDetails = await getProductDetails(productName);
       if (productDetails) {
-        const mediaId = await handleAddMedia(
+        const media = await handleAddMedia(
           productName + " " + currentVariantColor,
           productDetails["id"],
           currentFile
         );
-        if (mediaId) {
-          handleProductMediaAssignment(productDetails, mediaId, currentVariantColor);
+        if (media && media.id) {
+          handleProductMediaAssignment(productDetails, media, currentVariantColor);
           setImportedPics((prevImportedPics) => [...prevImportedPics, imgName]);
         }
       } else {
@@ -263,7 +290,9 @@ export const ProductsImporterView = () => {
   const getPageId = async (pageSlug) => {
     productInputIdsCache["Pages"] = productInputIdsCache["Pages"] || {};
     const fetchedPageID = await getPage(client, pageSlug);
-    productInputIdsCache["Pages"][pageSlug] = fetchedPageID;
+    if (fetchedPageID) {
+      productInputIdsCache["Pages"][pageSlug] = fetchedPageID;
+    }
     //console.log("fetchedPageID", fetchedPageID);
     return fetchedPageID;
   };
@@ -290,6 +319,9 @@ export const ProductsImporterView = () => {
           let pageId = productInputIdsCache["Pages"] && productInputIdsCache["Pages"][pageSlug];
           if (!pageId) {
             pageId = await getPageId(pageSlug);
+            if (!pageId) {
+              throw new Error("Page with slug " + pageSlug + " doesn't exist");
+            }
           }
           prodAttr["references"] = [pageId];
         } else {
@@ -298,19 +330,7 @@ export const ProductsImporterView = () => {
 
         attributes.push(prodAttr);
       }
-      // } else if (attrKey === "brand-ref") {
-      //   const brandPageSlug = row["brand"].trim().replace(" ", "-").toLowerCase();
-      //   let pageId = productInputIdsCache["Pages"] && productInputIdsCache["Pages"][brandPageSlug];
-      //   if (!pageId) {
-      //     pageId = await getPageId(brandPageSlug);
-      //   }
-      //   attributes.push({
-      //     id: definedProdAttributes[attrKey][0],
-      //     references: [pageId],
-      //   });
-      // }
     }
-
     return attributes;
   };
 
@@ -335,7 +355,8 @@ export const ProductsImporterView = () => {
           }
         }
 
-        let prodCollections = row["Colectii"].split("+").map((collection) => collection.trim());
+        let prodCollections =
+          row["Colectii"] && row["Colectii"].split("+").map((collection) => collection.trim());
         if (prodCollections) {
           for (let i = 0; i < prodCollections.length; i++) {
             const currCollection = prodCollections[i].trim();
@@ -376,232 +397,238 @@ export const ProductsImporterView = () => {
 
   const prepareProductBulkCreateInput = async (parsedCSV) => {
     const products = {};
-    for (const row of parsedCSV) {
-      const sku = row["Cod stoc"] && row["Cod stoc"].trim();
-      const stoc = row["stoc"] && parseInt(row["stoc"].trim());
-      let productName = row["Denumire comerciala"] && row["Denumire comerciala"].trim();
-      if (productName) {
-        productName = productName
-          .split(" ")
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(" ");
-      }
-      let colorDisplayed = row["culoare-comerciala"] && row["culoare-comerciala"].trim();
-      if (colorDisplayed) {
-        colorDisplayed = colorDisplayed
-          .split(" ")
-          .map((word) => {
-            return word.charAt(0).toUpperCase() + word.slice(1);
-          })
-          .join(" ");
-      }
-      let collection = row["Sezon"] && row["Sezon"].trim();
-      let brand = row["brand"] && row["brand"].trim();
-      let prodCollections = row["Colectii"].split("+").map((collection) => collection.trim());
-      prodCollections.push(collection);
-      prodCollections.push(brand);
-
-      let categoryCsv = row["Categorie site"] && row["Categorie site"].trim();
-      const category = createSlug(categoryCsv);
-      //console.log("categoryslug", category);
-      let productType = row["Tip produs"] && row["Tip produs"].trim();
-      let channel = row["Channel"] ? row["Channel"].trim() : "default-channel";
-      let description = row["descriere"] ? convertDescriereToEditorJS(row["descriere"]) : "";
-
-      //check if product variant already exists in DB, if yes throw error
-      let productVariantAlreadyInDB = await checkIfProductVariantExistsInDb(sku);
-
-      if (!productVariantAlreadyInDB) {
-        /** query Categorie */
-        const categoryID =
-          productInputIdsCache["Categorie site"] &&
-          productInputIdsCache["Categorie site"][category];
-        if (!categoryID) {
-          //console.log('Category not in cache, fetching...');
-          productInputIdsCache["Categorie site"] = productInputIdsCache["Categorie site"] || {};
-          const fetchedCategoryID = await getCategoryID(client, [category]);
-          productInputIdsCache["Categorie site"][category] = fetchedCategoryID;
-        }
-
-        /** query attributes by current product type, save all in cache */
-        const prodAttrs =
-          productInputIdsCache["Tip produs"] && productInputIdsCache["Tip produs"][productType];
-        if (!prodAttrs) {
-          //console.log('Product type not in cache, fetching...');
-          productInputIdsCache["Tip produs"] = productInputIdsCache["Tip produs"] || {};
-
-          const fetchedProdAttrs = await getProductTypeAttributes(client, [productType]);
-
-          if (fetchedProdAttrs) {
-            productInputIdsCache["Tip produs"][productType] = {};
-            productInputIdsCache["Tip produs"][productType]["id"] = fetchedProdAttrs.id;
-            productInputIdsCache["Tip produs"][productType]["productAttributes"] = {};
-            productInputIdsCache["Tip produs"][productType]["variantAttributes"] = {};
-
-            let productAttributes = fetchedProdAttrs.productAttributes;
-            let variantAttributes = fetchedProdAttrs.assignedVariantAttributes;
-
-            for (let a = 0; a < productAttributes.length; a++) {
-              let attrSlug = productAttributes[a].slug;
-              productInputIdsCache["Tip produs"][productType]["productAttributes"][attrSlug] = [
-                productAttributes[a].id,
-                productAttributes[a].inputType,
-              ];
-            }
-
-            for (let l = 0; l < variantAttributes.length; l++) {
-              let variantAttrSlug = variantAttributes[l].attribute.slug;
-              productInputIdsCache["Tip produs"][productType]["variantAttributes"][
-                variantAttrSlug
-              ] = [variantAttributes[l].attribute.id, variantAttributes[l].attribute.inputType];
-            }
-          }
-        }
-
-        /** query channels */
-        const channelID =
-          productInputIdsCache["Channel"] && productInputIdsCache["Channel"][channel];
-        if (!channelID) {
-          //console.log('Channel not in cache, fetching...');
-          productInputIdsCache["Channel"] = productInputIdsCache["Channel"] || {};
-          const fetchedChannels = await getChannels(client);
-          for (let c = 0; c < fetchedChannels.length; c++) {
-            let currChannelSlug = fetchedChannels[c]["slug"];
-            productInputIdsCache["Channel"][currChannelSlug] = fetchedChannels[c]["id"];
-          }
-        }
-
-        /** query collections (sezon)*/
-        if (prodCollections) {
-          for (let i = 0; i < prodCollections.length; i++) {
-            const currCollection = prodCollections[i].trim();
-            const prodCollectionID =
-              productInputIdsCache["Collections"] &&
-              productInputIdsCache["Collections"][currCollection];
-            if (!prodCollectionID) {
-              console.log("Collection not in cache, fetching...");
-              productInputIdsCache["Collections"] = productInputIdsCache["Collections"] || {};
-              const fetchedProdCollectionID = await getCollections(
-                client,
-                currCollection,
-                createNewCollectionMutation,
-                assignCollectionToChannel,
-                productInputIdsCache["Channel"][channel]
-              );
-              console.log("fetchedProdCollectionID", fetchedProdCollectionID);
-              if (fetchedProdCollectionID) {
-                productInputIdsCache["Collections"][currCollection] = fetchedProdCollectionID;
-              }
-            }
-          }
-        }
-
-        /** get default warehouse TOREMOVE IN PROD*/
-        const warehouseID = productInputIdsCache["Warehouse"];
-        if (!warehouseID) {
-          productInputIdsCache["Warehouse"] = productInputIdsCache["Warehouse"] || {};
-          const defaultWarehouseId = await getDefaultWarehouse(client);
-          productInputIdsCache["Warehouse"] = defaultWarehouseId;
-        }
-
-        const nowISO = new Date().toISOString();
-        //const seoDescription = `${productName} ${colorDisplayed} - ${row["brand"]} - pe magazinul online Surmont.ro`;
-
-        //if product is not in products, create the object
-        if (!products[productName]) {
-          products[productName] = {
-            name: productName,
-            attributes: [],
-            category: productInputIdsCache["Categorie site"][category],
-            productType: productInputIdsCache["Tip produs"][productType]["id"],
-            channelListings: [
-              {
-                channelId: productInputIdsCache["Channel"][channel],
-                isPublished: true,
-                publishedAt: nowISO,
-                visibleInListings: true,
-                isAvailableForPurchase: true,
-                availableForPurchaseAt: nowISO,
-              },
-            ],
-            variants: [],
-          };
-        }
-
-        if (description) {
-          products[productName].description = description;
-        }
-
-        console.log("prodCollections", prodCollections);
-        if (prodCollections) {
-          products[productName].collections = prodCollections.map(
-            (collection) => productInputIdsCache["Collections"][collection]
-          );
-        }
-
-        //add Product Attributes - use productInputIdsCache['Tip produs'][productType]['productAttributes']
-        let definedProdAttributes =
-          productInputIdsCache["Tip produs"][productType]["productAttributes"];
-        if (products[productName].attributes.length === 0) {
-          let attributes = await addProductAttributes(definedProdAttributes, row);
-          products[productName]["attributes"] = attributes;
-        }
-
-        //Add variants
-        const existingVariant = products[productName].variants.find(
-          (variant) => variant.sku === sku
-        );
-        //if variant does not exist, add it
-        if (!existingVariant) {
-          const newVariant = {
-            sku: sku,
-            name: row["marime"] ? row["marime"].trim() : "mărime unică",
-            attributes: [],
-            trackInventory: false,
-            channelListings: [
-              {
-                channelId: productInputIdsCache["Channel"][channel],
-                price: row["Pret vanzare initial"].trim() ?? 0,
-              },
-            ],
-            stocks: [
-              {
-                warehouse: productInputIdsCache["Warehouse"],
-                quantity: stoc,
-              },
-            ],
-          };
-
-          //add Variant Attributes - use productInputIdsCache['Tip produs'][productType]['productAttributes']
-          let definedVarAttributes =
-            productInputIdsCache["Tip produs"][productType]["variantAttributes"];
-          Object.keys(definedVarAttributes).forEach((attrKey) => {
-            if (row[attrKey]) {
-              // Attribute slug exists in csv header, add it
-              let varAttr = { id: definedVarAttributes[attrKey][0] };
-              const varAttrKey = definedVarAttributes[attrKey][1].toLowerCase();
-              if (definedVarAttributes[attrKey][1] === "MULTISELECT") {
-                varAttr[varAttrKey] = [{ value: row[attrKey].trim() }];
-              } else {
-                varAttr[varAttrKey] = { value: row[attrKey].trim() };
-              }
-              newVariant.attributes.push(varAttr);
-            }
-          });
-
-          products[productName].variants.push(newVariant);
-        }
-      }
-    }
-    console.log(products);
-    return Object.values(products);
-  };
-
-  const updateProducts = async (parsedCSV) => {
     try {
-      await updateProdCollections(parsedCSV);
+      for (const row of parsedCSV) {
+        const sku = row["Cod stoc"] && row["Cod stoc"].trim();
+        const stoc = row["stoc"] && parseInt(row["stoc"].trim());
+        let productName =
+          row["Denumire comerciala"] && row["Denumire comerciala"].trim().replace(/\s{2,}/g, " ");
+        if (productName) {
+          productName = productName
+            .split(" ")
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ");
+        }
+        let colorDisplayed = row["culoare-comerciala"] && row["culoare-comerciala"].trim();
+        if (colorDisplayed) {
+          colorDisplayed = colorDisplayed
+            .split(" ")
+            .map((word) => {
+              return word.charAt(0).toUpperCase() + word.slice(1);
+            })
+            .join(" ");
+        }
+        let seasonCollection = row["Sezon"] && row["Sezon"].trim();
+        let brand = row["brand"] && row["brand"].trim();
+        let prodCollections = row["Colectii"]
+          ? row["Colectii"].split("+").map((collection) => collection.trim())
+          : [];
+        if (seasonCollection) {
+          prodCollections.push(seasonCollection);
+        }
+        prodCollections.push(brand);
+
+        let categoryCsv = row["Categorie site"] && row["Categorie site"].trim();
+        const category = createSlug(categoryCsv);
+        //console.log("categoryslug", category);
+        let productType = row["Tip produs"] && row["Tip produs"].trim();
+        let channel = row["Channel"] ? row["Channel"].trim() : "default-channel";
+        let description = row["descriere"] ? convertDescriereToEditorJS(row["descriere"]) : "";
+
+        //check if product variant already exists in DB, if yes throw error
+        let productVariantAlreadyInDB = await checkIfProductVariantExistsInDb(sku);
+
+        if (!productVariantAlreadyInDB) {
+          /** query Categorie */
+          const categoryID =
+            productInputIdsCache["Categorie site"] &&
+            productInputIdsCache["Categorie site"][category];
+          if (!categoryID) {
+            //console.log('Category not in cache, fetching...');
+            productInputIdsCache["Categorie site"] = productInputIdsCache["Categorie site"] || {};
+            const fetchedCategoryID = await getCategoryID(client, [category]);
+            if (!fetchedCategoryID) {
+              throw new Error("Category " + categoryCsv + " doesn't exist.");
+            }
+            productInputIdsCache["Categorie site"][category] = fetchedCategoryID;
+          }
+
+          /** query attributes by current product type, save all in cache */
+          const prodAttrs =
+            productInputIdsCache["Tip produs"] && productInputIdsCache["Tip produs"][productType];
+          if (!prodAttrs) {
+            //console.log('Product type not in cache, fetching...');
+            productInputIdsCache["Tip produs"] = productInputIdsCache["Tip produs"] || {};
+
+            const fetchedProdAttrs = await getProductTypeAttributes(client, [productType]);
+
+            if (fetchedProdAttrs) {
+              productInputIdsCache["Tip produs"][productType] = {};
+              productInputIdsCache["Tip produs"][productType]["id"] = fetchedProdAttrs.id;
+              productInputIdsCache["Tip produs"][productType]["productAttributes"] = {};
+              productInputIdsCache["Tip produs"][productType]["variantAttributes"] = {};
+
+              let productAttributes = fetchedProdAttrs.productAttributes;
+              let variantAttributes = fetchedProdAttrs.assignedVariantAttributes;
+
+              for (let a = 0; a < productAttributes.length; a++) {
+                let attrSlug = productAttributes[a].slug;
+                productInputIdsCache["Tip produs"][productType]["productAttributes"][attrSlug] = [
+                  productAttributes[a].id,
+                  productAttributes[a].inputType,
+                ];
+              }
+
+              for (let l = 0; l < variantAttributes.length; l++) {
+                let variantAttrSlug = variantAttributes[l].attribute.slug;
+                productInputIdsCache["Tip produs"][productType]["variantAttributes"][
+                  variantAttrSlug
+                ] = [variantAttributes[l].attribute.id, variantAttributes[l].attribute.inputType];
+              }
+            }
+          }
+
+          /** query channels */
+          const channelID =
+            productInputIdsCache["Channel"] && productInputIdsCache["Channel"][channel];
+          if (!channelID) {
+            //console.log('Channel not in cache, fetching...');
+            productInputIdsCache["Channel"] = productInputIdsCache["Channel"] || {};
+            const fetchedChannels = await getChannels(client);
+            for (let c = 0; c < fetchedChannels.length; c++) {
+              let currChannelSlug = fetchedChannels[c]["slug"];
+              productInputIdsCache["Channel"][currChannelSlug] = fetchedChannels[c]["id"];
+            }
+          }
+
+          /** query collections (sezon)*/
+          if (prodCollections) {
+            for (let i = 0; i < prodCollections.length; i++) {
+              const currCollection = prodCollections[i].trim();
+              const prodCollectionID =
+                productInputIdsCache["Collections"] &&
+                productInputIdsCache["Collections"][currCollection];
+              if (!prodCollectionID) {
+                console.log("Collection not in cache, fetching...");
+                productInputIdsCache["Collections"] = productInputIdsCache["Collections"] || {};
+                const fetchedProdCollectionID = await getCollections(
+                  client,
+                  currCollection,
+                  createNewCollectionMutation,
+                  assignCollectionToChannel,
+                  productInputIdsCache["Channel"][channel]
+                );
+                console.log("fetchedProdCollectionID", fetchedProdCollectionID);
+                if (fetchedProdCollectionID) {
+                  productInputIdsCache["Collections"][currCollection] = fetchedProdCollectionID;
+                }
+              }
+            }
+          }
+
+          /** get default warehouse TOREMOVE IN PROD*/
+          const warehouseID = productInputIdsCache["Warehouse"];
+          if (!warehouseID) {
+            productInputIdsCache["Warehouse"] = productInputIdsCache["Warehouse"] || {};
+            const defaultWarehouseId = await getDefaultWarehouse(client);
+            productInputIdsCache["Warehouse"] = defaultWarehouseId;
+          }
+
+          const nowISO = new Date().toISOString();
+          //const seoDescription = `${productName} ${colorDisplayed} - ${row["brand"]} - pe magazinul online Surmont.ro`;
+
+          //if product is not in products, create the object
+          if (!products[productName]) {
+            products[productName] = {
+              name: productName,
+              attributes: [],
+              category: productInputIdsCache["Categorie site"][category],
+              productType: productInputIdsCache["Tip produs"][productType]["id"],
+              channelListings: [
+                {
+                  channelId: productInputIdsCache["Channel"][channel],
+                  isPublished: true,
+                  publishedAt: nowISO,
+                  visibleInListings: true,
+                  isAvailableForPurchase: true,
+                  availableForPurchaseAt: nowISO,
+                },
+              ],
+              variants: [],
+            };
+          }
+
+          if (description) {
+            products[productName].description = description;
+          }
+
+          console.log("prodCollections", prodCollections);
+          if (prodCollections) {
+            products[productName].collections = prodCollections.map(
+              (collection) => productInputIdsCache["Collections"][collection]
+            );
+          }
+
+          //add Product Attributes - use productInputIdsCache['Tip produs'][productType]['productAttributes']
+          let definedProdAttributes =
+            productInputIdsCache["Tip produs"][productType]["productAttributes"];
+          if (products[productName].attributes.length === 0) {
+            let attributes = await addProductAttributes(definedProdAttributes, row);
+            products[productName]["attributes"] = attributes;
+          }
+
+          //Add variants
+          const existingVariant = products[productName].variants.find(
+            (variant) => variant.sku === sku
+          );
+          //if variant does not exist, add it
+          if (!existingVariant) {
+            const newVariant = {
+              sku: sku,
+              name: row["marime"] ? row["marime"].trim() : "mărime unică",
+              attributes: [],
+              trackInventory: false,
+              quantityLimitPerCustomer: stoc,
+              channelListings: [
+                {
+                  channelId: productInputIdsCache["Channel"][channel],
+                  price: row["Pret vanzare initial"].trim() ?? 0,
+                },
+              ],
+              stocks: [
+                {
+                  warehouse: productInputIdsCache["Warehouse"],
+                  quantity: stoc,
+                },
+              ],
+            };
+
+            //add Variant Attributes - use productInputIdsCache['Tip produs'][productType]['productAttributes']
+            let definedVarAttributes =
+              productInputIdsCache["Tip produs"][productType]["variantAttributes"];
+            Object.keys(definedVarAttributes).forEach((attrKey) => {
+              if (row[attrKey]) {
+                // Attribute slug exists in csv header, add it
+                let varAttr = { id: definedVarAttributes[attrKey][0] };
+                const varAttrKey = definedVarAttributes[attrKey][1].toLowerCase();
+                if (definedVarAttributes[attrKey][1] === "MULTISELECT") {
+                  varAttr[varAttrKey] = [{ value: row[attrKey].trim() }];
+                } else {
+                  varAttr[varAttrKey] = { value: row[attrKey].trim() };
+                }
+                newVariant.attributes.push(varAttr);
+              }
+            });
+
+            products[productName].variants.push(newVariant);
+          }
+        }
+      }
+      console.log(products);
+      return Object.values(products);
     } catch (error) {
       handleErrors(error.message);
+      throw error;
     }
   };
 
@@ -634,6 +661,7 @@ export const ProductsImporterView = () => {
             } catch (error) {
               console.log("errr");
               handleErrors(error.message);
+              throw error; // Stop further execution
             }
           }
         }
@@ -641,14 +669,17 @@ export const ProductsImporterView = () => {
           const result = await createProductBulkMutation({
             input: productBulkCreateInput,
           });
+          console.log("result", result);
           if (result) {
             result.data.productBulkCreate.results?.map((prod) => {
               if (prod.product !== null) {
                 importedProds.push(prod.product.name);
               } else if (prod.errors && prod.errors.length > 0) {
                 handleErrors(prod.errors[0].message);
+                throw new Error(prod.errors[0].message); // Stop further execution
               } else if (!prod.product) {
                 handleErrors("Error adding product");
+                throw new Error(prod.errors[0].message); // Stop further execution
               }
             });
           }
@@ -660,6 +691,8 @@ export const ProductsImporterView = () => {
       }
     } catch (error) {
       handleErrors(error.message);
+      setUploading(false);
+      return;
     }
     setImportedProds(importedProds);
   };
@@ -670,7 +703,10 @@ export const ProductsImporterView = () => {
       const parsedCSV = await parseCSV(file);
       if (parsedCSV) {
         const filteredCSV = filterEmptyRows(parsedCSV);
-        await importProducts(filteredCSV);
+        for (let i = 0; i < filteredCSV.length; i += CHUNK_SIZE) {
+          const chunk = filteredCSV.slice(i, i + CHUNK_SIZE);
+          await importProducts(chunk);
+        }
       }
     } catch (error) {
       handleErrors(error.message);
@@ -710,6 +746,32 @@ export const ProductsImporterView = () => {
     }
   };
 
+  /**
+   * Temp function to fix stoc + update quantityLimitPerCustomer, for each variant with stoc value
+   */
+  const handleProductsStocUpdate = async () => {
+    try {
+      const input = inputRef?.current;
+      let files = input.files;
+      if (files.length === 0) {
+        return;
+      }
+      for (var i = 0; i < files.length; i++) {
+        const parsedCSV = await parseCSV(files[i]);
+        if (parsedCSV) {
+          const filteredCSV = filterEmptyRows(parsedCSV);
+          await updateProdStock(filteredCSV);
+        }
+      }
+    } catch (error) {
+      handleErrors(error.message);
+    }
+  };
+
+  /**
+   * Temp function used to bulk fix collections for produccts
+   * @returns
+   */
   const handleProductUpdate = async () => {
     try {
       const input = inputRef?.current;
@@ -786,7 +848,7 @@ export const ProductsImporterView = () => {
         </div>
 
         <button onClick={handleUpload} disabled={uploading} className="button-66">
-          {uploading ? "Importing..." : "Upload & Start Import"}
+          {uploading ? "Importing..." : "Start Import"}
         </button>
 
         {/* <button onClick={handleProductUpdate} className="button-66">
