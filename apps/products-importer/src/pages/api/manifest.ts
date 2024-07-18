@@ -25,7 +25,7 @@ export default createManifestHandler({
        * Set permissions for app if needed
        * https://docs.saleor.io/docs/3.x/developer/permissions
        */
-      permissions: ["MANAGE_PRODUCTS"],
+      permissions: ["MANAGE_PRODUCTS", "MANAGE_USERS"],
       id: "saleor.app",
       version: packageJson.version,
       /**

@@ -1,0 +1,8 @@
+  mutation customerCreate($input: UserCreateInput!) {
+    customerCreate(input: $input) {      
+      errors {
+        field
+        message
+      }
+    }
+  }

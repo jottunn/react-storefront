@@ -747,28 +747,6 @@ export const ProductsImporterView = () => {
   };
 
   /**
-   * Temp function to fix stoc + update quantityLimitPerCustomer, for each variant with stoc value
-   */
-  const handleProductsStocUpdate = async () => {
-    try {
-      const input = inputRef?.current;
-      let files = input.files;
-      if (files.length === 0) {
-        return;
-      }
-      for (var i = 0; i < files.length; i++) {
-        const parsedCSV = await parseCSV(files[i]);
-        if (parsedCSV) {
-          const filteredCSV = filterEmptyRows(parsedCSV);
-          await updateProdStock(filteredCSV);
-        }
-      }
-    } catch (error) {
-      handleErrors(error.message);
-    }
-  };
-
-  /**
    * Temp function used to bulk fix collections for produccts
    * @returns
    */
