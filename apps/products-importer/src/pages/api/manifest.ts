@@ -26,7 +26,7 @@ export default createManifestHandler({
        * https://docs.saleor.io/docs/3.x/developer/permissions
        */
       permissions: ["MANAGE_PRODUCTS", "MANAGE_USERS"],
-      id: "saleor.app",
+      id: "saleor.app.products-importer",
       version: packageJson.version,
       /**
        * Configure webhooks here. They will be created in Saleor during installation
