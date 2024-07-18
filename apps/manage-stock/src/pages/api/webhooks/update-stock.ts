@@ -3,7 +3,7 @@ import { saleorApp } from "../../../saleor-app";
 const WEBHOOK_SECRET_KEY = process.env.WEBHOOK_SECRET_KEY;
 
 export default async (
-  req: { body: { sku: string; quantity: number }; headers: { authorization: string } },
+  req: { body: { code: string; qty: number }; headers: { authorization: string } },
   res: {
     status: (arg0: number) => {
       (): any;
@@ -19,7 +19,7 @@ export default async (
   }
 
   // Assuming the body parser is enabled for this route, if you're receiving JSON:
-  const { sku, quantity } = req.body;
+  const { code, qty } = req.body;
   const authData = await saleorApp.apl.getAll();
 
   if (!authData || !authData[0] || !authData[0]["saleorApiUrl"] || !authData[0]["token"]) {
@@ -27,11 +27,11 @@ export default async (
     return res.status(500).json({ error: "Failed to retrieve valid authentication data" });
   }
 
-  if (!sku || quantity === undefined || quantity === null) {
+  if (!code || qty === undefined || qty === null) {
     return res.status(400).json({ error: "stock information missing" });
   }
 
-  if (quantity < 0) {
+  if (qty < 0) {
     return res.status(500).json({ error: "Quantity can't be negative" });
   }
 
@@ -74,8 +74,8 @@ export default async (
     `;
 
     // Perform the mutation with the provided SKU and stocks data
-    const stocksInput = [{ warehouse: warehouseId, quantity: quantity }];
-    const result = await client.mutation(mutation, { sku, stocksInput }).toPromise();
+    const stocksInput = [{ warehouse: warehouseId, quantity: qty }];
+    const result = await client.mutation(mutation, { sku: code, stocksInput }).toPromise();
 
     // Handle potential errors in the mutation result
     if (result.error || result.data.productVariantStocksUpdate.errors.length > 0) {
@@ -83,11 +83,9 @@ export default async (
         "Error updating stock:",
         result.error || result.data.productVariantStocksUpdate.errors
       );
-      return res
-        .status(500)
-        .json({
-          error: "Failed to update stock in Saleor. Please check that correct info is provided.",
-        });
+      return res.status(500).json({
+        error: "Failed to update stock in Saleor. Please check that correct info is provided.",
+      });
     }
   } catch (error) {
     console.error("Error handling stock update:", error);
