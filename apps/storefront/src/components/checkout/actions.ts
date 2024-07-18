@@ -29,7 +29,7 @@ import {
   RemoveProductFromCheckoutDocument,
   RemoveProductFromCheckoutMutation,
 } from "@/saleor/api";
-import { AddressFormData } from "./address/AddressForm";
+import { AddressFormData } from "../account/AddressForm";
 
 type updateEmailFromCheckoutArgs = {
   id: string;
@@ -112,7 +112,7 @@ export const customerDetach = async (id: string) => {
       cache: "no-cache",
     });
 
-    console.log("checkoutCustomerDetach", response.checkoutCustomerDetach?.errors);
+    // console.log("checkoutCustomerDetach", response.checkoutCustomerDetach?.errors);
     if (response.checkoutCustomerDetach?.errors.length) {
       const customError = response.checkoutCustomerDetach.errors as any;
       return { success: false, errors: customError.map((error: { code: any }) => error.code) };
@@ -146,7 +146,7 @@ export const checkoutBillingAddressUpdate = async (args: {
       cache: "no-cache",
     });
 
-    console.log(response.checkoutBillingAddressUpdate?.errors);
+    // console.log(response.checkoutBillingAddressUpdate?.errors);
     if (response.checkoutBillingAddressUpdate?.errors.length) {
       return { errors: response.checkoutBillingAddressUpdate.errors };
     }
@@ -179,7 +179,7 @@ export const checkoutShippingAddressUpdate = async (args: {
       cache: "no-cache",
     });
 
-    console.log("checkoutShippingAddressUpdate", response.checkoutShippingAddressUpdate?.errors);
+    // console.log("checkoutShippingAddressUpdate", response.checkoutShippingAddressUpdate?.errors);
     if (response.checkoutShippingAddressUpdate?.errors.length) {
       return { errors: response.checkoutShippingAddressUpdate.errors };
     }
@@ -275,7 +275,7 @@ export const checkoutCompleteMutation = async (args: { id: string; note: string 
 
     if (response.checkoutComplete?.errors.length) {
       const customError = response.checkoutComplete.errors as any;
-      console.log("customError", customError);
+      // console.log("customError", customError);
       return {
         success: false,
         errors: customError.map(
@@ -308,7 +308,7 @@ export const checkoutAddPromoCodeMutation = async (args: { id: string; promoCode
       },
       cache: "no-cache",
     });
-    console.log("checkoutAddPromoCodeMutation", response);
+    // console.log("checkoutAddPromoCodeMutation", response);
 
     if (response.checkoutAddPromoCode?.errors.length) {
       const customError = response.checkoutAddPromoCode.errors as any;

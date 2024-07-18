@@ -3,8 +3,8 @@ import { Messages } from "@/lib/util";
 import { CheckoutError, User } from "@/saleor/api";
 import SavedAddressSelectionList from "../address/SavedAddressSelectionList";
 import { Button } from "../../Button";
-import AddressDisplay from "../address/AddressDisplay";
-import { AddressForm, AddressFormData } from "../address/AddressForm";
+import AddressDisplay from "../../account/AddressDisplay";
+import { AddressForm, AddressFormData } from "../../account/AddressForm";
 import { checkoutShippingAddressUpdate } from "../actions";
 import { useCheckout } from "@/lib/hooks/CheckoutContext";
 

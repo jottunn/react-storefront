@@ -1,6 +1,5 @@
 import fs from "fs";
 import path from "path";
-import { DEFAULT_LOCALE } from "src/lib/regions";
 
 /**
  * Maps short locale codes to their full form if needed.
@@ -109,3 +108,8 @@ export const getNumColumns = (length: number) => {
   }
   return numColumns;
 };
+
+export function getMetadataValue(metadataArray: any[], key: any) {
+  const item = metadataArray.find((metadata) => metadata.key === key);
+  return item ? item.value : null;
+}

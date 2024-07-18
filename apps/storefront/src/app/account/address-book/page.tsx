@@ -9,10 +9,19 @@ function AddressBookPage() {
   const [addresses, setAddresses] = useState(user?.addresses || []);
 
   const handleAddressChange = (updatedAddress: any) => {
-    setAddresses([...updatedAddress]);
+    if (Array.isArray(updatedAddress)) {
+      setAddresses([...updatedAddress]);
+    } else {
+      setAddresses((prevAddresses) =>
+        prevAddresses.map((address) =>
+          address.id === updatedAddress.id ? updatedAddress : address,
+        ),
+      );
+    }
   };
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2">
+    <div className="flex flex-col md:flex-row">
       {user &&
         addresses.map((address) => (
           <AddressBookCard

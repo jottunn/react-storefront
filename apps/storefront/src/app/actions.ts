@@ -2,8 +2,11 @@
 
 import { executeGraphQL } from "@/lib/graphql";
 import {
+  AccountAddressUpdateDocument,
+  AccountAddressUpdateMutation,
   AddressDeleteDocument,
   AddressDeleteMutation,
+  AddressInput,
   AvailableProductFiltersDocument,
   AvailableProductFiltersQuery,
   ConfirmAccountDocument,
@@ -351,6 +354,33 @@ export const deleteAddressMutation = async (args: { id: string }) => {
     return { success: true, addresses: response.accountAddressDelete?.user?.addresses };
   } catch (error) {
     console.error("Failed to remove address:", error);
+    return;
+  }
+};
+
+export const updateAddressMutation = async (args: { id: string; address: AddressInput }) => {
+  const { id, address } = args;
+  try {
+    const response = await executeGraphQL<
+      AccountAddressUpdateMutation,
+      {
+        id: string;
+        address: AddressInput;
+      }
+    >(AccountAddressUpdateDocument, {
+      variables: {
+        id: id,
+        address: address,
+      },
+      cache: "no-cache",
+    });
+
+    if (response.accountAddressUpdate?.errors.length) {
+      return { errors: response.accountAddressUpdate?.errors };
+    }
+    return { success: true, addresses: response.accountAddressUpdate?.user?.addresses };
+  } catch (error) {
+    console.error("Failed to update address:", error);
     return;
   }
 };

@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { CheckoutDetailsFragment, CheckoutError, CountryCode, User } from "@/saleor/api";
 import { Button } from "../../Button";
 import { Messages } from "@/lib/util";
-import { AddressForm, AddressFormData } from "./AddressForm";
+import { AddressForm, AddressFormData } from "../../account/AddressForm";
 import SavedAddressSelectionList from "./SavedAddressSelectionList";
-import AddressDisplay from "./AddressDisplay";
+import AddressDisplay from "../../account/AddressDisplay";
 import { checkoutBillingAddressUpdate, checkoutShippingAddressUpdate } from "../actions";
 import { useCheckout } from "@/lib/hooks/CheckoutContext";
 

@@ -1,4 +1,4 @@
-import { getMessages, getNumColumns, getOrderValue } from "src/lib/util";
+import { getMessages, getMetadataValue, getNumColumns, getOrderValue } from "src/lib/util";
 import { DEFAULT_LOCALE, defaultRegionQuery } from "src/lib/regions";
 import { executeGraphQL } from "@/lib/graphql";
 import {
@@ -48,11 +48,6 @@ export const generateMetadata = async (): Promise<Metadata> => {
     description: page && (page.seoDescription || "Premium bike store for Trek, Bontrager, ION"),
   };
 };
-
-function getMetadataValue(metadataArray: any[], key: any) {
-  const item = metadataArray.find((metadata) => metadata.key === key);
-  return item ? item.value : null; // Return null if the key is not found
-}
 
 export default async function Home() {
   const messages = getMessages(DEFAULT_LOCALE);
@@ -270,7 +265,7 @@ export default async function Home() {
       <div className="container block">
         {homepageCollections && homepageCollections.length > 0 && (
           <div
-            className={`grid grid-cols-1 md:grid-cols-${numColumnsHPCollections} gap-4 mt-20 md:mb-40`}
+            className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-${numColumnsHPCollections} gap-4 mt-20 md:mb-40`}
           >
             {homepageCollections.map((collection) => (
               <HomepageBlock key={collection.id} item={collection} type="collection" />
@@ -279,7 +274,7 @@ export default async function Home() {
         )}
         {homepageCategories && homepageCategories.length > 0 && (
           <div
-            className={`grid grid-cols-1 md:grid-cols-${numColumnsHPCategories} gap-4 mt-20 mb-40`}
+            className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-${numColumnsHPCategories} gap-4 mt-20 mb-40`}
           >
             {homepageCategories.map((category) => (
               <HomepageBlock key={category.id} item={category} type="category" />

@@ -65,7 +65,9 @@ export function ProductCard({
       hoverImageUrl = sortedMedia.length > 1 ? sortedMedia[1].url : thumbnailUrl; // Fallback to the first if only one exists
     }
   }
-
+  const blurPlaceholderPicMeta =
+    variant && variant.metadata.find((meta) => meta.key === "blurPlaceholderPic");
+  const blurPlaceholderPic = blurPlaceholderPicMeta ? blurPlaceholderPicMeta.value : null;
   let isPriceRange = false;
   // let salesPercent = "";
   if (colorName === "") {
@@ -97,6 +99,9 @@ export function ProductCard({
                   objectFit: "contain",
                   opacity: isHovered && hoverImageUrl === thumbnailUrl ? 0.9 : 1,
                 }}
+                {...(blurPlaceholderPic && blurPlaceholderPic !== null
+                  ? { placeholder: "blur", blurDataURL: blurPlaceholderPic }
+                  : {})}
               />
             )}
             {product.pricing?.onSale && (

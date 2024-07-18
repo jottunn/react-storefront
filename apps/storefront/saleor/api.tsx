@@ -378,7 +378,7 @@ export type AccountRegisterInput = {
   metadata?: InputMaybe<Array<MetadataInput>>;
   /** Password. */
   password: Scalars["String"]["input"];
-  /** Base of frontend URL that will be needed to create confirmation URL. */
+  /** Base of frontend URL that will be needed to create confirmation URL. Required when account confirmation is enabled. */
   redirectUrl?: InputMaybe<Scalars["String"]["input"]>;
 };
 
@@ -736,7 +736,7 @@ export type AddressValidationData = {
    * Many fields in the JSON refer to address fields by one-letter abbreviations. These are defined as follows:
    *
    * - `N`: Name
-   * - `O`: Organisation
+   * - `O`: Organization
    * - `A`: Street Address Line(s)
    * - `D`: Dependent locality (may be an inner-city district or a suburb)
    * - `C`: City or Locality
@@ -753,7 +753,7 @@ export type AddressValidationData = {
    * Many fields in the JSON refer to address fields by one-letter abbreviations. These are defined as follows:
    *
    * - `N`: Name
-   * - `O`: Organisation
+   * - `O`: Organization
    * - `A`: Street Address Line(s)
    * - `D`: Dependent locality (may be an inner-city district or a suburb)
    * - `C`: City or Locality
@@ -832,7 +832,7 @@ export type App = Node &
     __typename?: "App";
     /** Description of this app. */
     aboutApp?: Maybe<Scalars["String"]["output"]>;
-    /** JWT token used to authenticate by thridparty app. */
+    /** JWT token used to authenticate by third-party app. */
     accessToken?: Maybe<Scalars["String"]["output"]>;
     /** URL to iframe with the app. */
     appUrl?: Maybe<Scalars["String"]["output"]>;
@@ -2386,7 +2386,7 @@ export type AttributeValue = Node & {
   inputType?: Maybe<AttributeInputTypeEnum>;
   /** Name of a value displayed in the interface. */
   name?: Maybe<Scalars["String"]["output"]>;
-  /** Represents the text of the attribute value, plain text without formating. */
+  /** Represents the text of the attribute value, plain text without formatting. */
   plainText?: Maybe<Scalars["String"]["output"]>;
   /** The ID of the attribute reference. */
   reference?: Maybe<Scalars["ID"]["output"]>;
@@ -2524,7 +2524,7 @@ export type AttributeValueCreateInput = {
   /** Name of a value displayed in the interface. */
   name: Scalars["String"]["input"];
   /**
-   * Represents the text of the attribute value, plain text without formating.
+   * Represents the text of the attribute value, plain text without formatting.
    *
    * DEPRECATED: this field will be removed in Saleor 4.0.The plain text attribute hasn't got predefined value, so can be specified only from instance that supports the given attribute.
    */
@@ -2810,7 +2810,7 @@ export type AttributeValueUpdateInput = {
   /** Name of a value displayed in the interface. */
   name?: InputMaybe<Scalars["String"]["input"]>;
   /**
-   * Represents the text of the attribute value, plain text without formating.
+   * Represents the text of the attribute value, plain text without formatting.
    *
    * DEPRECATED: this field will be removed in Saleor 4.0.The plain text attribute hasn't got predefined value, so can be specified only from instance that supports the given attribute.
    */
@@ -3611,6 +3611,8 @@ export type Channel = Node &
     /**
      * Channel specific tax configuration.
      *
+     * Added in Saleor 3.20.
+     *
      * Requires one of the following permissions: AUTHENTICATED_STAFF_USER, AUTHENTICATED_APP.
      */
     taxConfiguration: TaxConfiguration;
@@ -4221,7 +4223,7 @@ export type Checkout = Node &
      */
     totalBalance: Money;
     /**
-     * The sum of the the checkout line prices, with all the taxes,shipping costs, and discounts included.
+     * The sum of the checkout line prices, with all the taxes,shipping costs, and discounts included.
      *
      * Triggers the following webhook events:
      * - CHECKOUT_CALCULATE_TAXES (sync): Optionally triggered when checkout prices are expired.
@@ -4595,7 +4597,7 @@ export type CheckoutError = {
   lines?: Maybe<Array<Scalars["ID"]["output"]>>;
   /** The error message. */
   message?: Maybe<Scalars["String"]["output"]>;
-  /** List of varint IDs which causes the error. */
+  /** List of variant IDs which causes the error. */
   variants?: Maybe<Array<Scalars["ID"]["output"]>>;
 };
 
@@ -5861,7 +5863,11 @@ export type ConfirmEmailChange = {
   user?: Maybe<User>;
 };
 
-/** An enumeration. */
+/**
+ * Represents country codes defined by the ISO 3166-1 alpha-2 standard.
+ *
+ * The `EU` value is DEPRECATED and will be removed in Saleor 3.21.
+ */
 export type CountryCode =
   | "AD"
   | "AE"
@@ -7444,7 +7450,7 @@ export type ExternalNotificationTrigger = {
 export type ExternalNotificationTriggerInput = {
   /** External event type. This field is passed to a plugin as an event type. */
   externalEventType: Scalars["String"]["input"];
-  /** Additional payload that will be merged with the one based on the bussines object ID. */
+  /** Additional payload that will be merged with the one based on the business object ID. */
   extraPayload?: InputMaybe<Scalars["JSONString"]["input"]>;
   /** The list of customers or orders node IDs that will be serialized and included in the notification payload. */
   ids: Array<Scalars["ID"]["input"]>;
@@ -16384,6 +16390,7 @@ export type OrderGrantRefundCreateError = {
 
 /** An enumeration. */
 export type OrderGrantRefundCreateErrorCode =
+  | "AMOUNT_GREATER_THAN_AVAILABLE"
   | "GRAPHQL_ERROR"
   | "INVALID"
   | "NOT_FOUND"
@@ -16411,6 +16418,14 @@ export type OrderGrantRefundCreateInput = {
   lines?: InputMaybe<Array<OrderGrantRefundCreateLineInput>>;
   /** Reason of the granted refund. */
   reason?: InputMaybe<Scalars["String"]["input"]>;
+  /**
+   * The ID of the transaction item related to the granted refund. If `amount` provided in the input, the transaction.chargedAmount needs to be equal or greater than provided `amount`.If `amount` is not provided in the input and calculated automatically by Saleor, the `min(calculatedAmount, transaction.chargedAmount)` will be used.Field will be required starting from Saleor 3.21.
+   *
+   * Added in Saleor 3.20.
+   *
+   * Note: this API is currently in Feature Preview and can be subject to changes at later point.
+   */
+  transactionId?: InputMaybe<Scalars["ID"]["input"]>;
 };
 
 export type OrderGrantRefundCreateLineError = {
@@ -16486,6 +16501,7 @@ export type OrderGrantRefundUpdateError = {
 
 /** An enumeration. */
 export type OrderGrantRefundUpdateErrorCode =
+  | "AMOUNT_GREATER_THAN_AVAILABLE"
   | "GRAPHQL_ERROR"
   | "INVALID"
   | "NOT_FOUND"
@@ -16521,6 +16537,14 @@ export type OrderGrantRefundUpdateInput = {
    * Note: this API is currently in Feature Preview and can be subject to changes at later point.
    */
   removeLines?: InputMaybe<Array<Scalars["ID"]["input"]>>;
+  /**
+   * The ID of the transaction item related to the granted refund. If `amount` provided in the input, the transaction.chargedAmount needs to be equal or greater than provided `amount`.If `amount` is not provided in the input and calculated automatically by Saleor, the `min(calculatedAmount, transaction.chargedAmount)` will be used.Field will be required starting from Saleor 3.21.
+   *
+   * Added in Saleor 3.20.
+   *
+   * Note: this API is currently in Feature Preview and can be subject to changes at later point.
+   */
+  transactionId?: InputMaybe<Scalars["ID"]["input"]>;
 };
 
 export type OrderGrantRefundUpdateLineAddInput = {
@@ -16584,6 +16608,24 @@ export type OrderGrantedRefund = {
    * Note: this API is currently in Feature Preview and can be subject to changes at later point.
    */
   shippingCostsIncluded: Scalars["Boolean"]["output"];
+  /**
+   * Status of the granted refund calculated based on transactionItem assigned to granted refund.
+   *
+   * Added in Saleor 3.20.
+   */
+  status: OrderGrantedRefundStatusEnum;
+  /**
+   * The transaction assigned to the granted refund.
+   *
+   * Added in Saleor 3.20.
+   */
+  transaction?: Maybe<TransactionItem>;
+  /**
+   * List of refund events associated with the granted refund.
+   *
+   * Added in Saleor 3.20.
+   */
+  transactionEvents?: Maybe<Array<TransactionEvent>>;
   /** Time of last update. */
   updatedAt: Scalars["DateTime"]["output"];
   /** User who performed the action. Requires of of the following permissions: MANAGE_USERS, MANAGE_STAFF, OWNER. */
@@ -16607,6 +16649,17 @@ export type OrderGrantedRefundLine = {
   /** Reason for refunding the line. */
   reason?: Maybe<Scalars["String"]["output"]>;
 };
+
+/**
+ * Represents the status of a granted refund.
+ *
+ *     NONE - the refund on related transactionItem is not processed
+ *     PENDING - the refund on related transactionItem is pending
+ *     FULL - the refund on related transactionItem is fully processed
+ *     FAIL - the refund on related transactionItem failed
+ *
+ */
+export type OrderGrantedRefundStatusEnum = "FAILURE" | "NONE" | "PENDING" | "SUCCESS";
 
 /** Represents order line of particular order. */
 export type OrderLine = Node &
@@ -17121,7 +17174,7 @@ export type OrderReturnProductsInput = {
 export type OrderSettings = {
   __typename?: "OrderSettings";
   /**
-   * Determine if it is possible to place unpdaid order by calling `checkoutComplete` mutation.
+   * Determine if it is possible to place unpaid order by calling `checkoutComplete` mutation.
    *
    * Added in Saleor 3.15.
    *
@@ -17192,7 +17245,7 @@ export type OrderSettingsInput = {
   allowUnpaidOrders?: InputMaybe<Scalars["Boolean"]["input"]>;
   /** When disabled, all new orders from checkout will be marked as unconfirmed. When enabled orders from checkout will become unfulfilled immediately. By default set to True */
   automaticallyConfirmAllNewOrders?: InputMaybe<Scalars["Boolean"]["input"]>;
-  /** When enabled, all non-shippable gift card orders will be fulfilled automatically. By defualt set to True. */
+  /** When enabled, all non-shippable gift card orders will be fulfilled automatically. By default set to True. */
   automaticallyFulfillNonShippableGiftCard?: InputMaybe<Scalars["Boolean"]["input"]>;
   /**
    * The time in days after expired orders will be deleted.Allowed range is from 1 to 120.
@@ -19157,7 +19210,7 @@ export type PermissionGroupDeleted = Event & {
 
 export type PermissionGroupError = {
   __typename?: "PermissionGroupError";
-  /** List of chnnels IDs which causes the error. */
+  /** List of channels IDs which causes the error. */
   channels?: Maybe<Array<Scalars["ID"]["output"]>>;
   /** The error code. */
   code: PermissionGroupErrorCode;
@@ -22551,13 +22604,9 @@ export type PromotionCreateInput = {
   /**
    * Defines the promotion type. Implicate the required promotion rules predicate type and whether the promotion rules will give the catalogue or order discount.
    *
-   * The default value is `Catalogue`.
-   *
-   * This field will be required from Saleor 3.20.
-   *
    * Added in Saleor 3.19.
    */
-  type?: InputMaybe<PromotionTypeEnum>;
+  type: PromotionTypeEnum;
 };
 
 /**
@@ -23679,7 +23728,7 @@ export type Query = {
   /** List of the shop's collections. Requires one of the following permissions to include the unpublished items: MANAGE_ORDERS, MANAGE_DISCOUNTS, MANAGE_PRODUCTS. */
   collections?: Maybe<CollectionCountableConnection>;
   /**
-   * List of the shop's customers.
+   * List of the shop's customers. This list includes all users who registered through the accountRegister mutation. Additionally, staff users who have placed an order using their account will also appear in this list.
    *
    * Requires one of the following permissions: MANAGE_ORDERS, MANAGE_USERS.
    */
@@ -23965,7 +24014,10 @@ export type Query = {
    * Requires one of the following permissions: AUTHENTICATED_STAFF_USER, AUTHENTICATED_APP.
    */
   taxCountryConfigurations?: Maybe<Array<TaxCountryConfiguration>>;
-  /** List of all tax rates available from tax gateway. */
+  /**
+   * List of all tax rates available from tax gateway.
+   * @deprecated This field will be removed in Saleor 4.0. Use `taxClasses` field instead.
+   */
   taxTypes?: Maybe<Array<TaxType>>;
   /**
    * Look up a transaction by ID.
@@ -26280,7 +26332,7 @@ export type ShippingZoneUpdatedShippingZoneArgs = {
 export type Shop = ObjectWithMetadata & {
   __typename?: "Shop";
   /**
-   * Determines if user can login without confirmation when `enableAccountConfrimation` is enabled.
+   * Determines if user can login without confirmation when `enableAccountConfirmation` is enabled.
    *
    * Added in Saleor 3.15.
    *
@@ -28868,10 +28920,13 @@ export type TransactionRequestRefundForGrantedRefundError = {
 
 /** An enumeration. */
 export type TransactionRequestRefundForGrantedRefundErrorCode =
+  | "AMOUNT_GREATER_THAN_AVAILABLE"
   | "GRAPHQL_ERROR"
   | "INVALID"
   | "MISSING_TRANSACTION_ACTION_REQUEST_WEBHOOK"
-  | "NOT_FOUND";
+  | "NOT_FOUND"
+  | "REFUND_ALREADY_PROCESSED"
+  | "REFUND_IS_PENDING";
 
 /**
  * Update transaction.
@@ -30415,6 +30470,14 @@ export type Warehouse = Node &
     shippingZones: ShippingZoneCountableConnection;
     /** Warehouse slug. */
     slug: Scalars["String"]["output"];
+    /**
+     * Stocks that belong to this warehouse.
+     *
+     * Added in Saleor 3.20.
+     *
+     * Requires one of the following permissions: MANAGE_PRODUCTS, MANAGE_ORDERS.
+     */
+    stocks?: Maybe<StockCountableConnection>;
   };
 
 /** Represents warehouse. */
@@ -30439,6 +30502,14 @@ export type WarehousePrivateMetafieldsArgs = {
 
 /** Represents warehouse. */
 export type WarehouseShippingZonesArgs = {
+  after?: InputMaybe<Scalars["String"]["input"]>;
+  before?: InputMaybe<Scalars["String"]["input"]>;
+  first?: InputMaybe<Scalars["Int"]["input"]>;
+  last?: InputMaybe<Scalars["Int"]["input"]>;
+};
+
+/** Represents warehouse. */
+export type WarehouseStocksArgs = {
   after?: InputMaybe<Scalars["String"]["input"]>;
   before?: InputMaybe<Scalars["String"]["input"]>;
   first?: InputMaybe<Scalars["Int"]["input"]>;
@@ -32762,6 +32833,7 @@ export type ProductCardFragment = {
     name: string;
     quantityAvailable?: number | null;
     translation?: { __typename?: "ProductVariantTranslation"; id: string; name: string } | null;
+    metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
     attributes: Array<{
       __typename?: "SelectedAttribute";
       attribute: {
@@ -32888,6 +32960,7 @@ export type ProductDetailsFragment = {
     name: string;
     quantityAvailable?: number | null;
     translation?: { __typename?: "ProductVariantTranslation"; id: string; name: string } | null;
+    metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
     attributes: Array<{
       __typename?: "SelectedAttribute";
       attribute: {
@@ -33000,6 +33073,7 @@ export type ProductVariantDetailsFragment = {
   name: string;
   quantityAvailable?: number | null;
   translation?: { __typename?: "ProductVariantTranslation"; id: string; name: string } | null;
+  metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
   attributes: Array<{
     __typename?: "SelectedAttribute";
     attribute: {
@@ -33144,6 +33218,42 @@ export type AddressSetDefaultMutation = {
         country: { __typename?: "CountryDisplay"; code: string; country: string };
       }>;
     } | null;
+  } | null;
+};
+
+export type AccountAddressUpdateMutationVariables = Exact<{
+  id: Scalars["ID"]["input"];
+  address: AddressInput;
+}>;
+
+export type AccountAddressUpdateMutation = {
+  __typename?: "Mutation";
+  accountAddressUpdate?: {
+    __typename?: "AccountAddressUpdate";
+    user?: {
+      __typename?: "User";
+      addresses: Array<{
+        __typename?: "Address";
+        id: string;
+        phone?: string | null;
+        firstName: string;
+        lastName: string;
+        companyName: string;
+        streetAddress1: string;
+        streetAddress2: string;
+        city: string;
+        postalCode: string;
+        isDefaultBillingAddress?: boolean | null;
+        isDefaultShippingAddress?: boolean | null;
+        country: { __typename?: "CountryDisplay"; code: string; country: string };
+      }>;
+    } | null;
+    errors: Array<{
+      __typename?: "AccountError";
+      field?: string | null;
+      message?: string | null;
+      code: AccountErrorCode;
+    }>;
   } | null;
 };
 
@@ -36661,6 +36771,7 @@ export type ProductBySlugQuery = {
       name: string;
       quantityAvailable?: number | null;
       translation?: { __typename?: "ProductVariantTranslation"; id: string; name: string } | null;
+      metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
       attributes: Array<{
         __typename?: "SelectedAttribute";
         attribute: {
@@ -36849,6 +36960,7 @@ export type ProductCollectionQuery = {
             id: string;
             name: string;
           } | null;
+          metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
           attributes: Array<{
             __typename?: "SelectedAttribute";
             attribute: {
@@ -37082,6 +37194,7 @@ export type ProductsByAttributeQuery = {
             id: string;
             name: string;
           } | null;
+          metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
           attributes: Array<{
             __typename?: "SelectedAttribute";
             attribute: {
@@ -37731,6 +37844,10 @@ export const ProductVariantDetailsFragmentDoc = gql`
       id
       name
     }
+    metadata {
+      key
+      value
+    }
     quantityAvailable
     attributes {
       attribute {
@@ -38066,6 +38183,67 @@ export type AddressSetDefaultMutationResult = Apollo.MutationResult<AddressSetDe
 export type AddressSetDefaultMutationOptions = Apollo.BaseMutationOptions<
   AddressSetDefaultMutation,
   AddressSetDefaultMutationVariables
+>;
+export const AccountAddressUpdateDocument = gql`
+  mutation AccountAddressUpdate($id: ID!, $address: AddressInput!) {
+    accountAddressUpdate(input: $address, id: $id) {
+      user {
+        addresses {
+          ...AddressDetailsFragment
+        }
+      }
+      errors {
+        field
+        message
+        code
+      }
+    }
+  }
+  ${AddressDetailsFragmentDoc}
+`;
+export type AccountAddressUpdateMutationFn = Apollo.MutationFunction<
+  AccountAddressUpdateMutation,
+  AccountAddressUpdateMutationVariables
+>;
+
+/**
+ * __useAccountAddressUpdateMutation__
+ *
+ * To run a mutation, you first call `useAccountAddressUpdateMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAccountAddressUpdateMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [accountAddressUpdateMutation, { data, loading, error }] = useAccountAddressUpdateMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      address: // value for 'address'
+ *   },
+ * });
+ */
+export function useAccountAddressUpdateMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    AccountAddressUpdateMutation,
+    AccountAddressUpdateMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<AccountAddressUpdateMutation, AccountAddressUpdateMutationVariables>(
+    AccountAddressUpdateDocument,
+    options,
+  );
+}
+export type AccountAddressUpdateMutationHookResult = ReturnType<
+  typeof useAccountAddressUpdateMutation
+>;
+export type AccountAddressUpdateMutationResult =
+  Apollo.MutationResult<AccountAddressUpdateMutation>;
+export type AccountAddressUpdateMutationOptions = Apollo.BaseMutationOptions<
+  AccountAddressUpdateMutation,
+  AccountAddressUpdateMutationVariables
 >;
 export const CheckoutAddProductLineDocument = gql`
   mutation CheckoutAddProductLine($id: ID!, $productVariantId: ID!, $locale: LanguageCodeEnum!) {
@@ -47910,6 +48088,9 @@ export type OrderGrantedRefundKeySpecifier = (
   | "lines"
   | "reason"
   | "shippingCostsIncluded"
+  | "status"
+  | "transaction"
+  | "transactionEvents"
   | "updatedAt"
   | "user"
   | OrderGrantedRefundKeySpecifier
@@ -47922,6 +48103,9 @@ export type OrderGrantedRefundFieldPolicy = {
   lines?: FieldPolicy<any> | FieldReadFunction<any>;
   reason?: FieldPolicy<any> | FieldReadFunction<any>;
   shippingCostsIncluded?: FieldPolicy<any> | FieldReadFunction<any>;
+  status?: FieldPolicy<any> | FieldReadFunction<any>;
+  transaction?: FieldPolicy<any> | FieldReadFunction<any>;
+  transactionEvents?: FieldPolicy<any> | FieldReadFunction<any>;
   updatedAt?: FieldPolicy<any> | FieldReadFunction<any>;
   user?: FieldPolicy<any> | FieldReadFunction<any>;
 };
@@ -54123,6 +54307,7 @@ export type WarehouseKeySpecifier = (
   | "privateMetafields"
   | "shippingZones"
   | "slug"
+  | "stocks"
   | WarehouseKeySpecifier
 )[];
 export type WarehouseFieldPolicy = {
@@ -54142,6 +54327,7 @@ export type WarehouseFieldPolicy = {
   privateMetafields?: FieldPolicy<any> | FieldReadFunction<any>;
   shippingZones?: FieldPolicy<any> | FieldReadFunction<any>;
   slug?: FieldPolicy<any> | FieldReadFunction<any>;
+  stocks?: FieldPolicy<any> | FieldReadFunction<any>;
 };
 export type WarehouseCountableConnectionKeySpecifier = (
   | "edges"

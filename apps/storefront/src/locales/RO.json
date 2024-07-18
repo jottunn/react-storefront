@@ -85,6 +85,7 @@
   "app.preferences.addressbook.noData": "Nu există informații despre adrese pentru acest utilizator",
   "app.preferences.addressbook.setDefaultBilling": "Setează ca facturare implicită",
   "app.preferences.addressbook.setDefaultShipping": "Setează ca livrare implicită",
+  "app.postalCode.invalid": "Codul poștal este invalid",
   "app.preferences.changeEmail.changed": "Verifică adresa de email pentru a confirma noul email.",
   "app.preferences.changeEmail.header": "Schimbă emailul",
   "app.preferences.changePassword.changedPassword": "Parola a fost actualizată cu succes!",

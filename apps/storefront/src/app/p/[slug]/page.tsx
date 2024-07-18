@@ -34,7 +34,7 @@ import { mapEdgesToItems } from "@/lib/maps";
 import { ATTR_GHID_MARIMI } from "@/lib/const";
 import Link from "next/link";
 import VariantSelector from "./variants/VariantSelector";
-import { getMessages } from "@/lib/util";
+import { getMessages, getMetadataValue } from "@/lib/util";
 import Spinner from "@/components/Spinner";
 import { GroupedProduct, groupProductsByColor } from "@/lib/product";
 import SwiperComponent from "@/components/SwiperComponent";
@@ -149,8 +149,11 @@ const ProductDetail = async ({
       : product.variants?.[0];
 
   const firstImage = product.thumbnail;
-  const placeholder =
-    selectedVariant && selectedVariant.media && selectedVariant.media.length > 0
+  const hasPlaceholderMeta =
+    selectedVariant && getMetadataValue(selectedVariant?.metadata, "blurPlaceholderPic");
+  const placeholder = hasPlaceholderMeta
+    ? hasPlaceholderMeta
+    : selectedVariant && selectedVariant.media && selectedVariant.media.length > 0
       ? await getBase64(selectedVariant.media[0].url)
       : firstImage
         ? await getBase64(firstImage.url)
@@ -165,12 +168,14 @@ const ProductDetail = async ({
 
   const categoryAncestors = mapEdgesToItems(product.category?.ancestors);
   const brandAttribute = product.attributes.find((attr) => attr.attribute.slug === "brand");
+  const brandSlug = brandAttribute?.values[0]?.slug || "";
   const brandCollection =
     brandAttribute &&
+    brandSlug &&
     (await executeGraphQL<CollectionBySlugQuery, { slug: string; locale: LanguageCodeEnum }>(
       CollectionBySlugDocument,
       {
-        variables: { slug: brandAttribute?.values[0]?.slug || "", ...defaultRegionQuery() },
+        variables: { slug: brandSlug, ...defaultRegionQuery() },
         revalidate: 60 * 60 * 24,
       },
     ));

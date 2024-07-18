@@ -5,6 +5,10 @@ fragment ProductVariantDetailsFragment on ProductVariant {
     id
     name
   }
+  metadata {
+    key
+    value
+  }
   quantityAvailable
   attributes {
     attribute {

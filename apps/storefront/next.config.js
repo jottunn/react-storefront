@@ -23,7 +23,8 @@ module.exports = withBundleAnalyzer({
       ...allowedImageDomains.map((domain) => ({ hostname: domain })),
     ],
 
-    formats: ["image/avif", "image/webp"],
+    formats: ["image/webp"],
+    minimumCacheTTL: 31536000,
   },
   trailingSlash: false,
   i18n: {

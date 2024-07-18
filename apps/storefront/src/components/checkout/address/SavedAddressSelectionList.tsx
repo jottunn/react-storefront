@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import React from "react";
 import { AddressDetailsFragment, CheckoutError, CountryCode, User } from "@/saleor/api";
-import { AddressFormData } from "./AddressForm";
+import { AddressFormData } from "../../account/AddressForm";
 import Spinner from "@/components/Spinner";
 import { Messages } from "@/lib/util";
 

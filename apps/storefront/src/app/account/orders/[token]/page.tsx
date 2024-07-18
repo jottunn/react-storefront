@@ -3,7 +3,7 @@ import Image from "next/image";
 import { useUserContext } from "../../UserContext";
 import { formatMoney } from "@/lib/utils/formatMoney";
 import Spinner from "@/components/Spinner";
-import AddressDisplay from "@/components/checkout/address/AddressDisplay";
+import AddressDisplay from "@/components/account/AddressDisplay";
 import { useEffect, useState } from "react";
 import { orderDetails } from "src/app/actions";
 import { Order } from "@/saleor/api";
