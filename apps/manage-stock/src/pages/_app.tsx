@@ -1,15 +1,13 @@
 import "@saleor/macaw-ui/style";
-import "../styles/globals.css";
-
-import { AppBridge, AppBridgeProvider } from "@saleor/app-sdk/app-bridge";
-import { RoutePropagator } from "@saleor/app-sdk/app-bridge/next";
 import { AppProps } from "next/app";
-import { useEffect } from "react";
-
 import { ThemeProvider } from "@saleor/macaw-ui";
 import { NoSSRWrapper } from "../lib/no-ssr-wrapper";
 import { ThemeSynchronizer } from "../lib/theme-synchronizer";
 import { GraphQLProvider } from "../providers/GraphQLProvider";
+import { AppBridge, AppBridgeProvider } from "@saleor/app-sdk/app-bridge";
+import { RoutePropagator } from "@saleor/app-sdk/app-bridge/next";
+import "../styles/globals.css";
+import { useEffect } from "react";
 
 /**
  * Ensure instance is a singleton.
@@ -27,7 +25,6 @@ function NextApp({ Component, pageProps }: AppProps) {
       jssStyles?.parentElement?.removeChild(jssStyles);
     }
   }, []);
-
   return (
     <NoSSRWrapper>
       <AppBridgeProvider appBridgeInstance={appBridgeInstance}>

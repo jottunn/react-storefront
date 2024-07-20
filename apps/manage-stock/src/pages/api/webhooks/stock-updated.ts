@@ -3,6 +3,7 @@ import { SaleorAsyncWebhook } from "@saleor/app-sdk/handlers/next";
 
 import { saleorApp } from "../../../saleor-app";
 import { createClient } from "../../../lib/create-graphq-client";
+import logger from "../../../logger";
 
 type ProductVariantStockUpdatedWebhookPayloadFragment = {
   productVariant: {
@@ -123,10 +124,16 @@ export default productVariantStockUpdatedWebhook.createHandler(async (req, res, 
         "Error updating variant stock info (trackInventory, quantityLimitPerCustomer)",
         resultTrackInventory.error || resultTrackInventory.data.productVariantUpdate.errors
       );
+      logger.error(
+        `Error updating variant stock info (trackInventory, quantityLimitPerCustomer). Error: ${JSON.stringify(
+          resultTrackInventory.error || resultTrackInventory.data.productVariantUpdate.errors
+        )}`
+      );
       return res.status(500).json({ error: "Failed to update variant stock info" });
     }
   } catch (error) {
-    console.error("Error updating variant's Track Inventory:", error);
+    console.error("Error updating variant's Track Inventory:");
+    logger.error(`Error fetching warehouse details. Error: ${JSON.stringify(error)}`);
     return res
       .status(500)
       .json({ error: "Internal server error - Error updating variant stock info" });

@@ -66,6 +66,7 @@ services:
       - saleor-backend-tier
     volumes:
       - manage-stock-auth-volume:/app/apps/manage-stock/apl
+      - manage-stock-logs-volume:/app/apps/manage-stock/logs
     command: sh -c '(nginx &) && pnpm turbo run start --filter=manage-stock...'
   emails-and-messages:
     container_name: emails-and-messages
@@ -87,6 +88,7 @@ volumes:
   search-auth-volume:
   products-importer-auth-volume:
   manage-stock-auth-volume:
+  manage-stock-logs-volume:
 
 networks:
   saleor-backend-tier:

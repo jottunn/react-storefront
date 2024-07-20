@@ -1,3 +1,4 @@
+import logger from "../../../logger";
 import { createClient } from "../../../lib/create-graphq-client";
 import { saleorApp } from "../../../saleor-app";
 const WEBHOOK_SECRET_KEY = process.env.WEBHOOK_SECRET_KEY;
@@ -15,6 +16,7 @@ export default async (
   // Check for authorization header
   const authHeader = req.headers.authorization;
   if (!authHeader || authHeader !== `Bearer ${WEBHOOK_SECRET_KEY}`) {
+    logger.warn("Unauthorized access attempt");
     return res.status(401).json({ error: "Unauthorized" });
   }
 
@@ -24,14 +26,17 @@ export default async (
 
   if (!authData || !authData[0] || !authData[0]["saleorApiUrl"] || !authData[0]["token"]) {
     console.error("Authentication data is missing or incomplete:", authData);
+    logger.error("Authentication data is missing or incomplete");
     return res.status(500).json({ error: "Failed to retrieve valid authentication data" });
   }
 
   if (!code || qty === undefined || qty === null) {
+    logger.warn(`Stock information missing. Code: ${code}, Quantity: ${qty}`);
     return res.status(400).json({ error: "stock information missing" });
   }
 
   if (qty < 0) {
+    logger.error(`Invalid stock quantity. Quantity: ${qty}`);
     return res.status(500).json({ error: "Quantity can't be negative" });
   }
 
@@ -57,7 +62,8 @@ export default async (
     //console.log(result);
     warehouseId = result.data.warehouses.edges[0].node.id;
   } catch (error) {
-    console.error("Error fetching page details:", error);
+    logger.error(`Error fetching warehouse details. Error: ${JSON.stringify(error)}`);
+    console.error("Error fetching warehouse details:", error);
     throw error;
   }
 
@@ -83,14 +89,16 @@ export default async (
         "Error updating stock:",
         result.error || result.data.productVariantStocksUpdate.errors
       );
+      logger.error(`Error handling stock update. Error: ${JSON.stringify(result.error)}`);
       return res.status(500).json({
         error: "Failed to update stock in Saleor. Please check that correct info is provided.",
       });
     }
   } catch (error) {
     console.error("Error handling stock update:", error);
+    logger.error(`Error handling stock update. Error: ${JSON.stringify(error)}`);
     return res.status(500).json({ error: "Internal server error - Error handling stock update" });
   }
-
+  logger.info(`Stock updated successfully. Code: ${code}, Quantity: ${qty}`);
   return res.status(200).json({ message: "Stock updated successfully" });
 };

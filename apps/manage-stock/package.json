@@ -24,6 +24,7 @@
     "@urql/exchange-auth": "^1.0.0",
     "@vitejs/plugin-react": "4.2.1",
     "shared-apl": "file:../../packages/shared-apl",
+    "@saleor/apps-logger": "workspace:*",
     "graphql": "16.7.1",
     "graphql-tag": "^2.12.6",
     "jsdom": "^20.0.3",
@@ -32,13 +33,16 @@
     "react-dom": "18.2.0",
     "urql": "^4.0.4",
     "vite": "5.2.11",
-    "vitest": "1.6.0"
+    "vitest": "1.6.0",
+    "pino": "9.3.1",
+    "rotating-file-stream": "3.2.3"
   },
   "packageManager": "pnpm@9.1.4",
   "devDependencies": {
     "@types/node": "20.12.11",
     "@types/react": "^18.2.5",
     "@types/react-dom": "18.2.5",
+    "ts-loader": "^9.5.1",
     "eslint": "8.46.0",
     "eslint-config-next": "14.2.3",
     "eslint-config-prettier": "8.8.0",
