@@ -5,6 +5,12 @@ fragment CheckoutLineDetailsFragment on CheckoutLine {
       ...PriceFragment
     }
   }
+  undiscountedUnitPrice {
+      ...PriceFragment
+  }
+  undiscountedTotalPrice {
+      ...PriceFragment
+  }
   variant {
     id
     quantityAvailable
@@ -29,9 +35,23 @@ fragment CheckoutLineDetailsFragment on CheckoutLine {
       ...SelectedAttributeDetailsFragment
     }
     pricing {
+      onSale
+      priceUndiscounted {
+        gross {
+            currency
+            amount
+        }
+      }
+      discount {
+        gross {
+            currency
+            amount
+        }
+      }
       price {
         gross {
-          ...PriceFragment
+            currency
+            amount
         }
       }
     }

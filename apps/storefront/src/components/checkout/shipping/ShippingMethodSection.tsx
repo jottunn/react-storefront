@@ -8,6 +8,7 @@ import { notNullable } from "@/lib/media";
 import { ShippingMethodOption } from "./ShippingMethodOption";
 import ShippingMethodDisplay from "./ShippingMethodDisplay";
 import { useCheckout } from "@/lib/hooks/CheckoutContext";
+import Spinner from "@/components/Spinner";
 
 export interface ShippingMethodSectionProps {
   active: boolean;
@@ -29,6 +30,7 @@ export function ShippingMethodSection({ active, messages }: ShippingMethodSectio
     !checkout.deliveryMethod && availableShippingMethods.length > 1,
   );
   const [errors, setErrors] = React.useState<ErrorDetailsFragment[] | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!checkout.deliveryMethod && availableShippingMethods.length === 1) {
@@ -37,6 +39,7 @@ export function ShippingMethodSection({ active, messages }: ShippingMethodSectio
   }, [availableShippingMethods, checkout.deliveryMethod]);
 
   const handleChange = async (method: ShippingMethod) => {
+    setLoading(true);
     const response = await checkoutShippingMethodUpdate({
       shippingMethodId: method.id,
       id: checkout.id,
@@ -46,12 +49,14 @@ export function ShippingMethodSection({ active, messages }: ShippingMethodSectio
     if (response?.errors) {
       // todo: handle errors
       setErrors(response.errors);
+      setLoading(false);
       return;
     }
     await refreshCheckout();
     setSelectedDeliveryMethod(method);
     setEditing(false);
     setErrors(null);
+    setLoading(false);
   };
 
   return (
@@ -69,6 +74,7 @@ export function ShippingMethodSection({ active, messages }: ShippingMethodSectio
             </p>
           ))}
       </div>
+      {loading && <Spinner />}
       {active &&
         (editing ? (
           <>

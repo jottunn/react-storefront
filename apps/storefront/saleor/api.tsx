@@ -32430,6 +32430,8 @@ export type CheckoutDetailsFragment = {
       __typename?: "TaxedMoney";
       gross: { __typename?: "Money"; currency: string; amount: number };
     };
+    undiscountedUnitPrice: { __typename?: "Money"; currency: string; amount: number };
+    undiscountedTotalPrice: { __typename?: "Money"; currency: string; amount: number };
     variant: {
       __typename?: "ProductVariant";
       id: string;
@@ -32485,6 +32487,15 @@ export type CheckoutDetailsFragment = {
       }>;
       pricing?: {
         __typename?: "VariantPricingInfo";
+        onSale?: boolean | null;
+        priceUndiscounted?: {
+          __typename?: "TaxedMoney";
+          gross: { __typename?: "Money"; currency: string; amount: number };
+        } | null;
+        discount?: {
+          __typename?: "TaxedMoney";
+          gross: { __typename?: "Money"; currency: string; amount: number };
+        } | null;
         price?: {
           __typename?: "TaxedMoney";
           gross: { __typename?: "Money"; currency: string; amount: number };
@@ -32525,6 +32536,8 @@ export type CheckoutLineDetailsFragment = {
     __typename?: "TaxedMoney";
     gross: { __typename?: "Money"; currency: string; amount: number };
   };
+  undiscountedUnitPrice: { __typename?: "Money"; currency: string; amount: number };
+  undiscountedTotalPrice: { __typename?: "Money"; currency: string; amount: number };
   variant: {
     __typename?: "ProductVariant";
     id: string;
@@ -32576,6 +32589,15 @@ export type CheckoutLineDetailsFragment = {
     }>;
     pricing?: {
       __typename?: "VariantPricingInfo";
+      onSale?: boolean | null;
+      priceUndiscounted?: {
+        __typename?: "TaxedMoney";
+        gross: { __typename?: "Money"; currency: string; amount: number };
+      } | null;
+      discount?: {
+        __typename?: "TaxedMoney";
+        gross: { __typename?: "Money"; currency: string; amount: number };
+      } | null;
       price?: {
         __typename?: "TaxedMoney";
         gross: { __typename?: "Money"; currency: string; amount: number };
@@ -33359,6 +33381,8 @@ export type CheckoutAddProductLineMutation = {
           __typename?: "TaxedMoney";
           gross: { __typename?: "Money"; currency: string; amount: number };
         };
+        undiscountedUnitPrice: { __typename?: "Money"; currency: string; amount: number };
+        undiscountedTotalPrice: { __typename?: "Money"; currency: string; amount: number };
         variant: {
           __typename?: "ProductVariant";
           id: string;
@@ -33418,6 +33442,15 @@ export type CheckoutAddProductLineMutation = {
           }>;
           pricing?: {
             __typename?: "VariantPricingInfo";
+            onSale?: boolean | null;
+            priceUndiscounted?: {
+              __typename?: "TaxedMoney";
+              gross: { __typename?: "Money"; currency: string; amount: number };
+            } | null;
+            discount?: {
+              __typename?: "TaxedMoney";
+              gross: { __typename?: "Money"; currency: string; amount: number };
+            } | null;
             price?: {
               __typename?: "TaxedMoney";
               gross: { __typename?: "Money"; currency: string; amount: number };
@@ -33560,6 +33593,8 @@ export type CheckoutAddPromoCodeMutation = {
           __typename?: "TaxedMoney";
           gross: { __typename?: "Money"; currency: string; amount: number };
         };
+        undiscountedUnitPrice: { __typename?: "Money"; currency: string; amount: number };
+        undiscountedTotalPrice: { __typename?: "Money"; currency: string; amount: number };
         variant: {
           __typename?: "ProductVariant";
           id: string;
@@ -33619,6 +33654,15 @@ export type CheckoutAddPromoCodeMutation = {
           }>;
           pricing?: {
             __typename?: "VariantPricingInfo";
+            onSale?: boolean | null;
+            priceUndiscounted?: {
+              __typename?: "TaxedMoney";
+              gross: { __typename?: "Money"; currency: string; amount: number };
+            } | null;
+            discount?: {
+              __typename?: "TaxedMoney";
+              gross: { __typename?: "Money"; currency: string; amount: number };
+            } | null;
             price?: {
               __typename?: "TaxedMoney";
               gross: { __typename?: "Money"; currency: string; amount: number };
@@ -33757,6 +33801,8 @@ export type CheckoutBillingAddressUpdateMutation = {
           __typename?: "TaxedMoney";
           gross: { __typename?: "Money"; currency: string; amount: number };
         };
+        undiscountedUnitPrice: { __typename?: "Money"; currency: string; amount: number };
+        undiscountedTotalPrice: { __typename?: "Money"; currency: string; amount: number };
         variant: {
           __typename?: "ProductVariant";
           id: string;
@@ -33816,6 +33862,15 @@ export type CheckoutBillingAddressUpdateMutation = {
           }>;
           pricing?: {
             __typename?: "VariantPricingInfo";
+            onSale?: boolean | null;
+            priceUndiscounted?: {
+              __typename?: "TaxedMoney";
+              gross: { __typename?: "Money"; currency: string; amount: number };
+            } | null;
+            discount?: {
+              __typename?: "TaxedMoney";
+              gross: { __typename?: "Money"; currency: string; amount: number };
+            } | null;
             price?: {
               __typename?: "TaxedMoney";
               gross: { __typename?: "Money"; currency: string; amount: number };
@@ -34092,6 +34147,8 @@ export type CheckoutCustomerAttachMutation = {
           __typename?: "TaxedMoney";
           gross: { __typename?: "Money"; currency: string; amount: number };
         };
+        undiscountedUnitPrice: { __typename?: "Money"; currency: string; amount: number };
+        undiscountedTotalPrice: { __typename?: "Money"; currency: string; amount: number };
         variant: {
           __typename?: "ProductVariant";
           id: string;
@@ -34151,6 +34208,15 @@ export type CheckoutCustomerAttachMutation = {
           }>;
           pricing?: {
             __typename?: "VariantPricingInfo";
+            onSale?: boolean | null;
+            priceUndiscounted?: {
+              __typename?: "TaxedMoney";
+              gross: { __typename?: "Money"; currency: string; amount: number };
+            } | null;
+            discount?: {
+              __typename?: "TaxedMoney";
+              gross: { __typename?: "Money"; currency: string; amount: number };
+            } | null;
             price?: {
               __typename?: "TaxedMoney";
               gross: { __typename?: "Money"; currency: string; amount: number };
@@ -34293,6 +34359,8 @@ export type CheckoutCustomerDetachMutation = {
           __typename?: "TaxedMoney";
           gross: { __typename?: "Money"; currency: string; amount: number };
         };
+        undiscountedUnitPrice: { __typename?: "Money"; currency: string; amount: number };
+        undiscountedTotalPrice: { __typename?: "Money"; currency: string; amount: number };
         variant: {
           __typename?: "ProductVariant";
           id: string;
@@ -34352,6 +34420,15 @@ export type CheckoutCustomerDetachMutation = {
           }>;
           pricing?: {
             __typename?: "VariantPricingInfo";
+            onSale?: boolean | null;
+            priceUndiscounted?: {
+              __typename?: "TaxedMoney";
+              gross: { __typename?: "Money"; currency: string; amount: number };
+            } | null;
+            discount?: {
+              __typename?: "TaxedMoney";
+              gross: { __typename?: "Money"; currency: string; amount: number };
+            } | null;
             price?: {
               __typename?: "TaxedMoney";
               gross: { __typename?: "Money"; currency: string; amount: number };
@@ -34489,6 +34566,8 @@ export type CheckoutEmailUpdateMutation = {
           __typename?: "TaxedMoney";
           gross: { __typename?: "Money"; currency: string; amount: number };
         };
+        undiscountedUnitPrice: { __typename?: "Money"; currency: string; amount: number };
+        undiscountedTotalPrice: { __typename?: "Money"; currency: string; amount: number };
         variant: {
           __typename?: "ProductVariant";
           id: string;
@@ -34548,6 +34627,15 @@ export type CheckoutEmailUpdateMutation = {
           }>;
           pricing?: {
             __typename?: "VariantPricingInfo";
+            onSale?: boolean | null;
+            priceUndiscounted?: {
+              __typename?: "TaxedMoney";
+              gross: { __typename?: "Money"; currency: string; amount: number };
+            } | null;
+            discount?: {
+              __typename?: "TaxedMoney";
+              gross: { __typename?: "Money"; currency: string; amount: number };
+            } | null;
             price?: {
               __typename?: "TaxedMoney";
               gross: { __typename?: "Money"; currency: string; amount: number };
@@ -34686,6 +34774,8 @@ export type CheckoutLineUpdateMutation = {
           __typename?: "TaxedMoney";
           gross: { __typename?: "Money"; currency: string; amount: number };
         };
+        undiscountedUnitPrice: { __typename?: "Money"; currency: string; amount: number };
+        undiscountedTotalPrice: { __typename?: "Money"; currency: string; amount: number };
         variant: {
           __typename?: "ProductVariant";
           id: string;
@@ -34745,6 +34835,15 @@ export type CheckoutLineUpdateMutation = {
           }>;
           pricing?: {
             __typename?: "VariantPricingInfo";
+            onSale?: boolean | null;
+            priceUndiscounted?: {
+              __typename?: "TaxedMoney";
+              gross: { __typename?: "Money"; currency: string; amount: number };
+            } | null;
+            discount?: {
+              __typename?: "TaxedMoney";
+              gross: { __typename?: "Money"; currency: string; amount: number };
+            } | null;
             price?: {
               __typename?: "TaxedMoney";
               gross: { __typename?: "Money"; currency: string; amount: number };
@@ -34888,6 +34987,8 @@ export type RemoveProductFromCheckoutMutation = {
           __typename?: "TaxedMoney";
           gross: { __typename?: "Money"; currency: string; amount: number };
         };
+        undiscountedUnitPrice: { __typename?: "Money"; currency: string; amount: number };
+        undiscountedTotalPrice: { __typename?: "Money"; currency: string; amount: number };
         variant: {
           __typename?: "ProductVariant";
           id: string;
@@ -34947,6 +35048,15 @@ export type RemoveProductFromCheckoutMutation = {
           }>;
           pricing?: {
             __typename?: "VariantPricingInfo";
+            onSale?: boolean | null;
+            priceUndiscounted?: {
+              __typename?: "TaxedMoney";
+              gross: { __typename?: "Money"; currency: string; amount: number };
+            } | null;
+            discount?: {
+              __typename?: "TaxedMoney";
+              gross: { __typename?: "Money"; currency: string; amount: number };
+            } | null;
             price?: {
               __typename?: "TaxedMoney";
               gross: { __typename?: "Money"; currency: string; amount: number };
@@ -35085,6 +35195,8 @@ export type CheckoutShippingAddressUpdateMutation = {
           __typename?: "TaxedMoney";
           gross: { __typename?: "Money"; currency: string; amount: number };
         };
+        undiscountedUnitPrice: { __typename?: "Money"; currency: string; amount: number };
+        undiscountedTotalPrice: { __typename?: "Money"; currency: string; amount: number };
         variant: {
           __typename?: "ProductVariant";
           id: string;
@@ -35144,6 +35256,15 @@ export type CheckoutShippingAddressUpdateMutation = {
           }>;
           pricing?: {
             __typename?: "VariantPricingInfo";
+            onSale?: boolean | null;
+            priceUndiscounted?: {
+              __typename?: "TaxedMoney";
+              gross: { __typename?: "Money"; currency: string; amount: number };
+            } | null;
+            discount?: {
+              __typename?: "TaxedMoney";
+              gross: { __typename?: "Money"; currency: string; amount: number };
+            } | null;
             price?: {
               __typename?: "TaxedMoney";
               gross: { __typename?: "Money"; currency: string; amount: number };
@@ -35287,6 +35408,8 @@ export type CheckoutShippingMethodUpdateMutation = {
           __typename?: "TaxedMoney";
           gross: { __typename?: "Money"; currency: string; amount: number };
         };
+        undiscountedUnitPrice: { __typename?: "Money"; currency: string; amount: number };
+        undiscountedTotalPrice: { __typename?: "Money"; currency: string; amount: number };
         variant: {
           __typename?: "ProductVariant";
           id: string;
@@ -35346,6 +35469,15 @@ export type CheckoutShippingMethodUpdateMutation = {
           }>;
           pricing?: {
             __typename?: "VariantPricingInfo";
+            onSale?: boolean | null;
+            priceUndiscounted?: {
+              __typename?: "TaxedMoney";
+              gross: { __typename?: "Money"; currency: string; amount: number };
+            } | null;
+            discount?: {
+              __typename?: "TaxedMoney";
+              gross: { __typename?: "Money"; currency: string; amount: number };
+            } | null;
             price?: {
               __typename?: "TaxedMoney";
               gross: { __typename?: "Money"; currency: string; amount: number };
@@ -35975,6 +36107,8 @@ export type CheckoutFindQuery = {
         __typename?: "TaxedMoney";
         gross: { __typename?: "Money"; currency: string; amount: number };
       };
+      undiscountedUnitPrice: { __typename?: "Money"; currency: string; amount: number };
+      undiscountedTotalPrice: { __typename?: "Money"; currency: string; amount: number };
       variant: {
         __typename?: "ProductVariant";
         id: string;
@@ -36030,6 +36164,15 @@ export type CheckoutFindQuery = {
         }>;
         pricing?: {
           __typename?: "VariantPricingInfo";
+          onSale?: boolean | null;
+          priceUndiscounted?: {
+            __typename?: "TaxedMoney";
+            gross: { __typename?: "Money"; currency: string; amount: number };
+          } | null;
+          discount?: {
+            __typename?: "TaxedMoney";
+            gross: { __typename?: "Money"; currency: string; amount: number };
+          } | null;
           price?: {
             __typename?: "TaxedMoney";
             gross: { __typename?: "Money"; currency: string; amount: number };
@@ -37582,6 +37725,12 @@ export const CheckoutLineDetailsFragmentDoc = gql`
         ...PriceFragment
       }
     }
+    undiscountedUnitPrice {
+      ...PriceFragment
+    }
+    undiscountedTotalPrice {
+      ...PriceFragment
+    }
     variant {
       id
       quantityAvailable
@@ -37606,9 +37755,23 @@ export const CheckoutLineDetailsFragmentDoc = gql`
         ...SelectedAttributeDetailsFragment
       }
       pricing {
+        onSale
+        priceUndiscounted {
+          gross {
+            currency
+            amount
+          }
+        }
+        discount {
+          gross {
+            currency
+            amount
+          }
+        }
         price {
           gross {
-            ...PriceFragment
+            currency
+            amount
           }
         }
       }

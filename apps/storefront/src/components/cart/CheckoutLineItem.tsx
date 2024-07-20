@@ -159,6 +159,11 @@ export default function CheckoutLineItem({ line, messages }: CheckoutLineItemPro
           )}
         </div>
         <div className="flex h-16 flex-col justify-between items-end">
+          {line.variant && line.variant.pricing?.onSale && line.undiscountedTotalPrice && (
+            <p className="text-sm ml-2 opacity-75">
+              <s>{formatMoney(line.undiscountedTotalPrice)}</s>
+            </p>
+          )}
           <p className="flex justify-end space-y-2 text-right text-md">
             {formatMoney(line.totalPrice?.gross)}
           </p>
