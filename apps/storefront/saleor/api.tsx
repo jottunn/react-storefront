@@ -32192,6 +32192,7 @@ export type AddressDetailsFragment = {
   streetAddress2: string;
   city: string;
   postalCode: string;
+  countryArea: string;
   isDefaultBillingAddress?: boolean | null;
   isDefaultShippingAddress?: boolean | null;
   country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -32361,6 +32362,7 @@ export type CheckoutDetailsFragment = {
     streetAddress2: string;
     city: string;
     postalCode: string;
+    countryArea: string;
     isDefaultBillingAddress?: boolean | null;
     isDefaultShippingAddress?: boolean | null;
     country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -32376,6 +32378,7 @@ export type CheckoutDetailsFragment = {
     streetAddress2: string;
     city: string;
     postalCode: string;
+    countryArea: string;
     isDefaultBillingAddress?: boolean | null;
     isDefaultShippingAddress?: boolean | null;
     country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -33175,6 +33178,7 @@ export type AddressDeleteMutation = {
         streetAddress2: string;
         city: string;
         postalCode: string;
+        countryArea: string;
         isDefaultBillingAddress?: boolean | null;
         isDefaultShippingAddress?: boolean | null;
         country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -33213,6 +33217,7 @@ export type AddressSetDefaultMutation = {
         streetAddress2: string;
         city: string;
         postalCode: string;
+        countryArea: string;
         isDefaultBillingAddress?: boolean | null;
         isDefaultShippingAddress?: boolean | null;
         country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -33243,6 +33248,7 @@ export type AccountAddressUpdateMutation = {
         streetAddress2: string;
         city: string;
         postalCode: string;
+        countryArea: string;
         isDefaultBillingAddress?: boolean | null;
         isDefaultShippingAddress?: boolean | null;
         country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -33285,6 +33291,7 @@ export type CheckoutAddProductLineMutation = {
         streetAddress2: string;
         city: string;
         postalCode: string;
+        countryArea: string;
         isDefaultBillingAddress?: boolean | null;
         isDefaultShippingAddress?: boolean | null;
         country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -33300,6 +33307,7 @@ export type CheckoutAddProductLineMutation = {
         streetAddress2: string;
         city: string;
         postalCode: string;
+        countryArea: string;
         isDefaultBillingAddress?: boolean | null;
         isDefaultShippingAddress?: boolean | null;
         country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -33484,6 +33492,7 @@ export type CheckoutAddPromoCodeMutation = {
         streetAddress2: string;
         city: string;
         postalCode: string;
+        countryArea: string;
         isDefaultBillingAddress?: boolean | null;
         isDefaultShippingAddress?: boolean | null;
         country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -33499,6 +33508,7 @@ export type CheckoutAddPromoCodeMutation = {
         streetAddress2: string;
         city: string;
         postalCode: string;
+        countryArea: string;
         isDefaultBillingAddress?: boolean | null;
         isDefaultShippingAddress?: boolean | null;
         country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -33679,6 +33689,7 @@ export type CheckoutBillingAddressUpdateMutation = {
         streetAddress2: string;
         city: string;
         postalCode: string;
+        countryArea: string;
         isDefaultBillingAddress?: boolean | null;
         isDefaultShippingAddress?: boolean | null;
         country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -33694,6 +33705,7 @@ export type CheckoutBillingAddressUpdateMutation = {
         streetAddress2: string;
         city: string;
         postalCode: string;
+        countryArea: string;
         isDefaultBillingAddress?: boolean | null;
         isDefaultShippingAddress?: boolean | null;
         country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -33879,6 +33891,7 @@ export type CheckoutCompleteMutation = {
         streetAddress2: string;
         city: string;
         postalCode: string;
+        countryArea: string;
         isDefaultBillingAddress?: boolean | null;
         isDefaultShippingAddress?: boolean | null;
         country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -33894,6 +33907,7 @@ export type CheckoutCompleteMutation = {
         streetAddress2: string;
         city: string;
         postalCode: string;
+        countryArea: string;
         isDefaultBillingAddress?: boolean | null;
         isDefaultShippingAddress?: boolean | null;
         country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -34010,6 +34024,7 @@ export type CheckoutCustomerAttachMutation = {
         streetAddress2: string;
         city: string;
         postalCode: string;
+        countryArea: string;
         isDefaultBillingAddress?: boolean | null;
         isDefaultShippingAddress?: boolean | null;
         country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -34025,6 +34040,7 @@ export type CheckoutCustomerAttachMutation = {
         streetAddress2: string;
         city: string;
         postalCode: string;
+        countryArea: string;
         isDefaultBillingAddress?: boolean | null;
         isDefaultShippingAddress?: boolean | null;
         country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -34209,6 +34225,7 @@ export type CheckoutCustomerDetachMutation = {
         streetAddress2: string;
         city: string;
         postalCode: string;
+        countryArea: string;
         isDefaultBillingAddress?: boolean | null;
         isDefaultShippingAddress?: boolean | null;
         country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -34224,6 +34241,7 @@ export type CheckoutCustomerDetachMutation = {
         streetAddress2: string;
         city: string;
         postalCode: string;
+        countryArea: string;
         isDefaultBillingAddress?: boolean | null;
         isDefaultShippingAddress?: boolean | null;
         country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -34403,6 +34421,7 @@ export type CheckoutEmailUpdateMutation = {
         streetAddress2: string;
         city: string;
         postalCode: string;
+        countryArea: string;
         isDefaultBillingAddress?: boolean | null;
         isDefaultShippingAddress?: boolean | null;
         country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -34418,6 +34437,7 @@ export type CheckoutEmailUpdateMutation = {
         streetAddress2: string;
         city: string;
         postalCode: string;
+        countryArea: string;
         isDefaultBillingAddress?: boolean | null;
         isDefaultShippingAddress?: boolean | null;
         country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -34598,6 +34618,7 @@ export type CheckoutLineUpdateMutation = {
         streetAddress2: string;
         city: string;
         postalCode: string;
+        countryArea: string;
         isDefaultBillingAddress?: boolean | null;
         isDefaultShippingAddress?: boolean | null;
         country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -34613,6 +34634,7 @@ export type CheckoutLineUpdateMutation = {
         streetAddress2: string;
         city: string;
         postalCode: string;
+        countryArea: string;
         isDefaultBillingAddress?: boolean | null;
         isDefaultShippingAddress?: boolean | null;
         country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -34798,6 +34820,7 @@ export type RemoveProductFromCheckoutMutation = {
         streetAddress2: string;
         city: string;
         postalCode: string;
+        countryArea: string;
         isDefaultBillingAddress?: boolean | null;
         isDefaultShippingAddress?: boolean | null;
         country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -34813,6 +34836,7 @@ export type RemoveProductFromCheckoutMutation = {
         streetAddress2: string;
         city: string;
         postalCode: string;
+        countryArea: string;
         isDefaultBillingAddress?: boolean | null;
         isDefaultShippingAddress?: boolean | null;
         country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -34993,6 +35017,7 @@ export type CheckoutShippingAddressUpdateMutation = {
         streetAddress2: string;
         city: string;
         postalCode: string;
+        countryArea: string;
         isDefaultBillingAddress?: boolean | null;
         isDefaultShippingAddress?: boolean | null;
         country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -35008,6 +35033,7 @@ export type CheckoutShippingAddressUpdateMutation = {
         streetAddress2: string;
         city: string;
         postalCode: string;
+        countryArea: string;
         isDefaultBillingAddress?: boolean | null;
         isDefaultShippingAddress?: boolean | null;
         country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -35193,6 +35219,7 @@ export type CheckoutShippingMethodUpdateMutation = {
         streetAddress2: string;
         city: string;
         postalCode: string;
+        countryArea: string;
         isDefaultBillingAddress?: boolean | null;
         isDefaultShippingAddress?: boolean | null;
         country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -35208,6 +35235,7 @@ export type CheckoutShippingMethodUpdateMutation = {
         streetAddress2: string;
         city: string;
         postalCode: string;
+        countryArea: string;
         isDefaultBillingAddress?: boolean | null;
         isDefaultShippingAddress?: boolean | null;
         country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -35423,6 +35451,7 @@ export type SetAddressDefaultMutation = {
         streetAddress2: string;
         city: string;
         postalCode: string;
+        countryArea: string;
         isDefaultBillingAddress?: boolean | null;
         isDefaultShippingAddress?: boolean | null;
         country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -35878,6 +35907,7 @@ export type CheckoutFindQuery = {
       streetAddress2: string;
       city: string;
       postalCode: string;
+      countryArea: string;
       isDefaultBillingAddress?: boolean | null;
       isDefaultShippingAddress?: boolean | null;
       country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -35893,6 +35923,7 @@ export type CheckoutFindQuery = {
       streetAddress2: string;
       city: string;
       postalCode: string;
+      countryArea: string;
       isDefaultBillingAddress?: boolean | null;
       isDefaultShippingAddress?: boolean | null;
       country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -36426,6 +36457,7 @@ export type OrderDetailsByTokenQuery = {
       streetAddress2: string;
       city: string;
       postalCode: string;
+      countryArea: string;
       isDefaultBillingAddress?: boolean | null;
       isDefaultShippingAddress?: boolean | null;
       country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -36441,6 +36473,7 @@ export type OrderDetailsByTokenQuery = {
       streetAddress2: string;
       city: string;
       postalCode: string;
+      countryArea: string;
       isDefaultBillingAddress?: boolean | null;
       isDefaultShippingAddress?: boolean | null;
       country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -37320,6 +37353,7 @@ export type UserQuery = {
       streetAddress2: string;
       city: string;
       postalCode: string;
+      countryArea: string;
       isDefaultBillingAddress?: boolean | null;
       isDefaultShippingAddress?: boolean | null;
       country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -37335,6 +37369,7 @@ export type UserQuery = {
       streetAddress2: string;
       city: string;
       postalCode: string;
+      countryArea: string;
       isDefaultBillingAddress?: boolean | null;
       isDefaultShippingAddress?: boolean | null;
       country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -37350,6 +37385,7 @@ export type UserQuery = {
       streetAddress2: string;
       city: string;
       postalCode: string;
+      countryArea: string;
       isDefaultBillingAddress?: boolean | null;
       isDefaultShippingAddress?: boolean | null;
       country: { __typename?: "CountryDisplay"; code: string; country: string };
@@ -37467,6 +37503,7 @@ export const AddressDetailsFragmentDoc = gql`
     streetAddress2
     city
     postalCode
+    countryArea
     isDefaultBillingAddress
     isDefaultShippingAddress
     country {

@@ -35,6 +35,7 @@ function BillingAddressSection({ active, sameAddress, messages, user }: BillingA
         streetAddress2: checkout.billingAddress.streetAddress2 || "",
         city: checkout.billingAddress.city,
         postalCode: checkout.billingAddress.postalCode,
+        countryArea: checkout.billingAddress.countryArea || "",
         country: checkout.billingAddress.country.code as CountryCode,
         phone: checkout.billingAddress.phone || "",
       };

@@ -31,6 +31,7 @@ export function SavedAddressSelectionList({
       firstName: address?.firstName,
       lastName: address?.lastName,
       phone: address?.phone || "",
+      countryArea: address.countryArea || "",
       country: address?.country?.code as CountryCode,
       companyName: address?.companyName,
       streetAddress1: address.streetAddress1,

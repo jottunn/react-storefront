@@ -8,6 +8,7 @@ fragment AddressDetailsFragment on Address {
   streetAddress2
   city
   postalCode
+  countryArea
   isDefaultBillingAddress
   isDefaultShippingAddress
   country {

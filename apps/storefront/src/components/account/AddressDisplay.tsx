@@ -11,9 +11,15 @@ export default function AddressDisplay({ address }: AddressDisplayProps) {
         <p>
           {address?.firstName} {address?.lastName}
         </p>
-        <p>{address?.streetAddress1}</p>
+        {address?.companyName && <p>{address?.companyName}</p>}
         <p>
-          {address?.postalCode} {address?.city}, {address?.country.country}
+          {address?.streetAddress1} {address?.streetAddress2}
+        </p>
+        <p>
+          {address?.postalCode} {address?.city}
+        </p>
+        <p>
+          {address?.countryArea}, {address?.country.country}
         </p>
       </address>
       <div>{address?.phone}</div>
