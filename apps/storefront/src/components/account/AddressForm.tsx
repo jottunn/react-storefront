@@ -138,7 +138,7 @@ export function AddressForm({
               className="w-full py-2 border-gray-300 rounded-md shadow-sm text-base"
               spellCheck={false}
               {...registerAddress("phone", {
-                required: true,
+                required: messages["required"],
                 pattern: /^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/i,
               })}
             />
@@ -157,7 +157,7 @@ export function AddressForm({
               className="block w-full py-2 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-base"
               spellCheck={false}
               {...registerAddress("firstName", {
-                required: true,
+                required: messages["required"],
               })}
             />
             {!!errorsAddress.firstName && (
@@ -177,7 +177,7 @@ export function AddressForm({
               className="block w-full py-2 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-base"
               spellCheck={false}
               {...registerAddress("lastName", {
-                required: true,
+                required: messages["required"],
               })}
             />
             {!!errorsAddress.lastName && (
@@ -215,7 +215,7 @@ export function AddressForm({
               className="w-full py-2 border-gray-300 rounded-md shadow-sm text-base"
               spellCheck={false}
               {...registerAddress("streetAddress1", {
-                required: true,
+                required: messages["required"],
               })}
             />
             {!!errorsAddress.streetAddress1 && (
@@ -250,8 +250,8 @@ export function AddressForm({
               <Controller
                 name="countryArea"
                 control={control}
-                rules={{ required: true }}
-                render={({ field }) => (
+                rules={{ required: messages["app.checkout.selectCountryAreaField"] }}
+                render={({ field, fieldState: { error } }) => (
                   <Listbox value={field.value} onChange={field.onChange}>
                     {({ open }) => (
                       <div className="relative mt-1">
@@ -305,8 +305,8 @@ export function AddressForm({
               <Controller
                 name="city"
                 control={control}
-                rules={{ required: true }}
-                render={({ field }) => (
+                rules={{ required: messages["app.checkout.selectCityField"] }}
+                render={({ field, fieldState: { error } }) => (
                   <Listbox value={field.value} onChange={field.onChange}>
                     {({ open }) => (
                       <div className="relative mt-1">
@@ -363,7 +363,9 @@ export function AddressForm({
                   id="city"
                   className="block w-full py-2 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-base"
                   spellCheck={false}
-                  {...registerAddress("city", { required: true })}
+                  {...registerAddress("city", {
+                    required: messages["app.checkout.selectCityField"],
+                  })}
                 />
                 {!!errorsAddress.city && (
                   <p className="text-red-500">{errorsAddress.city.message}</p>
@@ -384,7 +386,7 @@ export function AddressForm({
               className="block w-full py-2 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-base"
               spellCheck={false}
               {...registerAddress("postalCode", {
-                required: true,
+                required: messages["required"],
               })}
             />
             {!!errorsAddress.postalCode && (
