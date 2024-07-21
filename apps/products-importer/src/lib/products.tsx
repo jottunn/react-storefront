@@ -29,6 +29,9 @@ export const getProductsVar = async (client: Client, productName: any) => {
                   }
               }
             }
+            isAvailable
+            isAvailableForPurchase
+            channel
           }
         }
       }
@@ -45,6 +48,46 @@ export const getProductsVar = async (client: Client, productName: any) => {
     return node[0]; // Return the first node
   } catch (error) {
     console.error("Error fetching product details:", error);
+    throw error; // Throw the error for handling in the calling function
+  }
+};
+
+/**
+ * update product -> publish to channel after media has been assigned
+ */
+
+export const productChannelListingUpdate = async (
+  client: Client,
+  productId: string,
+  productInput: any
+) => {
+  const productChannelListingUpdateMutation = `
+    mutation productChannelListingUpdate($id: ID!, $input: ProductChannelListingUpdateInput!) {
+      productChannelListingUpdate(id: $id, input: $input) {
+        errors {
+          code
+          message
+        }
+      }
+    }
+  `;
+
+  try {
+    const response = await client.mutation(
+      productChannelListingUpdateMutation,
+      {
+        id: productId,
+        input: productInput,
+      },
+      { requestPolicy: "network-only" }
+    );
+    console.log(response);
+    if (response.data?.productChannelListingUpdate?.errors.length) {
+      return { errors: response.data?.productChannelListingUpdate?.errors[0]?.message };
+    }
+    return { success: true };
+  } catch (error) {
+    console.error("Error productChannelListingUpdate:", error);
     throw error; // Throw the error for handling in the calling function
   }
 };

@@ -23,6 +23,7 @@ import {
   getPage,
   getDefaultWarehouse,
   addProductsToCollection,
+  productChannelListingUpdate,
 } from "../../../lib/products";
 import { productCache } from "./productCache";
 import { productInputIdsCache } from "./productInputIdsCache";
@@ -118,13 +119,16 @@ export const ProductsImporterView = () => {
   const handleProductMediaAssignment = async (productDetails, media, currentVariantColor) => {
     const mediaId = media.id;
     const mediaUrl = media.url;
+    console.log("handleProductMediaAssignment");
     try {
       const variantIds = await findProductVariantIds(productDetails, currentVariantColor);
       for (let i = 0; i < variantIds.length; i++) {
+        console.log("assign media for varinat id", variantIds[i]);
         const assigResult = await assignMedia(variantIds[i], mediaId);
-        console.log("assigResult", assigResult);
         //generate placeholders and saved to metadata with key blurPlaceholderPic
-        if (assigResult && mediaUrl) {
+        console.log(assigResult);
+        if (assigResult && assigResult.data.variantMediaAssign.errors.length === 0 && mediaUrl) {
+          console.log("generate placeholder");
           const placeholder = await fetch(
             `/api/getBase64?imageUrl=${encodeURIComponent(mediaUrl)}`
           );
@@ -148,6 +152,7 @@ export const ProductsImporterView = () => {
       }
     } catch (error) {
       handleErrors("Error handling product media assignment: " + error.message);
+      return false;
       //throw new Error('Error handling product media assignment: ' + error.message);
     }
   };
@@ -205,6 +210,7 @@ export const ProductsImporterView = () => {
     let imageNameArr = imgName.split("_");
     let productName = imageNameArr[0];
     let currentVariantColor = "";
+
     //remove the extension
     const fileExtension = getFileExtension(imgName);
     if (imageNameArr.length === 1) {
@@ -227,9 +233,56 @@ export const ProductsImporterView = () => {
           productDetails["id"],
           currentFile
         );
+        const productId = productDetails["id"];
+        const channel = productDetails["channel"];
         if (media && media.id) {
-          handleProductMediaAssignment(productDetails, media, currentVariantColor);
+          await handleProductMediaAssignment(productDetails, media, currentVariantColor);
           setImportedPics((prevImportedPics) => [...prevImportedPics, imgName]);
+          if (!productInputIdsCache["AvailableProducts"]) {
+            productInputIdsCache["AvailableProducts"] = {};
+          }
+          // console.log('productDetails', productDetails);
+
+          if (
+            (!productDetails["isAvailableForPurchase"] || !productDetails["isAvailable"]) &&
+            !productInputIdsCache["AvailableProducts"][productId]
+          ) {
+            console.log("make product available");
+            productInputIdsCache["AvailableProducts"][productId] = productId;
+            //update product, make it visible in channel
+            const channelID =
+              productInputIdsCache["Channel"] && productInputIdsCache["Channel"][channel];
+            if (!channelID) {
+              productInputIdsCache["Channel"] = productInputIdsCache["Channel"] || {};
+              const fetchedChannels = await getChannels(client);
+              for (let c = 0; c < fetchedChannels.length; c++) {
+                let currChannelSlug = fetchedChannels[c]["slug"];
+                productInputIdsCache["Channel"][currChannelSlug] = fetchedChannels[c]["id"];
+              }
+            }
+            const nowISO = new Date().toISOString();
+            const productInput = {
+              updateChannels: [
+                {
+                  channelId: productInputIdsCache["Channel"][channel],
+                  isPublished: true,
+                  publishedAt: nowISO,
+                  visibleInListings: true,
+                  isAvailableForPurchase: true,
+                  availableForPurchaseAt: nowISO,
+                },
+              ],
+            };
+            const updateProduct = await productChannelListingUpdate(
+              client,
+              productDetails["id"],
+              productInput
+            );
+            // console.log('updateProduct', updateProduct)
+            if (updateProduct.errors) {
+              handleErrors("Error publishing product " + productName + ":" + updateProduct.errors);
+            }
+          }
         }
       } else {
         handleErrors(imgName + " Product details not found - product does not exist.");
@@ -547,11 +600,9 @@ export const ProductsImporterView = () => {
               channelListings: [
                 {
                   channelId: productInputIdsCache["Channel"][channel],
-                  isPublished: true,
-                  publishedAt: nowISO,
-                  visibleInListings: true,
-                  isAvailableForPurchase: true,
-                  availableForPurchaseAt: nowISO,
+                  isPublished: false,
+                  visibleInListings: false,
+                  isAvailableForPurchase: false,
                 },
               ],
               variants: [],
@@ -684,9 +735,6 @@ export const ProductsImporterView = () => {
             });
           }
           setUploading(false);
-          //resetSelectedFiles();
-          // Handle the result here if needed
-          //console.log(result.data.productBulkCreate.results);
         }
       }
     } catch (error) {
