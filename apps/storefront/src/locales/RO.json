@@ -165,7 +165,7 @@
   "required": "Obligatoriu",
   "error": "eroare",
   "passwordsDoNotMatch": "Campurile Parolă și Confirmă Parola nu corespund",
-  "updateCheckotEmail": "Emailul nu a fost actualizat pentru checkout",
+  "updateCheckoutEmail": "Emailul nu a fost actualizat pentru checkout",
   "invalidEmail": "Adresa de email este invalidă",
   "UNFULFILLED": "ÎN PROCESARE",
   "PARTIALLY_FULFILLED": "PARȚIAL PROCESATA",

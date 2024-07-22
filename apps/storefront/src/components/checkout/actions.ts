@@ -119,7 +119,7 @@ export const customerDetach = async (id: string) => {
     }
     return { success: true, checkout: response.checkoutCustomerDetach?.checkout };
   } catch (error) {
-    console.error("Failed to attach customer to checkout:", error);
+    console.error("Failed to detach customer from checkout:", error);
     return;
   }
 };

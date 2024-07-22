@@ -5,7 +5,7 @@ import { User } from "@/saleor/api";
 import { Button } from "../Button";
 import { useRouter } from "next/navigation";
 import { Messages } from "@/lib/util";
-import { checkoutEmailUpdate, customerAttach } from "./actions";
+import { checkoutEmailUpdate, customerAttach, customerDetach } from "./actions";
 import { login, register as registerUser } from "src/app/actions";
 import { useCheckout } from "@/lib/hooks/CheckoutContext";
 
@@ -67,6 +67,18 @@ function EmailSection({ messages, user }: EmailSectionProps) {
       return;
     }
 
+    if (checkout.email) {
+      //detaching if any existing customer already attached
+      //temp fix for https://github.com/saleor/saleor/issues/12037
+      const detachExisting = await customerDetach(checkout.id);
+
+      if (detachExisting?.success === false) {
+        // Handle detaching errors
+        setError("email", { message: "updateCheckotEmail" });
+        return;
+      }
+    }
+
     // After successful sign-in, update the checkout with the user's email
     const emailUpdateResult = await checkoutEmailUpdate({ id: checkout.id, email: formData.email });
 
@@ -80,10 +92,10 @@ function EmailSection({ messages, user }: EmailSectionProps) {
     const customerAttachResult = await customerAttach(checkout.id);
 
     if (customerAttachResult?.success === false) {
-      // Handle checkout email update errors
-      setError("email", { message: "updateCheckotEmail" });
+      setError("email", { message: "updateCheckoutEmail" });
       return;
     }
+
     router.refresh();
   };
 
