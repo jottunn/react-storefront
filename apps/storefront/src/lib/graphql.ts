@@ -76,6 +76,8 @@ export async function executeGraphQL<Result, Variables>(
       console.log("body", body);
       console.log("locations", body.errors[0].locations);
     } else {
+      console.log("GraphQL Query:", queryString);
+      console.log("Variables:", variables);
       throw new GraphQLError(body);
     }
   }

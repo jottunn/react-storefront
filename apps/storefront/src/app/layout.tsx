@@ -8,6 +8,7 @@ import { AuthProvider } from "@/components/AuthProvider";
 import { CheckoutProvider } from "@/lib/hooks/CheckoutContext";
 import Footer from "@/components/footer/Footer";
 import BackToTopButton from "@/components/BackToTopButton";
+import CookieConsentWrapper from "@/components/CookieConsentWrapper";
 
 const openSans = localFont({
   src: "../../public/fonts/OpenSans-VariableFont_wdth,wght.ttf",
@@ -42,6 +43,7 @@ export default function RootLayout(props: { children: ReactNode }) {
             <Providers>{children}</Providers>
             {/* @ts-expect-error Async Server Component */}
             <Footer />
+            <CookieConsentWrapper />
             <BackToTopButton />
           </CheckoutProvider>
         </AuthProvider>

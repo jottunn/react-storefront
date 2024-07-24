@@ -52,6 +52,7 @@ const NewsletterSubscribe = ({ messages }: NewsletterSubscribeProps) => {
       <h2 className="text-2xl font-bold mb-4 text-left">{messages["app.nwl.title"]}</h2>
       <form onSubmit={handleSubmit} className="flex items-center space-x-2">
         <input
+          id="nwl-email"
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -61,6 +62,7 @@ const NewsletterSubscribe = ({ messages }: NewsletterSubscribeProps) => {
         />
         <div style={{ display: "none" }}>
           <input
+            id="nwl-name"
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
