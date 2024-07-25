@@ -15,11 +15,8 @@ export default async (
 ) => {
   logger.info(`Request headers: ${JSON.stringify(req.headers)}`);
   logger.info(`Request body: ${JSON.stringify(req.body)}`);
-  logger.info(`Request payload: ${JSON.stringify(req.payload)}`);
-
   // Check for authorization header
   const authHeader = req.headers.authorization;
-  logger.info(`Auth header: ${authHeader}`);
   if (!authHeader || authHeader !== `Bearer ${WEBHOOK_SECRET_KEY}`) {
     logger.warn("Unauthorized access attempt");
     return res.status(401).json({ error: "Unauthorized" });
@@ -37,12 +34,12 @@ export default async (
 
   if (!code || qty === undefined || qty === null) {
     logger.warn(`Stock information missing. Code: ${code}, Quantity: ${qty}`);
-    return res.status(400).json({ error: "stock information missing" });
+    return res.status(200).json({ error: "stock information missing" });
   }
 
   if (qty < 0) {
     logger.error(`Invalid stock quantity. Quantity: ${qty}`);
-    return res.status(500).json({ error: "Quantity can't be negative" });
+    return res.status(200).json({ error: "Quantity can't be negative" });
   }
 
   const client = createClient(authData[0]["saleorApiUrl"], async () => ({
@@ -90,12 +87,13 @@ export default async (
 
     // Handle potential errors in the mutation result
     if (result.error || result.data.productVariantStocksUpdate.errors.length > 0) {
+      const err = result.error || JSON.stringify(result.data.productVariantStocksUpdate.errors);
       console.error(
         "Error updating stock:",
         result.error || result.data.productVariantStocksUpdate.errors
       );
-      logger.error(`Error handling stock update. Error: ${JSON.stringify(result.error)}`);
-      return res.status(500).json({
+      logger.error(`Failed to update stock in Saleor. Error: ${err}`);
+      return res.status(200).json({
         error: "Failed to update stock in Saleor. Please check that correct info is provided.",
       });
     }
