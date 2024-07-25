@@ -4,7 +4,7 @@ import { saleorApp } from "../../../saleor-app";
 const WEBHOOK_SECRET_KEY = process.env.WEBHOOK_SECRET_KEY;
 
 export default async (
-  req: { body: { code: string; qty: number }; headers: { authorization: string } },
+  req: { body: { code: string; qty: number }; headers: { authorization: string }; payload: any },
   res: {
     status: (arg0: number) => {
       (): any;
@@ -13,8 +13,13 @@ export default async (
     };
   }
 ) => {
+  logger.info(`Request headers: ${JSON.stringify(req.headers)}`);
+  logger.info(`Request body: ${JSON.stringify(req.body)}`);
+  logger.info(`Request payload: ${JSON.stringify(req.payload)}`);
+
   // Check for authorization header
   const authHeader = req.headers.authorization;
+  logger.info(`Auth header: ${authHeader}`);
   if (!authHeader || authHeader !== `${WEBHOOK_SECRET_KEY}`) {
     logger.warn("Unauthorized access attempt");
     return res.status(401).json({ error: "Unauthorized" });
