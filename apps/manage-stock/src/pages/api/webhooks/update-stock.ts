@@ -20,7 +20,7 @@ export default async (
   // Check for authorization header
   const authHeader = req.headers.authorization;
   logger.info(`Auth header: ${authHeader}`);
-  if (!authHeader || authHeader !== `${WEBHOOK_SECRET_KEY}`) {
+  if (!authHeader || authHeader !== `Bearer ${WEBHOOK_SECRET_KEY}`) {
     logger.warn("Unauthorized access attempt");
     return res.status(401).json({ error: "Unauthorized" });
   }
