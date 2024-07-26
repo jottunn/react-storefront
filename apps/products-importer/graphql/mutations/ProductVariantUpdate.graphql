@@ -1,5 +1,5 @@
-mutation updateProductVariant($id: ID, $input: ProductVariantInput!) {
-    productVariantUpdate(id: $id, input: $input) {
+mutation updateProductVariant($id: ID, $sku:String, $input: ProductVariantInput!) {
+    productVariantUpdate(id: $id, sku: $sku, input: $input) {
         errors {
             message
         }
