@@ -63,4 +63,5 @@ fragment ProductVariantDetailsFragment on ProductVariant {
       }
     }
   }
+  updatedAt
 }

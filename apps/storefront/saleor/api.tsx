@@ -32262,6 +32262,7 @@ export type CategoryDetailsFragment = {
   seoTitle?: string | null;
   seoDescription?: string | null;
   description?: string | null;
+  updatedAt: string;
   name: string;
   slug: string;
   translation?: {
@@ -32857,6 +32858,7 @@ export type ProductCardFragment = {
     id: string;
     name: string;
     quantityAvailable?: number | null;
+    updatedAt: string;
     translation?: { __typename?: "ProductVariantTranslation"; id: string; name: string } | null;
     metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
     attributes: Array<{
@@ -32984,6 +32986,7 @@ export type ProductDetailsFragment = {
     id: string;
     name: string;
     quantityAvailable?: number | null;
+    updatedAt: string;
     translation?: { __typename?: "ProductVariantTranslation"; id: string; name: string } | null;
     metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
     attributes: Array<{
@@ -33097,6 +33100,7 @@ export type ProductVariantDetailsFragment = {
   id: string;
   name: string;
   quantityAvailable?: number | null;
+  updatedAt: string;
   translation?: { __typename?: "ProductVariantTranslation"; id: string; name: string } | null;
   metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
   attributes: Array<{
@@ -35783,6 +35787,109 @@ export type AvailableShippingMethodsQuery = {
   };
 };
 
+export type CategoriesSortedByQueryVariables = Exact<{
+  sortBy?: InputMaybe<CategorySortingInput>;
+  locale: LanguageCodeEnum;
+}>;
+
+export type CategoriesSortedByQuery = {
+  __typename?: "Query";
+  categories?: {
+    __typename?: "CategoryCountableConnection";
+    edges: Array<{
+      __typename?: "CategoryCountableEdge";
+      node: {
+        __typename?: "Category";
+        id: string;
+        seoTitle?: string | null;
+        seoDescription?: string | null;
+        description?: string | null;
+        updatedAt: string;
+        name: string;
+        slug: string;
+        translation?: {
+          __typename?: "CategoryTranslation";
+          id: string;
+          description?: string | null;
+          name?: string | null;
+        } | null;
+        backgroundImage?: { __typename?: "Image"; url: string; alt?: string | null } | null;
+        ancestors?: {
+          __typename?: "CategoryCountableConnection";
+          edges: Array<{
+            __typename?: "CategoryCountableEdge";
+            node: {
+              __typename?: "Category";
+              id: string;
+              name: string;
+              slug: string;
+              translation?: {
+                __typename?: "CategoryTranslation";
+                id: string;
+                name?: string | null;
+              } | null;
+              metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
+              ancestors?: {
+                __typename?: "CategoryCountableConnection";
+                edges: Array<{
+                  __typename?: "CategoryCountableEdge";
+                  node: {
+                    __typename?: "Category";
+                    id: string;
+                    name: string;
+                    slug: string;
+                    translation?: {
+                      __typename?: "CategoryTranslation";
+                      id: string;
+                      name?: string | null;
+                    } | null;
+                  };
+                }>;
+              } | null;
+            };
+          }>;
+        } | null;
+        children?: {
+          __typename?: "CategoryCountableConnection";
+          edges: Array<{
+            __typename?: "CategoryCountableEdge";
+            node: {
+              __typename?: "Category";
+              id: string;
+              name: string;
+              slug: string;
+              translation?: {
+                __typename?: "CategoryTranslation";
+                id: string;
+                name?: string | null;
+              } | null;
+              metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
+              ancestors?: {
+                __typename?: "CategoryCountableConnection";
+                edges: Array<{
+                  __typename?: "CategoryCountableEdge";
+                  node: {
+                    __typename?: "Category";
+                    id: string;
+                    name: string;
+                    slug: string;
+                    translation?: {
+                      __typename?: "CategoryTranslation";
+                      id: string;
+                      name?: string | null;
+                    } | null;
+                  };
+                }>;
+              } | null;
+            };
+          }>;
+        } | null;
+        metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
+      };
+    }>;
+  } | null;
+};
+
 export type CategoriesByMetaKeyQueryVariables = Exact<{
   filter?: InputMaybe<CategoryFilterInput>;
   locale: LanguageCodeEnum;
@@ -35800,6 +35907,7 @@ export type CategoriesByMetaKeyQuery = {
         seoTitle?: string | null;
         seoDescription?: string | null;
         description?: string | null;
+        updatedAt: string;
         name: string;
         slug: string;
         translation?: {
@@ -35898,6 +36006,7 @@ export type CategoryBySlugQuery = {
     seoTitle?: string | null;
     seoDescription?: string | null;
     description?: string | null;
+    updatedAt: string;
     name: string;
     slug: string;
     translation?: {
@@ -36233,24 +36342,35 @@ export type CollectionBySlugQuery = {
   } | null;
 };
 
-export type CollectionPathsQueryVariables = Exact<{
-  after?: InputMaybe<Scalars["String"]["input"]>;
-  channel: Scalars["String"]["input"];
+export type CollectionsSortedByQueryVariables = Exact<{
+  sortBy?: InputMaybe<CollectionSortingInput>;
+  locale: LanguageCodeEnum;
+  channel?: InputMaybe<Scalars["String"]["input"]>;
 }>;
 
-export type CollectionPathsQuery = {
+export type CollectionsSortedByQuery = {
   __typename?: "Query";
   collections?: {
     __typename?: "CollectionCountableConnection";
-    pageInfo: {
-      __typename?: "PageInfo";
-      hasNextPage: boolean;
-      startCursor?: string | null;
-      endCursor?: string | null;
-    };
     edges: Array<{
       __typename?: "CollectionCountableEdge";
-      node: { __typename?: "Collection"; slug: string };
+      node: {
+        __typename?: "Collection";
+        id: string;
+        seoTitle?: string | null;
+        seoDescription?: string | null;
+        description?: string | null;
+        name: string;
+        slug: string;
+        translation?: {
+          __typename?: "CollectionTranslation";
+          id: string;
+          description?: string | null;
+          name?: string | null;
+        } | null;
+        backgroundImage?: { __typename?: "Image"; url: string; alt?: string | null } | null;
+        metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
+      };
     }>;
   } | null;
 };
@@ -36946,6 +37066,7 @@ export type ProductBySlugQuery = {
       id: string;
       name: string;
       quantityAvailable?: number | null;
+      updatedAt: string;
       translation?: { __typename?: "ProductVariantTranslation"; id: string; name: string } | null;
       metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
       attributes: Array<{
@@ -37131,6 +37252,7 @@ export type ProductCollectionQuery = {
           id: string;
           name: string;
           quantityAvailable?: number | null;
+          updatedAt: string;
           translation?: {
             __typename?: "ProductVariantTranslation";
             id: string;
@@ -37365,6 +37487,7 @@ export type ProductsByAttributeQuery = {
           id: string;
           name: string;
           quantityAvailable?: number | null;
+          updatedAt: string;
           translation?: {
             __typename?: "ProductVariantTranslation";
             id: string;
@@ -37633,6 +37756,7 @@ export const CategoryDetailsFragmentDoc = gql`
       key
       value
     }
+    updatedAt
   }
 `;
 export const AddressDetailsFragmentDoc = gql`
@@ -38102,6 +38226,7 @@ export const ProductVariantDetailsFragmentDoc = gql`
         }
       }
     }
+    updatedAt
   }
 `;
 export const ProductCardFragmentDoc = gql`
@@ -39963,6 +40088,83 @@ export type AvailableShippingMethodsQueryResult = Apollo.QueryResult<
   AvailableShippingMethodsQuery,
   AvailableShippingMethodsQueryVariables
 >;
+export const CategoriesSortedByDocument = gql`
+  query CategoriesSortedBy($sortBy: CategorySortingInput, $locale: LanguageCodeEnum!) {
+    categories(first: 100, sortBy: $sortBy) {
+      edges {
+        node {
+          ...CategoryDetailsFragment
+        }
+      }
+    }
+  }
+  ${CategoryDetailsFragmentDoc}
+  ${CategoryBasicFragmentDoc}
+  ${ImageFragmentDoc}
+`;
+
+/**
+ * __useCategoriesSortedByQuery__
+ *
+ * To run a query within a React component, call `useCategoriesSortedByQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCategoriesSortedByQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useCategoriesSortedByQuery({
+ *   variables: {
+ *      sortBy: // value for 'sortBy'
+ *      locale: // value for 'locale'
+ *   },
+ * });
+ */
+export function useCategoriesSortedByQuery(
+  baseOptions: Apollo.QueryHookOptions<CategoriesSortedByQuery, CategoriesSortedByQueryVariables> &
+    ({ variables: CategoriesSortedByQueryVariables; skip?: boolean } | { skip: boolean }),
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<CategoriesSortedByQuery, CategoriesSortedByQueryVariables>(
+    CategoriesSortedByDocument,
+    options,
+  );
+}
+export function useCategoriesSortedByLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    CategoriesSortedByQuery,
+    CategoriesSortedByQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<CategoriesSortedByQuery, CategoriesSortedByQueryVariables>(
+    CategoriesSortedByDocument,
+    options,
+  );
+}
+export function useCategoriesSortedBySuspenseQuery(
+  baseOptions?: Apollo.SuspenseQueryHookOptions<
+    CategoriesSortedByQuery,
+    CategoriesSortedByQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useSuspenseQuery<CategoriesSortedByQuery, CategoriesSortedByQueryVariables>(
+    CategoriesSortedByDocument,
+    options,
+  );
+}
+export type CategoriesSortedByQueryHookResult = ReturnType<typeof useCategoriesSortedByQuery>;
+export type CategoriesSortedByLazyQueryHookResult = ReturnType<
+  typeof useCategoriesSortedByLazyQuery
+>;
+export type CategoriesSortedBySuspenseQueryHookResult = ReturnType<
+  typeof useCategoriesSortedBySuspenseQuery
+>;
+export type CategoriesSortedByQueryResult = Apollo.QueryResult<
+  CategoriesSortedByQuery,
+  CategoriesSortedByQueryVariables
+>;
 export const CategoriesByMetaKeyDocument = gql`
   query CategoriesByMetaKey($filter: CategoryFilterInput, $locale: LanguageCodeEnum!) {
     categories(first: 2, filter: $filter) {
@@ -40365,78 +40567,90 @@ export type CollectionBySlugQueryResult = Apollo.QueryResult<
   CollectionBySlugQuery,
   CollectionBySlugQueryVariables
 >;
-export const CollectionPathsDocument = gql`
-  query CollectionPaths($after: String, $channel: String!) {
-    collections(first: 20, channel: $channel, after: $after) {
-      pageInfo {
-        ...PageInfoFragment
-      }
+export const CollectionsSortedByDocument = gql`
+  query CollectionsSortedBy(
+    $sortBy: CollectionSortingInput
+    $locale: LanguageCodeEnum!
+    $channel: String
+  ) {
+    collections(first: 100, sortBy: $sortBy, channel: $channel) {
       edges {
         node {
-          slug
+          ...CollectionDetailsFragment
         }
       }
     }
   }
-  ${PageInfoFragmentDoc}
+  ${CollectionDetailsFragmentDoc}
+  ${CollectionBasicFragmentDoc}
+  ${ImageFragmentDoc}
 `;
 
 /**
- * __useCollectionPathsQuery__
+ * __useCollectionsSortedByQuery__
  *
- * To run a query within a React component, call `useCollectionPathsQuery` and pass it any options that fit your needs.
- * When your component renders, `useCollectionPathsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useCollectionsSortedByQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCollectionsSortedByQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useCollectionPathsQuery({
+ * const { data, loading, error } = useCollectionsSortedByQuery({
  *   variables: {
- *      after: // value for 'after'
+ *      sortBy: // value for 'sortBy'
+ *      locale: // value for 'locale'
  *      channel: // value for 'channel'
  *   },
  * });
  */
-export function useCollectionPathsQuery(
-  baseOptions: Apollo.QueryHookOptions<CollectionPathsQuery, CollectionPathsQueryVariables> &
-    ({ variables: CollectionPathsQueryVariables; skip?: boolean } | { skip: boolean }),
+export function useCollectionsSortedByQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    CollectionsSortedByQuery,
+    CollectionsSortedByQueryVariables
+  > &
+    ({ variables: CollectionsSortedByQueryVariables; skip?: boolean } | { skip: boolean }),
 ) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<CollectionPathsQuery, CollectionPathsQueryVariables>(
-    CollectionPathsDocument,
+  return Apollo.useQuery<CollectionsSortedByQuery, CollectionsSortedByQueryVariables>(
+    CollectionsSortedByDocument,
     options,
   );
 }
-export function useCollectionPathsLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<CollectionPathsQuery, CollectionPathsQueryVariables>,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<CollectionPathsQuery, CollectionPathsQueryVariables>(
-    CollectionPathsDocument,
-    options,
-  );
-}
-export function useCollectionPathsSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    CollectionPathsQuery,
-    CollectionPathsQueryVariables
+export function useCollectionsSortedByLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    CollectionsSortedByQuery,
+    CollectionsSortedByQueryVariables
   >,
 ) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<CollectionPathsQuery, CollectionPathsQueryVariables>(
-    CollectionPathsDocument,
+  return Apollo.useLazyQuery<CollectionsSortedByQuery, CollectionsSortedByQueryVariables>(
+    CollectionsSortedByDocument,
     options,
   );
 }
-export type CollectionPathsQueryHookResult = ReturnType<typeof useCollectionPathsQuery>;
-export type CollectionPathsLazyQueryHookResult = ReturnType<typeof useCollectionPathsLazyQuery>;
-export type CollectionPathsSuspenseQueryHookResult = ReturnType<
-  typeof useCollectionPathsSuspenseQuery
+export function useCollectionsSortedBySuspenseQuery(
+  baseOptions?: Apollo.SuspenseQueryHookOptions<
+    CollectionsSortedByQuery,
+    CollectionsSortedByQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useSuspenseQuery<CollectionsSortedByQuery, CollectionsSortedByQueryVariables>(
+    CollectionsSortedByDocument,
+    options,
+  );
+}
+export type CollectionsSortedByQueryHookResult = ReturnType<typeof useCollectionsSortedByQuery>;
+export type CollectionsSortedByLazyQueryHookResult = ReturnType<
+  typeof useCollectionsSortedByLazyQuery
 >;
-export type CollectionPathsQueryResult = Apollo.QueryResult<
-  CollectionPathsQuery,
-  CollectionPathsQueryVariables
+export type CollectionsSortedBySuspenseQueryHookResult = ReturnType<
+  typeof useCollectionsSortedBySuspenseQuery
+>;
+export type CollectionsSortedByQueryResult = Apollo.QueryResult<
+  CollectionsSortedByQuery,
+  CollectionsSortedByQueryVariables
 >;
 export const CollectionsByMetaKeyDocument = gql`
   query CollectionsByMetaKey(

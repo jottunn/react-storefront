@@ -1,0 +1,9 @@
+query CollectionsSortedBy($sortBy: CollectionSortingInput, $locale: LanguageCodeEnum!, $channel: String) {
+  collections(first:100, sortBy: $sortBy, channel: $channel) {
+    edges {
+        node {
+            ...CollectionDetailsFragment
+        }
+    }
+  }
+}

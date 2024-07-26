@@ -1,0 +1,9 @@
+query CategoriesSortedBy($sortBy: CategorySortingInput, $locale: LanguageCodeEnum!) {
+  categories(first:100, sortBy: $sortBy) {
+    edges {
+        node {
+            ...CategoryDetailsFragment
+        }
+    }
+  }
+}

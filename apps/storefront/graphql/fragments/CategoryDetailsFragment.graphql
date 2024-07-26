@@ -29,4 +29,5 @@ fragment CategoryDetailsFragment on Category {
     key
     value
   }
+  updatedAt
 }
