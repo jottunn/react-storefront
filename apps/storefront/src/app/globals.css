@@ -109,3 +109,7 @@ input:checked + .slider:before {
 input:disabled + .slider {
   background-color: #bdbdbd;
 }
+
+.prose-2xl:has(table) {
+  overflow-x: auto;
+}

@@ -55,9 +55,9 @@ export default function SizeGuide({ sizeGuide, messages }: { sizeGuide: any; mes
           onClose={() => setShowSizeGuideModal(false)}
           className="relative z-50"
         >
-          <div className="fixed inset-0 w-screen overflow-y-auto p-4">
+          <div className="fixed inset-0 w-screen overflow-y-auto p-4 bg-black bg-opacity-60">
             <div className="flex min-h-full items-center justify-center">
-              <DialogPanel className="max-w-10xl space-y-4 border-2 bg-white p-4 md:pt-12 relative">
+              <DialogPanel className="max-w-10xl space-y-4 border-2 px-4 md:pt-12 relative md:py-8 shadow-2xl bg-white">
                 <button
                   type="button"
                   className="absolute top-4 right-4 z-50"
@@ -81,7 +81,10 @@ export default function SizeGuide({ sizeGuide, messages }: { sizeGuide: any; mes
                       ),
                     )}
                   <hr />
-                  <div dangerouslySetInnerHTML={{ __html: parsedContent }} className="mt-6" />
+                  <div
+                    dangerouslySetInnerHTML={{ __html: parsedContent }}
+                    className="md:mt-6 max-h-[300px] overflow-y-scroll"
+                  />
                 </div>
               </DialogPanel>
             </div>

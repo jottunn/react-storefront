@@ -13,6 +13,8 @@ import {
 } from "@/saleor/api";
 import { getProductCollection } from "./actions";
 import { GroupedProduct, groupProductsByColor } from "@/lib/product";
+import { BASE_URL } from "@/lib/const";
+
 async function getCatgeories() {
   try {
     const categorySortBy: CategorySortingInput = {
@@ -31,7 +33,7 @@ async function getCatgeories() {
     });
     const sitemapCategories = categories ? mapEdgesToItems(categories) : [];
     const categoryUrls = sitemapCategories.map(({ slug, updatedAt }) => ({
-      url: `${process.env.NEXT_PUBLIC_STOREFRONT_URL}/c/${slug}`,
+      url: `${BASE_URL}/c/${slug}`,
       lastModified: updatedAt,
     }));
     return [...categoryUrls];
@@ -59,7 +61,7 @@ async function getCollections() {
     });
     const sitemapCollections = collections ? mapEdgesToItems(collections) : [];
     const collectionUrls = sitemapCollections.map(({ slug }) => ({
-      url: `${process.env.NEXT_PUBLIC_STOREFRONT_URL}/collections/${slug}`,
+      url: `${BASE_URL}/collections/${slug}`,
       lastModified: new Date().toISOString(),
     }));
     return [...collectionUrls];
@@ -88,7 +90,7 @@ async function getProducts() {
         );
         const variant = checkProductVariant?.[0];
         return {
-          url: `${process.env.NEXT_PUBLIC_STOREFRONT_URL}/p/${product.slug}?variant=${variant?.id}`,
+          url: `${BASE_URL}/p/${product.slug}?variant=${variant?.id}`,
           lastModified: variant?.updatedAt,
         };
       });
@@ -110,7 +112,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/faq",
     "/ghid-marimi",
   ].map((route) => ({
-    url: `${process.env.NEXT_PUBLIC_STOREFRONT_URL}${route}`,
+    url: `${BASE_URL}${route}`,
     lastModified: new Date().toISOString(),
     changeFrequency: "weekly" as "weekly",
   }));
