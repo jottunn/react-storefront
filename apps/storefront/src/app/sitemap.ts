@@ -1,7 +1,6 @@
 import { MetadataRoute } from "next";
 import { executeGraphQL } from "@/lib/graphql";
 import { mapEdgesToItems } from "@/lib/maps";
-import { defaultRegionQuery } from "@/lib/regions";
 import {
   CategoriesSortedByDocument,
   CategoriesSortedByQuery,
@@ -10,12 +9,15 @@ import {
   CollectionsSortedByDocument,
   CollectionsSortedByQuery,
   LanguageCodeEnum,
+  ProductCollectionDocument,
+  ProductCollectionQuery,
+  ProductFilterInput,
 } from "@/saleor/api";
-import { getProductCollection } from "./actions";
 import { GroupedProduct, groupProductsByColor } from "@/lib/product";
 import { BASE_URL } from "@/lib/const";
+import { defaultRegionQuery } from "@/lib/regions";
 
-async function getCatgeories() {
+export async function getSitemapCategories() {
   try {
     const categorySortBy: CategorySortingInput = {
       direction: "DESC",
@@ -29,21 +31,24 @@ async function getCatgeories() {
         sortBy: categorySortBy,
         ...defaultRegionQuery(),
       },
+      withAuth: false,
       revalidate: 60 * 60 * 24,
     });
-    const sitemapCategories = categories ? mapEdgesToItems(categories) : [];
-    const categoryUrls = sitemapCategories.map(({ slug, updatedAt }) => ({
-      url: `${BASE_URL}/c/${slug}`,
-      lastModified: updatedAt,
-    }));
-    return [...categoryUrls];
+    if (categories) {
+      const sitemapCategories = categories ? mapEdgesToItems(categories) : [];
+      const categoryUrls = sitemapCategories.map(({ slug, updatedAt }) => ({
+        url: `${BASE_URL}/c/${slug}`,
+        lastModified: updatedAt,
+      }));
+      return [...categoryUrls];
+    }
   } catch (err) {
     console.error("Error:", err);
   }
   return [];
 }
 
-async function getCollections() {
+export async function getSitemapCollections() {
   try {
     const collectionSortBy: CollectionSortingInput = {
       direction: "DESC",
@@ -57,30 +62,43 @@ async function getCollections() {
         sortBy: collectionSortBy,
         ...defaultRegionQuery(),
       },
+      withAuth: false,
       revalidate: 60 * 60 * 24,
     });
-    const sitemapCollections = collections ? mapEdgesToItems(collections) : [];
-    const collectionUrls = sitemapCollections.map(({ slug }) => ({
-      url: `${BASE_URL}/collections/${slug}`,
-      lastModified: new Date().toISOString(),
-    }));
-    return [...collectionUrls];
+    if (collections) {
+      const sitemapCollections = collections ? mapEdgesToItems(collections) : [];
+      const collectionUrls = sitemapCollections.map(({ slug }) => ({
+        url: `${BASE_URL}/collections/${slug}`,
+        lastModified: new Date().toISOString(),
+      }));
+      return [...collectionUrls];
+    }
   } catch (err) {
     console.error("Error:", err);
   }
   return [];
 }
 
-async function getProducts() {
-  const queryVariables = {
-    stockAvailability: "IN_STOCK",
-    isPublished: true,
-    isVisibleInListing: true,
-    first: 700,
-    ...defaultRegionQuery(),
-  };
+export async function getSitemapProducts() {
   try {
-    const products = await getProductCollection(queryVariables);
+    const filter: ProductFilterInput = {
+      isPublished: true,
+      stockAvailability: "IN_STOCK",
+      isVisibleInListing: true,
+    };
+    const queryVariables = {
+      filter,
+      first: 700,
+      ...defaultRegionQuery(),
+    };
+    const { products } = await executeGraphQL<ProductCollectionQuery, { filter: any }>(
+      ProductCollectionDocument,
+      {
+        variables: queryVariables,
+        withAuth: false,
+        revalidate: 60 * 60 * 24,
+      },
+    );
     if (products) {
       let sitemapProducts = products ? mapEdgesToItems(products) : [];
       sitemapProducts = groupProductsByColor(sitemapProducts as GroupedProduct[]);
@@ -117,8 +135,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: "weekly" as "weekly",
   }));
 
-  const categoriesRoutes = await getCatgeories();
-  const collectionsRoutes = await getCollections();
-  const productssRoutes = await getProducts();
-  return [...staticRoutes, ...categoriesRoutes, ...collectionsRoutes, ...productssRoutes];
+  const [categoriesRoutes, collectionsRoutes, productsRoutes] = await Promise.all([
+    getSitemapCategories(),
+    getSitemapCollections(),
+    getSitemapProducts(),
+  ]);
+  return [...staticRoutes, ...categoriesRoutes, ...collectionsRoutes, ...productsRoutes];
 }

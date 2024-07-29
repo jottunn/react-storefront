@@ -32859,6 +32859,7 @@ export type ProductCardFragment = {
     name: string;
     quantityAvailable?: number | null;
     updatedAt: string;
+    sku?: string | null;
     translation?: { __typename?: "ProductVariantTranslation"; id: string; name: string } | null;
     metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
     attributes: Array<{
@@ -32987,6 +32988,7 @@ export type ProductDetailsFragment = {
     name: string;
     quantityAvailable?: number | null;
     updatedAt: string;
+    sku?: string | null;
     translation?: { __typename?: "ProductVariantTranslation"; id: string; name: string } | null;
     metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
     attributes: Array<{
@@ -33101,6 +33103,7 @@ export type ProductVariantDetailsFragment = {
   name: string;
   quantityAvailable?: number | null;
   updatedAt: string;
+  sku?: string | null;
   translation?: { __typename?: "ProductVariantTranslation"; id: string; name: string } | null;
   metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
   attributes: Array<{
@@ -37067,6 +37070,7 @@ export type ProductBySlugQuery = {
       name: string;
       quantityAvailable?: number | null;
       updatedAt: string;
+      sku?: string | null;
       translation?: { __typename?: "ProductVariantTranslation"; id: string; name: string } | null;
       metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
       attributes: Array<{
@@ -37253,6 +37257,7 @@ export type ProductCollectionQuery = {
           name: string;
           quantityAvailable?: number | null;
           updatedAt: string;
+          sku?: string | null;
           translation?: {
             __typename?: "ProductVariantTranslation";
             id: string;
@@ -37488,6 +37493,7 @@ export type ProductsByAttributeQuery = {
           name: string;
           quantityAvailable?: number | null;
           updatedAt: string;
+          sku?: string | null;
           translation?: {
             __typename?: "ProductVariantTranslation";
             id: string;
@@ -38227,6 +38233,7 @@ export const ProductVariantDetailsFragmentDoc = gql`
       }
     }
     updatedAt
+    sku
   }
 `;
 export const ProductCardFragmentDoc = gql`
