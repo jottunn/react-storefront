@@ -1,0 +1,18 @@
+query ProductCollection($filter: ProductFilterInput, $channel: String) {
+  products(first: 1000, channel: $channel, filter: $filter) {
+    edges {
+      node {
+        id
+        isAvailable
+        isAvailableForPurchase
+        variants {
+          sku
+          quantityLimitPerCustomer
+          stocks {
+            quantity
+          }
+        }
+      }    
+    }
+  }
+}

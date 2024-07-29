@@ -1,0 +1,7 @@
+mutation updateProductVariant($id: ID, $sku:String, $input: ProductVariantInput!) {
+    productVariantUpdate(id: $id, sku: $sku, input: $input) {
+        errors {
+            message
+        }
+    }
+}

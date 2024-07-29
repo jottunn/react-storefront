@@ -1,7 +1,7 @@
 import logger from "../../../logger";
 import { createClient } from "../../../lib/create-graphq-client";
 import { saleorApp } from "../../../saleor-app";
-const WEBHOOK_SECRET_KEY = process.env.WEBHOOK_SECRET_KEY;
+const WEBHOOK_SECRET_KEY = process.env.NEXT_PUBLIC_WEBHOOK_SECRET_KEY;
 
 export default async (
   req: { body: { code: string; qty: number }; headers: { authorization: string }; payload: any },

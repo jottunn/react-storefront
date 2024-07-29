@@ -32881,10 +32881,34 @@ export type _Service = {
   sdl?: Maybe<Scalars['String']['output']>;
 };
 
+export type UpdateProductVariantMutationVariables = Exact<{
+  id?: InputMaybe<Scalars['ID']['input']>;
+  sku?: InputMaybe<Scalars['String']['input']>;
+  input: ProductVariantInput;
+}>;
+
+
+export type UpdateProductVariantMutation = { __typename?: 'Mutation', productVariantUpdate?: { __typename?: 'ProductVariantUpdate', errors: Array<{ __typename?: 'ProductError', message?: string | null }> } | null };
+
 export type FetchAppDetailsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type FetchAppDetailsQuery = { __typename?: 'Query', app?: { __typename?: 'App', id: string, privateMetadata: Array<{ __typename?: 'MetadataItem', key: string, value: string }> } | null };
+
+export type ProductCollectionQueryVariables = Exact<{
+  filter?: InputMaybe<ProductFilterInput>;
+  channel?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type ProductCollectionQuery = { __typename?: 'Query', products?: { __typename?: 'ProductCountableConnection', edges: Array<{ __typename?: 'ProductCountableEdge', node: { __typename?: 'Product', id: string, isAvailable?: boolean | null, isAvailableForPurchase?: boolean | null, variants?: Array<{ __typename?: 'ProductVariant', sku?: string | null, quantityLimitPerCustomer?: number | null, stocks?: Array<{ __typename?: 'Stock', quantity: number }> | null }> | null } }> } | null };
+
+export type GetProductVariantBySkuQueryVariables = Exact<{
+  sku: Scalars['String']['input'];
+}>;
+
+
+export type GetProductVariantBySkuQuery = { __typename?: 'Query', productVariant?: { __typename?: 'ProductVariant', id: string, product: { __typename?: 'Product', id: string } } | null };
 
 export type ProductVariantStockUpdatedWebhookPayloadFragment = { __typename?: 'ProductVariantStockUpdated', productVariant?: { __typename?: 'ProductVariant', id: string, sku?: string | null, stocks?: Array<{ __typename?: 'Stock', id: string, quantity: number }> | null } | null };
 
@@ -102441,6 +102465,19 @@ export const UntypedProductVariantStockUpdatedWebhookPayloadFragmentDoc = gql`
   }
 }
     `;
+export const UntypedupdateProductVariantDocument = gql`
+    mutation updateProductVariant($id: ID, $sku: String, $input: ProductVariantInput!) {
+  productVariantUpdate(id: $id, sku: $sku, input: $input) {
+    errors {
+      message
+    }
+  }
+}
+    `;
+
+export function useUpdateProductVariantMutation() {
+  return Urql.useMutation<UpdateProductVariantMutation, UpdateProductVariantMutationVariables>(UntypedupdateProductVariantDocument);
+};
 export const UntypedFetchAppDetailsDocument = gql`
     query FetchAppDetails {
   app {
@@ -102456,6 +102493,44 @@ export const UntypedFetchAppDetailsDocument = gql`
 export function useFetchAppDetailsQuery(options?: Omit<Urql.UseQueryArgs<FetchAppDetailsQueryVariables>, 'query'>) {
   return Urql.useQuery<FetchAppDetailsQuery, FetchAppDetailsQueryVariables>({ query: UntypedFetchAppDetailsDocument, ...options });
 };
+export const UntypedProductCollectionDocument = gql`
+    query ProductCollection($filter: ProductFilterInput, $channel: String) {
+  products(first: 1000, channel: $channel, filter: $filter) {
+    edges {
+      node {
+        id
+        isAvailable
+        isAvailableForPurchase
+        variants {
+          sku
+          quantityLimitPerCustomer
+          stocks {
+            quantity
+          }
+        }
+      }
+    }
+  }
+}
+    `;
+
+export function useProductCollectionQuery(options?: Omit<Urql.UseQueryArgs<ProductCollectionQueryVariables>, 'query'>) {
+  return Urql.useQuery<ProductCollectionQuery, ProductCollectionQueryVariables>({ query: UntypedProductCollectionDocument, ...options });
+};
+export const UntypedGetProductVariantBySkuDocument = gql`
+    query GetProductVariantBySku($sku: String!) {
+  productVariant(sku: $sku) {
+    id
+    product {
+      id
+    }
+  }
+}
+    `;
+
+export function useGetProductVariantBySkuQuery(options: Omit<Urql.UseQueryArgs<GetProductVariantBySkuQueryVariables>, 'query'>) {
+  return Urql.useQuery<GetProductVariantBySkuQuery, GetProductVariantBySkuQueryVariables>({ query: UntypedGetProductVariantBySkuDocument, ...options });
+};
 export const UntypedProductVariantStockUpdatedDocument = gql`
     subscription ProductVariantStockUpdated {
   event {
@@ -102468,5 +102543,8 @@ export function useProductVariantStockUpdatedSubscription<TData = ProductVariant
   return Urql.useSubscription<ProductVariantStockUpdatedSubscription, TData, ProductVariantStockUpdatedSubscriptionVariables>({ query: UntypedProductVariantStockUpdatedDocument, ...options }, handler);
 };
 export const ProductVariantStockUpdatedWebhookPayloadFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProductVariantStockUpdatedWebhookPayload"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ProductVariantStockUpdated"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"productVariant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"sku"}},{"kind":"Field","name":{"kind":"Name","value":"stocks"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}}]}}]}}]}}]} as unknown as DocumentNode<ProductVariantStockUpdatedWebhookPayloadFragment, unknown>;
+export const UpdateProductVariantDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateProductVariant"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sku"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ProductVariantInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"productVariantUpdate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"sku"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sku"}}},{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"errors"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateProductVariantMutation, UpdateProductVariantMutationVariables>;
 export const FetchAppDetailsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"FetchAppDetails"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"app"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"privateMetadata"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]}}]}}]} as unknown as DocumentNode<FetchAppDetailsQuery, FetchAppDetailsQueryVariables>;
+export const ProductCollectionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ProductCollection"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"ProductFilterInput"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"channel"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"products"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"IntValue","value":"1000"}},{"kind":"Argument","name":{"kind":"Name","value":"channel"},"value":{"kind":"Variable","name":{"kind":"Name","value":"channel"}}},{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"isAvailable"}},{"kind":"Field","name":{"kind":"Name","value":"isAvailableForPurchase"}},{"kind":"Field","name":{"kind":"Name","value":"variants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sku"}},{"kind":"Field","name":{"kind":"Name","value":"quantityLimitPerCustomer"}},{"kind":"Field","name":{"kind":"Name","value":"stocks"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"quantity"}}]}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<ProductCollectionQuery, ProductCollectionQueryVariables>;
+export const GetProductVariantBySkuDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetProductVariantBySku"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sku"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"productVariant"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"sku"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sku"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"product"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<GetProductVariantBySkuQuery, GetProductVariantBySkuQueryVariables>;
 export const ProductVariantStockUpdatedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"ProductVariantStockUpdated"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"event"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ProductVariantStockUpdatedWebhookPayload"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProductVariantStockUpdatedWebhookPayload"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ProductVariantStockUpdated"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"productVariant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"sku"}},{"kind":"Field","name":{"kind":"Name","value":"stocks"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}}]}}]}}]}}]} as unknown as DocumentNode<ProductVariantStockUpdatedSubscription, ProductVariantStockUpdatedSubscriptionVariables>;

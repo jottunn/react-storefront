@@ -1,0 +1,8 @@
+query GetProductVariantBySku($sku: String!) {
+    productVariant(sku: $sku) {
+        id,
+        product {
+            id
+        }
+    }
+}
