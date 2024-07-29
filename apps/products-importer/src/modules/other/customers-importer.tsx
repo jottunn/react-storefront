@@ -108,22 +108,25 @@ export const CustomersImporterView = () => {
         const nameSplitted = nume.split(" ");
         const email = row["email"].trim();
         const data_nasterii = row["data_nasterii"].trim();
-        const data_cont = row["data_cont"].trim();
+        const abonat_news = row["abonat_news"].trim();
         const adresa = row["adresa"].trim();
         const oras = row["oras"].trim();
         const judet = row["judet"].trim();
         let cod_postal = row["cod_postal"].trim();
         if (cod_postal.length === 5) {
           cod_postal = "0" + cod_postal;
+        } else if (cod_postal.length < 5 || cod_postal.length > 6) {
+          cod_postal = "999999";
         }
         const telefon = row["telefon"].trim();
 
-        const privateMeta = [
-          {
-            key: "data-cont",
-            value: data_cont,
-          },
-        ];
+        let privateMeta = [];
+        if (abonat_news && abonat_news === "on") {
+          privateMeta.push({
+            key: "abonat_news",
+            value: 1,
+          });
+        }
 
         if (data_nasterii) {
           privateMeta.push({
