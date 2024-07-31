@@ -8,6 +8,7 @@ import { Messages } from "@/lib/util";
 import { checkoutEmailUpdate, customerAttach, customerDetach } from "./actions";
 import { login, register as registerUser } from "src/app/actions";
 import { useCheckout } from "@/lib/hooks/CheckoutContext";
+import Link from "next/link";
 
 export interface EmailSectionProps {
   messages: Messages;
@@ -43,7 +44,7 @@ function EmailSection({ messages, user }: EmailSectionProps) {
       const result = await registerUser(formData);
       if (result.errors) {
         const customError = result.errors[0] as any;
-        setError("email" || "password", { message: customError });
+        setError("email" || "password", { message: customError.code });
         return;
       }
     }
@@ -128,6 +129,14 @@ function EmailSection({ messages, user }: EmailSectionProps) {
         {errors.email && (
           <span className="font-medium text-sm">
             {errors.email?.message && messages[errors.email?.message]}
+            {errors.email?.message === "UNIQUE" && (
+              <Link
+                href="/reset"
+                className="text-sm text-gray-700 underline hover:text-black cursor-pointer pl-2"
+              >
+                {messages["app.login.remindPassword"]}
+              </Link>
+            )}
           </span>
         )}
         {errors.password && (

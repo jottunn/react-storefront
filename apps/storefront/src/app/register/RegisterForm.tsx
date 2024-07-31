@@ -13,6 +13,7 @@ export interface RegisterFormData {
   email: string;
   password: string;
   gdprConsent: boolean;
+  nwlRegister: boolean;
 }
 
 export default function RegisterForm({ messages }: FormProps) {
@@ -27,6 +28,7 @@ export default function RegisterForm({ messages }: FormProps) {
   } = useForm<RegisterFormData>({
     defaultValues: {
       gdprConsent: false,
+      nwlRegister: false,
     },
   });
 
@@ -107,6 +109,14 @@ export default function RegisterForm({ messages }: FormProps) {
         {!!errorsForm.email && (
           <p className="text-sm text-red-500 pt-2">
             {messages[errorsForm.email?.type || ""] || messages[errorsForm.email?.message || ""]}
+            {errorsForm.email?.message === "UNIQUE" && (
+              <Link
+                href="/reset"
+                className="text-sm text-gray-700 underline hover:text-black cursor-pointer pl-2"
+              >
+                {messages["app.login.remindPassword"]}
+              </Link>
+            )}
           </p>
         )}
       </div>
@@ -154,7 +164,7 @@ export default function RegisterForm({ messages }: FormProps) {
             type="checkbox"
             id="gdprConsent"
             {...registerForm("gdprConsent")}
-            className="mr-2 mt-2"
+            className="mr-2"
           />
           <span className="mr-1">{messages["app.login.gdprConsent"]}</span>
           <Link className="inline-block underline hover:text-action-1" href="/termeni-si-conditii">
@@ -164,6 +174,19 @@ export default function RegisterForm({ messages }: FormProps) {
         {!!errorsForm.gdprConsent && (
           <p className="text-sm text-red-500 pt-2"> {messages["app.login.gdprConsentErr"]}</p>
         )}
+      </div>
+
+      {/* Newsletter */}
+      <div className="my-3">
+        <label htmlFor="nwlRegister" className="text-md">
+          <input
+            type="checkbox"
+            id="nwlRegister"
+            {...registerForm("nwlRegister")}
+            className="mr-2"
+          />
+          <span className="mr-1">{messages["app.register.nwl"]}</span>
+        </label>
       </div>
 
       <div className="">

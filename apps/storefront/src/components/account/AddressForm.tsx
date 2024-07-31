@@ -241,6 +241,24 @@ export function AddressForm({
             )}
           </div>
         </div>
+        {/* To ensure that the selected country code from your CountrySelect component gets included in the updateAddressMutation call within your AddressForm component, you need to integrate the CountrySelect component with React Hook Form's useForm mechanism. This integration involves using a controller component or managing the selected value through local state and then passing it to the form handler.
+        Since you're using React Hook Form, the most seamless way to integrate custom select components like CountrySelect is by using the Controller component from React Hook Form. This approach will directly link the custom select with the form's state management, ensuring that the selected country code is included in the form data when submitting. */}
+        <div className="col-span-full sm:col-span-6">
+          <label htmlFor="country" className="block text-sm font-medium text-gray-700">
+            {messages["app.checkout.countryField"]}*
+          </label>
+          <Controller
+            name="country"
+            control={control}
+            rules={{ required: messages["app.checkout.countryFieldRequired"] }}
+            render={({ field, fieldState: { error } }) => (
+              <>
+                <CountrySelect only={availableShippingCountries} {...field} messages={messages} />
+                {error && <p className="text-red-500">{error.message}</p>}
+              </>
+            )}
+          />
+        </div>
         {selectedCountry === "RO" ? (
           <>
             <div className="col-span-full sm:col-span-6">
@@ -393,24 +411,6 @@ export function AddressForm({
               <p className="text-red-500">{messages["app.postalCode.invalid"]}</p>
             )}
           </div>
-        </div>
-        {/* To ensure that the selected country code from your CountrySelect component gets included in the updateAddressMutation call within your AddressForm component, you need to integrate the CountrySelect component with React Hook Form's useForm mechanism. This integration involves using a controller component or managing the selected value through local state and then passing it to the form handler.
-        Since you're using React Hook Form, the most seamless way to integrate custom select components like CountrySelect is by using the Controller component from React Hook Form. This approach will directly link the custom select with the form's state management, ensuring that the selected country code is included in the form data when submitting. */}
-        <div className="col-span-full sm:col-span-6">
-          <label htmlFor="country" className="block text-sm font-medium text-gray-700">
-            {messages["app.checkout.countryField"]}*
-          </label>
-          <Controller
-            name="country"
-            control={control}
-            rules={{ required: messages["app.checkout.countryFieldRequired"] }}
-            render={({ field, fieldState: { error } }) => (
-              <>
-                <CountrySelect only={availableShippingCountries} {...field} messages={messages} />
-                {error && <p className="text-red-500">{error.message}</p>}
-              </>
-            )}
-          />
         </div>
         <div className="col-span-full">
           <Button

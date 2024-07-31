@@ -14,6 +14,7 @@ export default function ConfirmPage() {
             <h1 className="text-2xl font-bold mt-2">
               {messages["app.register.accountConfirmTitle"]}
             </h1>
+            <Spinner />
             <ConfirmResult messages={messages} />
           </div>
         </div>

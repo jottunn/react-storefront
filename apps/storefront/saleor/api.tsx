@@ -35541,6 +35541,10 @@ export type ConfirmAccountMutation = {
   __typename?: "Mutation";
   confirmAccount?: {
     __typename?: "ConfirmAccount";
+    user?: {
+      __typename?: "User";
+      metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
+    } | null;
     errors: Array<{
       __typename?: "AccountError";
       message?: string | null;
@@ -39477,6 +39481,12 @@ export type CheckoutShippingMethodUpdateMutationOptions = Apollo.BaseMutationOpt
 export const ConfirmAccountDocument = gql`
   mutation confirmAccount($email: String!, $token: String!) {
     confirmAccount(email: $email, token: $token) {
+      user {
+        metadata {
+          key
+          value
+        }
+      }
       errors {
         message
         field

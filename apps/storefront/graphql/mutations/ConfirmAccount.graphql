@@ -1,5 +1,11 @@
 mutation confirmAccount($email: String!, $token: String!) {
 	confirmAccount(email: $email, token: $token) {
+		user {
+			metadata {
+				key
+				value
+			}
+		}
 		errors {
 			message
 			field

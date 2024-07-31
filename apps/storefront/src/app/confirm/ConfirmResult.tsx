@@ -3,6 +3,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { confirmAccount } from "../actions";
 import { FormProps } from "../login/LoginForm";
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 export interface ConfirmData {
   email: string;
@@ -19,6 +20,10 @@ export default function ConfirmResult({ messages }: FormProps) {
       if (typeof email === "string" && typeof token === "string") {
         const result = await confirmAccount({ email, token });
         if (result.success) {
+          //check if nwl on
+          if (result.newsletter) {
+            const response: any = await axios.post("/api/subscribe", { email });
+          }
           router.push("/login?confirmed=1");
         } else if (result.errors) {
           setConfirmationMessage(result.errors?.[0].code || "");

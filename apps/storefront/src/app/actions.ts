@@ -10,7 +10,7 @@ import {
   AvailableProductFiltersDocument,
   AvailableProductFiltersQuery,
   ConfirmAccountDocument,
-  ConfirmAccountMutationResult,
+  ConfirmAccountMutation,
   ConfirmEmailChangeDocument,
   ConfirmEmailChangeMutation,
   LanguageCodeEnum,
@@ -75,20 +75,30 @@ export async function register(formData: RegisterFormData | any) {
       password: string;
       redirectUrl: string;
       channel: string;
+      metadata?: any;
     }
     const confirmUrl = `${BASE_URL}/confirm`;
+    const input: RegisterInput = {
+      email: formData.email,
+      password: formData.password,
+      firstName: formData.firstName || "",
+      lastName: formData.lastName || "",
+      redirectUrl: confirmUrl,
+      channel: DEFAULT_CHANNEL.slug,
+    };
+    if (formData.nwlRegister) {
+      input.metadata = [
+        {
+          key: "abonat_news",
+          value: formData.nwlRegister,
+        },
+      ];
+    }
     const response = await executeGraphQL<RegisterMutation, { input: RegisterInput }>(
       RegisterDocument,
       {
         variables: {
-          input: {
-            email: formData.email,
-            password: formData.password,
-            firstName: formData.firstName || "",
-            lastName: formData.lastName || "",
-            redirectUrl: confirmUrl,
-            channel: DEFAULT_CHANNEL.slug,
-          },
+          input: input,
         },
       },
     );
@@ -174,21 +184,25 @@ export async function requestPasswordReset(formData: ResetFormData) {
 
 export async function confirmAccount(confirmData: ConfirmData) {
   try {
-    const response = await executeGraphQL<
-      ConfirmAccountMutationResult,
-      { email: string; token: string }
-    >(ConfirmAccountDocument, {
-      variables: {
-        email: confirmData.email,
-        token: confirmData.token,
+    const response = await executeGraphQL<ConfirmAccountMutation, { email: string; token: string }>(
+      ConfirmAccountDocument,
+      {
+        variables: {
+          email: confirmData.email,
+          token: confirmData.token,
+        },
       },
-    });
+    );
 
-    if (response.data?.confirmAccount?.errors.length) {
-      const customError = response.data.confirmAccount.errors as any;
+    if (response.confirmAccount?.errors.length) {
+      const customError = response.confirmAccount.errors as any;
       return { success: false, errors: customError.map((error: { code: any }) => error.code) };
     }
-    return { success: true };
+    const nwlItem = response?.confirmAccount?.user?.metadata.find(
+      (meta) => meta.key === "abonat_news",
+    );
+    const nwlValue = nwlItem?.value;
+    return { success: true, newsletter: nwlValue };
   } catch (error) {
     console.error("Failed to execute ConfirmAccountMutationResult:", error);
     return { success: false };
