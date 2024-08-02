@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import Link from "next/link";
 import { FormProps } from "../login/LoginForm";
 import { requestPasswordReset } from "../actions";
+import { Button } from "@/components/Button/Button";
 
 export interface ResetFormData {
   email: string;
@@ -59,12 +60,12 @@ export default function ForgotPassword({ messages }: FormProps) {
         />
       </div>
       <div className="flex items-center justify-between">
-        <button
+        <Button
           type="submit"
-          className="mb-3 w-full bg-main hover:bg-main-1 text-white text-md py-4 transition duration-100"
-        >
-          {messages["app.login.forgotPasswordSendLinkButton"]}
-        </button>
+          label={messages["app.login.forgotPasswordSendLinkButton"]}
+          variant="tertiary"
+          className="w-full mb-3 !h-12 "
+        />
       </div>
       {successMessage && (
         <p className="text-action-1 text-action-1 font-bold text-sm">

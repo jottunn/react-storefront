@@ -1,5 +1,5 @@
 "use client";
-import { Button } from "@/components/Button";
+import { Button } from "@/components/Button/Button";
 import AddressDisplay from "@/components/account/AddressDisplay";
 
 import { AddressDetailsFragment } from "@/saleor/api";

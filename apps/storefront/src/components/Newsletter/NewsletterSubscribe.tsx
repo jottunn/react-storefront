@@ -5,6 +5,7 @@ import axios from "axios";
 import { Messages } from "@/lib/util";
 import Link from "next/link";
 import Spinner from "../Spinner";
+import { Button } from "../Button/Button";
 interface NewsletterSubscribeProps {
   messages: Messages;
 }
@@ -72,12 +73,12 @@ const NewsletterSubscribe = ({ messages }: NewsletterSubscribeProps) => {
         {loading ? (
           <Spinner />
         ) : (
-          <button
+          <Button
+            label={messages["app.nwl.btn"]}
             type="submit"
-            className="bg-black text-white p-2 text-base hover:opacity-75 transition-opacity uppercase"
-          >
-            {messages["app.nwl.btn"]}
-          </button>
+            variant="tertiary"
+            style={{ textTransform: "uppercase" }}
+          />
         )}
       </form>
       <div className="mt-2 flex items-start">

@@ -5,6 +5,7 @@ import Cookies from "js-cookie";
 import { Messages } from "@/lib/util";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Button } from "./Button/Button";
 
 interface Props {
   messages: Messages;
@@ -61,18 +62,18 @@ const CookieConsent: React.FC<Props> = ({ messages }) => {
           </p>
         </div>
         <div className="flex flex-col md:flex-row md:items-center">
-          <button
+          <Button
             onClick={handleAccept}
-            className="bg-black text-white text-sm px-4 py-2 hover:bg-gray-700"
-          >
-            {messages["app.consent.acceptAll"]}
-          </button>
-          <button
+            variant="tertiary"
+            label={messages["app.consent.acceptAll"]}
+            className="!text-sm !normal-case"
+          />
+          <Button
             onClick={handleDecline}
-            className="text-main-1 text-sm px-4 py-2 mt-4 md:mt-0 md:ml-4 border border-gray-700 hover:bg-main-1 hover:text-white"
-          >
-            {messages["app.consent.declineAll"]}
-          </button>
+            variant="secondary"
+            label={messages["app.consent.declineAll"]}
+            className="md:ml-4 !text-sm !normal-case"
+          />
         </div>
       </div>
     </div>

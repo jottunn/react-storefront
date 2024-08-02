@@ -1,0 +1,23 @@
+.button {
+  @apply inline-flex h-10 items-center justify-center whitespace-nowrap border active:outline-none text-sm uppercase transition duration-100;
+}
+
+.button-primary {
+  @apply border-action-1 bg-action-2 hover:bg-action-1 disabled:bg-neutral-700 text-white px-4;
+}
+
+.button-primary[aria-disabled="true"] {
+  @apply cursor-not-allowed opacity-70 hover:bg-neutral-700;
+}
+
+.button-secondary {
+  @apply border-neutral-600 hover:border-neutral-700 hover:bg-black hover:text-white active:bg-neutral-300 disabled:border-neutral-300 bg-transparent disabled:bg-transparent px-4;
+}
+
+.button-secondary[aria-disabled="true"] {
+  @apply border-neutral-300;
+}
+
+.button-tertiary {
+  @apply border-black bg-black text-white px-4 text-base hover:bg-main-1 transition-opacity;
+}

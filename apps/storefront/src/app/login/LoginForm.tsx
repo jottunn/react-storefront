@@ -3,6 +3,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { login } from "src/app/actions";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
+import { Button } from "@/components/Button/Button";
 
 export interface LoginFormData {
   email: string;
@@ -81,12 +82,12 @@ export default function LoginForm({ messages }: FormProps) {
         </Link>
       </div>
       <div>
-        <button
+        <Button
           type="submit"
-          className="mt-4 mb-3 w-full bg-main hover:bg-main-1 text-white text-md py-4 transition duration-100"
-        >
-          {messages["app.navigation.login"]}
-        </button>
+          label={messages["app.navigation.login"]}
+          variant="tertiary"
+          className="w-full mt-4 mb-3 !h-12"
+        />
         {!!errorsForm.email && (
           <p className="text-sm text-red-700 pt-2 font-semibold">
             {errorsForm.email?.message && messages[errorsForm.email.message]}

@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { FormProps } from "../login/LoginForm";
 import { setPassword } from "../actions";
+import { Button } from "@/components/Button/Button";
 
 export interface ResetPasswordFormData {
   email: string;
@@ -102,13 +103,13 @@ export default function ResetForm({ messages }: FormProps) {
         )}
       </div>
       <div className="mt-5">
-        <button
+        <Button
           type="submit"
           disabled={isSubmitting}
-          className="mt-4 mb-3 w-full bg-main hover:bg-main-1 text-white text-md py-2 transition duration-100"
-        >
-          {messages["app.login.forgotPasswordButton"]}
-        </button>
+          label={messages["app.login.forgotPasswordButton"]}
+          variant="tertiary"
+          className="w-full mt-4 mb-3 !h-12 "
+        />
       </div>
     </form>
   );

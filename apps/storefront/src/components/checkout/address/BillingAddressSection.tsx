@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { CheckoutDetailsFragment, CheckoutError, CountryCode, User } from "@/saleor/api";
-import { Button } from "../../Button";
+import { Button } from "../../Button/Button";
 import { Messages } from "@/lib/util";
 import { AddressForm, AddressFormData } from "../../account/AddressForm";
 import SavedAddressSelectionList from "./SavedAddressSelectionList";

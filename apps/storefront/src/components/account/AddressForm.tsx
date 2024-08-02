@@ -3,7 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 import { AddressDetailsFragment, CheckoutError, CountryCode } from "@/saleor/api";
 import { useAvailableShippingCountries } from "@/lib/hooks/useAvailableShippingCountries";
 import { Messages } from "@/lib/util";
-import { Button } from "@/components/Button";
+import { Button } from "@/components/Button/Button";
 import { CountrySelect } from "./CountrySelect";
 import countiesCitiesData from "@/lib/consts/romania_counties_cities_sorted_unique.json";
 import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from "@headlessui/react";

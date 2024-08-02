@@ -1,7 +1,7 @@
 import { RadioGroup } from "@headlessui/react";
 import React, { useEffect, useState } from "react";
 import { ErrorDetailsFragment, ShippingMethod } from "@/saleor/api";
-import { Button } from "../../Button";
+import { Button } from "../../Button/Button";
 import { Messages } from "@/lib/util";
 import { checkoutShippingMethodUpdate } from "../actions";
 import { notNullable } from "@/lib/media";

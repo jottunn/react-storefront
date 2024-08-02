@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { FormProps } from "../login/LoginForm";
 import { register } from "../actions";
 import Link from "next/link";
+import { Button } from "@/components/Button/Button";
 
 export interface RegisterFormData {
   firstName: string;
@@ -190,12 +191,12 @@ export default function RegisterForm({ messages }: FormProps) {
       </div>
 
       <div className="">
-        <button
+        <Button
           type="submit"
-          className="mt-4 mb-3 w-full bg-main hover:bg-main-1 text-white text-md py-4 transition duration-100"
-        >
-          {messages["app.register.registerButton"]}
-        </button>
+          label={messages["app.register.registerButton"]}
+          variant="tertiary"
+          className="w-full mt-4 mb-3 !h-12"
+        />
       </div>
     </form>
   );

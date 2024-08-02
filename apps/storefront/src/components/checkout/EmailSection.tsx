@@ -2,7 +2,7 @@
 import React, { ChangeEvent, useState } from "react";
 import { useForm } from "react-hook-form";
 import { User } from "@/saleor/api";
-import { Button } from "../Button";
+import { Button } from "../Button/Button";
 import { useRouter } from "next/navigation";
 import { Messages } from "@/lib/util";
 import { checkoutEmailUpdate, customerAttach, customerDetach } from "./actions";

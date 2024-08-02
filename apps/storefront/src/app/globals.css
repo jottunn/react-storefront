@@ -3,10 +3,6 @@
 @tailwind utilities;
 
 @layer components {
-  .btn-blue {
-    @apply py-2 px-4 bg-action-2 text-white font-semibold rounded-lg shadow-md hover:bg-action-1 focus:outline-none focus:ring-2 focus:ring-action-3 focus:ring-opacity-75;
-  }
-
   .checkout-section-container {
     @apply bg-white rounded p-4 border;
   }
@@ -112,4 +108,32 @@ input:disabled + .slider {
 
 .prose-2xl:has(table) {
   overflow-x: auto;
+}
+
+.banner-text a {
+  display: inline-flex;
+  height: 3rem;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  border: 1px solid;
+  outline: none;
+  font-size: 2rem;
+  text-transform: uppercase;
+  border-color: #000000;
+  background-color: #000000;
+  color: white;
+  padding: 2.5rem 2rem;
+}
+
+.banner-text a:hover {
+  background-color: #394052;
+}
+
+.banner-text h1 {
+  margin-bottom: 10px;
+}
+
+.prose-base.banner-text a {
+  margin-top: 15px;
 }

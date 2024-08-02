@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Messages } from "@/lib/util";
 import { CheckoutError, User } from "@/saleor/api";
 import SavedAddressSelectionList from "../address/SavedAddressSelectionList";
-import { Button } from "../../Button";
+import { Button } from "../../Button/Button";
 import AddressDisplay from "../../account/AddressDisplay";
 import { AddressForm, AddressFormData } from "../../account/AddressForm";
 import { checkoutShippingAddressUpdate } from "../actions";

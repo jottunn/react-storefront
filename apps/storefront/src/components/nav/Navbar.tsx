@@ -18,13 +18,12 @@ export const Navbar = async () => {
             <Image
               src="/logo-surmont.png"
               alt="Surmont - The bike shop logo"
-              className="pl-4"
               width="200"
               height="31"
               priority={true}
             />
           </Link>
-          <div className="ml-auto flex items-center justify-center gap-4 whitespace-nowrap lg:gap-6 pr-4">
+          <div className="ml-auto flex items-center justify-center gap-4 whitespace-nowrap lg:gap-6">
             <div className="hidden md:flex">
               <CustomSearchBox />
             </div>
