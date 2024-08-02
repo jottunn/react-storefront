@@ -48,7 +48,7 @@ export const CountrySelect = forwardRef<HTMLSelectElement, CountrySelectProps>(
         onChange={handleCountryChange}
         value={value || ""} // Controlled by React Hook Form, Use an empty string for the unselected state to match the placeholder value
         classNames={{ container: "country-select-container" }}
-        style={{ marginTop: "4px", height: "38px", lineHeight: "10px" }}
+        style={{ marginTop: "4px", height: "38px", lineHeight: "2rem" }}
       />
     );
   },

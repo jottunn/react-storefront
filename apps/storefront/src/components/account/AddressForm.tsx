@@ -56,6 +56,7 @@ export function AddressForm({
     watch,
     resetField,
     setValue,
+    unregister,
   } = useForm<AddressFormData>({
     defaultValues: {
       firstName: existingAddressData?.firstName || "",
@@ -88,6 +89,7 @@ export function AddressForm({
 
   useEffect(() => {
     if (selectedCounty && selectedCountry === "RO") {
+      unregister("city");
       const countyData = countiesCities[selectedCounty];
       if (countyData) {
         setCities(countyData.cities);
@@ -123,7 +125,6 @@ export function AddressForm({
   });
 
   const { availableShippingCountries } = useAvailableShippingCountries();
-
   return (
     <form method="post" onSubmit={onAddressFormSubmit}>
       <div className="grid grid-cols-12 gap-4 w-full">
@@ -344,9 +345,7 @@ export function AddressForm({
                               key={city}
                               value={city.toUpperCase()}
                               className={({ focus }) =>
-                                `relative cursor-default select-none py-2 pl-2 pr-4 ${
-                                  focus ? "bg-gray-100 text-action-1" : "text-gray-900"
-                                }`
+                                `relative cursor-default select-none py-2 pl-2 pr-4 ${focus ? "bg-gray-100 text-action-1" : "text-gray-900"}`
                               }
                             >
                               {({ selected }) => (
@@ -416,7 +415,7 @@ export function AddressForm({
           <Button
             label={messages["app.ui.saveButton"] || "Save"}
             className="btn-checkout-section"
-            onClick={onAddressFormSubmit}
+            type="submit"
           />
         </div>
       </div>

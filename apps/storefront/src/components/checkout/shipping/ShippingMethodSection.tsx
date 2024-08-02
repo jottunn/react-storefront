@@ -24,7 +24,7 @@ export function ShippingMethodSection({ active, messages }: ShippingMethodSectio
   const availableShippingMethods = checkout.shippingMethods.filter(notNullable) || [];
   const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState(
     checkout.deliveryMethod ||
-      (availableShippingMethods.length === 1 && availableShippingMethods[0]),
+      (availableShippingMethods.length === 1 ? availableShippingMethods[0] : null),
   );
   const [editing, setEditing] = useState(
     !checkout.deliveryMethod && availableShippingMethods.length > 1,
@@ -36,9 +36,20 @@ export function ShippingMethodSection({ active, messages }: ShippingMethodSectio
     if (!checkout.deliveryMethod && availableShippingMethods.length === 1) {
       handleChange(availableShippingMethods[0]);
     }
+    if (availableShippingMethods.length > 0) {
+      const initialEditing = !checkout.deliveryMethod && availableShippingMethods.length > 1;
+      console.log("Initial State: editing", initialEditing);
+      setEditing(initialEditing);
+
+      const initialDeliveryMethod =
+        checkout.deliveryMethod ||
+        (availableShippingMethods.length === 1 ? availableShippingMethods[0] : null);
+      setSelectedDeliveryMethod(initialDeliveryMethod);
+    }
   }, [availableShippingMethods, checkout.deliveryMethod]);
 
   const handleChange = async (method: ShippingMethod) => {
+    console.log("handle change");
     setLoading(true);
     const response = await checkoutShippingMethodUpdate({
       shippingMethodId: method.id,
