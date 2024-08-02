@@ -1,6 +1,6 @@
 {
   "name": "@saleor/sentry-utils",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "scripts": {
     "check-types": "tsc --noEmit",
     "lint": "eslint .",
@@ -8,7 +8,7 @@
   },
   "devDependencies": {
     "eslint-config-saleor": "workspace:*",
-    "typescript": "5.1.6"
+    "typescript": "5.4.5"
   },
   "exports": {
     ".": {

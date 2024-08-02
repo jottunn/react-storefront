@@ -68,23 +68,23 @@ services:
       - manage-stock-auth-volume:/app/apps/manage-stock/apl
       - manage-stock-logs-volume:/app/apps/manage-stock/logs
     command: sh -c '(nginx &) && pnpm turbo run start --filter=manage-stock...'
-  emails-and-messages:
-    container_name: emails-and-messages
+  smtp:
+    container_name: smtp
     build:
       context: .
       dockerfile: Dockerfile.base
       args:
-        - TARGET_APP=emails-and-messages
+        - TARGET_APP=smtp
     ports:
       - 3008:3008
     networks:
       - saleor-backend-tier
     volumes:
-      - emails-and-messages-auth-volume:/app/apps/emails-and-messages/apl
-    command: sh -c '(nginx &) && pnpm turbo run start --filter=emails-and-messages...'
+      - smtp-auth-volume:/app/apps/smtp/apl
+    command: sh -c '(nginx &) && pnpm turbo run start --filter=smtp...'
 volumes:
   manage-promotions-auth-volume:
-  emails-and-messages-auth-volume:
+  smtp-auth-volume:
   search-auth-volume:
   products-importer-auth-volume:
   manage-stock-auth-volume:

@@ -1,14 +1,14 @@
 {
   "name": "@saleor/apps-ui",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "scripts": {
     "check-types": "tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint --fix ."
   },
   "dependencies": {
-    "eslint": "8.46.0",
-    "typescript": "5.1.6"
+    "eslint": "../../node_modules/eslint",
+    "typescript": "5.4.5"
   },
   "devDependencies": {
     "@saleor/app-sdk": "link:../../node_modules/@saleor/app-sdk",

@@ -22,10 +22,10 @@
     "@saleor/app-sdk": "link:../../node_modules/@saleor/app-sdk",
     "@saleor/macaw-ui": "1.0.0-pre.7",
     "@urql/exchange-auth": "^1.0.0",
-    "@vitejs/plugin-react": "4.2.1",
+    "@vitejs/plugin-react": "4.3.1",
     "shared-apl": "file:../../packages/shared-apl",
     "graphql": "16.7.1",
-    "graphql-tag": "^2.12.6",
+    "graphql-tag": "2.12.6",
     "jsdom": "24.0.0",
     "next": "14.2.3",
     "react": "18.2.0",
@@ -43,11 +43,11 @@
     "@types/react-dom": "18.2.5",
     "@types/papaparse": "5.3.14",
     "eslint": "8.46.0",
-    "eslint-config-next": "14.2.3",
-    "eslint-config-prettier": "8.8.0",
+    "eslint-config-next": "14.2.4",
+    "eslint-config-prettier": "9.1.0",
     "papaparse": "^5.4.1",
     "prettier": "^2.8.2",
-    "typescript": "5.1.6"
+    "typescript": "5.4.5"
   },
   "lint-staged": {
     "*.{js,ts,tsx}": "eslint --cache --fix",

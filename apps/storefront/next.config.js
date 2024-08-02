@@ -7,6 +7,8 @@ const strapiURL = new URL(process.env.NEXT_PUBLIC_STRAPI_URL);
 const allowedImageDomains = process.env.NEXT_PUBLIC_ALLOWED_IMAGE_DOMAINS
   ? process.env.NEXT_PUBLIC_ALLOWED_IMAGE_DOMAINS.split(",")
   : [];
+const fs = require("fs");
+const path = require("path");
 
 module.exports = withBundleAnalyzer({
   reactStrictMode: false,
@@ -77,6 +79,17 @@ module.exports = withBundleAnalyzer({
         ],
       },
     ];
+  },
+  async redirects() {
+    const redirectsPath = path.resolve(__dirname, "redirects.json");
+    const rawRedirects = fs.readFileSync(redirectsPath);
+    const redirects = JSON.parse(rawRedirects);
+
+    return redirects.map((redirect) => ({
+      source: redirect.source,
+      destination: redirect.destination,
+      permanent: true,
+    }));
   },
   experimental: {},
 });

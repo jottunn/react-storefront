@@ -1,6 +1,6 @@
 {
   "name": "@saleor/react-hook-form-macaw",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "scripts": {
     "build-storybook": "storybook build",
     "check-types": "tsc --noEmit",
@@ -10,7 +10,7 @@
     "storybook": "storybook dev -p 6006"
   },
   "dependencies": {
-    "eslint": "8.46.0"
+    "eslint": "../../node_modules/eslint"
   },
   "devDependencies": {
     "@babel/core": "^7.21.8",
@@ -31,8 +31,8 @@
     "react-dom": "18.2.0",
     "react-hook-form": "^7.43.9",
     "storybook": "^7.0.12",
-    "typescript": "5.1.6",
-    "vite": "4.4.8",
+    "typescript": "5.4.5",
+    "vite": "5.3.3",
     "webpack": "^5.82.1"
   },
   "main": "index.ts",

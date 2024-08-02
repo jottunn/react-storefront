@@ -1,6 +1,6 @@
 {
   "name": "@saleor/apps-logger",
-  "version": "1.2.8",
+  "version": "1.2.9",
   "scripts": {
     "check-types": "tsc --noEmit",
     "lint": "eslint .",
@@ -8,16 +8,16 @@
     "test": "vitest"
   },
   "dependencies": {
-    "eslint": "8.46.0",
+    "eslint": "../../node_modules/eslint",
     "tslog": "4.9.2",
-    "typescript": "5.1.6"
+    "typescript": "5.4.5"
   },
   "devDependencies": {
     "@saleor/app-sdk": "link:../../node_modules/@saleor/app-sdk",
     "@sentry/nextjs": "../../node_modules/@sentry/nextjs",
     "eslint-config-saleor": "workspace:*",
-    "vite": "4.4.8",
-    "vitest": "0.34.1"
+    "vite": "5.3.3",
+    "vitest": "1.6.0"
   },
   "exports": {
     ".": {

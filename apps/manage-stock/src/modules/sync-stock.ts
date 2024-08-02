@@ -35,7 +35,12 @@ export const syncStock = async (client: Client, codStoc?: string) => {
 
       const getExpertStoc = await getStockFromExpert(sku);
       console.log("getExpertStoc", getExpertStoc);
-      if (getExpertStoc !== undefined && getExpertStoc >= 0 && stock !== getExpertStoc) {
+      if (
+        getExpertStoc !== undefined &&
+        getExpertStoc !== null &&
+        getExpertStoc >= 0 &&
+        stock !== getExpertStoc
+      ) {
         // Call the update-stock webhook with the fetched quantity
         try {
           const webhookResponse = await fetch(`${appUrl}/api/webhooks/update-stock`, {
