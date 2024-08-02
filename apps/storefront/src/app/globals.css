@@ -137,3 +137,7 @@ input:disabled + .slider {
 .prose-base.banner-text a {
   margin-top: 15px;
 }
+
+.prose-base.banner-text p {
+  font-size: 1.4rem;
+}

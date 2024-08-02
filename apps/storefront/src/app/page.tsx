@@ -23,13 +23,12 @@ import { mapEdgesToItems } from "@/lib/maps";
 import { Metadata } from "next";
 import { STOREFRONT_NAME, UPLOAD_FOLDER } from "@/lib/const";
 import { translate } from "@/lib/translations";
-import Link from "next/link";
-import Image from "next/image";
 import edjsHTML from "editorjs-html";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 import SwiperComponent from "@/components/SwiperComponent";
 import HomepageBlock from "@/components/homepage/HomepageBlock";
 import getBase64 from "@/lib/generateBlurPlaceholder";
+import Banner from "@/components/homepage/Banner";
 
 const parser = edjsHTML();
 
@@ -148,30 +147,72 @@ export default async function Home() {
   const homepageCollections = collections ? mapEdgesToItems(collections) : [];
   homepageCollections.sort((a, b) => getOrderValue(a.metadata) - getOrderValue(b.metadata));
   const numColumnsHPCollections = getNumColumns(homepageCollections.length);
-
-  const bannerAttribute =
+  /** banner1 */
+  const banner1Attribute =
     page && "attributes" in page
-      ? page.attributes.find((attr) => attr.attribute.name === "Banner")
+      ? page.attributes.find((attr) => attr.attribute.name === "Homepage Banner1")
       : null;
-  const richTextAttributes =
+
+  const hasBanner1 = banner1Attribute?.values.length && banner1Attribute?.values.length > 0;
+  const banner1AttributeContent =
     page && "attributes" in page
-      ? page.attributes.filter((attr) => attr.attribute.inputType === "RICH_TEXT")
+      ? page.attributes.find(
+          (attr) =>
+            attr.attribute.inputType === "RICH_TEXT" &&
+            attr.attribute.name === "Homepage Banner1 Content",
+        )
+      : null;
+  const parsedBanner1RichText = banner1AttributeContent?.values[0].richText
+    ? parser.parse(JSON.parse(banner1AttributeContent?.values[0].richText)).join("")
+    : "";
+  const displayTextBanner1 =
+    page && "metadata" in page ? getMetadataValue(page.metadata, "Banner1 Text Display") : "";
+  const banner1TextStyle =
+    page && "metadata" in page ? getMetadataValue(page.metadata, "Banner1 Text Style") : "";
+  const base64 =
+    banner1Attribute?.values[0]?.name &&
+    (await getBase64(`${UPLOAD_FOLDER ?? ""}/${banner1Attribute.values[0].name}`));
+  const placeholder = base64 || null;
+  /** banner2 */
+  const banner2Attribute =
+    page && "attributes" in page
+      ? page.attributes.find((attr) => attr.attribute.name === "Homepage Banner2")
+      : null;
+  const hasBanner2 = banner2Attribute?.values.length && banner2Attribute?.values.length > 0;
+  let parsedBanner2RichText, displayTextBanner2, banner2TextStyle, placeholder_2;
+  if (hasBanner2) {
+    const banner2AttributeContent =
+      page && "attributes" in page
+        ? page.attributes.find(
+            (attr) =>
+              attr.attribute.inputType === "RICH_TEXT" &&
+              attr.attribute.name === "Homepage Banner2 Content",
+          )
+        : null;
+    parsedBanner2RichText = banner2AttributeContent?.values[0].richText
+      ? parser.parse(JSON.parse(banner2AttributeContent?.values[0].richText)).join("")
+      : "";
+    displayTextBanner2 =
+      page && "metadata" in page ? getMetadataValue(page.metadata, "Banner2 Text Display") : "";
+    banner2TextStyle =
+      page && "metadata" in page ? getMetadataValue(page.metadata, "Banner2 Text Style") : "";
+    const base64_2 =
+      banner2Attribute?.values[0]?.name &&
+      (await getBase64(`${UPLOAD_FOLDER ?? ""}/${banner2Attribute.values[0].name}`));
+    placeholder_2 = base64_2 || null;
+  }
+  const shopRichTextAttributes =
+    page && "attributes" in page
+      ? page.attributes.filter(
+          (attr) =>
+            attr.attribute.inputType === "RICH_TEXT" &&
+            (attr.attribute.name === "Content column1" ||
+              attr.attribute.name === "Content column2"),
+        )
       : [];
-  const displayTextBanner =
-    page && "metadata" in page ? getMetadataValue(page.metadata, "Display Text") : "";
-  const buttonText =
-    page && "metadata" in page ? getMetadataValue(page.metadata, "Button Text") : "";
-  const linkBanner =
-    page && "metadata" in page ? getMetadataValue(page.metadata, "Link Banner") : "#";
-  const textBanner =
-    page && "metadata" in page ? getMetadataValue(page.metadata, "Text Banner") : "";
 
   const content = page && "content" in page ? translate(page, "content") : null;
   const parsedContent = content ? parser.parse(JSON.parse(content)).join("") : "";
-  const base64 =
-    bannerAttribute?.values[0]?.name &&
-    (await getBase64(`${UPLOAD_FOLDER ?? ""}/${bannerAttribute.values[0].name}`));
-  const placeholder = base64 || null;
 
   const featuredCollectionText =
     (featuredCollection && translate(featuredCollection, "description")) || "";
@@ -181,53 +222,41 @@ export default async function Home() {
 
   return (
     <>
-      {bannerAttribute && (
-        <div className="flex overflow-hidden not-last:mb-md !px-0 mb-20 md:mb-28">
-          <div className="flex flex-col md:flex-row w-full h-[125vw] md:max-h-[80vh]">
-            <div className="relative overflow-hidden flex-col-reverse my-0 mx-auto w-full h-full md:flex-row">
-              <div className="w-full h-full">
-                <Link
-                  href={linkBanner || "#"}
-                  className="flex no-select transition items-center relative disabled:cursor-not-allowed focus h-full w-full leading-none focus-in"
-                >
-                  <div className="relative flex h-full w-full overflow-hidden">
-                    {bannerAttribute?.values[0]?.name && (
-                      <Image
-                        key="banner"
-                        src={`${UPLOAD_FOLDER ?? ""}/${bannerAttribute.values[0].name}`}
-                        alt={buttonText || STOREFRONT_NAME}
-                        className="absolute h-full w-full inset-0 object-cover object-center"
-                        fill
-                        sizes="(max-width: 640px) 100vw, 100vw"
-                        priority={true}
-                        loading={"eager"}
-                        {...(placeholder !== null
-                          ? { placeholder: "blur", blurDataURL: placeholder }
-                          : {})}
-                      />
-                    )}
-                  </div>
-                </Link>
-              </div>
-              {!(displayTextBanner && displayTextBanner === "NO") && (
-                <div className="banner-content absolute left-1/2 transform -translate-x-1/2 bottom-28 bg-black bg-opacity-85 py-10 px-18">
-                  <h2 className="text-center text-lg text-white">{textBanner}</h2>
-                  <p className="text-center mt-3 text-md text-white">
-                    <a
-                      rel="noreferrer"
-                      href={linkBanner}
-                      target="_self"
-                      className="hover:text-action-1"
-                    >
-                      <u>{buttonText}</u>
-                    </a>
-                  </p>
-                </div>
-              )}
-            </div>
+      {hasBanner1 && !hasBanner2 && (
+        <div className="flex overflow-hidden mb-20 md:mb-28 !px-0">
+          <div className="flex flex-col w-full h-[125vw] md:max-h-[80vh]">
+            <Banner
+              bannerAttribute={banner1Attribute}
+              parsedBannerRichText={parsedBanner1RichText}
+              displayTextBanner={displayTextBanner1}
+              bannerTextStyle={banner1TextStyle}
+              placeholder={placeholder}
+            />
           </div>
         </div>
       )}
+
+      {hasBanner1 && hasBanner2 && (
+        <div className="flex overflow-hidden mb-20 md:mb-28 !px-0">
+          <div className="flex flex-col w-full md:w-[98%] mx-auto h-[250vw] md:max-h-[80vh] md:flex-row gap-4 md:gap-6">
+            <Banner
+              bannerAttribute={banner1Attribute}
+              parsedBannerRichText={parsedBanner1RichText}
+              displayTextBanner={displayTextBanner1}
+              bannerTextStyle={banner1TextStyle}
+              placeholder={placeholder}
+            />
+            <Banner
+              bannerAttribute={banner2Attribute}
+              parsedBannerRichText={parsedBanner2RichText}
+              displayTextBanner={displayTextBanner2}
+              bannerTextStyle={banner2TextStyle}
+              placeholder={placeholder_2}
+            />
+          </div>
+        </div>
+      )}
+
       {parsedContent && (
         <div className="container mb-4 md:mb-14 mx-auto max-w-[800px] text-center prose-2xl">
           <div dangerouslySetInnerHTML={{ __html: parsedContent }} />
@@ -308,9 +337,9 @@ export default async function Home() {
         </div>
       )}
 
-      {richTextAttributes && richTextAttributes.length > 0 && (
+      {shopRichTextAttributes && shopRichTextAttributes.length > 0 && (
         <div className="container flex flex-col md:flex-row  prose-2xl">
-          {richTextAttributes.map((attr, index) =>
+          {shopRichTextAttributes.map((attr, index) =>
             attr.values.map((item) => {
               const parsedRichText = item.richText
                 ? parser.parse(JSON.parse(item.richText)).join("")
