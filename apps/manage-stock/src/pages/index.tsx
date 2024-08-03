@@ -28,7 +28,7 @@ const IndexPage: NextPage = () => {
               <Button variant="primary">View log</Button>
             </Link>
           </div>
-          <div
+          {/* <div
             style={{ display: "block", width: "100%", border: "1px solid #ddd", padding: "5px" }}
           >
             <Text as={"p"} style={{ marginBottom: "5px" }}>
@@ -38,7 +38,7 @@ const IndexPage: NextPage = () => {
             <Link href="/sync">
               <Button variant="primary">Go to Sync</Button>
             </Link>
-          </div>
+          </div> */}
         </>
       )}
     </Box>
