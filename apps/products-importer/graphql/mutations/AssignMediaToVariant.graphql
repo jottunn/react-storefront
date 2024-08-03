@@ -3,6 +3,10 @@ mutation assignMediaToVariant($variantId: ID! , $mediaId: ID!) {
     productVariant {
       id
       name
+      metadata {
+        key
+        value
+      }
     }
     media {
       id

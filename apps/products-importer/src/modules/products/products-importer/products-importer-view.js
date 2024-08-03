@@ -123,12 +123,23 @@ export const ProductsImporterView = () => {
     try {
       const variantIds = await findProductVariantIds(productDetails, currentVariantColor);
       for (let i = 0; i < variantIds.length; i++) {
-        console.log("assign media for varinat id", variantIds[i]);
+        // console.log("assign media for varinat id", variantIds[i]);
         const assigResult = await assignMedia(variantIds[i], mediaId);
-        //generate placeholders and saved to metadata with key blurPlaceholderPic
-        console.log(assigResult);
-        if (assigResult && assigResult.data.variantMediaAssign.errors.length === 0 && mediaUrl) {
-          console.log("generate placeholder");
+        //generate placeholders and save it to metadata with key blurPlaceholderPic
+        // console.log('assigResult', assigResult);
+        // console.log(assigResult.data.variantMediaAssign);
+        const variantHasPlaceHolder =
+          assigResult.data.variantMediaAssign.productVariant?.metadata.find(
+            (meta) => meta.key === "blurPlaceholderPic"
+          );
+        // console.log('variantHasPlaceHolder', variantHasPlaceHolder);
+        if (
+          assigResult &&
+          assigResult.data.variantMediaAssign.errors.length === 0 &&
+          mediaUrl &&
+          !variantHasPlaceHolder
+        ) {
+          // console.log("generate placeholder");
           const placeholder = await fetch(
             `/api/getBase64?imageUrl=${encodeURIComponent(mediaUrl)}`
           );
