@@ -31,6 +31,7 @@ import getBase64 from "@/lib/generateBlurPlaceholder";
 import Banner from "@/components/homepage/Banner";
 
 const parser = edjsHTML();
+const emptyTagsRegex = /^<[^>]+>\s*(<br\s*\/?>)?\s*<\/[^>]+>$/;
 
 export const generateMetadata = async (): Promise<Metadata> => {
   const response = await executeGraphQL<PageQuery, { slug: String; locale: LanguageCodeEnum }>(
@@ -213,13 +214,14 @@ export default async function Home() {
 
   const content = page && "content" in page ? translate(page, "content") : null;
   const parsedContent = content ? parser.parse(JSON.parse(content)).join("") : "";
-
+  const isEmptyContent = emptyTagsRegex.test(parsedContent);
   const featuredCollectionText =
     (featuredCollection && translate(featuredCollection, "description")) || "";
   const parsedFeaturedCollectionText = featuredCollectionText
     ? parser.parse(JSON.parse(featuredCollectionText))
     : "";
-
+  console.log("parsedContent", parsedContent);
+  console.log("isEmptyContent", isEmptyContent);
   return (
     <>
       {hasBanner1 && !hasBanner2 && (
@@ -257,7 +259,7 @@ export default async function Home() {
         </div>
       )}
 
-      {parsedContent && (
+      {parsedContent && !isEmptyContent && (
         <div className="container mb-4 md:mb-14 mx-auto max-w-[800px] text-center prose-2xl">
           <div dangerouslySetInnerHTML={{ __html: parsedContent }} />
         </div>
