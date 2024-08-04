@@ -153,7 +153,7 @@ export default async function Home() {
       ? page.attributes.find((attr) => attr.attribute.name === "Homepage Banner1")
       : null;
 
-  const hasBanner1 = banner1Attribute?.values.length && banner1Attribute?.values.length > 0;
+  const hasBanner1 = banner1Attribute?.values.length ? banner1Attribute?.values.length > 0 : false;
   const banner1AttributeContent =
     page && "attributes" in page
       ? page.attributes.find(
@@ -178,7 +178,7 @@ export default async function Home() {
     page && "attributes" in page
       ? page.attributes.find((attr) => attr.attribute.name === "Homepage Banner2")
       : null;
-  const hasBanner2 = banner2Attribute?.values.length && banner2Attribute?.values.length > 0;
+  const hasBanner2 = banner2Attribute?.values.length ? banner2Attribute?.values.length > 0 : false;
   let parsedBanner2RichText, displayTextBanner2, banner2TextStyle, placeholder_2;
   if (hasBanner2) {
     const banner2AttributeContent =
