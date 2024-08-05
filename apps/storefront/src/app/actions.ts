@@ -59,14 +59,12 @@ export async function login(formData: LoginFormData) {
   }
 
   const { data } = await saleorAuthClient().signIn({ email, password }, { cache: "no-store" });
-  console.log("API response data:", data);
 
   if (data.tokenCreate.errors.length > 0) {
     const customError = data?.tokenCreate?.errors as any;
     return { success: false, errors: customError.map((error: { code: any }) => error.code) };
   }
-  const token = data.tokenCreate.token;
-  console.log("Login successful, token:", token);
+
   return { success: true, token: data.tokenCreate.token };
 }
 

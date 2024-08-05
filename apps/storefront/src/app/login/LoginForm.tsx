@@ -28,7 +28,6 @@ export default function LoginForm({ messages }: FormProps) {
 
   const handleSubmit = handleSubmitForm(async (formData: LoginFormData) => {
     const result = await login(formData);
-    console.log("result login", result);
     if (result.success) {
       router.push("/account");
     } else if (result.errors) {
