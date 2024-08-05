@@ -8,6 +8,7 @@ import { CountrySelect } from "./CountrySelect";
 import countiesCitiesData from "@/lib/consts/romania_counties_cities_sorted_unique.json";
 import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
+import Spinner from "../Spinner";
 
 export interface AddressFormData {
   firstName: string;
@@ -75,6 +76,7 @@ export function AddressForm({
   const selectedCountry = watch("country");
   const selectedCounty = watch("countryArea");
   const [cities, setCities] = useState<string[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (errors && Array.isArray(errors) && errors.length > 0) {
@@ -110,7 +112,9 @@ export function AddressForm({
   }, [selectedCounty, setValue]);
 
   const onAddressFormSubmit = handleSubmitAddress(async (formData: AddressFormData) => {
+    setIsSaving(true);
     const errors = await updateAddressMutation(formData);
+    setIsSaving(false);
     if (errors && errors.length > 0) {
       errors.forEach((e) =>
         setErrorAddress(e.field as keyof AddressFormData, {
@@ -412,11 +416,15 @@ export function AddressForm({
           </div>
         </div>
         <div className="col-span-full">
-          <Button
-            label={messages["app.ui.saveButton"] || "Save"}
-            className="btn-checkout-section"
-            type="submit"
-          />
+          {isSaving ? (
+            <Spinner />
+          ) : (
+            <Button
+              label={messages["app.ui.saveButton"] || "Save"}
+              className="btn-checkout-section"
+              type="submit"
+            />
+          )}
         </div>
       </div>
     </form>

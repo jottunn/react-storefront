@@ -294,8 +294,7 @@ export function ProductCollection({
       </div>
 
       {isLoadingMore && <Spinner />}
-
-      {allowMore && (
+      {allowMore && !isLoadingMore && (
         <Pagination
           onLoadMore={onLoadMore}
           pageInfo={(productCollection as any).pageInfo}
