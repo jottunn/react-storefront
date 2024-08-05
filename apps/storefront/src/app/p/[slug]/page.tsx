@@ -453,9 +453,9 @@ const ProductDetail = async ({
           )}
         </div>
       </div>
-      <div className="container pb-12 px-8 md:max-w-[80%]">
+      <div className="container pb-12 px-8">
         {description && (
-          <div className="mt-8 space-y-6">
+          <div className="mt-8 space-y-6  md:max-w-[80%]">
             <p className="text-md mt-8 font-bold text-black-500 uppercase">
               {messages["app.product.description"]}
             </p>

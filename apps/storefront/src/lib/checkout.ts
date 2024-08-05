@@ -8,6 +8,7 @@ import {
 } from "@/saleor/api";
 import { executeGraphQL } from "@/lib/graphql";
 import { DEFAULT_LOCALE } from "./regions";
+import { STOREFRONT_URL } from "./const";
 
 export async function getIdFromCookies(channel: string) {
   const cookieName = `checkoutId-${channel}`;
@@ -16,7 +17,7 @@ export async function getIdFromCookies(channel: string) {
 }
 
 export async function saveIdToCookie(channel: string, checkoutId: string) {
-  const storefrontUrl = process.env.NEXT_PUBLIC_STOREFRONT_URL || "";
+  const storefrontUrl = STOREFRONT_URL || "";
   const shouldUseHttps = storefrontUrl.startsWith("https");
   const cookieName = `checkoutId-${channel}`;
   cookies().set(cookieName, checkoutId, {

@@ -3,7 +3,7 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useUserContext } from "../UserContext";
-import { BASE_URL } from "@/lib/const";
+import { STOREFRONT_URL } from "@/lib/const";
 import { confirmEmailChange, requestEmailChange } from "src/app/actions";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -45,7 +45,7 @@ function EmailPreferences() {
     confirmEmail();
   }, [token]);
 
-  const redirectUrl = `${BASE_URL}/account/`;
+  const redirectUrl = `${STOREFRONT_URL}/account/`;
   const onEmailPreferenceSubmit = handleSubmit(async (formData: EmailChangeFormData) => {
     const result = await requestEmailChange({
       newEmail: formData.newEmail,
