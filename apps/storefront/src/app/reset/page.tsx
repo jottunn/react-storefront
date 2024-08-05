@@ -3,7 +3,7 @@ import Spinner from "@/components/Spinner";
 import { getMessages } from "@/lib/util";
 import { DEFAULT_LOCALE } from "@/lib/regions";
 import ForgotPassword from "./ForgotPassword";
-import { STOREFRONT_NAME } from "@/lib/const";
+import { STOREFRONT_NAME, STOREFRONT_URL } from "@/lib/const";
 import ResetForm from "./ResetPasswordForm";
 import ResetPageClient from "./ResetPageClient";
 
@@ -12,9 +12,7 @@ export const metadata = {
   title: `${messages["app.login.remindPassword"]} | ${STOREFRONT_NAME}`,
   description: `${messages["app.login.remindPassword"]} -  Surmont.ro`,
   alternates: {
-    canonical: process.env.NEXT_PUBLIC_STOREFRONT_URL
-      ? process.env.NEXT_PUBLIC_STOREFRONT_URL + `/reset`
-      : undefined,
+    canonical: STOREFRONT_URL ? STOREFRONT_URL + `/reset` : undefined,
   },
 };
 export default function ResetPage() {

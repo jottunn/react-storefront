@@ -5,6 +5,7 @@ import { translate } from "@/lib/translations";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Script from "next/script";
 import xss from "xss";
+import { STOREFRONT_URL } from "@/lib/const";
 const edjsParser = edjsHTML();
 
 type Props = {
@@ -41,7 +42,7 @@ export default function PageSaleor({ page }: Props) {
       "@type": "ListItem",
       position: i + 1,
       name: item.name,
-      item: item.href ? `${process.env.NEXT_PUBLIC_STOREFRONT_URL}${item.href}` : undefined,
+      item: item.href ? `${STOREFRONT_URL}${item.href}` : undefined,
     })),
   };
 

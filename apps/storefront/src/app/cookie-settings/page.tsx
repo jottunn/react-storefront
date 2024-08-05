@@ -1,16 +1,14 @@
 import { getMessages } from "@/lib/util";
 import Link from "next/link";
 import ManageCookies from "./ManageCookies";
-import { STOREFRONT_NAME } from "@/lib/const";
+import { STOREFRONT_NAME, STOREFRONT_URL } from "@/lib/const";
 import { DEFAULT_LOCALE } from "@/lib/regions";
 
 export const metadata = {
   title: `Setări Cookie-uri | ${STOREFRONT_NAME}`,
   description: "Revizuiește și gestionează setările cookie-urilor pe Surmont.ro",
   alternates: {
-    canonical: process.env.NEXT_PUBLIC_STOREFRONT_URL
-      ? process.env.NEXT_PUBLIC_STOREFRONT_URL + `/cookie-settings`
-      : undefined,
+    canonical: STOREFRONT_URL ? STOREFRONT_URL + `/cookie-settings` : undefined,
   },
 };
 

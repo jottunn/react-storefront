@@ -10,7 +10,7 @@ import { getMessages, getNumColumns, getOrderValue } from "@/lib/util";
 import { executeGraphQL } from "@/lib/graphql";
 import { mapEdgesToItems } from "@/lib/maps";
 import PageHero from "@/components/PageHero";
-import { STOREFRONT_NAME } from "@/lib/const";
+import { STOREFRONT_NAME, STOREFRONT_URL } from "@/lib/const";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Script from "next/script";
 import HomepageBlock from "@/components/homepage/HomepageBlock";
@@ -19,9 +19,7 @@ export const metadata = {
   title: `Reduceri | ${STOREFRONT_NAME}`,
   description: "Reduceri la Surmont.ro",
   alternates: {
-    canonical: process.env.NEXT_PUBLIC_STOREFRONT_URL
-      ? process.env.NEXT_PUBLIC_STOREFRONT_URL + `/outlet`
-      : undefined,
+    canonical: STOREFRONT_URL ? STOREFRONT_URL + `/outlet` : undefined,
   },
 };
 
@@ -58,7 +56,7 @@ export default async function Page() {
       "@type": "ListItem",
       position: i + 1,
       name: item.name,
-      item: item.href ? `${process.env.NEXT_PUBLIC_STOREFRONT_URL}${item.href}` : undefined,
+      item: item.href ? `${STOREFRONT_URL}${item.href}` : undefined,
     })),
   };
   return (

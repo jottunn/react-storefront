@@ -4,16 +4,14 @@ import Spinner from "@/components/Spinner";
 import { getMessages } from "@/lib/util";
 import { DEFAULT_LOCALE } from "@/lib/regions";
 import Link from "next/link";
-import { STOREFRONT_NAME } from "@/lib/const";
+import { STOREFRONT_NAME, STOREFRONT_URL } from "@/lib/const";
 const messages = getMessages(DEFAULT_LOCALE);
 
 export const metadata = {
   title: `${messages["app.login.header"]} | ${STOREFRONT_NAME}`,
   description: `${messages["app.login.header"]} -  Surmont.ro`,
   alternates: {
-    canonical: process.env.NEXT_PUBLIC_STOREFRONT_URL
-      ? process.env.NEXT_PUBLIC_STOREFRONT_URL + `/login`
-      : undefined,
+    canonical: STOREFRONT_URL ? STOREFRONT_URL + `/login` : undefined,
   },
 };
 

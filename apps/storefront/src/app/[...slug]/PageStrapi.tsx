@@ -1,4 +1,5 @@
 import Breadcrumbs from "@/components/Breadcrumbs";
+import { STOREFRONT_URL } from "@/lib/const";
 import { sectionRenderer } from "@/lib/strapi/section-renderer";
 import Script from "next/script";
 
@@ -13,7 +14,7 @@ export default function PageStrapi({ page }: any) {
       "@type": "ListItem",
       position: i + 1,
       name: item.name,
-      item: item.href ? `${process.env.NEXT_PUBLIC_STOREFRONT_URL}${item.href}` : undefined,
+      item: item.href ? `${STOREFRONT_URL}${item.href}` : undefined,
     })),
   };
   console.log(pageContent);

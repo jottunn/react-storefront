@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { DEFAULT_LOCALE } from "@/lib/regions";
 import { getMessages } from "@/lib/util";
-import { STOREFRONT_NAME } from "@/lib/const";
+import { STOREFRONT_NAME, STOREFRONT_URL } from "@/lib/const";
 import SearchClient from "./SearchClient";
 
 const messages = getMessages(DEFAULT_LOCALE);
@@ -9,12 +9,9 @@ export const metadata = {
   title: `${messages["app.search.searchTitle"]} | ${STOREFRONT_NAME}`,
   description: `${messages["app.search.searchTitle"]} - Surmont.ro`,
   alternates: {
-    canonical: process.env.NEXT_PUBLIC_STOREFRONT_URL
-      ? process.env.NEXT_PUBLIC_STOREFRONT_URL + `/search`
-      : undefined,
+    canonical: STOREFRONT_URL ? STOREFRONT_URL + `/search` : undefined,
   },
 };
-
 
 export default async function Page({
   searchParams,
@@ -36,7 +33,6 @@ export default async function Page({
     }
     redirect(`/search?${new URLSearchParams({ query: firstValidSearchValue }).toString()}`);
   }
-
 
   return (
     <main>

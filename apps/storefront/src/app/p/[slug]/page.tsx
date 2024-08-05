@@ -31,7 +31,7 @@ import getBase64 from "@/lib/generateBlurPlaceholder";
 import clsx from "clsx";
 import { ChevronLeftIcon, ChevronRightIcon, TagIcon } from "@heroicons/react/24/outline";
 import { mapEdgesToItems } from "@/lib/maps";
-import { ATTR_GHID_MARIMI } from "@/lib/const";
+import { ATTR_GHID_MARIMI, STOREFRONT_URL } from "@/lib/const";
 import Link from "next/link";
 import VariantSelector from "./variants/VariantSelector";
 import { getMessages, getMetadataValue } from "@/lib/util";
@@ -75,8 +75,8 @@ export async function generateMetadata(
     title: `${product.name} | ${product.seoTitle || (await parent).title?.absolute}`,
     description: product.seoDescription || productNameAndVariant,
     alternates: {
-      canonical: process.env.NEXT_PUBLIC_STOREFRONT_URL
-        ? process.env.NEXT_PUBLIC_STOREFRONT_URL + `/p/${encodeURIComponent(params.slug)}`
+      canonical: STOREFRONT_URL
+        ? STOREFRONT_URL + `/p/${encodeURIComponent(params.slug)}`
         : undefined,
     },
     openGraph: product.thumbnail
@@ -338,7 +338,7 @@ const ProductDetail = async ({
       "@type": "ListItem",
       position: i + 1,
       name: item.name,
-      item: item.href ? `${process.env.NEXT_PUBLIC_STOREFRONT_URL}${item.href}` : undefined,
+      item: item.href ? `${STOREFRONT_URL}${item.href}` : undefined,
     })),
   };
 
@@ -453,7 +453,7 @@ const ProductDetail = async ({
           )}
         </div>
       </div>
-      <div className="container pb-12 px-8">
+      <div className="container pb-12 px-8 md:max-w-[80%]">
         {description && (
           <div className="mt-8 space-y-6">
             <p className="text-md mt-8 font-bold text-black-500 uppercase">

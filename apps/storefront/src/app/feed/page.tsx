@@ -1,6 +1,6 @@
 import { mapEdgesToItems } from "@/lib/maps";
 import { GroupedProduct, groupProductsByColor } from "@/lib/product";
-import { BASE_URL } from "@/lib/const";
+import { STOREFRONT_URL } from "@/lib/const";
 import {
   ProductCollectionDocument,
   ProductCollectionQuery,
@@ -35,7 +35,7 @@ async function getProducts() {
         const variant = checkProductVariant?.[0];
         return {
           sku: variant?.sku,
-          url: `${BASE_URL}/p/${product.slug}?variant=${variant?.id}`,
+          url: `${STOREFRONT_URL}/p/${product.slug}?variant=${variant?.id}`,
           lastModified: variant?.updatedAt,
         };
       });

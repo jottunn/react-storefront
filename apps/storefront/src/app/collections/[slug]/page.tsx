@@ -8,7 +8,7 @@ import { translate } from "@/lib/translations";
 import FilteredProductList from "@/components/productList/FilteredProductList";
 import { getMessages } from "@/lib/util";
 import Link from "next/link";
-import { STOREFRONT_NAME } from "@/lib/const";
+import { STOREFRONT_NAME, STOREFRONT_URL } from "@/lib/const";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Script from "next/script";
 
@@ -32,8 +32,8 @@ export const generateMetadata = async ({
       collection &&
       (collection.seoDescription || `${collection.name} pe magazinul online Surmont.ro`),
     alternates: {
-      canonical: process.env.NEXT_PUBLIC_STOREFRONT_URL
-        ? process.env.NEXT_PUBLIC_STOREFRONT_URL + `/c/${encodeURIComponent(params.slug)}`
+      canonical: STOREFRONT_URL
+        ? STOREFRONT_URL + `/c/${encodeURIComponent(params.slug)}`
         : undefined,
     },
     openGraph: {
@@ -76,7 +76,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
       "@type": "ListItem",
       position: i + 1,
       name: item.name,
-      item: item.href ? `${process.env.NEXT_PUBLIC_STOREFRONT_URL}${item.href}` : undefined,
+      item: item.href ? `${STOREFRONT_URL}${item.href}` : undefined,
     })),
   };
 
