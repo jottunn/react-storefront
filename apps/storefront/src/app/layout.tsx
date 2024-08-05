@@ -9,6 +9,7 @@ import { CheckoutProvider } from "@/lib/hooks/CheckoutContext";
 import Footer from "@/components/footer/Footer";
 import BackToTopButton from "@/components/BackToTopButton";
 import CookieConsentWrapper from "@/components/CookieConsentWrapper";
+import { STOREFRONT_URL } from "@/lib/const";
 
 const openSans = localFont({
   src: "../../public/fonts/OpenSans-VariableFont_wdth,wght.ttf",
@@ -25,9 +26,7 @@ const raleway = localFont({
 export const metadata: Metadata = {
   title: process.env.NEXT_PUBLIC_STOREFRONT_NAME,
   description: process.env.NEXT_PUBLIC_STOREFRONT_NAME,
-  metadataBase: process.env.NEXT_PUBLIC_STOREFRONT_URL
-    ? new URL(process.env.NEXT_PUBLIC_STOREFRONT_URL)
-    : undefined,
+  metadataBase: STOREFRONT_URL ? new URL(STOREFRONT_URL) : undefined,
 };
 
 export default function RootLayout(props: { children: ReactNode }) {
