@@ -38,17 +38,19 @@ import {
 import { saleorAuthClient } from "src/app/config";
 import { LoginFormData } from "./login/LoginForm";
 import { RegisterFormData } from "./register/RegisterForm";
-import { BASE_URL } from "@/lib/const";
+import { STOREFRONT_URL } from "@/lib/const";
 import { DEFAULT_CHANNEL, defaultRegionQuery } from "@/lib/regions";
 import { ResetFormData } from "./reset/ForgotPassword";
 import { ResetPasswordFormData } from "./reset/ResetPasswordForm";
 import { ConfirmData } from "./confirm/ConfirmResult";
 
 export async function logout() {
-  saleorAuthClient.signOut();
+  "use server";
+  saleorAuthClient().signOut();
 }
 
 export async function login(formData: LoginFormData) {
+  "use server";
   const email = formData.email.toString();
   const password = formData.password.toString();
 
@@ -56,13 +58,15 @@ export async function login(formData: LoginFormData) {
     return { success: false, errors: ["Email and password are required"] };
   }
 
-  const { data } = await saleorAuthClient.signIn({ email, password }, { cache: "no-store" });
+  const { data } = await saleorAuthClient().signIn({ email, password }, { cache: "no-store" });
+  console.log("API response data:", data);
 
   if (data.tokenCreate.errors.length > 0) {
     const customError = data?.tokenCreate?.errors as any;
     return { success: false, errors: customError.map((error: { code: any }) => error.code) };
   }
-
+  const token = data.tokenCreate.token;
+  console.log("Login successful, token:", token);
   return { success: true, token: data.tokenCreate.token };
 }
 
@@ -77,7 +81,7 @@ export async function register(formData: RegisterFormData | any) {
       channel: string;
       metadata?: any;
     }
-    const confirmUrl = `${BASE_URL}/confirm`;
+    const confirmUrl = `${STOREFRONT_URL}/confirm`;
     const input: RegisterInput = {
       email: formData.email,
       password: formData.password,
@@ -145,7 +149,7 @@ export async function setPassword(formData: ResetPasswordFormData) {
         token: formData.token,
       },
     });
-    console.log("setPassword", response.setPassword?.errors);
+    //console.log("setPassword", response.setPassword?.errors);
     if (response?.setPassword?.errors?.length) {
       const customError = response.setPassword.errors as any;
       return { success: false, errors: customError.map((error: { code: any }) => error.code) };
@@ -166,10 +170,10 @@ export async function requestPasswordReset(formData: ResetFormData) {
       variables: {
         email: formData.email,
         channel: DEFAULT_CHANNEL.slug,
-        redirectUrl: `${BASE_URL}/reset`,
+        redirectUrl: `${STOREFRONT_URL}/reset`,
       },
     });
-    // console.log('requestPasswordReset', response.requestPasswordReset?.errors);
+    console.log("requestPasswordReset", response.requestPasswordReset?.errors);
     if (response?.requestPasswordReset?.errors?.length) {
       const customError = response.requestPasswordReset.errors as any;
       return { success: false, errors: customError.map((error: { code: any }) => error.code) };

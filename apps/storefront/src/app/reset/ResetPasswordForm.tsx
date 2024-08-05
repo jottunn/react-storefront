@@ -54,7 +54,7 @@ export default function ResetForm({ messages }: FormProps) {
       const customError = result.errors[0] as any;
       setError(customError || "ERROR");
     } else {
-      router.push("/account");
+      router.push("/login");
     }
     setIsSubmitting(false);
   };
