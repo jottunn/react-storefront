@@ -33,12 +33,16 @@ export function ShippingMethodSection({ active, messages }: ShippingMethodSectio
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!checkout.deliveryMethod && availableShippingMethods.length === 1) {
+    if (
+      !checkout.deliveryMethod &&
+      availableShippingMethods.length === 1 &&
+      selectedDeliveryMethod === null
+    ) {
       handleChange(availableShippingMethods[0]);
     }
-    if (availableShippingMethods.length > 0) {
+    if (availableShippingMethods.length > 0 && selectedDeliveryMethod === null) {
       const initialEditing = !checkout.deliveryMethod && availableShippingMethods.length > 1;
-      console.log("Initial State: editing", initialEditing);
+      // console.log("Initial State: editing", initialEditing);
       setEditing(initialEditing);
 
       const initialDeliveryMethod =
@@ -48,23 +52,30 @@ export function ShippingMethodSection({ active, messages }: ShippingMethodSectio
     }
   }, [availableShippingMethods, checkout.deliveryMethod]);
 
-  const handleChange = async (method: ShippingMethod) => {
-    console.log("handle change");
+  useEffect(() => {
+    if (selectedDeliveryMethod) {
+      updateShippingMethod(selectedDeliveryMethod as ShippingMethod);
+    }
+  }, [JSON.stringify(selectedDeliveryMethod)]);
+
+  const handleChange = (method: ShippingMethod) => {
+    setSelectedDeliveryMethod(method);
+    updateShippingMethod(method as ShippingMethod);
+  };
+
+  const updateShippingMethod = async (method: ShippingMethod) => {
     setLoading(true);
     const response = await checkoutShippingMethodUpdate({
       shippingMethodId: method.id,
       id: checkout.id,
     });
 
-    console.log("handleChange", response);
     if (response?.errors) {
-      // todo: handle errors
       setErrors(response.errors);
       setLoading(false);
       return;
     }
     await refreshCheckout();
-    setSelectedDeliveryMethod(method);
     setEditing(false);
     setErrors(null);
     setLoading(false);
@@ -89,16 +100,18 @@ export function ShippingMethodSection({ active, messages }: ShippingMethodSectio
       {active &&
         (editing ? (
           <>
-            <a
-              href="#"
-              className="text-base underline text-main-1 hover:text-main"
-              onClick={(e) => {
-                e.preventDefault();
-                setEditing(false);
-              }}
-            >
-              {messages["app.buttons.back"]}
-            </a>
+            {selectedDeliveryMethod !== null && !loading && (
+              <a
+                href="#"
+                className="text-base underline text-main-1 hover:text-main"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setEditing(false);
+                }}
+              >
+                {messages["app.buttons.back"]}
+              </a>
+            )}
             <RadioGroup value={selectedDeliveryMethod} onChange={handleChange} className="pb-4">
               <div className="mt-4 grid grid-cols-2 gap-2">
                 {availableShippingMethods.map((method) => {

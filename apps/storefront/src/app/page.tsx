@@ -220,8 +220,6 @@ export default async function Home() {
   const parsedFeaturedCollectionText = featuredCollectionText
     ? parser.parse(JSON.parse(featuredCollectionText))
     : "";
-  console.log("parsedContent", parsedContent);
-  console.log("isEmptyContent", isEmptyContent);
   return (
     <>
       {hasBanner1 && !hasBanner2 && (

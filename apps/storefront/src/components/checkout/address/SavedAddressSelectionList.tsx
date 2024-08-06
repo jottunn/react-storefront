@@ -2,7 +2,6 @@ import clsx from "clsx";
 import React from "react";
 import { AddressDetailsFragment, CheckoutError, CountryCode, User } from "@/saleor/api";
 import { AddressFormData } from "../../account/AddressForm";
-import Spinner from "@/components/Spinner";
 import { Messages } from "@/lib/util";
 
 interface SavedAddressSelectionListProps {
@@ -59,8 +58,8 @@ export function SavedAddressSelectionList({
               }
             }}
             className={clsx(
-              "border-2 p-3 mr-2 rounded-md cursor-pointer hover:border-action-3",
-              address?.id === selectedSavedAddress?.id && "border-action-1",
+              "border-2 p-3 mr-2 mb-2 rounded-md cursor-pointer hover:border-action-3",
+              address?.id === selectedSavedAddress?.id ? "border-action-1" : "",
             )}
             key={address?.id}
           >
