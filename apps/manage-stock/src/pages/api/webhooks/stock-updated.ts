@@ -9,6 +9,7 @@ type ProductVariantStockUpdatedWebhookPayloadFragment = {
   productVariant: {
     sku: string;
     stocks: any[];
+    product: any;
   };
 };
 
@@ -24,6 +25,20 @@ const ProductVariantStockUpdatedGraphqlSubscription = gql`
       stocks {
         id
         quantity
+      }
+      product {
+        id
+        variants {
+          stocks {
+            id
+            quantity
+          }
+        }
+        channelListings {
+          channel {
+            id
+          }
+        }
       }
     }
   }
@@ -137,6 +152,62 @@ export default productVariantStockUpdatedWebhook.createHandler(async (req, res, 
     return res
       .status(500)
       .json({ error: "Internal server error - Error updating variant stock info" });
+  }
+
+  //if product is out of stock, all variants have stock 0, then mark it as unav for purchase + hiding from listings
+  // Check if all variants have stock 0
+  const allVariantsOutOfStock = payload.productVariant.product.variants.every(
+    (variant: { stocks: any[] }) => variant.stocks.every((stock) => stock.quantity === 0)
+  );
+  const updateProductChannelListingMutation = gql`
+    mutation UpdateProductChannelListing($id: ID!, $input: ProductChannelListingUpdateInput!) {
+      productChannelListingUpdate(id: $id, input: $input) {
+        errors {
+          message
+        }
+      }
+    }
+  `;
+
+  try {
+    const updateChannels = payload.productVariant.product.channelListings.map(
+      (listing: { channel: { id: any } }) => ({
+        channelId: listing.channel.id,
+        isAvailableForPurchase: !allVariantsOutOfStock,
+        visibleInListings: !allVariantsOutOfStock,
+      })
+    );
+
+    const resultUpdateProductChannel = await client
+      .mutation(updateProductChannelListingMutation, {
+        id: payload.productVariant.product.id,
+        input: { updateChannels },
+      })
+      .toPromise();
+
+    if (
+      resultUpdateProductChannel.error ||
+      resultUpdateProductChannel.data.productChannelListingUpdate.errors.length > 0
+    ) {
+      console.error(
+        "Error updating product channel listing",
+        resultUpdateProductChannel.error ||
+          resultUpdateProductChannel.data.productChannelListingUpdate.errors
+      );
+      logger.error(
+        `Error updating product channel listing. Error: ${JSON.stringify(
+          resultUpdateProductChannel.error ||
+            resultUpdateProductChannel.data.productChannelListingUpdate.errors
+        )}`
+      );
+      return res.status(500).json({ error: "Failed to update product channel listing" });
+    }
+  } catch (error) {
+    console.error("Error updating product channel listing:");
+    logger.error(`Error updating product channel listing. Error: ${JSON.stringify(error)}`);
+    return res
+      .status(500)
+      .json({ error: "Internal server error - Error updating product channel listing" });
   }
 
   /**
