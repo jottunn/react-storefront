@@ -68,7 +68,7 @@ export function AddressBookCard({ address, onAddressChange }: AddressBookCardPro
   };
 
   return (
-    <div className="flex-1 md:w-1/2 md:ml-2 mb-2 relative">
+    <div className="flex-1 min-w-[200px] md:min-w-[300px] md:w-1/2 md:ml-2 mb-2 relative">
       <div className="border p-4 md:min-h-[250px]">
         {error && <p className="text-red-500">{error}</p>}
         {successMessage && <p className="text-action-1 text-md">{successMessage}</p>}
@@ -108,11 +108,11 @@ export function AddressBookCard({ address, onAddressChange }: AddressBookCardPro
             </div>
           </>
         )}
-        <div className="flex flex-col lg:flex-row my-4">
+        <div className="my-4">
           {!address.isDefaultBillingAddress && (
             <Button
               variant="secondary"
-              className="my-1 mr-2 py-2 w-full lg:w-auto inline-flex h-auto items-center justify-center whitespace-break-spaces"
+              className="my-1 mr-2 py-2 w-auto inline-flex h-auto items-center justify-center whitespace-break-spaces"
               onClick={() => setDefaultAddress(address.id, "BILLING")}
               label={messages["app.preferences.addressbook.setDefaultBilling"]}
             />
@@ -120,7 +120,7 @@ export function AddressBookCard({ address, onAddressChange }: AddressBookCardPro
           {!address.isDefaultShippingAddress && (
             <Button
               variant="secondary"
-              className="my-1 py-2 w-full lg:w-auto inline-flex h-auto items-center justify-center whitespace-break-spaces"
+              className="my-1 py-2 w-auto inline-flex h-auto items-center justify-center whitespace-break-spaces"
               onClick={() => setDefaultAddress(address.id, "SHIPPING")}
               label={messages["app.preferences.addressbook.setDefaultShipping"]}
             />

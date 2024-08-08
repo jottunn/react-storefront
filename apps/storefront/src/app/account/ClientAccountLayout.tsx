@@ -21,9 +21,9 @@ const ClientAccountLayout: React.FC<ClientAccountLayoutProps> = ({
 }) => {
   return (
     <UserProvider value={{ user, messages, orders }}>
-      <div className="py-10">
-        <main className="flex flex-col md:flex-row container px-8">
-          <div className="mb-2 flex-initial md:w-[300px] border-r-2 mr-8">
+      <div className="md:py-10">
+        <main className="flex flex-col md:flex-row md:container md:px-8">
+          <div className="mb-2 flex-initial md:w-[300px] md:mr-8 md:border-r-2">
             <NavigationPanel messages={messages} />
           </div>
           <div className="flex flex-initial w-full flex-col overflow-y-auto md:px-4 space-y-4 h-full">

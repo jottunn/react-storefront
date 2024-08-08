@@ -63,13 +63,15 @@ export default function Page({ params }: { params: { token: string } }) {
                 <tr key={line?.id} className="h-16">
                   <td className="my-3">
                     <div className="flex flex-row justify-center">
-                      <Image
-                        src={line?.thumbnail?.url || "/"}
-                        alt={line?.thumbnail?.alt || " "}
-                        width={70}
-                        height={70}
-                      />
-                      <div className="flex flex-col justify-center">
+                      {line?.thumbnail?.url && (
+                        <Image
+                          src={line?.thumbnail?.url}
+                          alt={line?.thumbnail?.alt || line?.productName}
+                          width={70}
+                          height={70}
+                        />
+                      )}
+                      <div className="flex flex-col justify-center text-left ml-2">
                         <div>{line?.productName}</div>
                         <div className="text-xs text-left text-gray-600">{line?.variantName}</div>
                       </div>

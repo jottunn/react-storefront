@@ -21,7 +21,7 @@ function AddressBookPage() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row">
+    <div className="mx-6 my-6 md:mx-0 md:my-0 md:flex md:flex-wrap md:gap-2">
       {user &&
         addresses.map((address) => (
           <AddressBookCard

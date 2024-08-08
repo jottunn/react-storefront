@@ -15,7 +15,7 @@ const AccountPage = () => {
 
   return (
     <div>
-      <p className="text-lg mb-4">
+      <p className="text-lg mb-4 container">
         {user?.firstName}&nbsp;{user?.lastName}
       </p>
       <div className="checkout-section-container mb-4">
