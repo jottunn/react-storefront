@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ProductDetailsFragment } from "@/saleor/api";
 import Image from "next/image";
-import { ATTR_COLOR_SLUG } from "@/lib/const";
+import { ATTR_COLOR_COMMERCIAL_SLUG, ATTR_COLOR_SLUG } from "@/lib/const";
 
 export interface VariantSelectorProps {
   product: ProductDetailsFragment;
@@ -17,14 +17,14 @@ export function VariantColorSelector({
   const processedColors = new Set<string>();
   const defaultMedia = product.thumbnail || { url: "", alt: product.name };
 
-  const colorOptions =
+  const getColorOptions = (attrSlug: string, currentColor?: string) =>
     product.variants?.flatMap((variant) => {
       if (!variant.quantityAvailable) {
         // only if variant is inStock
         return [];
       }
       return variant.attributes.flatMap((attribute) => {
-        if (attribute.attribute.slug === ATTR_COLOR_SLUG) {
+        if (attribute.attribute.slug === attrSlug) {
           return attribute.values
             .filter((value) => {
               const name = value.name as string;
@@ -86,6 +86,27 @@ export function VariantColorSelector({
                 </Link>
               );
             });
+        }
+        return [];
+      });
+    }) || [];
+
+  const colorOptions =
+    product.variants?.flatMap((variant) => {
+      return variant.attributes.flatMap((attribute) => {
+        if (
+          attribute.attribute.slug === ATTR_COLOR_COMMERCIAL_SLUG &&
+          attribute.values?.[0]?.name?.length
+        ) {
+          return getColorOptions(
+            ATTR_COLOR_COMMERCIAL_SLUG,
+            commercialColorAttr?.values?.[0]?.name,
+          );
+        } else if (
+          attribute.attribute.slug === ATTR_COLOR_COMMERCIAL_SLUG &&
+          (!attribute.values?.[0]?.name || attribute.values?.[0]?.name?.length === 0)
+        ) {
+          return getColorOptions(ATTR_COLOR_SLUG, currentColor);
         }
         return [];
       });

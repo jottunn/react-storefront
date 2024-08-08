@@ -7,7 +7,7 @@ import {
   ProductVariantDetailsFragment,
   SelectedAttributeDetailsFragment,
 } from "@/saleor/api";
-import { ATTR_COLOR_SLUG } from "./const";
+import { ATTR_COLOR_COMMERCIAL_SLUG, ATTR_COLOR_SLUG } from "./const";
 // import { translate } from "./translations";
 /**
  * When a variant is selected, the variant attributes are shown together with
@@ -47,10 +47,21 @@ function groupVariantsByColor(variants: ProductVariantDetailsFragment[]) {
 
   variants.forEach((variant) => {
     if (variant.quantityAvailable && variant.quantityAvailable > 0) {
-      const colorValue =
-        variant.attributes.find((attr) => attr.attribute.slug === ATTR_COLOR_SLUG)?.values[0]
-          ?.name || "No Color";
-
+      let colorValue: string | undefined | null;
+      // Check for ATTR_COLOR_COMMERCIAL_SLUG first
+      const commercialColorAttr = variant.attributes.find(
+        (attr) => attr.attribute.slug === ATTR_COLOR_COMMERCIAL_SLUG,
+      );
+      if (commercialColorAttr) {
+        colorValue = commercialColorAttr.values[0]?.name;
+      }
+      // If no commercial color found, check for ATTR_COLOR_SLUG
+      if (!colorValue) {
+        const defaultColorAttr = variant.attributes.find(
+          (attr) => attr.attribute.slug === ATTR_COLOR_SLUG,
+        );
+        colorValue = defaultColorAttr?.values[0]?.name || "";
+      }
       if (!map.has(colorValue)) {
         map.set(colorValue, []);
       }
@@ -58,7 +69,7 @@ function groupVariantsByColor(variants: ProductVariantDetailsFragment[]) {
     }
   });
 
-  return map; // Map with key as color or "No Color", and value as array of variants
+  return map;
 }
 
 export interface GroupedProduct extends Product {

@@ -21,7 +21,7 @@ export default function Banner({
       <div className="relative flex h-full w-full overflow-hidden">
         {bannerAttribute?.values[0]?.name && (
           <Image
-            key="banner"
+            key={bannerAttribute?.values[0]?.name}
             src={`${UPLOAD_FOLDER ?? ""}/${bannerAttribute.values[0].name}`}
             alt={STOREFRONT_NAME}
             className="absolute h-full w-full inset-0 object-cover object-center"

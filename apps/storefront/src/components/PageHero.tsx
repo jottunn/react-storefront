@@ -31,6 +31,19 @@ export function PageHero({ title, description, pills = [], messages }: PageHeroP
         <h1 className="text-4xl" data-testid={`titleOf${title}`}>
           {title}
         </h1>
+        {pills.length > 0 && (
+          <div className="hidden md:flex md:gap-2 md:flex-wrap md:items-center md:justify-center my-4 md:mt-6">
+            {pills.map((pill) => (
+              <Link
+                key={pill.label}
+                href={`/c/${pill.slug}`}
+                className="cursor-pointer h-10 py-2 inline-flex items-center border border-gray-400 text-base hover:border-action-1 hover:text-action-1 whitespace-nowrap px-4"
+              >
+                {pill.label}
+              </Link>
+            ))}
+          </div>
+        )}
         {excerpt && (
           <div
             className="text-md inline-block my-6 text-main "
@@ -75,19 +88,6 @@ export function PageHero({ title, description, pills = [], messages }: PageHeroP
               </>
             )}
           </Disclosure>
-        )}
-        {pills.length > 0 && (
-          <div className="hidden md:flex md:gap-2 md:flex-wrap md:items-center md:justify-center md:mt-5 my-4">
-            {pills.map((pill) => (
-              <Link
-                key={pill.label}
-                href={`/c/${pill.slug}`}
-                className="cursor-pointer h-10 py-2 inline-flex items-center border border-gray-400 text-base hover:border-action-1 hover:text-action-1 whitespace-nowrap px-4"
-              >
-                {pill.label}
-              </Link>
-            ))}
-          </div>
         )}
       </div>
     </Box>

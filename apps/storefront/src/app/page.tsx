@@ -38,7 +38,7 @@ export const generateMetadata = async (): Promise<Metadata> => {
     PageDocument,
     {
       variables: { slug: "home", locale: DEFAULT_LOCALE },
-      revalidate: 60,
+      revalidate: 60 * 60 * 24,
     },
   );
   const page = response.page;
@@ -73,7 +73,7 @@ export default async function Home() {
     ProductCollectionDocument,
     {
       variables: queryVariables,
-      revalidate: 60,
+      revalidate: 60 * 60,
     },
   );
   let newProducts = newProductsH ? mapEdgesToItems(newProductsH) : [];
@@ -87,7 +87,6 @@ export default async function Home() {
       slug: "highlights",
       ...defaultRegionQuery(),
     },
-    revalidate: 60,
   });
 
   let featuredProducts;
@@ -106,7 +105,7 @@ export default async function Home() {
         ...defaultRegionQuery(),
         sortBy,
       },
-      revalidate: 60,
+      revalidate: 60 * 5,
     });
     featuredProducts = featuredProductsH ? mapEdgesToItems(featuredProductsH) : [];
   }
@@ -154,7 +153,9 @@ export default async function Home() {
       ? page.attributes.find((attr) => attr.attribute.name === "Homepage Banner1")
       : null;
 
-  const hasBanner1 = banner1Attribute?.values.length ? banner1Attribute?.values.length > 0 : false;
+  // console.log('page.attributes', page?.attributes);
+  const hasBanner1 = banner1Attribute?.values.length && banner1Attribute?.values.length > 0;
+  // console.log('hasBanner1', hasBanner1);
   const banner1AttributeContent =
     page && "attributes" in page
       ? page.attributes.find(
@@ -222,9 +223,11 @@ export default async function Home() {
     : "";
   return (
     <>
-      {hasBanner1 && !hasBanner2 && (
+      {hasBanner1 && (
         <div className="flex overflow-hidden mb-20 md:mb-28 !px-0">
-          <div className="flex flex-col w-full h-[125vw] md:max-h-[80vh]">
+          <div
+            className={`flex flex-col w-full ${hasBanner1 && hasBanner2 ? "md:w-[98%] mx-auto h-[250vw] md:flex-row gap-4 md:gap-6" : ""} ${hasBanner1 && !hasBanner2 ? "h-[125vw] md:max-h-[80vh]" : ""}`}
+          >
             <Banner
               bannerAttribute={banner1Attribute}
               parsedBannerRichText={parsedBanner1RichText}
@@ -232,27 +235,15 @@ export default async function Home() {
               bannerTextStyle={banner1TextStyle}
               placeholder={placeholder}
             />
-          </div>
-        </div>
-      )}
-
-      {hasBanner1 && hasBanner2 && (
-        <div className="flex overflow-hidden mb-20 md:mb-28 !px-0">
-          <div className="flex flex-col w-full md:w-[98%] mx-auto h-[250vw] md:max-h-[80vh] md:flex-row gap-4 md:gap-6">
-            <Banner
-              bannerAttribute={banner1Attribute}
-              parsedBannerRichText={parsedBanner1RichText}
-              displayTextBanner={displayTextBanner1}
-              bannerTextStyle={banner1TextStyle}
-              placeholder={placeholder}
-            />
-            <Banner
-              bannerAttribute={banner2Attribute}
-              parsedBannerRichText={parsedBanner2RichText}
-              displayTextBanner={displayTextBanner2}
-              bannerTextStyle={banner2TextStyle}
-              placeholder={placeholder_2}
-            />
+            {hasBanner2 && (
+              <Banner
+                bannerAttribute={banner2Attribute}
+                parsedBannerRichText={parsedBanner2RichText}
+                displayTextBanner={displayTextBanner2}
+                bannerTextStyle={banner2TextStyle}
+                placeholder={placeholder_2}
+              />
+            )}
           </div>
         </div>
       )}
@@ -312,7 +303,7 @@ export default async function Home() {
         )}
       </div>
 
-      {newProducts && (
+      {newProducts && newProducts.length > 0 && (
         <div className="container px-8 pb-24">
           <div className="swiper-header flex justify-center items-center space-x-4">
             <h2 className="text-lg uppercase m-0 flex-1 text-left mb-8">

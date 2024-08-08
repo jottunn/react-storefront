@@ -22,11 +22,11 @@ export interface VariantSelectorProps {
   sizeGuide?: any;
 }
 
-function getColorOfVariant(productVariant: ProductVariantDetailsFragment) {
+function getColorOfVariant(productVariant: ProductVariantDetailsFragment, attrSlug: string) {
   if (productVariant && Array.isArray(productVariant.attributes)) {
     for (const attribute of productVariant.attributes) {
       if (
-        attribute.attribute.slug === ATTR_COLOR_SLUG &&
+        attribute.attribute.slug === attrSlug &&
         attribute.values &&
         attribute.values.length > 0
       ) {
@@ -37,15 +37,33 @@ function getColorOfVariant(productVariant: ProductVariantDetailsFragment) {
       }
     }
   }
-  return ""; // Return default color if none is found
+  return "";
 }
-function getGroupedVariants(currentColor: string, variants: ProductVariant[]) {
+
+//used for grouping sizes
+function getGroupedVariants(
+  variants: ProductVariant[],
+  currentColor?: string,
+  currentCommercialColor?: string,
+) {
   return variants
     .filter((variant) => variant.quantityAvailable)
     .filter((variant) => {
-      const colorAttribute = variant.attributes.find(
-        (attribute) => attribute.attribute.slug === ATTR_COLOR_SLUG,
+      let colorAttribute = variant.attributes.find(
+        (attribute) => attribute.attribute.slug === ATTR_COLOR_COMMERCIAL_SLUG,
       );
+      if (colorAttribute && colorAttribute?.values?.length > 0) {
+        return (
+          colorAttribute &&
+          colorAttribute.values.some((value) => value.name === currentCommercialColor)
+        );
+      }
+
+      if (!colorAttribute || colorAttribute?.values?.length === 0) {
+        colorAttribute = variant.attributes.find(
+          (attribute) => attribute.attribute.slug === ATTR_COLOR_SLUG,
+        );
+      }
       return colorAttribute && colorAttribute.values.some((value) => value.name === currentColor);
     });
 }
@@ -62,13 +80,23 @@ export function VariantSelector({
     variants &&
     variants.filter((variant) => variant.quantityAvailable || variant.id === selectedVariant?.id);
   // console.log('availableVariants', availableVariants);
-  const currentColor = selectedVariant ? getColorOfVariant(selectedVariant) : "";
-  const sizes = currentColor
-    ? getGroupedVariants(currentColor, availableVariants as ProductVariant[])
-    : availableVariants;
+  const currentColor = selectedVariant ? getColorOfVariant(selectedVariant, ATTR_COLOR_SLUG) : "";
+  const currentCommercialColor = selectedVariant
+    ? getColorOfVariant(selectedVariant, ATTR_COLOR_COMMERCIAL_SLUG)
+    : "";
   const commercialColorAttr = selectedVariant?.attributes.find(
     (attr) => attr.attribute.slug === ATTR_COLOR_COMMERCIAL_SLUG,
   );
+
+  const sizes =
+    currentColor || currentCommercialColor
+      ? getGroupedVariants(
+          availableVariants as ProductVariant[],
+          currentColor,
+          currentCommercialColor,
+        )
+      : availableVariants;
+
   // Skip displaying selector when theres no variant
   if (!availableVariants || availableVariants.length === 0) {
     return null;
@@ -105,7 +133,7 @@ export function VariantSelector({
           </p>
         )}
 
-        {availableVariants && availableVariants.length > 1 && (
+        {availableVariants && availableVariants.length > 0 && (
           <VariantColorSelector
             product={product}
             currentColor={currentColor}
