@@ -365,7 +365,7 @@ const ProductDetail = async ({
           "grid grid-cols-1 gap-[2rem] md:grid-cols-3 md:gap-[4rem] lg:gap-[10rem] max-h-full container px-8 pb-4",
         )}
       >
-        <div className="h-full relative md:col-span-2 md:flex md:items-center md:justify-center">
+        <div className="h-full relative md:col-span-2 md:flex md:items-center md:justify-center md:gap-4">
           {product.variants?.[0]?.pricing?.onSale && (
             <TagIcon className="text-action-1 w-6 h-6 absolute right-4 top-4 z-30" />
           )}
@@ -379,7 +379,7 @@ const ProductDetail = async ({
           {brandAttribute && (
             <Link
               href={`/collections/${brandAttribute?.values[0]?.slug}`}
-              className="text-md my-4 md:mb-6 font-medium text-gray-600 cursor-pointer text-left hover:text-green-600 block"
+              className="text-md my-4 md:mb-6 font-medium text-gray-600 cursor-pointer text-left hover:text-green-600 inlin-block w-auto"
             >
               {brandCollection &&
               brandCollection.collection &&

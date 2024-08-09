@@ -58,9 +58,7 @@ export function VariantColorSelector({
               const imgElement = (
                 <div
                   key={`thumb-${variant.id.toString()}-${value.name || ""}`}
-                  className={`relative flex items-center justify-center border-2 ${
-                    isSelectedColor ? "border-black" : "border-neutral-400"
-                  } p-1 h-[80px] w-[80px] overflow-hidden`}
+                  className={`relative flex items-center justify-center border-2 ${isSelectedColor ? "border-black hover:border-black" : "border-neutral-400 hover:border-action-1"} p-1 h-[80px] w-[80px] overflow-hidden`}
                 >
                   <Image
                     src={variantMedia.url}

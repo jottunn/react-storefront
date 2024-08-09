@@ -231,12 +231,12 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
           onClick={() => handleImageClick(index)}
         >
           {media.type === "IMAGE" && (
-            <div className="relative w-full h-[350px] md:h-[700px] flex items-center justify-center">
+            <div className="relative w-full h-[350px] md:h-[600px] flex items-center justify-center">
               <Image
                 src={media.url}
                 alt={media.alt}
                 width={700}
-                height={700}
+                height={600}
                 style={{ objectFit: "contain" }}
                 className="block mx-auto p-6 max-h-[100%] cursor-pointer"
                 priority={index === 0}
