@@ -51,7 +51,6 @@ const sectionsManager = (checkout?: CheckoutDetailsFragment): CollapsedSections 
 function CheckoutForm({ messages, user }: CheckoutFormProps) {
   const [sameAddress, setSameAddress] = useState(true);
   const { checkout } = useCheckout();
-
   if (!checkout) {
     return null;
   }
@@ -71,7 +70,7 @@ function CheckoutForm({ messages, user }: CheckoutFormProps) {
           messages={messages}
           user={user}
         />
-        {checkout.email && (
+        {checkout.email && checkout.isShippingRequired && (
           <div className="col-span-full sm:col-span-12 mt-5 mb-5">
             <label>
               <input

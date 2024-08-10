@@ -58,7 +58,7 @@ function BillingAddressSection({ active, sameAddress, messages, user }: BillingA
     }
 
     // If "Use same address" is checked, also update the shipping address
-    if (updateShipping && !errors.length) {
+    if (checkout.isShippingRequired && updateShipping && !errors.length) {
       // Only proceed if there were no errors from billing address update
       const shippingResponse = await checkoutShippingAddressUpdate({
         address: { ...formData },
