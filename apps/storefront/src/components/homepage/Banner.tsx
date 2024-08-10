@@ -37,17 +37,19 @@ export default function Banner({
       {!(displayTextBanner && displayTextBanner === "NO") && (
         <div
           className={clsx({
-            "absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 p-6 md:p-12":
-              bannerTextStyle === "full",
-            "absolute banner-content left-1/2 transform -translate-x-1/2 bottom-4 md:bottom-28 bg-black bg-opacity-85 py-10 px-18":
-              bannerTextStyle !== "full",
+            "absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 p-6 md:p-12 ":
+              bannerTextStyle === "full" || bannerTextStyle === "full&background",
+            "absolute banner-content left-1/2 transform -translate-x-1/2 bottom-4 md:bottom-28 bg-black bg-opacity-85 py-10 px-18 ":
+              bannerTextStyle !== "full" && bannerTextStyle !== "full&background",
           })}
         >
           <div
             className={clsx({
-              "container text-md text-left text-white bg-black bg-opacity-70 p-6 sm:bg-transparent sm:p-0 md:text-lg md:prose-2xl banner-text":
-                bannerTextStyle === "full",
-              "prose-base banner-text text-white": bannerTextStyle !== "full",
+              "container text-md text-left text-white bg-black bg-opacity-70 p-6 sm:bg-transparent sm:p-0 md:text-lg md:prose-2xl banner-text ":
+                bannerTextStyle === "full" || bannerTextStyle === "full&background",
+              "with-bkg ": bannerTextStyle === "full&background",
+              "prose-base banner-text with-bkg text-white":
+                bannerTextStyle !== "full" && bannerTextStyle !== "full&background",
             })}
           >
             {parsedBannerRichText && (

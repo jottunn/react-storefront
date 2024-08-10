@@ -148,6 +148,7 @@ export default async function Home() {
   const homepageCollections = collections ? mapEdgesToItems(collections) : [];
   homepageCollections.sort((a, b) => getOrderValue(a.metadata) - getOrderValue(b.metadata));
   const numColumnsHPCollections = getNumColumns(homepageCollections.length);
+
   /** banner1 */
   const banner1Attribute =
     page && "attributes" in page
@@ -168,6 +169,8 @@ export default async function Home() {
   const parsedBanner1RichText = banner1AttributeContent?.values[0].richText
     ? parser.parse(JSON.parse(banner1AttributeContent?.values[0].richText)).join("")
     : "";
+  const bannerContainerSize =
+    page && "metadata" in page ? getMetadataValue(page.metadata, "Display Banner FullScreen") : "";
   const displayTextBanner1 =
     page && "metadata" in page ? getMetadataValue(page.metadata, "Banner1 Text Display") : "";
   const banner1TextStyle =
@@ -225,9 +228,11 @@ export default async function Home() {
   return (
     <>
       {hasBanner1 && (
-        <div className="flex overflow-hidden mb-20 md:mb-28 !px-0">
+        <div
+          className={`flex overflow-hidden mb-20 md:mb-28 !px-0 ${bannerContainerSize && bannerContainerSize === "YES" ? "" : "max-w-[1920px] mx-auto"}`}
+        >
           <div
-            className={`flex flex-col w-full ${hasBanner1 && hasBanner2 ? "md:w-[98%] mx-auto h-[250vw] md:flex-row gap-4 md:gap-6" : ""} ${hasBanner1 && !hasBanner2 ? "h-[125vw] md:max-h-[80vh]" : ""}`}
+            className={`flex flex-col w-full md:max-h-[80vh] ${hasBanner1 && hasBanner2 ? "md:w-[98%] mx-auto h-[250vw] md:flex-row gap-4 md:gap-6" : ""} ${hasBanner1 && !hasBanner2 ? "h-[125vw]" : ""}`}
           >
             <Banner
               bannerAttribute={banner1Attribute}
