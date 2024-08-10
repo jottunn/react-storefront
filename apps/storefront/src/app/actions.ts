@@ -235,7 +235,6 @@ export async function getAvailableFilters(productsFilter: ProductFilterInput) {
         ...defaultRegionQuery(),
       },
       revalidate: 60 * 60,
-      withAuth: false,
     });
     return products;
   } catch (error) {
@@ -250,7 +249,6 @@ export async function getProductCollection(queryVariables: any) {
       ProductCollectionDocument,
       {
         variables: queryVariables,
-        withAuth: false,
       },
     );
     return products;

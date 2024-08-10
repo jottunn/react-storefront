@@ -12,6 +12,7 @@ interface ServerMenuProps {
 }
 
 export default async function MenuServer({ children }: ServerMenuProps) {
+  "use server";
   const leftNavLinks = await executeGraphQL<MenuGetBySlugQuery, MenuGetBySlugQueryVariables>(
     MenuGetBySlugDocument,
     {

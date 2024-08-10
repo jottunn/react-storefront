@@ -38,7 +38,7 @@ export const generateMetadata = async (): Promise<Metadata> => {
     PageDocument,
     {
       variables: { slug: "home", locale: DEFAULT_LOCALE },
-      revalidate: 60 * 60 * 24,
+      revalidate: 60 * 5,
     },
   );
   const page = response.page;
@@ -50,13 +50,14 @@ export const generateMetadata = async (): Promise<Metadata> => {
 };
 
 export default async function Home() {
+  "use server";
   const messages = getMessages(DEFAULT_LOCALE);
   //get page by slug home
   const { page } = await executeGraphQL<PageQuery, { slug: String; locale: LanguageCodeEnum }>(
     PageDocument,
     {
       variables: { slug: "home", locale: DEFAULT_LOCALE },
-      revalidate: 60,
+      revalidate: 60 * 5,
     },
   );
 
@@ -73,7 +74,7 @@ export default async function Home() {
     ProductCollectionDocument,
     {
       variables: queryVariables,
-      revalidate: 60 * 60,
+      revalidate: 60 * 60 * 24,
     },
   );
   let newProducts = newProductsH ? mapEdgesToItems(newProductsH) : [];
@@ -122,7 +123,7 @@ export default async function Home() {
       filter: categoryFilter,
       ...defaultRegionQuery(),
     },
-    revalidate: 60,
+    revalidate: 60 * 5,
   });
   const homepageCategories = categories ? mapEdgesToItems(categories) : [];
   homepageCategories.sort((a, b) => getOrderValue(a.metadata) - getOrderValue(b.metadata));
@@ -141,7 +142,7 @@ export default async function Home() {
       filter: collectionFilter,
       ...defaultRegionQuery(),
     },
-    revalidate: 60,
+    revalidate: 60 * 5,
   });
 
   const homepageCollections = collections ? mapEdgesToItems(collections) : [];
@@ -255,7 +256,7 @@ export default async function Home() {
       )}
 
       {featuredCollection && featuredProducts && (
-        <div className="container px-8 py-24">
+        <div className="container p-8 md:py-24">
           <div className="swiper-header flex justify-center items-center space-x-4">
             <h2 className="text-lg uppercase m-0 flex-1 text-left">
               {translate(featuredCollection, "name") || messages["app.featuredProducts"]}
@@ -285,7 +286,7 @@ export default async function Home() {
       <div className="container block">
         {homepageCollections && homepageCollections.length > 0 && (
           <div
-            className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-${numColumnsHPCollections} gap-4 mt-20 md:mb-40`}
+            className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-${numColumnsHPCollections} gap-4 mt-10 md:mt-20 md:mb-40`}
           >
             {homepageCollections.map((collection) => (
               <HomepageBlock key={collection.id} item={collection} type="collection" />
@@ -294,7 +295,7 @@ export default async function Home() {
         )}
         {homepageCategories && homepageCategories.length > 0 && (
           <div
-            className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-${numColumnsHPCategories} gap-4 mt-20 mb-40`}
+            className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-${numColumnsHPCategories} gap-4 my-10 md:mt-20 md:mb-40`}
           >
             {homepageCategories.map((category) => (
               <HomepageBlock key={category.id} item={category} type="category" />
@@ -304,7 +305,7 @@ export default async function Home() {
       </div>
 
       {newProducts && newProducts.length > 0 && (
-        <div className="container px-8 pb-24">
+        <div className="container px-8 pb-2 md:pb-24">
           <div className="swiper-header flex justify-center items-center space-x-4">
             <h2 className="text-lg uppercase m-0 flex-1 text-left mb-8">
               {messages["app.newProducts"]}
@@ -329,7 +330,7 @@ export default async function Home() {
       )}
 
       {shopRichTextAttributes && shopRichTextAttributes.length > 0 && (
-        <div className="container flex flex-col md:flex-row  prose-2xl">
+        <div className="container flex flex-col prose-2xl border-t border-gray-300 pb-20 pt-24">
           {shopRichTextAttributes.map((attr, index) =>
             attr.values.map((item) => {
               const parsedRichText = item.richText
@@ -337,10 +338,7 @@ export default async function Home() {
                 : "";
               if (parsedRichText) {
                 return (
-                  <div
-                    key={`${index}`}
-                    className="md:w-1/2 px-4 md:border-t md:border-gray-300 md:py-20"
-                  >
+                  <div key={`${index}`} className="md:w-3/4 mx-auto">
                     <div className="p-2" dangerouslySetInnerHTML={{ __html: parsedRichText }} />
                   </div>
                 );

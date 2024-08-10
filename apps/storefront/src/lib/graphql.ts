@@ -35,7 +35,7 @@ export async function executeGraphQL<Result, Variables>(
   // Logging the query and variables for debugging
   // console.log('operation', operation);
   // console.log("GraphQL Query:", queryString);
-  // console.log("Variables:", variables);
+  //console.log("Variables:", variables);
 
   const input = {
     method: "POST",
@@ -51,37 +51,50 @@ export async function executeGraphQL<Result, Variables>(
     next: { revalidate },
   };
 
-  const response = withAuth
-    ? await saleorAuthClient().fetchWithAuth(process.env.NEXT_PUBLIC_SALEOR_API_URL, input)
-    : await fetch(process.env.NEXT_PUBLIC_SALEOR_API_URL, input);
+  let attempt = 0;
+  let maxRetries = 1;
+  let body;
+  while (attempt <= maxRetries) {
+    const response = withAuth
+      ? await saleorAuthClient().fetchWithAuth(process.env.NEXT_PUBLIC_SALEOR_API_URL, input)
+      : await fetch(process.env.NEXT_PUBLIC_SALEOR_API_URL, input);
 
-  if (!response.ok) {
-    const body = await (async () => {
-      try {
-        return await response.text();
-      } catch {
-        return "";
+    if (!response.ok) {
+      body = await (async () => {
+        try {
+          return await response.text();
+        } catch {
+          return "";
+        }
+      })();
+      console.error(input.body);
+      //throw new HTTPError(response, body);
+    }
+
+    body = await response.json();
+
+    if ("errors" in body) {
+      const errorMessage = body.errors[0]?.message;
+
+      // console.log("GraphQL Query:", queryString);
+      if (errorMessage === "Signature has expired" && withAuth) {
+        //console.log("body hh Signature has expired", body);
+        saleorAuthClient().cleanup();
+        attempt += 1;
+        if (attempt > maxRetries) {
+          console.log("Max retries reached. Throwing error.");
+          //throw new GraphQLError(body);
+        }
+        continue; // Retry the request
+      } else {
+        console.log("GraphQL Error for Query:", queryString);
+        console.log("Variables:", variables);
+        throw new GraphQLError(body);
       }
-    })();
-    console.error(input.body);
-    throw new HTTPError(response, body);
-  }
-
-  const body = await response.json();
-
-  if ("errors" in body) {
-    // console.log("GraphQL Query:", queryString);
-    console.log("body", body);
-    if (body.errors && body.errors[0] && body.errors[0]["message"] === "Signature has expired") {
-      console.log("body", body);
-      console.log("locations", body.errors[0].locations);
     } else {
-      console.log("GraphQL Query:", queryString);
-      console.log("Variables:", variables);
-      throw new GraphQLError(body);
+      return body.data;
     }
   }
-
   return body.data;
 }
 

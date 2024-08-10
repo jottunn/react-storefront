@@ -17,8 +17,8 @@ type Props = {
 
 const isValidSlug = (slug: string): boolean => {
   const invalidPatterns = [
-    /^\./, // Starts with a dot (hidden/system files)
-    /\.(env|example|json|js|ts|tsx|md|html|css|scss|png|jpg|jpeg|gif|svg|ico)$/, // Ends with specific file extensions
+    /^\./,
+    /\.(env|example|json|js|ts|tsx|md|html|css|scss|png|jpg|jpeg|gif|svg|ico)$/,
   ];
 
   return !invalidPatterns.some((pattern) => pattern.test(slug));

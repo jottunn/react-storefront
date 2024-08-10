@@ -8,6 +8,7 @@ import { executeGraphQL } from "@/lib/graphql";
 import { UserDocument, UserQuery } from "@/saleor/api";
 
 export default async function UserMenuContainer() {
+  "use server";
   const { user } = await executeGraphQL<UserQuery, {}>(UserDocument, {
     cache: "no-cache",
   });

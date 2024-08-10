@@ -24,6 +24,7 @@ import { getMessages } from "src/lib/util";
 import SvgSprite from "../SvgSprite";
 
 export default async function Footer({ className, ...rest }: FooterProps) {
+  "use server";
   const messages = getMessages(DEFAULT_LOCALE, "app.nwl");
   const footerNavLinks = await executeGraphQL<
     FooterMenuQuery,
