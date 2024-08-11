@@ -73,6 +73,7 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
       return (
         <>
           <Swiper
+            key={selectedVariant?.id || product.id}
             slidesPerView={1}
             modules={[Navigation, Scrollbar]}
             scrollbar={{ draggable: true }}
@@ -129,6 +130,7 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
       return (
         <div className="bock w-full">
           <Swiper
+            key={selectedVariant?.id || product.id}
             ref={mainSwiperRef}
             modules={[Navigation, Keyboard]}
             navigation
