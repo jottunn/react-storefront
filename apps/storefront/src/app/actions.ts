@@ -9,6 +9,8 @@ import {
   AddressInput,
   AvailableProductFiltersDocument,
   AvailableProductFiltersQuery,
+  ChannelDocument,
+  ChannelQuery,
   ConfirmAccountDocument,
   ConfirmAccountMutation,
   ConfirmEmailChangeDocument,
@@ -480,3 +482,15 @@ export const saveOrderMetaDataMutation = async (args: { id: string; type: string
     return;
   }
 };
+
+export async function getChannelCountries(channelSlug: string) {
+  try {
+    const { channel } = await executeGraphQL<ChannelQuery, { slug: string }>(ChannelDocument, {
+      variables: { slug: channelSlug },
+    });
+    return channel?.countries;
+  } catch (error) {
+    console.error("Failed to execute getChannelCountries", error);
+    return null;
+  }
+}
