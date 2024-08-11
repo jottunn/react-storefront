@@ -4,7 +4,6 @@ import { type ReactNode } from "react";
 import { type Metadata } from "next";
 import { Navbar } from "@/components/nav/Navbar";
 import Providers from "@/components/ProgressBarProvider";
-import { AuthProvider } from "@/components/AuthProvider";
 import { CheckoutProvider } from "@/lib/hooks/CheckoutContext";
 import Footer from "@/components/footer/Footer";
 import BackToTopButton from "@/components/BackToTopButton";
@@ -35,17 +34,15 @@ export default function RootLayout(props: { children: ReactNode }) {
   return (
     <html lang="ro" className={`${openSans.className} min-h-dvh`}>
       <body className="min-h-dvh prose-h1:font-dark prose-h2:font-black">
-        <AuthProvider>
-          <CheckoutProvider>
-            {/* @ts-expect-error Async Server Component */}
-            <Navbar />
-            <Providers>{children}</Providers>
-            {/* @ts-expect-error Async Server Component */}
-            <Footer />
-            <CookieConsentWrapper />
-            <BackToTopButton />
-          </CheckoutProvider>
-        </AuthProvider>
+        <CheckoutProvider>
+          {/* @ts-expect-error Async Server Component */}
+          <Navbar />
+          <Providers>{children}</Providers>
+          {/* @ts-expect-error Async Server Component */}
+          <Footer />
+          <CookieConsentWrapper />
+          <BackToTopButton />
+        </CheckoutProvider>
       </body>
     </html>
   );
