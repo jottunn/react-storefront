@@ -91,7 +91,7 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
                       alt={media.alt || ""}
                       width={300}
                       height={300}
-                      style={{ objectFit: "contain" }}
+                      style={{ objectFit: "contain", maxHeight: "300px" }}
                       priority={index === 0}
                       loading={index < 1 ? "eager" : "lazy"}
                       onClick={() => handleImageClick(index)}
