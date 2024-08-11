@@ -199,7 +199,7 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
                     alt={media.alt || ""}
                     width={106}
                     height={106}
-                    style={{ objectFit: "cover" }}
+                    style={{ objectFit: "contain", maxHeight: "106px" }}
                   />
                 )}
                 {media.type === "VIDEO" && (

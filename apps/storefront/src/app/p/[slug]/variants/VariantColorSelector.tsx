@@ -69,6 +69,7 @@ export function VariantColorSelector({
                     }
                     width="80"
                     height="80"
+                    style={{ objectFit: "contain", maxHeight: "100%" }}
                   />
                 </div>
               );
