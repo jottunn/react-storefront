@@ -117,7 +117,7 @@ export default function CartModal({ messages }: CartModalProps) {
                 <div className="flex h-full flex-col justify-between overflow-hidden p-1">
                   <CheckoutProductList messages={messages} />
                   <div className="py-4 text-sm text-neutral-500 dark:text-neutral-400">
-                    <div className="mb-3 flex items-center justify-between border-b border-neutral-200 pb-1 dark:border-neutral-700">
+                    {/* <div className="mb-3 flex items-center justify-between border-b border-neutral-200 pb-1 dark:border-neutral-700">
                       <p>{messages["app.checkout.tax"]}</p>
                       <div className="py-2 flex items-center justify-between">
                         <p
@@ -127,14 +127,10 @@ export default function CartModal({ messages }: CartModalProps) {
                           {formatMoney(checkout.subtotalPrice?.tax)}
                         </p>
                       </div>
-                    </div>
+                    </div> */}
                     <div className="mb-3 flex items-center justify-between border-b border-neutral-200 pb-1 pt-1 dark:border-neutral-700">
                       <p>{messages["app.checkout.shipping"]}</p>
-                      {checkout.shippingPrice?.gross ? (
-                        formatMoney(checkout.shippingPrice?.gross)
-                      ) : (
-                        <p className="text-right">{messages["app.checkout.shippingInfo"]}</p>
-                      )}
+                      <p className="text-right">{messages["app.checkout.shippingInfo"]}</p>
                     </div>
                     <div className="mb-3 flex items-center justify-between border-b border-neutral-200 pb-1 pt-1 dark:border-neutral-700">
                       <p>{messages["app.checkout.total"]}</p>

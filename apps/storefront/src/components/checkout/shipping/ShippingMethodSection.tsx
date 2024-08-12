@@ -15,70 +15,83 @@ export interface ShippingMethodSectionProps {
   messages: Messages;
 }
 
+interface ShippingMethodState {
+  selectedDeliveryMethod: ShippingMethod | null;
+  editing: boolean;
+  errors: ErrorDetailsFragment[] | null;
+  loading: boolean;
+}
+
 export function ShippingMethodSection({ active, messages }: ShippingMethodSectionProps) {
   const { checkout, refreshCheckout } = useCheckout();
+
+  const [state, setState] = useState<ShippingMethodState>({
+    selectedDeliveryMethod: null,
+    editing: false,
+    errors: null,
+    loading: false,
+  });
+
+  console.log("checkout", checkout);
   if (!checkout) {
     return;
   }
 
-  const availableShippingMethods = checkout.shippingMethods.filter(notNullable) || [];
-  const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState(
-    checkout.deliveryMethod ||
-      (availableShippingMethods.length === 1 ? availableShippingMethods[0] : null),
-  );
-  const [editing, setEditing] = useState(
-    !checkout.deliveryMethod && availableShippingMethods.length > 1,
-  );
-  const [errors, setErrors] = React.useState<ErrorDetailsFragment[] | null>(null);
-  const [loading, setLoading] = useState(false);
-
   useEffect(() => {
-    if (
-      !checkout.deliveryMethod &&
-      availableShippingMethods.length === 1 &&
-      selectedDeliveryMethod === null
-    ) {
-      handleChange(availableShippingMethods[0]);
-    }
-    if (availableShippingMethods.length > 0 && selectedDeliveryMethod === null) {
-      const initialEditing = !checkout.deliveryMethod && availableShippingMethods.length > 1;
-      // console.log("Initial State: editing", initialEditing);
-      setEditing(initialEditing);
-
+    if (checkout) {
       const initialDeliveryMethod =
         checkout.deliveryMethod ||
-        (availableShippingMethods.length === 1 ? availableShippingMethods[0] : null);
-      setSelectedDeliveryMethod(initialDeliveryMethod);
+        (checkout.shippingMethods.length === 1 ? checkout.shippingMethods[0] : null);
+      const initialEditing = !checkout.deliveryMethod && checkout.shippingMethods.length > 1;
+
+      setState((prevState) => ({
+        ...prevState,
+        selectedDeliveryMethod: initialDeliveryMethod as ShippingMethod,
+        editing: initialEditing,
+      }));
     }
-  }, [availableShippingMethods, checkout.deliveryMethod]);
+  }, [checkout]);
 
   useEffect(() => {
-    if (selectedDeliveryMethod) {
-      updateShippingMethod(selectedDeliveryMethod as ShippingMethod);
+    if (state.selectedDeliveryMethod) {
+      updateShippingMethod(state.selectedDeliveryMethod);
     }
-  }, [JSON.stringify(selectedDeliveryMethod)]);
+  }, [state.selectedDeliveryMethod]);
 
   const handleChange = (method: ShippingMethod) => {
-    setSelectedDeliveryMethod(method);
-    updateShippingMethod(method as ShippingMethod);
+    setState((prevState) => ({
+      ...prevState,
+      selectedDeliveryMethod: method,
+    }));
   };
 
   const updateShippingMethod = async (method: ShippingMethod) => {
-    setLoading(true);
+    setState((prevState) => ({
+      ...prevState,
+      loading: true,
+    }));
+
     const response = await checkoutShippingMethodUpdate({
       shippingMethodId: method.id,
       id: checkout.id,
     });
 
     if (response?.errors) {
-      setErrors(response.errors);
-      setLoading(false);
+      setState((prevState) => ({
+        ...prevState,
+        errors: response.errors,
+        loading: false,
+      }));
       return;
     }
+
     await refreshCheckout();
-    setEditing(false);
-    setErrors(null);
-    setLoading(false);
+    setState((prevState) => ({
+      ...prevState,
+      editing: false,
+      errors: null,
+      loading: false,
+    }));
   };
 
   return (
@@ -89,32 +102,39 @@ export function ShippingMethodSection({ active, messages }: ShippingMethodSectio
         >
           {messages["app.checkout.shippingMethodCardHeader"]}
         </h2>
-        {errors &&
-          errors.map((error, index) => (
+        {state.errors &&
+          state.errors.map((error, index) => (
             <p key={index} className="text-red-500 font-bold mt-2">
-              {error.message}
+              {error.message || error.code}
             </p>
           ))}
       </div>
-      {loading && <Spinner />}
+      {state.loading && <Spinner />}
       {active &&
-        (editing ? (
+        (state.editing ? (
           <>
-            {selectedDeliveryMethod !== null && !loading && (
+            {state.selectedDeliveryMethod !== null && !state.loading && (
               <a
                 href="#"
                 className="text-base underline text-main-1 hover:text-main"
                 onClick={(e) => {
                   e.preventDefault();
-                  setEditing(false);
+                  setState((prevState) => ({
+                    ...prevState,
+                    editing: false,
+                  }));
                 }}
               >
                 {messages["app.buttons.back"]}
               </a>
             )}
-            <RadioGroup value={selectedDeliveryMethod} onChange={handleChange} className="pb-4">
+            <RadioGroup
+              value={state.selectedDeliveryMethod}
+              onChange={handleChange}
+              className="pb-4"
+            >
               <div className="mt-4 grid grid-cols-2 gap-2">
-                {availableShippingMethods.map((method) => {
+                {checkout.shippingMethods.map((method) => {
                   if (!method) {
                     return null;
                   }
@@ -133,10 +153,15 @@ export function ShippingMethodSection({ active, messages }: ShippingMethodSectio
                 messages={messages}
               />
             )}
-            {availableShippingMethods.length > 1 && (
+            {checkout.shippingMethods.length > 1 && (
               <div className="flex justify-between items-center">
                 <Button
-                  onClick={() => setEditing(true)}
+                  onClick={() =>
+                    setState((prevState) => ({
+                      ...prevState,
+                      editing: true,
+                    }))
+                  }
                   label={messages["app.ui.changeButton"]}
                   variant="secondary"
                 />
