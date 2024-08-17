@@ -19,7 +19,7 @@ export const useUser = () => {
     fetchCurrentUser();
 
     const handleLogout = () => {
-      setUser(null); // Set user to null on logout
+      setUser(null);
     };
 
     const handleUserChange = async () => {

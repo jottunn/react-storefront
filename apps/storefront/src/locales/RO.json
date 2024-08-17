@@ -99,7 +99,7 @@
   "app.preferences.changePassword.changedPassword": "Parola a fost actualizată cu succes!",
   "app.preferences.changePassword.header": "Schimbă parola",
   "app.preferences.changePassword.newPasswordFieldLabel": "Parolă nouă",
-  "app.preferences.changePassword.oldPasswordFieldLabel": "Parola veche",
+  "app.preferences.changePassword.oldPasswordFieldLabel": "Parola actuală",
   "app.preferences.newPassword.header": "Confirmă parola",
   "app.product.addToCart": "Adaugă în coș",
   "app.product.adding": "Se procesează...",

@@ -22,6 +22,7 @@ export function NavigationPanel({ messages }: NavProps) {
   const user = useUser();
   const handleLogout = async () => {
     await logout();
+    window.dispatchEvent(new Event("user-logout"));
     router.push("/login");
   };
   return (
