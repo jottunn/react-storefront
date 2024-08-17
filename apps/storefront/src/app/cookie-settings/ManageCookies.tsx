@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import { Messages } from "@/lib/util";
-import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/react";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/solid";
 
 interface Props {

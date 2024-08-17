@@ -2,9 +2,7 @@ import { Suspense } from "react";
 import Spinner from "@/components/Spinner";
 import { getMessages } from "@/lib/util";
 import { DEFAULT_LOCALE } from "@/lib/regions";
-import ForgotPassword from "./ForgotPassword";
 import { STOREFRONT_NAME, STOREFRONT_URL } from "@/lib/const";
-import ResetForm from "./ResetPasswordForm";
 import ResetPageClient from "./ResetPageClient";
 
 const messages = getMessages(DEFAULT_LOCALE);

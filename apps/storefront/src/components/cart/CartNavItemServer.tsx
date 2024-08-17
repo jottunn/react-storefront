@@ -1,5 +1,5 @@
 import { Messages, getMessages } from "@/lib/util";
-import { DEFAULT_LOCALE, defaultRegionQuery } from "@/lib/regions";
+import { DEFAULT_LOCALE } from "@/lib/regions";
 import { ReactNode } from "react";
 
 interface CartNavItemProps {
