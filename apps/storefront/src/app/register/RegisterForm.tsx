@@ -7,23 +7,25 @@ import { FormProps } from "../login/LoginForm";
 import { register } from "../actions";
 import Link from "next/link";
 import { Button } from "@/components/Button/Button";
+import PasswordField from "@/components/account/PasswordField";
 
 export interface RegisterFormData {
   firstName: string;
   lastName: string;
   email: string;
   password: string;
+  confirmPassword: string;
   gdprConsent: boolean;
   nwlRegister: boolean;
 }
 
 export default function RegisterForm({ messages }: FormProps) {
   const router = useRouter();
-  const [confirmPassword, setConfirmPassword] = useState("");
 
   const {
     register: registerForm,
     handleSubmit: handleSubmitForm,
+    watch,
     formState: { errors: errorsForm },
     setError: setErrorForm,
   } = useForm<RegisterFormData>({
@@ -33,13 +35,11 @@ export default function RegisterForm({ messages }: FormProps) {
     },
   });
 
+  const password = watch("password");
+
   const handleRegister = handleSubmitForm(async (formData: RegisterFormData) => {
     if (!formData.gdprConsent) {
       setErrorForm("gdprConsent", { message: "gdprConsentErr" });
-      return;
-    }
-    if (formData.password !== confirmPassword) {
-      setErrorForm("password", { message: "passwordsDoNotMatch" });
       return;
     }
 
@@ -121,42 +121,39 @@ export default function RegisterForm({ messages }: FormProps) {
           </p>
         )}
       </div>
-      <div className="mt-5">
-        <label htmlFor="password" className="block text-md mb-2 uppercase">
-          {messages["app.login.passwordField"]}
-        </label>
-        <input
-          className="px-4 w-full border-2 py-2 rounded-md text-sm outline-none"
-          type="password"
-          id="password"
-          spellCheck={false}
-          {...registerForm("password", {
-            required: true,
-          })}
-        />
-        {!!errorsForm.password && (
-          <p className="text-sm text-red-500 pt-2">
-            {messages[errorsForm.password?.type || ""] ||
-              messages[errorsForm.password?.message || ""]}
-          </p>
-        )}
-      </div>
 
-      <div className="mt-5">
-        <label htmlFor="confirmPassword" className="block text-md mb-2 uppercase">
-          {messages["app.preferences.newPassword.header"]}
-        </label>
-        <input
-          className="px-4 w-full border-2 py-2 rounded-md text-sm outline-none"
-          type="password"
-          id="confirmPassword"
-          name="confirmPassword"
-          spellCheck={false}
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
-        />
-      </div>
+      <PasswordField
+        label={messages["app.login.passwordField"]}
+        id="password"
+        register={registerForm}
+        validationRules={{
+          required: messages["required"],
+          minLength: {
+            value: 8,
+            message: messages["PASSWORD_TOO_SHORT"],
+          },
+        }}
+        error={
+          (errorsForm.password?.message && messages[errorsForm.password?.type || ""]) ||
+          messages[errorsForm.password?.message || ""]
+        }
+      />
+
+      <PasswordField
+        label={messages["app.preferences.newPassword.header"]}
+        id="confirmPassword"
+        register={registerForm}
+        validationRules={{
+          required: messages["required"],
+          validate: (value: string) => value === password || messages["passwordsDoNotMatch"],
+        }}
+        error={
+          (errorsForm.confirmPassword?.message &&
+            messages[errorsForm.confirmPassword?.type || ""]) ||
+          messages[errorsForm.confirmPassword?.message || ""]
+        }
+        labelClassName="block pl-1 text-sm font-medium text-gray-700"
+      />
 
       {/* GDPR Consent Checkbox */}
       <div className="my-3">

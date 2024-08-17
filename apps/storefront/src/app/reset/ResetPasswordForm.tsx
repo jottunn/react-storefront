@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { FormProps } from "../login/LoginForm";
 import { setPassword } from "../actions";
 import { Button } from "@/components/Button/Button";
+import PasswordField from "@/components/account/PasswordField";
 
 export interface ResetPasswordFormData {
   email: string;
@@ -69,39 +70,32 @@ export default function ResetForm({ messages }: FormProps) {
         <span className="font-semibold ml-2">{emailQ}</span>{" "}
       </h1>
       {error && <p className="text-red-700 font-bold text-sm mt-4">{messages[error]}</p>}
-      <div className="mt-5">
-        <input
-          type="password"
-          id="password"
-          className="px-4 w-full border-2 py-2 rounded-md text-sm outline-none"
-          placeholder={messages["app.preferences.changePassword.newPasswordFieldLabel"]}
-          {...register("password", {
-            required: "Password is required",
-            minLength: {
-              value: 8,
-              message: messages["PASSWORD_TOO_SHORT"],
-            },
-            validate: (value) => value === confirmPassword || messages["passwordsDoNotMatch"],
-          })}
-          required
-        />
-        {errors.password && (
-          <p className="text-red-700 font-bold text-sm mt-1">{errors.password.message}</p>
-        )}
-      </div>
-      <div className="mt-5">
-        <input
-          type="password"
-          id="confirmPassword"
-          className="px-4 w-full border-2 py-2 rounded-md text-sm outline-none"
-          placeholder={messages["app.preferences.newPassword.header"]}
-          {...register("confirmPassword", { required: "Confirm Password is required" })}
-          required
-        />
-        {errors.confirmPassword && (
-          <p className="text-red-700 font-bold text-sm mt-1">{errors.confirmPassword.message}</p>
-        )}
-      </div>
+
+      <PasswordField
+        label={messages["app.preferences.changePassword.newPasswordFieldLabel"]}
+        id="password"
+        register={register}
+        error={errors.password?.message && messages[errors.password.message]}
+        validationRules={{
+          required: messages["required"],
+          minLength: {
+            value: 8,
+            message: messages["PASSWORD_TOO_SHORT"],
+          },
+          validate: (value: string) => value === confirmPassword || messages["passwordsDoNotMatch"],
+        }}
+      />
+
+      <PasswordField
+        label={messages["app.preferences.newPassword.header"]}
+        id="confirmPassword"
+        register={register}
+        error={errors.confirmPassword?.message && messages[errors.confirmPassword.message]}
+        validationRules={{
+          required: messages["required"],
+        }}
+      />
+
       <div className="mt-5">
         <Button
           type="submit"

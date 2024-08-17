@@ -4,6 +4,7 @@ import { login } from "src/app/actions";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
 import { Button } from "@/components/Button/Button";
+import PasswordField from "@/components/account/PasswordField";
 
 export interface LoginFormData {
   email: string;
@@ -29,6 +30,7 @@ export default function LoginForm({ messages }: FormProps) {
   const handleSubmit = handleSubmitForm(async (formData: LoginFormData) => {
     const result = await login(formData);
     if (result.success) {
+      window.dispatchEvent(new Event("user-login"));
       router.push("/account");
     } else if (result.errors) {
       setErrorForm("email", { message: result?.errors.join(", ") });
@@ -62,20 +64,17 @@ export default function LoginForm({ messages }: FormProps) {
           })}
         />
       </div>
-      <div className="mt-5">
-        <label htmlFor="password" className="block text-md mb-2 uppercase">
-          {messages["app.login.passwordField"]}
-        </label>
-        <input
-          className="px-4 w-full border-2 py-2 rounded-md text-sm outline-none"
-          type="password"
-          id="password"
-          spellCheck={false}
-          {...registerForm("password", {
-            required: true,
-          })}
-        />
-      </div>
+
+      <PasswordField
+        label={messages["app.login.passwordField"]}
+        id="password"
+        register={registerForm}
+        validationRules={{
+          required: messages["required"],
+        }}
+        error={errorsForm.password?.message && messages[errorsForm.password.message]}
+      />
+
       <div className="flex justify-between">
         <Link href="/reset" className="text-sm text-blue-700 hover:underline cursor-pointer pt-2">
           {messages["app.login.remindPassword"]}

@@ -12,7 +12,7 @@ export default function ResetPageClient({ messages }: FormProps) {
   const emailQ = searchParams.get("email");
 
   return (
-    <div className="w-[85%] md:w-[45%]">
+    <div className="w-[85%] md:w-[35%]">
       {token && emailQ ? <ResetForm messages={messages} /> : <ForgotPassword messages={messages} />}
     </div>
   );

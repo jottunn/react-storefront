@@ -10,7 +10,7 @@ export default function ConfirmPage() {
     <Suspense fallback={<Spinner />}>
       <section className="mx-auto max-w-8xl p-4">
         <div className="container bg-white pb-40 pt-40 flex justify-center items-center">
-          <div className="w-[85%] md:w-[45%]">
+          <div className="w-[85%] md:w-[35%]">
             <h1 className="text-2xl font-bold mt-2">
               {messages["app.register.accountConfirmTitle"]}
             </h1>
