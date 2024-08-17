@@ -18,7 +18,7 @@ type Props = {
 const isValidSlug = (slug: string): boolean => {
   const invalidPatterns = [
     /^\./,
-    /\.(env|example|json|js|ts|tsx|md|html|css|scss|png|jpg|jpeg|gif|svg|ico)$/,
+    /\.(env|example|json|js|ts|tsx|md|html|css|scss|png|php|jpg|jpeg|gif|svg|ico|map)$/,
   ];
 
   return !invalidPatterns.some((pattern) => pattern.test(slug));
@@ -40,8 +40,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         ...defaultRegionQuery(),
       },
       revalidate: 60,
+      withAuth: false,
     });
-    if (saleorPage.page) {
+
+    if (saleorPage !== null && saleorPage.page) {
       return {
         title: saleorPage.page.seoTitle || `${saleorPage.page.title} | ${STOREFRONT_NAME}`,
         description: saleorPage.page.seoDescription || `${saleorPage.page.title} - Surmont.ro`,
@@ -54,9 +56,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
     const strapiPage = await getPageBySlug(params.slug, params.lang);
 
-    if (strapiPage.data && strapiPage.data.length === 0) return notFound();
+    if (strapiPage?.data && strapiPage?.data.length === 0) return notFound();
 
-    if (strapiPage.data && strapiPage.data[0] && !strapiPage.data[0].attributes?.seo) {
+    if (strapiPage?.data && strapiPage?.data[0] && !strapiPage.data[0].attributes?.seo) {
       return {
         title: `${strapiPage.data[0].attributes.pageName} | ${STOREFRONT_NAME}`,
         description: `${strapiPage.data[0].attributes.pageName} - Surmont.ro`,
@@ -80,22 +82,32 @@ export default async function Page({ params }: { params: { slug: string } }) {
     console.warn("Invalid slug attempt:", currentSlug);
     return notFound();
   }
-  const saleorPage = await executeGraphQL<
-    PageQuery,
-    { slug: string; locale: LanguageCodeEnum; channel: string }
-  >(PageDocument, {
-    variables: {
-      slug: currentSlug,
-      ...defaultRegionQuery(),
-    },
-    revalidate: 60,
-  });
 
-  if (saleorPage.page) {
-    return <PageSaleor page={saleorPage.page as PageFragment} />;
+  try {
+    const saleorPage = await executeGraphQL<
+      PageQuery,
+      { slug: string; locale: LanguageCodeEnum; channel: string }
+    >(PageDocument, {
+      variables: {
+        slug: currentSlug,
+        ...defaultRegionQuery(),
+      },
+      revalidate: 60,
+      withAuth: false,
+    });
+
+    if (saleorPage.page) {
+      return <PageSaleor page={saleorPage.page as PageFragment} />;
+    }
+  } catch {
+    console.log("server is down");
   }
 
-  const strapiPage = await getPageBySlug(params.slug, DEFAULT_LOCALE);
-  if (strapiPage.data && strapiPage.data.length === 0) return notFound();
-  return <PageStrapi page={strapiPage} />;
+  try {
+    const strapiPage = await getPageBySlug(params.slug, DEFAULT_LOCALE);
+    if (strapiPage.data && strapiPage.data.length === 0) return notFound();
+    return <PageStrapi page={strapiPage} />;
+  } catch {
+    console.log("server is down");
+  }
 }

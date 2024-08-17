@@ -3,6 +3,8 @@
 import { executeGraphQL } from "@/lib/graphql";
 import { defaultRegionQuery } from "@/lib/regions";
 import {
+  CheckoutAddProductLineDocument,
+  CheckoutAddProductLineMutation,
   CheckoutAddPromoCodeDocument,
   CheckoutAddPromoCodeMutation,
   CheckoutBillingAddressUpdateDocument,
@@ -13,6 +15,8 @@ import {
   CheckoutCustomerAttachMutation,
   CheckoutCustomerDetachDocument,
   CheckoutCustomerDetachMutation,
+  CheckoutDeliveryMethodUpdateDocument,
+  CheckoutDeliveryMethodUpdateMutation,
   CheckoutEmailUpdateDocument,
   CheckoutEmailUpdateMutation,
   CheckoutLineUpdateDocument,
@@ -22,15 +26,14 @@ import {
   CheckoutPaymentCreateMutation,
   CheckoutShippingAddressUpdateDocument,
   CheckoutShippingAddressUpdateMutation,
-  CheckoutShippingMethodUpdateDocument,
-  CheckoutShippingMethodUpdateMutation,
+  LanguageCodeEnum,
   MetadataInput,
   PaymentInput,
   RemoveProductFromCheckoutDocument,
   RemoveProductFromCheckoutMutation,
 } from "@/saleor/api";
 import { AddressFormData } from "../account/AddressForm";
-
+import * as Checkout from "@/lib/checkout";
 type updateEmailFromCheckoutArgs = {
   id: string;
   email: string;
@@ -52,9 +55,10 @@ export const checkoutEmailUpdate = async ({ id, email }: updateEmailFromCheckout
         locale: defaultRegionQuery().locale,
       },
       cache: "no-cache",
+      withAuth: false,
     });
 
-    //console.log(response.checkoutEmailUpdate?.errors);
+    console.log(response.checkoutEmailUpdate?.errors);
     if (response.checkoutEmailUpdate?.errors.length) {
       const customError = response.checkoutEmailUpdate.errors as any;
       return { success: false, errors: customError.map((error: { code: any }) => error.code) };
@@ -81,6 +85,7 @@ export const customerAttach = async (id: string) => {
         locale: defaultRegionQuery().locale,
       },
       cache: "no-cache",
+      withAuth: true,
     });
 
     //console.log(response.checkoutCustomerAttach?.errors);
@@ -110,6 +115,7 @@ export const customerDetach = async (id: string) => {
         locale: defaultRegionQuery().locale,
       },
       cache: "no-cache",
+      withAuth: true,
     });
 
     // console.log("checkoutCustomerDetach", response.checkoutCustomerDetach?.errors);
@@ -190,33 +196,33 @@ export const checkoutShippingAddressUpdate = async (args: {
   }
 };
 
-export const checkoutShippingMethodUpdate = async (args: {
-  shippingMethodId: string;
+export const checkoutDeliveryMethodUpdate = async (args: {
+  deliveryMethodId: string;
   id: string;
 }) => {
-  const { shippingMethodId, id } = args;
+  const { deliveryMethodId, id } = args;
   try {
     const response = await executeGraphQL<
-      CheckoutShippingMethodUpdateMutation,
+      CheckoutDeliveryMethodUpdateMutation,
       {
-        shippingMethodId: string;
+        deliveryMethodId: string;
         locale: string;
         id: string;
       }
-    >(CheckoutShippingMethodUpdateDocument, {
+    >(CheckoutDeliveryMethodUpdateDocument, {
       variables: {
-        shippingMethodId: shippingMethodId,
+        deliveryMethodId: deliveryMethodId,
         id: id,
         locale: defaultRegionQuery().locale,
       },
       cache: "no-cache",
     });
 
-    if (response.checkoutShippingMethodUpdate?.errors.length) {
-      const customError = response.checkoutShippingMethodUpdate.errors as any;
+    if (response.checkoutDeliveryMethodUpdate?.errors.length) {
+      const customError = response.checkoutDeliveryMethodUpdate.errors as any;
       return { success: false, errors: customError.map((error: { code: any }) => error.code) };
     }
-    return { success: true, checkout: response.checkoutShippingMethodUpdate?.checkout };
+    return { success: true, checkout: response.checkoutDeliveryMethodUpdate?.checkout };
   } catch (error) {
     console.error("Failed to update Shipping Method on checkout:", error);
     return;
@@ -393,4 +399,58 @@ export const updateLineFromCheckout = async ({
     console.error("Failed to remove checkout line:", error);
     return;
   }
+};
+
+type AddItemArgs = {
+  selectedVariantId: string;
+};
+
+export const addItem = async ({ selectedVariantId }: AddItemArgs) => {
+  if (!selectedVariantId) {
+    return;
+  }
+
+  const checkoutId = await Checkout.getIdFromCookies(defaultRegionQuery().channel);
+  const resultCheckoutCreate = await Checkout.findOrCreate({
+    checkoutId: checkoutId,
+    channel: defaultRegionQuery().channel,
+  });
+
+  if (resultCheckoutCreate.errors) {
+    console.error("Error in checkout creation/retrieval:", resultCheckoutCreate.errors[0]);
+    return { error: resultCheckoutCreate.errors[0] };
+  }
+
+  //console.log("Checkout after findOrCreate:", resultCheckoutCreate.checkout);
+  const checkout = resultCheckoutCreate.checkout;
+
+  if (!checkout) {
+    console.error("Checkout is null after findOrCreate");
+    return { error: "Unable to create or retrieve checkout" };
+    //throw new Error("Unable to create or retrieve checkout");
+  }
+
+  Checkout.saveIdToCookie(defaultRegionQuery().channel, checkout.id);
+
+  const addProducts = await executeGraphQL<
+    CheckoutAddProductLineMutation,
+    { id: string; locale: LanguageCodeEnum; productVariantId: string }
+  >(CheckoutAddProductLineDocument, {
+    variables: {
+      id: checkout.id,
+      productVariantId: decodeURIComponent(selectedVariantId),
+      locale: defaultRegionQuery().locale,
+    },
+    cache: "no-cache",
+  });
+  if (addProducts.checkoutLinesAdd?.errors.length) {
+    console.log(addProducts.checkoutLinesAdd?.errors);
+    const addProductErr =
+      addProducts.checkoutLinesAdd?.errors[0]["code"] === "QUANTITY_GREATER_THAN_LIMIT"
+        ? "QUANTITY_GREATER_THAN_LIMIT_PRODUCT"
+        : addProducts.checkoutLinesAdd?.errors[0]["code"];
+    return { error: addProductErr };
+  }
+
+  return { success: true, checkout: checkout };
 };

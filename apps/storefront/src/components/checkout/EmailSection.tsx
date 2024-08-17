@@ -1,5 +1,5 @@
 "use client";
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { User } from "@/saleor/api";
 import { Button } from "../Button/Button";
@@ -9,6 +9,7 @@ import { checkoutEmailUpdate, customerAttach, customerDetach } from "./actions";
 import { login, register as registerUser } from "src/app/actions";
 import { useCheckout } from "@/lib/hooks/CheckoutContext";
 import Link from "next/link";
+import PasswordField from "../account/PasswordField";
 
 export interface EmailSectionProps {
   messages: Messages;
@@ -18,7 +19,7 @@ export interface EmailSectionProps {
 function EmailSection({ messages, user }: EmailSectionProps) {
   const router = useRouter();
   const { checkout } = useCheckout();
-  const [modifyEmail, setModifyEmail] = useState(!checkout?.email);
+  const [modifyEmail, setModifyEmail] = useState(true);
   const [createAccount, setCreateAccount] = useState(false);
   const [isSignInVisible, setIsSignInVisible] = useState(false);
 
@@ -33,6 +34,27 @@ function EmailSection({ messages, user }: EmailSectionProps) {
       password: "",
     },
   });
+
+  useEffect(() => {
+    if (user && user !== null && checkout && checkout.email !== user.email) {
+      // If user is logged in, attach the customer to the checkout
+      const attachCustomer = async () => {
+        const customerAttachResult = await customerAttach(checkout.id);
+        if (customerAttachResult?.success === false) {
+          setError("email", { message: "updateCheckoutEmail" });
+        }
+      };
+      attachCustomer();
+    }
+  }, [user, user?.email]);
+
+  useEffect(() => {
+    if (!checkout?.email) {
+      setModifyEmail(true);
+    } else {
+      setModifyEmail(false);
+    }
+  }, [checkout]);
 
   if (!checkout) {
     return;
@@ -49,10 +71,11 @@ function EmailSection({ messages, user }: EmailSectionProps) {
       }
     }
     const emailUpdateResult = await checkoutEmailUpdate({ id: checkout.id, email: formData.email });
+    console.log("emailUpdateResult", emailUpdateResult);
 
     if (emailUpdateResult?.success === false) {
       // Handle checkout email update errors
-      setError("email", { message: "updateCheckotEmail" });
+      setError("email", { message: "app.checkout.updateCheckotEmail" });
       return;
     }
 
@@ -75,7 +98,7 @@ function EmailSection({ messages, user }: EmailSectionProps) {
 
       if (detachExisting?.success === false) {
         // Handle detaching errors
-        setError("email", { message: "updateCheckotEmail" });
+        setError("email", { message: "app.checkout.updateCheckotEmail" });
         return;
       }
     }
@@ -85,7 +108,7 @@ function EmailSection({ messages, user }: EmailSectionProps) {
 
     if (emailUpdateResult?.success === false) {
       // Handle checkout email update errors
-      setError("email", { message: "updateCheckotEmail" });
+      setError("email", { message: "app.checkout.updateCheckotEmail" });
       return;
     }
 
@@ -148,7 +171,7 @@ function EmailSection({ messages, user }: EmailSectionProps) {
       {isSignInVisible && !user ? (
         <form method="post" onSubmit={handleSubmit(handleSignInSubmit)}>
           <div className="my-3">
-            <label htmlFor="email" className="block text-md mb-2">
+            <label htmlFor="email" className="block text-md mb-2 uppercase">
               {messages["app.register.emailField"]}
             </label>
             <input
@@ -159,7 +182,7 @@ function EmailSection({ messages, user }: EmailSectionProps) {
               {...register("email", {
                 required: {
                   value: true,
-                  message: "REQUIRED",
+                  message: "required",
                 },
                 pattern: {
                   value: /^\S+@\S+$/i,
@@ -168,24 +191,17 @@ function EmailSection({ messages, user }: EmailSectionProps) {
               })}
             />
           </div>
-          <div className="mt-5 mb-5">
-            <label htmlFor="password" className="block text-md mb-2">
-              {messages["app.register.passwordField"]}
-            </label>
-            <input
-              className="px-4 w-full border-2 py-2 rounded-md text-sm outline-none"
-              type="password"
-              id="password"
-              spellCheck={false}
-              {...register("password", {
-                required: {
-                  value: true,
-                  message: "REQUIRED",
-                },
-              })}
-            />
-          </div>
-          <Button type="submit" label={messages["app.navigation.login"]} className="mr-2" />
+          <PasswordField
+            label={messages["app.register.passwordField"]}
+            id="password"
+            register={register}
+            validationRules={{
+              required: messages["required"],
+            }}
+            error={errors.password?.message && messages[errors.password.message]}
+          />
+
+          <Button type="submit" label={messages["app.navigation.login"]} className="mr-2 mt-5" />
           <Button
             onClick={toggleSignInVisibility}
             variant="secondary"

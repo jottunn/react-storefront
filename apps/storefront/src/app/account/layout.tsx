@@ -1,34 +1,22 @@
-import { executeGraphQL } from "@/lib/graphql";
 import { DEFAULT_LOCALE } from "@/lib/regions";
 import { getMessages } from "@/lib/util";
-import { Order, OrdersDocument, OrdersQuery, User, UserDocument, UserQuery } from "@/saleor/api";
 import { ReactNode } from "react";
-import { redirect } from "next/navigation";
-import ClientAccountLayout from "./ClientAccountLayout";
-import { mapEdgesToItems } from "@/lib/maps";
+import NavigationPanel from "./NavigationPanel";
 
 export type AccountLayoutProps = { children: ReactNode };
-
 const AccountLayout = async ({ children }: AccountLayoutProps) => {
-  const { user } = await executeGraphQL<UserQuery, {}>(UserDocument, {
-    cache: "no-cache",
-  });
-
-  const { me: orders } = await executeGraphQL<OrdersQuery, {}>(OrdersDocument, {
-    cache: "no-cache",
-  });
-
-  const userOrders = mapEdgesToItems(orders?.orders);
   const messages = getMessages(DEFAULT_LOCALE);
-
-  if (!user) {
-    return redirect("/login");
-  }
-
   return (
-    <ClientAccountLayout user={user as User} messages={messages} orders={userOrders as any}>
-      {children}
-    </ClientAccountLayout>
+    <div className="md:py-10 min-h-[400px]">
+      <main className="flex flex-col md:flex-row md:container md:px-8">
+        <div className="mb-2 flex-initial md:w-[300px] md:mr-8 md:border-r-2">
+          <NavigationPanel messages={messages} />
+        </div>
+        <div className="flex flex-initial w-full flex-col overflow-y-auto md:px-4 space-y-4 h-full">
+          {children}
+        </div>
+      </main>
+    </div>
   );
 };
 

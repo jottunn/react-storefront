@@ -1,35 +1,26 @@
-"use client";
+import React from "react";
+import { User } from "@/saleor/api";
+import { getMessages } from "@/lib/util";
+import { DEFAULT_LOCALE } from "@/lib/regions";
+import AddressesClient from "./AddressesClient";
+import { getCurrentUser } from "src/app/actions";
+import LoginForm from "src/app/login/LoginForm";
+const messages = getMessages(DEFAULT_LOCALE);
+export const dynamic = "force-dynamic";
 
-import React, { useState } from "react";
-import { useUserContext } from "../UserContext";
-import { AddressBookCard } from "./AddressBookCard";
-
-function AddressBookPage() {
-  const { user } = useUserContext();
-  const [addresses, setAddresses] = useState(user?.addresses || []);
-
-  const handleAddressChange = (updatedAddress: any) => {
-    if (Array.isArray(updatedAddress)) {
-      setAddresses([...updatedAddress]);
-    } else {
-      setAddresses((prevAddresses) =>
-        prevAddresses.map((address) =>
-          address.id === updatedAddress.id ? updatedAddress : address,
-        ),
-      );
-    }
-  };
+async function AddressBookPage() {
+  const user = await getCurrentUser();
+  if (!user || user === null) {
+    return (
+      <div className="w-[85%] md:w-[35%]">
+        <LoginForm messages={messages} />
+      </div>
+    );
+  }
 
   return (
     <div className="mx-6 my-6 md:mx-0 md:my-0 md:flex md:flex-wrap md:gap-2">
-      {user &&
-        addresses.map((address) => (
-          <AddressBookCard
-            key={address.id}
-            address={address}
-            onAddressChange={handleAddressChange}
-          />
-        ))}
+      <AddressesClient messages={messages} user={user as User} />
     </div>
   );
 }

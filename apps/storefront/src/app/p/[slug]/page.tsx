@@ -40,6 +40,8 @@ import { GroupedProduct, groupProductsByColor } from "@/lib/product";
 import SwiperComponent from "@/components/SwiperComponent";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Script from "next/script";
+import RelatedProducts from "./RelatedProducts";
+import { addItem } from "@/components/checkout/actions";
 const edjsParser = edjsHTML();
 
 export async function generateMetadata(
@@ -51,17 +53,23 @@ export async function generateMetadata(
     searchParams: { variant?: string };
   },
   parent: ResolvingMetadata,
-): Promise<Metadata> {
-  const { product } = await executeGraphQL<
-    ProductBySlugQuery,
-    { slug: string; channel: string; locale: string }
-  >(ProductBySlugDocument, {
-    variables: {
-      slug: decodeURIComponent(params.slug),
-      ...defaultRegionQuery(),
-    },
-    revalidate: 60,
-  });
+): Promise<Metadata | []> {
+  let product;
+  try {
+    const response = await executeGraphQL<
+      ProductBySlugQuery,
+      { slug: string; channel: string; locale: string }
+    >(ProductBySlugDocument, {
+      variables: {
+        slug: decodeURIComponent(params.slug),
+        ...defaultRegionQuery(),
+      },
+      revalidate: 60,
+    });
+    product = response.product;
+  } catch {
+    return [];
+  }
 
   if (!product) {
     notFound();
@@ -115,7 +123,17 @@ const Page = ({
 }) => {
   const productDetailPromise = ProductDetail({ params, searchParams });
 
-  return <Suspense fallback={<Spinner />}>{use(productDetailPromise)}</Suspense>;
+  return (
+    <Suspense
+      fallback={
+        <div className="h-[75vh] justify-center flex flex-col items-center">
+          <Spinner />
+        </div>
+      }
+    >
+      {use(productDetailPromise)}
+    </Suspense>
+  );
 };
 
 const ProductDetail = async ({
@@ -125,16 +143,22 @@ const ProductDetail = async ({
   params: { slug: string; channel: string };
   searchParams: { variant?: string };
 }) => {
-  const { product } = await executeGraphQL<
-    ProductBySlugQuery,
-    { slug: string; channel: string; locale: string }
-  >(ProductBySlugDocument, {
-    variables: {
-      slug: decodeURIComponent(params.slug),
-      ...defaultRegionQuery(),
-    },
-    revalidate: 60,
-  });
+  let product;
+  try {
+    const response = await executeGraphQL<
+      ProductBySlugQuery,
+      { slug: string; channel: string; locale: string }
+    >(ProductBySlugDocument, {
+      variables: {
+        slug: decodeURIComponent(params.slug),
+        ...defaultRegionQuery(),
+      },
+      revalidate: 60,
+    });
+    product = response.product;
+  } catch {
+    return [];
+  }
 
   if (!product) {
     notFound();
@@ -169,52 +193,43 @@ const ProductDetail = async ({
   const categoryAncestors = mapEdgesToItems(product.category?.ancestors);
   const brandAttribute = product.attributes.find((attr) => attr.attribute.slug === "brand");
   const brandSlug = brandAttribute?.values[0]?.slug || "";
-  const brandCollection =
-    brandAttribute &&
-    brandSlug &&
-    (await executeGraphQL<CollectionBySlugQuery, { slug: string; locale: LanguageCodeEnum }>(
-      CollectionBySlugDocument,
-      {
-        variables: { slug: brandSlug, ...defaultRegionQuery() },
-        revalidate: 60 * 60 * 24,
-      },
-    ));
+  let brandCollection;
+  try {
+    brandCollection =
+      brandAttribute &&
+      brandSlug &&
+      (await executeGraphQL<CollectionBySlugQuery, { slug: string; locale: LanguageCodeEnum }>(
+        CollectionBySlugDocument,
+        {
+          variables: { slug: brandSlug, ...defaultRegionQuery() },
+          revalidate: 60 * 60 * 24,
+        },
+      ));
+  } catch {
+    return [];
+  }
 
-  const attribute = product.attributes.find((attr) => attr.attribute.slug === ATTR_GHID_MARIMI);
-  const pageId = attribute?.values?.[0]?.reference;
-  const sizeGuide =
-    pageId &&
-    (await executeGraphQL<PageFragment, { id: string; locale: LanguageCodeEnum }>(
-      PageByIdDocument,
-      {
-        variables: { id: pageId, ...defaultRegionQuery() },
-        revalidate: 60,
-      },
-    ));
-
-  /**related products */
-  const categoryId = product?.category?.id ?? "";
-  const { products: relatedProductsResponse } = await executeGraphQL<
-    ProductCollectionQuery,
-    { filter: any; first: number; channel: string; locale: string }
-  >(ProductCollectionDocument, {
-    variables: {
-      filter: {
-        categories: [categoryId].filter(Boolean),
-        stockAvailability: "IN_STOCK",
-      },
-      first: 10,
-      ...defaultRegionQuery(),
-    },
-    revalidate: 60,
-  });
-
-  let relatedProducts = mapEdgesToItems(relatedProductsResponse).filter(
-    (relatedProduct) => relatedProduct.slug !== product?.slug,
+  const attributeSizeGuide = product.attributes.find(
+    (attr) => attr.attribute.slug === ATTR_GHID_MARIMI,
   );
-  relatedProducts = groupProductsByColor(relatedProducts as GroupedProduct[]);
+  const pageId = attributeSizeGuide?.values?.[0]?.reference;
+
+  let sizeGuide;
+  try {
+    sizeGuide =
+      pageId &&
+      (await executeGraphQL<PageFragment, { id: string; locale: LanguageCodeEnum }>(
+        PageByIdDocument,
+        {
+          variables: { id: pageId, ...defaultRegionQuery() },
+          revalidate: 60,
+        },
+      ));
+  } catch {
+    return [];
+  }
+
   /** recommended products */
-  //console.log(product.attributes);
   const recommendedAttribute = product.attributes.find(
     (attr) => attr.attribute.slug === "recommended",
   );
@@ -232,51 +247,12 @@ const ProductDetail = async ({
         },
         ...defaultRegionQuery(),
       },
-      revalidate: 60,
+      revalidate: 60 * 60,
     });
 
     recommendedProducts = mapEdgesToItems(recommendedProductsResponse);
     recommendedProducts = groupProductsByColor(recommendedProducts as GroupedProduct[]);
   }
-  async function addItem() {
-    "use server";
-    const checkoutId = await Checkout.getIdFromCookies(defaultRegionQuery().channel);
-    const resultCheckoutCreate = await Checkout.findOrCreate({
-      checkoutId: checkoutId,
-      channel: defaultRegionQuery().channel,
-    });
-
-    if (resultCheckoutCreate.errors) {
-      console.error("Error in checkout creation/retrieval:", resultCheckoutCreate.errors[0]);
-      throw new Error(resultCheckoutCreate.errors[0]);
-    }
-    console.log("Checkout after findOrCreate:", resultCheckoutCreate.checkout);
-    const checkout = resultCheckoutCreate.checkout;
-
-    if (!checkout) {
-      console.error("Checkout is null after findOrCreate");
-      throw new Error("Unable to create or retrieve checkout");
-    }
-    //invariant(checkout, "This should never happen");
-    Checkout.saveIdToCookie(defaultRegionQuery().channel, checkout.id);
-
-    if (!selectedVariantID) {
-      return;
-    }
-    const addProducts = await executeGraphQL<
-      CheckoutAddProductLineMutation,
-      { id: string; locale: LanguageCodeEnum; productVariantId: string }
-    >(CheckoutAddProductLineDocument, {
-      variables: {
-        id: checkout.id,
-        productVariantId: decodeURIComponent(selectedVariantID),
-        locale: defaultRegionQuery().locale,
-      },
-      cache: "no-cache",
-    });
-    console.log(addProducts.checkoutLinesAdd?.errors);
-  }
-
   const isAvailable = variants?.some((variant) => variant.quantityAvailable) ?? false;
   const price = selectedVariant?.pricing?.price?.gross
     ? formatMoney(selectedVariant.pricing.price.gross)
@@ -367,7 +343,7 @@ const ProductDetail = async ({
       >
         <div className="h-full relative md:col-span-2 md:flex md:items-center md:justify-center md:gap-4">
           {product.variants?.[0]?.pricing?.onSale && (
-            <TagIcon className="text-action-1 w-6 h-6 absolute right-4 top-4 z-30" />
+            <TagIcon className="text-action-1 w-8 h-8 md:w-12 md:h-12 absolute right-4 top-4 z-30" />
           )}
           <ProductGallery
             placeholder={placeholder}
@@ -441,14 +417,16 @@ const ProductDetail = async ({
 
           {isAvailable && (
             <div className="mt-8 block">
-              <form action={addItem} className="m-auto text-left">
-                <AddButton disabled={isAddToCartButtonDisabled} messages={messages} />
-                {selectedVariant?.quantityAvailable === 0 && (
-                  <p className="text-base text-left font-semibold text-red-500 pt-2">
-                    {messages["app.product.soldOutVariant"]}
-                  </p>
-                )}
-              </form>
+              <AddButton
+                disabled={isAddToCartButtonDisabled}
+                messages={messages}
+                selectedVariantId={selectedVariantID}
+              />
+              {selectedVariant?.quantityAvailable === 0 && (
+                <p className="text-base text-left font-semibold text-red-500 pt-2">
+                  {messages["app.product.soldOutVariant"]}
+                </p>
+              )}
             </div>
           )}
         </div>
@@ -469,38 +447,9 @@ const ProductDetail = async ({
           </div>
         )}
       </div>
-      {relatedProducts && relatedProducts.length > 0 && (
-        <div className="container px-8 py-12 md:py-44 border-t">
-          <div className="swiper-header flex justify-center items-center space-x-4">
-            <h2 className="text-lg uppercase m-0 flex-1 text-left mb-8">
-              {messages["app.relatedProducts"]}
-            </h2>
-            <div className="swiper-navigation flex mb-8">
-              <button
-                className="swiper-button-prev-rel custom-prev inline-flex justify-center items-center w-10 h-10 border border-gray-600 hover:border-gray-700 disabled:border-gray-200 rounded-full transition-colors cursor-pointer"
-                aria-label="Prev"
-              >
-                <ChevronLeftIcon className="h-6 w-6 text-gray-500" />
-              </button>
-              <button
-                className="swiper-button-next-rel custom-next inline-flex justify-center items-center w-10 h-10 border border-gray-600 hover:border-gray-700 disabled:border-gray-200 ml-2 rounded-full transition-colors cursor-pointer"
-                aria-label="Next"
-              >
-                <ChevronRightIcon className="h-6 w-6 text-gray-500" />
-              </button>
-            </div>
-          </div>
-          <div style={{ maxHeight: "400px" }}>
-            <SwiperComponent
-              products={relatedProducts as any}
-              prevButtonClass="swiper-button-prev-rel"
-              nextButtonClass="swiper-button-next-rel"
-            />
-          </div>
-        </div>
-      )}
+
       {recommendedProducts && recommendedProducts.length > 0 && (
-        <div className="container px-8 pt-44 pb-44 border-t">
+        <div className="container px-8 py-12 md:py-40 border-t">
           <div className="swiper-header flex justify-center items-center space-x-4">
             <h2 className="text-lg uppercase m-0 flex-1 text-left mb-8">
               {messages["app.recommendedProducts"]}
@@ -529,6 +478,20 @@ const ProductDetail = async ({
           </div>
         </div>
       )}
+
+      <Suspense
+        fallback={
+          <div>
+            <Spinner />
+          </div>
+        }
+      >
+        <RelatedProducts
+          product={product}
+          messages={messages}
+          recommendedProducts={recommendedProducts}
+        />
+      </Suspense>
     </main>
   );
 };

@@ -14,6 +14,7 @@ import { STOREFRONT_NAME, STOREFRONT_URL } from "@/lib/const";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Script from "next/script";
 import HomepageBlock from "@/components/homepage/HomepageBlock";
+import { notFound } from "next/navigation";
 
 export const metadata = {
   title: `Reduceri | ${STOREFRONT_NAME}`,
@@ -24,19 +25,26 @@ export const metadata = {
 };
 
 export default async function Page() {
-  const { collections } = await executeGraphQL<
-    CollectionsByMetaKeyQuery,
-    { filter: any; locale: LanguageCodeEnum; channel: string }
-  >(CollectionsByMetaKeyDocument, {
-    variables: {
-      filter: {
-        metadata: [{ key: "isSale", value: "YES" }],
-        published: "PUBLISHED",
+  let collections;
+  try {
+    const result = await executeGraphQL<
+      CollectionsByMetaKeyQuery,
+      { filter: any; locale: LanguageCodeEnum; channel: string }
+    >(CollectionsByMetaKeyDocument, {
+      variables: {
+        filter: {
+          metadata: [{ key: "isSale", value: "YES" }],
+          published: "PUBLISHED",
+        },
+        ...defaultRegionQuery(),
       },
-      ...defaultRegionQuery(),
-    },
-    revalidate: 60,
-  });
+      revalidate: 60,
+    });
+    collections = result.collections;
+  } catch {
+    return null;
+  }
+
   const outletCollections = mapEdgesToItems(collections);
   outletCollections.sort((a, b) => getOrderValue(a.metadata) - getOrderValue(b.metadata));
   const outletCollectionsWithImage = outletCollections.filter(

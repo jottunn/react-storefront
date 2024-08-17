@@ -8,7 +8,7 @@ import { algoliaClient } from "@/lib/searchClient";
 import FilteredProductList from "@/components/productList/FilteredProductList";
 import { SearchIndex } from "algoliasearch";
 import { Messages } from "@/lib/util";
-import CustomSearchBox from "@/components/nav/SearchBox";
+import CustomSearchBox from "@/components/nav/components/Search/SearchBox";
 
 interface Hit {
   objectID: string;

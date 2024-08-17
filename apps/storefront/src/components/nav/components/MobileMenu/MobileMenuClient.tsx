@@ -3,10 +3,13 @@
 import clsx from "clsx";
 import styles from "./BurgerMenu.module.css";
 import { CollapseMenu } from "./CollapseMenu";
-import { XMarkIcon, Bars3BottomLeftIcon } from "@heroicons/react/24/solid";
-import { useMobileMenu } from "../../useMobileMenu";
-import { MenuGetBySlugQuery } from "@/saleor/api";
-import { ReactNode } from "react";
+import { XMarkIcon, Bars3BottomLeftIcon, PowerIcon } from "@heroicons/react/24/solid";
+import { useMobileMenu } from "./useMobileMenu";
+import { MenuGetBySlugQuery, User } from "@/saleor/api";
+import { ReactNode, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { logout } from "src/app/actions";
+import { useUser } from "@/lib/hooks/useUser";
 
 interface ClientMobileMenuProps {
   leftNavLinks: MenuGetBySlugQuery;
@@ -20,6 +23,13 @@ export default function MobileMenuClient({
   children,
 }: ClientMobileMenuProps) {
   const { closeMenu, openMenu, isOpen } = useMobileMenu();
+  const router = useRouter();
+  const user = useUser();
+  const handleLogout = async () => {
+    await logout();
+    window.dispatchEvent(new Event("user-logout"));
+    router.push("/login");
+  };
 
   return (
     <>
@@ -40,6 +50,16 @@ export default function MobileMenuClient({
           </div>
           {leftNavLinks.menu?.items?.map((item) => <CollapseMenu menuItem={item} key={item.id} />)}
           {rightNavLinks.menu?.items?.map((item) => <CollapseMenu menuItem={item} key={item.id} />)}
+          {user && (
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="hover:text-red-500 flex mt-6 pt-6 text-md uppercase font-semibold border-t-2"
+            >
+              <PowerIcon className="h-6 w-6 mr-2" />
+              <span>Logout</span>
+            </button>
+          )}
           <div className="mt-auto pt-4">{children}</div>
         </div>
       </div>

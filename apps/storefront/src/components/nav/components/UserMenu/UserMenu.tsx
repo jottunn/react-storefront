@@ -1,38 +1,23 @@
 "use client";
-
-import clsx from "clsx";
-import Link from "next/link";
-import { logout } from "src/app/actions";
-import styles from "../../Navbar.module.css";
+import { useUser } from "@/lib/hooks/useUser";
 import { UserIcon } from "@heroicons/react/24/outline";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import styles from "../../Navbar.module.css";
+import { Messages } from "@/lib/util";
 
 interface UserMenuProps {
-  messages: { [key: string]: string };
+  messages: Messages;
 }
 
-export function UserMenu({ messages }: UserMenuProps) {
-  const router = useRouter();
-  const handleLogout = async () => {
-    await logout();
-    router.push("/login");
-  };
+export default function UserMenu({ messages }: UserMenuProps) {
+  const user = useUser();
   return (
-    <div className={clsx(styles["user-menu-container"])}>
+    <Link
+      href={user ? "/account" : "/login"}
+      data-testid="userIcon"
+      title={messages["app.navigation.accountPreferences"]}
+    >
       <UserIcon className={styles["nav-icon-button"]} />
-      <div className={styles["user-menu"]}>
-        <Link href="/account" tabIndex={0} className={styles["user-menu-item"]}>
-          {messages["app.navigation.accountPreferences"]}
-        </Link>
-        <button
-          type="button"
-          onClick={handleLogout}
-          tabIndex={-1}
-          className={styles["user-menu-item"]}
-        >
-          {messages["app.navigation.logout"]}
-        </button>
-      </div>
-    </div>
+    </Link>
   );
 }

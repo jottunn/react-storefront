@@ -9,6 +9,7 @@ import {
 import { executeGraphQL } from "@/lib/graphql";
 import { DEFAULT_LOCALE } from "./regions";
 import { STOREFRONT_URL } from "./const";
+import { getCurrentUser } from "src/app/actions";
 
 export async function getIdFromCookies(channel: string) {
   const cookieName = `checkoutId-${channel}`;
@@ -56,8 +57,9 @@ export async function findOrCreate({
   channel: string;
 }) {
   try {
+    const user = await getCurrentUser();
     if (!checkoutId) {
-      const createResult = await create({ channel });
+      const createResult = await create({ channel, user });
       if (createResult.checkoutCreate?.errors.length) {
         console.error("Error creating checkout:", createResult.checkoutCreate.errors);
         const customError = createResult.checkoutCreate.errors as any;
@@ -67,7 +69,7 @@ export async function findOrCreate({
     }
     const checkout = await find(checkoutId);
     if (!checkout) {
-      const createResult = await create({ channel });
+      const createResult = await create({ channel, user });
       if (createResult?.checkoutCreate?.errors.length) {
         const customError = createResult.checkoutCreate.errors as any;
         console.error("Error creating checkout:", createResult?.checkoutCreate.errors);
@@ -83,8 +85,9 @@ export async function findOrCreate({
   }
 }
 
-export const create = ({ channel }: { channel: string }) =>
+export const create = ({ channel, user }: { channel: string; user: any }) =>
   executeGraphQL<CreateCheckoutMutation, { channel: string }>(CreateCheckoutDocument, {
     cache: "no-cache",
     variables: { channel },
+    withAuth: user && user !== null,
   });

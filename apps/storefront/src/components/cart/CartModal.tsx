@@ -5,11 +5,12 @@ import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { CheckoutLineDetailsFragment } from "@/saleor/api";
 import invariant from "ts-invariant";
 import { usePathname } from "next/navigation";
-import NavIconButton from "../nav/NavIconButton";
+import styles from "../nav/Navbar.module.css";
 import { CheckoutProductList } from "./CheckoutProductList";
 import { formatMoney } from "@/lib/utils/formatMoney";
 import CheckoutLink from "./CheckoutLink";
 import { useCheckout } from "@/lib/hooks/CheckoutContext";
+import { ShoppingBagIcon } from "@heroicons/react/24/outline";
 
 interface CartModalProps {
   messages: { [key: string]: string };
@@ -59,8 +60,20 @@ export default function CartModal({ messages }: CartModalProps) {
   }
   return (
     <>
-      <button aria-label="Open cart" onClick={openCart} type="button">
-        <NavIconButton isButton={false} icon="bag" aria-hidden="true" counter={counter} />
+      <button
+        aria-label={messages["app.checkout.openCart"]}
+        onClick={openCart}
+        type="button"
+        title={messages["app.checkout.openCart"]}
+      >
+        <span className={styles["nav-icon-button"]}>
+          {!!counter && (
+            <span className={styles["nav-icon-counter"]} data-testid="cartCounter">
+              {counter}
+            </span>
+          )}
+          <ShoppingBagIcon className="h-8 w-8" />
+        </span>
       </button>
       <Transition show={cartModalOpen}>
         <Dialog onClose={closeCart} className="relative z-50">
@@ -86,7 +99,9 @@ export default function CartModal({ messages }: CartModalProps) {
           >
             <DialogPanel className="fixed bottom-0 right-0 top-0 flex h-full w-full flex-col border-l border-neutral-200 bg-white/80 p-6 text-black backdrop-blur-xl dark:border-neutral-700 dark:bg-black/80 dark:text-white md:w-[430px]">
               <div className="flex items-center justify-between mb-10">
-                <p className="text-lg font-semibold">{messages["app.checkout.pageHeader"]}</p>
+                <p className="text-md uppercase font-semibold">
+                  {messages["app.checkout.pageHeader"]}
+                </p>
                 <button title="Close" aria-label="Close cart" onClick={closeCart} type="button">
                   <div className="relative flex h-11 w-11 items-center justify-center rounded-md border border-neutral-200 text-black transition-colors dark:border-neutral-700 dark:text-white">
                     <svg

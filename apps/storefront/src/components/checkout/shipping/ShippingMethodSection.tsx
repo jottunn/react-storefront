@@ -3,12 +3,12 @@ import React, { useEffect, useState } from "react";
 import { ErrorDetailsFragment, ShippingMethod } from "@/saleor/api";
 import { Button } from "../../Button/Button";
 import { Messages } from "@/lib/util";
-import { checkoutShippingMethodUpdate } from "../actions";
 import { notNullable } from "@/lib/media";
 import { ShippingMethodOption } from "./ShippingMethodOption";
 import ShippingMethodDisplay from "./ShippingMethodDisplay";
 import { useCheckout } from "@/lib/hooks/CheckoutContext";
 import Spinner from "@/components/Spinner";
+import { checkoutDeliveryMethodUpdate } from "../actions";
 
 export interface ShippingMethodSectionProps {
   active: boolean;
@@ -71,8 +71,8 @@ export function ShippingMethodSection({ active, messages }: ShippingMethodSectio
       loading: true,
     }));
 
-    const response = await checkoutShippingMethodUpdate({
-      shippingMethodId: method.id,
+    const response = await checkoutDeliveryMethodUpdate({
+      deliveryMethodId: method.id,
       id: checkout.id,
     });
 

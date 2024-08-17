@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { type ResolvingMetadata, type Metadata } from "next";
+import { type Metadata } from "next";
 import { executeGraphQL } from "src/lib/graphql";
 import { CollectionBySlugDocument, CollectionBySlugQuery, LanguageCodeEnum } from "@/saleor/api";
 import { DEFAULT_LOCALE, defaultRegionQuery } from "@/lib/regions";
@@ -7,7 +7,6 @@ import PageHero from "@/components/PageHero";
 import { translate } from "@/lib/translations";
 import FilteredProductList from "@/components/productList/FilteredProductList";
 import { getMessages } from "@/lib/util";
-import Link from "next/link";
 import { STOREFRONT_NAME, STOREFRONT_URL } from "@/lib/const";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Script from "next/script";
@@ -16,15 +15,20 @@ export const generateMetadata = async ({
   params,
 }: {
   params: { slug: string };
-}): Promise<Metadata> => {
-  const response = await executeGraphQL<
-    CollectionBySlugQuery,
-    { slug: string; locale: LanguageCodeEnum; channel: string }
-  >(CollectionBySlugDocument, {
-    variables: { slug: params.slug, ...defaultRegionQuery() },
-    revalidate: 60 * 60 * 24,
-  });
-  const collection = response.collection as any;
+}): Promise<Metadata | []> => {
+  let collection;
+  try {
+    const response = await executeGraphQL<
+      CollectionBySlugQuery,
+      { slug: string; locale: LanguageCodeEnum; channel: string }
+    >(CollectionBySlugDocument, {
+      variables: { slug: params.slug, ...defaultRegionQuery() },
+      revalidate: 60 * 60 * 24,
+    });
+    collection = response.collection as any;
+  } catch {
+    return [];
+  }
 
   return {
     title: collection && (collection.seoTitle || `${collection.name} | ${STOREFRONT_NAME}`),
@@ -55,13 +59,19 @@ export const generateMetadata = async ({
 };
 
 export default async function Page({ params }: { params: { slug: string } }) {
-  const { collection } = await executeGraphQL<
-    CollectionBySlugQuery,
-    { slug: string; locale: LanguageCodeEnum; channel: string }
-  >(CollectionBySlugDocument, {
-    variables: { slug: params.slug, ...defaultRegionQuery() },
-    revalidate: 60,
-  });
+  let collection;
+  try {
+    const response = await executeGraphQL<
+      CollectionBySlugQuery,
+      { slug: string; locale: LanguageCodeEnum; channel: string }
+    >(CollectionBySlugDocument, {
+      variables: { slug: params.slug, ...defaultRegionQuery() },
+      revalidate: 60,
+    });
+    collection = response.collection;
+  } catch {
+    return [];
+  }
 
   if (!collection) {
     notFound();

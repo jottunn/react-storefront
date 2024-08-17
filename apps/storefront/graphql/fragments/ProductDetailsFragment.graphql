@@ -45,4 +45,8 @@ fragment ProductDetailsFragment on Product {
   category {
     name
   }
+  metadata {
+    key
+    value
+  }
 }

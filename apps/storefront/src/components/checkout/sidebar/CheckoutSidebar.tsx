@@ -14,9 +14,7 @@ function CheckoutSidebar({ messages }: CheckoutSidebarProps) {
       <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 md:pr-4 md:py-4 md:pl-0 p-4">
         {messages["app.checkout.orderSummary"]}
       </h1>
-
       <CheckoutProductList messages={messages} />
-      {/* @ts-expect-error Async Server Component  */}
       <CartSummary messages={messages} />
     </section>
   );

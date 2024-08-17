@@ -16,15 +16,20 @@ export const generateMetadata = async ({
   params,
 }: {
   params: { slug: string };
-}): Promise<Metadata> => {
-  const response = await executeGraphQL<any, { slug: string; locale: LanguageCodeEnum }>(
-    CategoryBySlugDocument,
-    {
-      variables: { slug: params.slug, locale: DEFAULT_LOCALE },
-      revalidate: 60 * 60 * 24,
-    },
-  );
-  const category = response.category;
+}): Promise<Metadata | []> => {
+  let category;
+  try {
+    const response = await executeGraphQL<any, { slug: string; locale: LanguageCodeEnum }>(
+      CategoryBySlugDocument,
+      {
+        variables: { slug: params.slug, locale: DEFAULT_LOCALE },
+        revalidate: 60 * 60 * 24,
+      },
+    );
+    category = response.category;
+  } catch {
+    return [];
+  }
 
   return {
     title: category && (category.seoTitle || `${category.name} | ${STOREFRONT_NAME}`),
@@ -53,14 +58,19 @@ export const generateMetadata = async ({
 };
 
 export default async function Page({ params }: { params: { slug: string } }) {
-  const { category } = await executeGraphQL<
-    CategoryBySlugQuery,
-    { slug: string; locale: LanguageCodeEnum }
-  >(CategoryBySlugDocument, {
-    variables: { slug: params.slug, locale: DEFAULT_LOCALE },
-    revalidate: 60,
-  });
-
+  let category;
+  try {
+    const response = await executeGraphQL<
+      CategoryBySlugQuery,
+      { slug: string; locale: LanguageCodeEnum }
+    >(CategoryBySlugDocument, {
+      variables: { slug: params.slug, locale: DEFAULT_LOCALE },
+      revalidate: 60,
+    });
+    category = response.category;
+  } catch {
+    return [];
+  }
   if (!category) {
     notFound();
   }

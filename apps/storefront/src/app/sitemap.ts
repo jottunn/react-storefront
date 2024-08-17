@@ -43,7 +43,7 @@ export async function getSitemapCategories() {
       return [...categoryUrls];
     }
   } catch (err) {
-    console.error("Error:", err);
+    //console.error("Error Sitemap:", err);
   }
   return [];
 }
@@ -74,7 +74,7 @@ export async function getSitemapCollections() {
       return [...collectionUrls];
     }
   } catch (err) {
-    console.error("Error:", err);
+    //  console.error("Error sitemap:", err);
   }
   return [];
 }
@@ -115,7 +115,7 @@ export async function getSitemapProducts() {
       return [...productUrls];
     }
   } catch (err) {
-    console.error("Error:", err);
+    //console.error("Error sitemap:", err);
   }
   return [];
 }

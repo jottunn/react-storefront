@@ -1,4 +1,4 @@
-query CategoriesByMetaKey($filter: CategoryFilterInput, $locale: LanguageCodeEnum!) {
+query CategoriesByFilter($filter: CategoryFilterInput, $locale: LanguageCodeEnum!) {
   categories(first:2, filter: $filter) {
     edges {
         node {

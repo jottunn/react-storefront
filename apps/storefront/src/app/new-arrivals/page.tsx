@@ -33,13 +33,20 @@ export default async function Page() {
     ...defaultRegionQuery(),
     sortBy,
   };
-  const { products: newProductsH } = await executeGraphQL<ProductCollectionQuery, { filter: any }>(
-    ProductCollectionDocument,
-    {
-      variables: queryVariables,
-      revalidate: 60,
-    },
-  );
+  let newProductsH;
+  try {
+    const response = await executeGraphQL<ProductCollectionQuery, { filter: any }>(
+      ProductCollectionDocument,
+      {
+        variables: queryVariables,
+        revalidate: 60,
+      },
+    );
+    newProductsH = response.products;
+  } catch {
+    return [];
+  }
+
   let newProducts = newProductsH ? mapEdgesToItems(newProductsH) : [];
   const daysAgo45 = new Date();
   const currentDate = new Date();

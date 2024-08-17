@@ -6,6 +6,7 @@ import { DEFAULT_LOCALE } from "@/lib/regions";
 import { getMessages } from "@/lib/util";
 import { executeGraphQL } from "@/lib/graphql";
 import { UserDocument, UserQuery } from "@/saleor/api";
+import Spinner from "@/components/Spinner";
 
 export const metadata = {
   title: "Checkout",
@@ -24,11 +25,19 @@ export default async function CheckoutPage({
   if (!searchParams.checkout && !searchParams.order) {
     return null;
   }
-  const checkout = searchParams.checkout ? await Checkout.find(searchParams.checkout) : null;
+
+  let checkout;
+  try {
+    checkout = searchParams.checkout ? await Checkout.find(searchParams.checkout) : null;
+  } catch {
+    return null;
+  }
   const messages = getMessages(DEFAULT_LOCALE);
   const { user } = await executeGraphQL<UserQuery, {}>(UserDocument, {
     cache: "no-cache",
+    withAuth: true,
   });
+
   return (
     <main className="mt-6 flex-1 container pt-8 px-8">
       <div className="grid min-h-screen grid-cols-1 gap-x-16 lg:grid-cols-2">

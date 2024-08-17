@@ -1,24 +1,23 @@
 "use client";
 import { Button } from "@/components/Button/Button";
 import AddressDisplay from "@/components/account/AddressDisplay";
-
 import { AddressDetailsFragment } from "@/saleor/api";
-import { useUserContext } from "../UserContext";
 import {
   deleteAddressMutation,
   setAddressDefaultMutation,
   updateAddressMutation,
 } from "src/app/actions";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AddressForm, AddressFormData } from "@/components/account/AddressForm";
+import { Messages } from "@/lib/util";
 
 export interface AddressBookCardProps {
   address: AddressDetailsFragment;
   onAddressChange: (updatedAddress: any) => void;
+  messages: Messages;
 }
 
-export function AddressBookCard({ address, onAddressChange }: AddressBookCardProps) {
-  const { messages } = useUserContext();
+export function AddressBookCard({ address, onAddressChange, messages }: AddressBookCardProps) {
   const [error, setError] = useState<any | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);

@@ -26,35 +26,46 @@ import SvgSprite from "../SvgSprite";
 export default async function Footer({ className, ...rest }: FooterProps) {
   "use server";
   const messages = getMessages(DEFAULT_LOCALE, "app.nwl");
-  const footerNavLinks = await executeGraphQL<
-    FooterMenuQuery,
-    { slug: string; channel: string; locale: string }
-  >(FooterMenuDocument, {
-    variables: { slug: "navbar", ...defaultRegionQuery() },
-    revalidate: 60 * 60,
-  });
-
-  const brandCollections = await executeGraphQL<
-    CollectionsByMetaKeyQuery,
-    { filter: any; channel: string; locale: string }
-  >(CollectionsByMetaKeyDocument, {
-    variables: {
-      filter: {
-        metadata: [{ key: "isBrand", value: "YES" }],
-        published: "PUBLISHED",
+  let footerNavLinks, brandCollections, contactContentResponse;
+  try {
+    footerNavLinks = await executeGraphQL<
+      FooterMenuQuery,
+      { slug: string; channel: string; locale: string }
+    >(FooterMenuDocument, {
+      variables: { slug: "navbar", ...defaultRegionQuery() },
+      revalidate: 60 * 60,
+    });
+  } catch {
+    return null;
+  }
+  try {
+    brandCollections = await executeGraphQL<
+      CollectionsByMetaKeyQuery,
+      { filter: any; channel: string; locale: string }
+    >(CollectionsByMetaKeyDocument, {
+      variables: {
+        filter: {
+          metadata: [{ key: "isBrand", value: "YES" }],
+          published: "PUBLISHED",
+        },
+        ...defaultRegionQuery(),
       },
-      ...defaultRegionQuery(),
-    },
-    revalidate: 60 * 60 * 24,
-  });
-
-  const contactContentResponse = await executeGraphQL<
-    PageTypesQuery,
-    { filter: any; locale: LanguageCodeEnum }
-  >(PageTypesDocument, {
-    variables: { filter: { slugs: ["get-in-touch"] }, locale: DEFAULT_LOCALE },
-    revalidate: 60,
-  });
+      revalidate: 60 * 60 * 24,
+    });
+  } catch {
+    return null;
+  }
+  try {
+    contactContentResponse = await executeGraphQL<
+      PageTypesQuery,
+      { filter: any; locale: LanguageCodeEnum }
+    >(PageTypesDocument, {
+      variables: { filter: { slugs: ["get-in-touch"] }, locale: DEFAULT_LOCALE },
+      revalidate: 60,
+    });
+  } catch {
+    return null;
+  }
 
   const parser = edjsHTML();
   const contactContent = contactContentResponse.pages?.edges[0];

@@ -16,8 +16,8 @@ import {
   ConfirmEmailChangeDocument,
   ConfirmEmailChangeMutation,
   LanguageCodeEnum,
-  OrderDetailsByTokenDocument,
-  OrderDetailsByTokenQuery,
+  OrderDetailsByIdDocument,
+  OrderDetailsByIdQuery,
   PasswordChangeDocument,
   PasswordChangeMutation,
   ProductCollectionDocument,
@@ -45,14 +45,20 @@ import { DEFAULT_CHANNEL, defaultRegionQuery } from "@/lib/regions";
 import { ResetFormData } from "./reset/ForgotPassword";
 import { ResetPasswordFormData } from "./reset/ResetPasswordForm";
 import { ConfirmData } from "./confirm/ConfirmResult";
+import { customerDetach } from "@/components/checkout/actions";
+import { cookies } from "next/headers";
 
 export async function logout() {
-  "use server";
+  //if any checkout and attached customer  =>  detach
+  const cookieStore = cookies();
+  const checkoutId = cookieStore.get("checkoutId-default-channel")?.value;
+  if (checkoutId) {
+    await customerDetach(checkoutId);
+  }
   saleorAuthClient().signOut();
 }
 
 export async function login(formData: LoginFormData) {
-  "use server";
   const email = formData.email.toString();
   const password = formData.password.toString();
 
@@ -66,7 +72,6 @@ export async function login(formData: LoginFormData) {
     const customError = data?.tokenCreate?.errors as any;
     return { success: false, errors: customError.map((error: { code: any }) => error.code) };
   }
-
   return { success: true, token: data.tokenCreate.token };
 }
 
@@ -213,16 +218,17 @@ export async function confirmAccount(confirmData: ConfirmData) {
   }
 }
 
-export async function getCurrentUser(): Promise<User | undefined> {
+export async function getCurrentUser(): Promise<User | null> {
   try {
     const { user } = await executeGraphQL<UserQuery, {}>(UserDocument, {
       cache: "no-cache",
+      withAuth: true,
     });
 
     return user as User;
   } catch (error) {
     console.error("Failed to fetch current user:", error);
-    return;
+    return null;
   }
 }
 
@@ -281,6 +287,7 @@ export const requestEmailChange = async (args: {
         redirectUrl: redirectUrl,
       },
       cache: "no-cache",
+      withAuth: true,
     });
 
     if (response.requestEmailChange?.errors.length) {
@@ -309,6 +316,7 @@ export const confirmEmailChange = async (args: { token: String }) => {
         channel: DEFAULT_CHANNEL.slug,
       },
       cache: "no-cache",
+      withAuth: true,
     });
 
     if (response.confirmEmailChange?.errors.length) {
@@ -337,6 +345,7 @@ export const passwordChange = async (args: { newPassword: string; oldPassword: s
         oldPassword: oldPassword,
       },
       cache: "no-cache",
+      withAuth: true,
     });
 
     if (response.passwordChange?.errors.length) {
@@ -363,6 +372,7 @@ export const deleteAddressMutation = async (args: { id: string }) => {
         id: id,
       },
       cache: "no-cache",
+      withAuth: true,
     });
 
     if (response.accountAddressDelete?.errors.length) {
@@ -391,6 +401,7 @@ export const updateAddressMutation = async (args: { id: string; address: Address
         address: address,
       },
       cache: "no-cache",
+      withAuth: true,
     });
 
     if (response.accountAddressUpdate?.errors.length) {
@@ -418,6 +429,7 @@ export const setAddressDefaultMutation = async (args: { id: string; type: string
         type: type,
       },
       cache: "no-cache",
+      withAuth: true,
     });
 
     if (response.accountSetDefaultAddress?.errors.length) {
@@ -431,54 +443,27 @@ export const setAddressDefaultMutation = async (args: { id: string; type: string
   }
 };
 
-export const orderDetails = async (args: { token: String }) => {
-  const { token } = args;
+export const orderDetails = async (args: { id: String }) => {
+  const { id } = args;
   try {
     const response = await executeGraphQL<
-      OrderDetailsByTokenQuery,
+      OrderDetailsByIdQuery,
       {
-        token: String;
+        id: String;
       }
-    >(OrderDetailsByTokenDocument, {
+    >(OrderDetailsByIdDocument, {
       variables: {
-        token: token,
+        id: id,
       },
       cache: "no-cache",
+      withAuth: true,
     });
 
-    if (response.orderByToken) {
-      return { success: true, order: response.orderByToken };
+    if (response.order) {
+      return { success: true, order: response.order };
     }
   } catch (error) {
     console.error("Failed to remove address:", error);
-    return;
-  }
-};
-
-export const saveOrderMetaDataMutation = async (args: { id: string; type: string }) => {
-  const { id, type } = args;
-  try {
-    const response = await executeGraphQL<
-      SetAddressDefaultMutation,
-      {
-        id: string;
-        type: string;
-      }
-    >(SetAddressDefaultDocument, {
-      variables: {
-        id: id,
-        type: type,
-      },
-      cache: "no-cache",
-    });
-
-    if (response.accountSetDefaultAddress?.errors.length) {
-      const customError = response.accountSetDefaultAddress.errors as any;
-      return { success: false, errors: customError.map((error: { code: any }) => error.code) };
-    }
-    return { success: true, addresses: response.accountSetDefaultAddress?.user?.addresses };
-  } catch (error) {
-    console.error("Failed to set default adresss:", error);
     return;
   }
 };

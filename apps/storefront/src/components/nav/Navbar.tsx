@@ -3,11 +3,14 @@ import Link from "next/link";
 import React, { Suspense } from "react";
 import styles from "./Navbar.module.css";
 import Image from "next/image";
-import UserMenuContainer from "./components/UserMenu/UserMenuContainer";
 import MobileMenu from "./components/MobileMenu/MobileMenu";
 import Menu from "./Menu";
-import CustomSearchBox from "./SearchBox";
+import CustomSearchBox from "./components/Search/SearchBox";
 import CartNavItem from "../cart/CartNavItem";
+import { getMessages } from "@/lib/util";
+import { DEFAULT_LOCALE } from "@/lib/regions";
+import UserMenu from "./components/UserMenu/UserMenu";
+const messages = getMessages(DEFAULT_LOCALE, "app.navigation");
 
 export const Navbar = async () => {
   return (
@@ -27,10 +30,7 @@ export const Navbar = async () => {
             <div className="hidden md:flex">
               <CustomSearchBox />
             </div>
-            <Suspense fallback={<div className="w-8" />}>
-              {/* @ts-expect-error Async Server Component */}
-              <UserMenuContainer />
-            </Suspense>
+            <UserMenu messages={messages} />
             <Suspense fallback={<div className="w-6" />}>
               <CartNavItem />
             </Suspense>

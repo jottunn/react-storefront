@@ -1,5 +1,5 @@
 import MenuServer from "../../MenuServer";
-import { SearchBar } from "../../SearchBar";
+import { SearchBar } from "../Search/SearchBar";
 import ClientMobileMenu from "./MobileMenuClient";
 
 export default function MobileMenu() {

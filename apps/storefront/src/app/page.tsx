@@ -2,8 +2,8 @@ import { getMessages, getMetadataValue, getNumColumns, getOrderValue } from "src
 import { DEFAULT_LOCALE, defaultRegionQuery } from "src/lib/regions";
 import { executeGraphQL } from "@/lib/graphql";
 import {
-  CategoriesByMetaKeyDocument,
-  CategoriesByMetaKeyQuery,
+  CategoriesByFilterDocument,
+  CategoriesByFilterQuery,
   CategoryFilterInput,
   CollectionBySlugDocument,
   CollectionBySlugQuery,
@@ -33,15 +33,20 @@ import Banner from "@/components/homepage/Banner";
 const parser = edjsHTML();
 const emptyTagsRegex = /^<[^>]+>\s*(<br\s*\/?>)?\s*<\/[^>]+>$/;
 
-export const generateMetadata = async (): Promise<Metadata> => {
-  const response = await executeGraphQL<PageQuery, { slug: String; locale: LanguageCodeEnum }>(
-    PageDocument,
-    {
-      variables: { slug: "home", locale: DEFAULT_LOCALE },
-      revalidate: 60 * 5,
-    },
-  );
-  const page = response.page;
+export const generateMetadata = async (): Promise<Metadata | []> => {
+  let page;
+  try {
+    const response = await executeGraphQL<PageQuery, { slug: String; locale: LanguageCodeEnum }>(
+      PageDocument,
+      {
+        variables: { slug: "home", locale: DEFAULT_LOCALE },
+        revalidate: 60 * 5,
+      },
+    );
+    page = response.page;
+  } catch {
+    return [];
+  }
 
   return {
     title: page && (page.seoTitle || STOREFRONT_NAME),
@@ -53,14 +58,20 @@ export default async function Home() {
   "use server";
   const messages = getMessages(DEFAULT_LOCALE);
   //get page by slug home
-  const { page } = await executeGraphQL<PageQuery, { slug: String; locale: LanguageCodeEnum }>(
-    PageDocument,
-    {
-      variables: { slug: "home", locale: DEFAULT_LOCALE },
-      revalidate: 60 * 5,
-    },
-  );
-
+  let page;
+  try {
+    const response = await executeGraphQL<PageQuery, { slug: String; locale: LanguageCodeEnum }>(
+      PageDocument,
+      {
+        variables: { slug: "home", locale: DEFAULT_LOCALE },
+        revalidate: 60 * 5,
+      },
+    );
+    page = response.page;
+  } catch {
+    return [];
+    //throw new Error("Server is down")
+  }
   const filter: ProductFilterInput = { isPublished: true, stockAvailability: "IN_STOCK" };
   const sortBy: ProductOrder = { direction: "DESC", field: "PUBLICATION_DATE" };
   const queryVariables = {
@@ -70,25 +81,37 @@ export default async function Home() {
     sortBy,
   };
 
-  const { products: newProductsH } = await executeGraphQL<ProductCollectionQuery, { filter: any }>(
-    ProductCollectionDocument,
-    {
-      variables: queryVariables,
-      revalidate: 60 * 60 * 24,
-    },
-  );
+  let newProductsH;
+  try {
+    const response = await executeGraphQL<ProductCollectionQuery, { filter: any }>(
+      ProductCollectionDocument,
+      {
+        variables: queryVariables,
+        revalidate: 60 * 60 * 24,
+      },
+    );
+    newProductsH = response.products;
+  } catch {
+    return [];
+  }
   let newProducts = newProductsH ? mapEdgesToItems(newProductsH) : [];
 
   /** feature-products collection */
-  const { collection: featuredCollection } = await executeGraphQL<
-    CollectionBySlugQuery,
-    { slug: string; channel: string; locale: LanguageCodeEnum }
-  >(CollectionBySlugDocument, {
-    variables: {
-      slug: "highlights",
-      ...defaultRegionQuery(),
-    },
-  });
+  let featuredCollection;
+  try {
+    const response = await executeGraphQL<
+      CollectionBySlugQuery,
+      { slug: string; channel: string; locale: LanguageCodeEnum }
+    >(CollectionBySlugDocument, {
+      variables: {
+        slug: "highlights",
+        ...defaultRegionQuery(),
+      },
+    });
+    featuredCollection = response.collection;
+  } catch {
+    return [];
+  }
 
   let featuredProducts;
   if (featuredCollection) {
@@ -115,16 +138,22 @@ export default async function Home() {
   const categoryFilter: CategoryFilterInput = {
     metadata: [{ key: "Show on Homepage", value: "YES" }],
   };
-  const { categories } = await executeGraphQL<
-    CategoriesByMetaKeyQuery,
-    { filter: CategoryFilterInput; locale: LanguageCodeEnum }
-  >(CategoriesByMetaKeyDocument, {
-    variables: {
-      filter: categoryFilter,
-      ...defaultRegionQuery(),
-    },
-    revalidate: 60 * 5,
-  });
+  let categories;
+  try {
+    const response = await executeGraphQL<
+      CategoriesByFilterQuery,
+      { filter: CategoryFilterInput; locale: LanguageCodeEnum }
+    >(CategoriesByFilterDocument, {
+      variables: {
+        filter: categoryFilter,
+        ...defaultRegionQuery(),
+      },
+      revalidate: 60 * 5,
+    });
+    categories = response.categories;
+  } catch {
+    return [];
+  }
   const homepageCategories = categories ? mapEdgesToItems(categories) : [];
   homepageCategories.sort((a, b) => getOrderValue(a.metadata) - getOrderValue(b.metadata));
   const numColumnsHPCategories = getNumColumns(homepageCategories.length);
@@ -134,16 +163,22 @@ export default async function Home() {
     metadata: [{ key: "Show on Homepage", value: "YES" }],
   };
 
-  const { collections } = await executeGraphQL<
-    CollectionsByMetaKeyQuery,
-    { filter: CollectionFilterInput; locale: LanguageCodeEnum }
-  >(CollectionsByMetaKeyDocument, {
-    variables: {
-      filter: collectionFilter,
-      ...defaultRegionQuery(),
-    },
-    revalidate: 60 * 5,
-  });
+  let collections;
+  try {
+    const response = await executeGraphQL<
+      CollectionsByMetaKeyQuery,
+      { filter: CollectionFilterInput; locale: LanguageCodeEnum }
+    >(CollectionsByMetaKeyDocument, {
+      variables: {
+        filter: collectionFilter,
+        ...defaultRegionQuery(),
+      },
+      revalidate: 60 * 5,
+    });
+    collections = response.collections;
+  } catch {
+    return [];
+  }
 
   const homepageCollections = collections ? mapEdgesToItems(collections) : [];
   homepageCollections.sort((a, b) => getOrderValue(a.metadata) - getOrderValue(b.metadata));
