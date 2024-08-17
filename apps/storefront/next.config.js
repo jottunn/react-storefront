@@ -91,5 +91,13 @@ module.exports = withBundleAnalyzer({
       permanent: true,
     }));
   },
+  async rewrites() {
+    return [
+      {
+        source: "/noutati",
+        destination: "/new-arrivals",
+      },
+    ];
+  },
   experimental: {},
 });

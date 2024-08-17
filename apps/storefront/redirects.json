@@ -1,4 +1,386 @@
 [
-  { "source": "/produse/echipament/Outlet-59/baieti-1", "destination": "/outlet" },
-  { "source": "/noutati", "destination": "/new-arrivals" }
+  {
+    "source": "/produse/biciclete/Gravel-58/baieti-1",
+    "destination": "/c/biciclete-gravel"
+  },
+  {
+    "source": "/produse/biciclete/Gravel-58",
+    "destination": "/c/biciclete-gravel"
+  },
+  {
+    "source": "/produse/biciclete/sosea-2/baieti-1",
+    "destination": "/c/biciclete-sosea"
+  },
+  {
+    "source": "/produse/biciclete/mtb-hardtail-3/baieti-1",
+    "destination": "/c/biciclete-mtb-hardtailcross-country"
+  },
+  {
+    "source": "/produse/biciclete/mtb-full-suspension-4/baieti-1",
+    "destination": "/c/biciclete-mtb-full-suspension"
+  },
+  {
+    "source": "/produse/biciclete/hibrid-6/baieti-1",
+    "destination": "/c/biciclete-hibrid"
+  },
+  {
+    "source": "/produse/biciclete/urban-1/baieti-1",
+    "destination": "/c/biciclete-urbane"
+  },
+  {
+    "source": "/produse/biciclete/Electrice-56/baieti-1",
+    "destination": "/c/biciclete-electrice"
+  },
+  {
+    "source": "/produse/biciclete/Gravel-58/fete-2",
+    "destination": "/c/biciclete-gravel"
+  },
+  {
+    "source": "/produse/biciclete/sosea-2/fete-2",
+    "destination": "/c/biciclete-sosea"
+  },
+  {
+    "source": "/produse/biciclete/mtb-hardtail-3/fete-2",
+    "destination": "/c/biciclete-mtb-hardtailcross-country"
+  },
+  {
+    "source": "/produse/biciclete/mtb-full-suspension-4/fete-2",
+    "destination": "/c/biciclete-mtb-full-suspension"
+  },
+  {
+    "source": "/produse/biciclete/Electrice-56/fete-2",
+    "destination": "/c/biciclete-electrice"
+  },
+  {
+    "source": "/produse/biciclete/mtb-hardtail-3/copii-6",
+    "destination": "/c/biciclete-mtb-hardtailcross-country"
+  },
+  {
+    "source": "/produse/biciclete/sosea-2",
+    "destination": "/c/biciclete-sosea"
+  },
+  {
+    "source": "/produse/biciclete/mtb-hardtail-3",
+    "destination": "/c/biciclete-mtb-hardtailcross-country"
+  },
+  {
+    "source": "/produse/biciclete/mtb-full-suspension-4",
+    "destination": "/c/biciclete-mtb-full-suspension"
+  },
+  {
+    "source": "/produse/biciclete/hibrid-6",
+    "destination": "/c/biciclete-hibrid"
+  },
+  {
+    "source": "/produse/biciclete/urban-1",
+    "destination": "/c/biciclete-urbane"
+  },
+  {
+    "source": "/produse/biciclete/Electrice-56",
+    "destination": "/c/biciclete-electrice"
+  },
+  {
+    "source": "/produse/piese/angrenaje-27",
+    "destination": "/c/angrenaje-butuci-pinioane-bicicleta"
+  },
+  {
+    "source": "/produse/piese/piese-bmx-43",
+    "destination": "/c/piese-bmx"
+  },
+  {
+    "source": "/produse/piese/tije-sa-42",
+    "destination": "/c/sei-si-tije-bicicleta"
+  },
+  {
+    "source": "/produse/piese/sei-41",
+    "destination": "/c/sei-si-tije-bicicleta"
+  },
+  {
+    "source": "/produse/piese/pipe-40",
+    "destination": "/c/pipe-bicicleta"
+  },
+  {
+    "source": "/produse/piese/pedale-39",
+    "destination": "/c/pedale-bicicleta"
+  },
+  {
+    "source": "/produse/piese/mansoane-37",
+    "destination": "/c/mansoane-si-ghidolina-bicicleta"
+  },
+  {
+    "source": "/produse/piese/Ghidolina-53",
+    "destination": "/c/mansoane-si-ghidolina-bicicleta"
+  },
+  {
+    "source": "/produse/piese/ghidoane-36",
+    "destination": "/c/ghidoane-bicicleta"
+  },
+  {
+    "source": "/produse/piese/schimbatoare-35",
+    "destination": "/c/schimbatoare-bicicleta"
+  },
+  {
+    "source": "/produse/piese/pinioane-28",
+    "destination": "/c/angrenaje-butuci-pinioane-bicicleta"
+  },
+  {
+    "source": "/produse/piese/lanturi-29",
+    "destination": "/c/lanturi-bicicleta"
+  },
+  {
+    "source": "/produse/piese/butuci-30",
+    "destination": "/c/angrenaje-butuci-pinioane-bicicleta"
+  },
+  {
+    "source": "/produse/piese/cauciucuri-31",
+    "destination": "/c/cauciucurianvelope-bicicleta"
+  },
+  {
+    "source": "/produse/piese/Camere-52",
+    "destination": "/c/camere-bicicleta"
+  },
+  {
+    "source": "/produse/piese/frane-33",
+    "destination": "/c/frane-bicicleta"
+  },
+  {
+    "source": "/produse/piese/manete-34",
+    "destination": "/c/schimbatoare-bicicleta"
+  },
+  {
+    "source": "/produse/echipament/Outlet-59/baieti-1",
+    "destination": "/outlet"
+  },
+  {
+    "source": "/produse/echipament/geci-49/baieti-1",
+    "destination": "/c/geci-bicicleta"
+  },
+  {
+    "source": "/produse/echipament/bluze-cu-maneca-lunga-55/baieti-1",
+    "destination": "/c/bluze-si-hanorace-bicicleta"
+  },
+  {
+    "source": "/produse/echipament/pantaloni-lungi-54/baieti-1",
+    "destination": "/c/pantaloni-lungi-bicicleta"
+  },
+  {
+    "source": "/produse/echipament/tricouri-9/baieti-1",
+    "destination": "/c/tricouri-ciclism"
+  },
+  {
+    "source": "/produse/echipament/pantaloni-10/baieti-1",
+    "destination": "/c/pantaloni-scurti-bicicleta"
+  },
+  {
+    "source": "/produse/echipament/manusi-8/baieti-1",
+    "destination": "/c/manusi-bicicleta"
+  },
+  {
+    "source": "/produse/echipament/incaltaminte-15/baieti-1",
+    "destination": "/c/incaltaminte-bicicleta"
+  },
+  {
+    "source": "/produse/echipament/sosete-14/baieti-1",
+    "destination": "/c/sosete-bicicleta"
+  },
+  {
+    "source": "/produse/echipament/protectii-12/baieti-1",
+    "destination": "/c/echipament-protectie-bicicleta"
+  },
+  {
+    "source": "/produse/echipament/casti-11/baieti-1",
+    "destination": "/c/casti-bicicleta"
+  },
+  {
+    "source": "/produse/echipament/rucsacuri-46/baieti-1",
+    "destination": "/c/rucsacuri-genti-si-borsete-bicicleta"
+  },
+  {
+    "source": "/produse/echipament/ochelari-16/baieti-1",
+    "destination": "/c/ochelari-bicicleta"
+  },
+  {
+    "source": "/produse/echipament/Accesorii-57/baieti-1",
+    "destination": "/c/accesorii-echipament-bicicleta"
+  },
+  {
+    "source": "/produse/echipament/Outlet-59/fete-2",
+    "destination": "/outlet"
+  },
+  {
+    "source": "/produse/echipament/geci-49/fete-2",
+    "destination": "/c/geci-bicicleta"
+  },
+  {
+    "source": "/produse/echipament/pantaloni-lungi-54/fete-2",
+    "destination": "/c/pantaloni-lungi-bicicleta"
+  },
+  {
+    "source": "/produse/echipament/tricouri-9/fete-2",
+    "destination": "/c/tricouri-ciclism"
+  },
+  {
+    "source": "/produse/echipament/pantaloni-10/fete-2",
+    "destination": "/c/pantaloni-scurti-bicicleta"
+  },
+  {
+    "source": "/produse/echipament/manusi-8/fete-2",
+    "destination": "/c/manusi-bicicleta"
+  },
+  {
+    "source": "/produse/echipament/incaltaminte-15/fete-2",
+    "destination": "/c/incaltaminte-bicicleta"
+  },
+  {
+    "source": "/produse/echipament/sosete-14/fete-2",
+    "destination": "/c/sosete-bicicleta"
+  },
+  {
+    "source": "/produse/echipament/protectii-12/fete-2",
+    "destination": "/c/echipament-protectie-bicicleta"
+  },
+  {
+    "source": "/produse/echipament/casti-11/fete-2",
+    "destination": "/c/casti-bicicleta"
+  },
+  {
+    "source": "/produse/echipament/rucsacuri-46/fete-2",
+    "destination": "/c/rucsacuri-genti-si-borsete-bicicleta"
+  },
+  {
+    "source": "/produse/echipament/ochelari-16/fete-2",
+    "destination": "/c/ochelari-bicicleta"
+  },
+  {
+    "source": "/produse/echipament/Accesorii-57/fete-2",
+    "destination": "/c/accesorii-echipament-bicicleta"
+  },
+  {
+    "source": "/produse/echipament/bluze-cu-maneca-lunga-55/copii-6",
+    "destination": "/c/bluze-si-hanorace-bicicleta"
+  },
+  {
+    "source": "/produse/echipament/pantaloni-10/copii-6",
+    "destination": "/c/pantaloni-scurti-bicicleta"
+  },
+  {
+    "source": "/produse/echipament/manusi-8/copii-6",
+    "destination": "/c/manusi-bicicleta"
+  },
+  {
+    "source": "/produse/echipament/protectii-12/copii-6",
+    "destination": "/c/echipament-protectie-bicicleta"
+  },
+  {
+    "source": "/produse/accesorii/aparatori-noroi-17",
+    "destination": "/c/aparatori-noroi-bicicleta"
+  },
+  {
+    "source": "/produse/accesorii/sisteme-antifurt-18",
+    "destination": "/c/antifurt-bicicleta"
+  },
+  {
+    "source": "/produse/accesorii/vitezometre-19",
+    "destination": "/c/vitezometre-bicicleta"
+  },
+  {
+    "source": "/produse/accesorii/faruri-si-stopuri-20",
+    "destination": "/c/lumini-bicicleta"
+  },
+  {
+    "source": "/produse/accesorii/pompe-21",
+    "destination": "/c/pompe-bicicleta"
+  },
+  {
+    "source": "/produse/accesorii/scule-22",
+    "destination": "/c/scule-bicicleta"
+  },
+  {
+    "source": "/produse/accesorii/produse-intretinere-23",
+    "destination": "/c/produse-intretinere-bicicleta"
+  },
+  {
+    "source": "/produse/accesorii/portbagaje-24",
+    "destination": "/c/portbagaje-si-cricuri-bicicleta"
+  },
+  {
+    "source": "/produse/accesorii/genti-25",
+    "destination": "/c/rucsacuri-genti-si-borsete-bicicleta"
+  },
+  {
+    "source": "/produse/accesorii/bidoane-si-suporturi-26",
+    "destination": "/c/bidoane-si-suporturi-bidoane"
+  },
+  {
+    "source": "/produse/accesorii/suporturi-auto-biciclete-44",
+    "destination": "/c/suporturi-auto-bicicleta"
+  },
+  {
+    "source": "/reduceri",
+    "destination": "/outlet"
+  },
+  {
+    "source": "/marimi",
+    "destination": "/ghid-marimi"
+  },
+  {
+    "source": "/brands/Trek-1",
+    "destination": "/collections/trek"
+  },
+  {
+    "source": "/brands/Bontrager-2",
+    "destination": "/collections/bontrager"
+  },
+  {
+    "source": "/brands/Ion-35",
+    "destination": "/collections/ion"
+  },
+  {
+    "source": "/brands/Mirra-Bike-Co-4",
+    "destination": "/collections/mirra-bike-co"
+  },
+  {
+    "source": "/brands/Saris-28",
+    "destination": "/collections/saris"
+  },
+  {
+    "source": "/brands/Muc-Off-18",
+    "destination": "/collections/muc-off"
+  },
+  {
+    "source": "/brands/Shimano-6",
+    "destination": "/collections/shimano"
+  },
+  {
+    "source": "/brands/SRAM-7",
+    "destination": "/collections/sram"
+  },
+  {
+    "source": "/brands/CamelBak-32",
+    "destination": "/collections/camelbak"
+  },
+  {
+    "source": "/brands/ACROS-13",
+    "destination": "/collections/acros"
+  },
+  {
+    "source": "/brands/Rapid-Race-Products-19",
+    "destination": "/collections/rapid-racer-products"
+  },
+  {
+    "source": "/brands/Avid-14",
+    "destination": "/collections/avid"
+  },
+  {
+    "source": "/brands/RED-BULL-SPECT-27",
+    "destination": "/collections/red-bull-spect"
+  },
+  {
+    "source": "/brands/Atala-57",
+    "destination": "/collections/atala"
+  },
+  {
+    "source": "/politica-cookie-uri",
+    "destination": "/politica-cookie"
+  }
 ]
