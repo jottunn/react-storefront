@@ -267,7 +267,7 @@ export default async function Home() {
           className={`flex overflow-hidden mb-20 md:mb-28 !px-0 ${bannerContainerSize && bannerContainerSize === "YES" ? "" : "max-w-[1920px] mx-auto"}`}
         >
           <div
-            className={`flex flex-col w-full md:max-h-[80vh] ${hasBanner1 && hasBanner2 ? "md:w-[98%] mx-auto h-[250vw] md:flex-row gap-4 md:gap-6" : ""} ${hasBanner1 && !hasBanner2 ? "h-[125vw]" : ""}`}
+            className={`flex flex-col w-full md:max-h-[80vh] ${hasBanner1 && hasBanner2 ? "h-auto md:w-[98%] mx-auto md:flex-row gap-4 md:gap-6" : ""} ${hasBanner1 && !hasBanner2 ? "h-[125vw]" : ""}`}
           >
             <Banner
               bannerAttribute={banner1Attribute}
@@ -275,6 +275,7 @@ export default async function Home() {
               displayTextBanner={displayTextBanner1}
               bannerTextStyle={banner1TextStyle}
               placeholder={placeholder}
+              hasBanner2={hasBanner2}
             />
             {hasBanner2 && (
               <Banner
@@ -283,6 +284,7 @@ export default async function Home() {
                 displayTextBanner={displayTextBanner2}
                 bannerTextStyle={banner2TextStyle}
                 placeholder={placeholder_2}
+                hasBanner2={hasBanner2}
               />
             )}
           </div>
