@@ -23,8 +23,7 @@ export const useUser = () => {
     };
 
     const handleUserChange = async () => {
-      const currentUser = await getCurrentUser();
-      setUser(currentUser);
+      fetchCurrentUser();
     };
     window.addEventListener("user-login", handleUserChange);
     window.addEventListener("user-logout", handleLogout);

@@ -6,9 +6,9 @@ import { CollapseMenu } from "./CollapseMenu";
 import { XMarkIcon, Bars3BottomLeftIcon, PowerIcon } from "@heroicons/react/24/solid";
 import { useMobileMenu } from "./useMobileMenu";
 import { MenuGetBySlugQuery, User } from "@/saleor/api";
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { logout } from "src/app/actions";
+import { getCurrentUser, logout } from "src/app/actions";
 import { useUser } from "@/lib/hooks/useUser";
 
 interface ClientMobileMenuProps {
@@ -24,12 +24,26 @@ export default function MobileMenuClient({
 }: ClientMobileMenuProps) {
   const { closeMenu, openMenu, isOpen } = useMobileMenu();
   const router = useRouter();
-  const user = useUser();
+  const [user, setUser] = useState<User | null>(null);
   const handleLogout = async () => {
     await logout();
     window.dispatchEvent(new Event("user-logout"));
     router.push("/login");
   };
+
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const currentUser = await getCurrentUser();
+        setUser(currentUser);
+      } catch (error) {
+        console.error("Failed to fetch user:", error);
+        setUser(null);
+      }
+    };
+
+    fetchCurrentUser();
+  }, [isOpen]);
 
   return (
     <>

@@ -3,7 +3,6 @@ import {
   MenuGetBySlugDocument,
   MenuGetBySlugQuery,
   MenuGetBySlugQueryVariables,
-  User,
 } from "@/saleor/api";
 import { ReactNode } from "react";
 import { defaultRegionQuery } from "@/lib/regions";
