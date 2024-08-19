@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         slug: currentSlug,
         ...defaultRegionQuery(),
       },
-      revalidate: 60,
+      revalidate: 60 * 60,
       withAuth: false,
     });
 
@@ -76,6 +76,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
+export async function generateStaticParams() {
+  const fixedSlugs = ["contact", "despre-noi"];
+  return fixedSlugs.map((slug) => ({
+    params: { slug },
+  }));
+}
+
 export default async function Page({ params }: { params: { slug: string } }) {
   const currentSlug = params.slug[params.slug.length - 1];
   if (!isValidSlug(currentSlug)) {
@@ -92,7 +99,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
         slug: currentSlug,
         ...defaultRegionQuery(),
       },
-      revalidate: 60,
+      revalidate: 60 * 5,
       withAuth: false,
     });
 

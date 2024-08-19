@@ -12,21 +12,6 @@ type Props = {
   page: PageFragment;
 };
 export default function PageSaleor({ page }: Props) {
-  // const { page } = await executeGraphQL<
-  //   PageQuery,
-  //   { slug: string; locale: LanguageCodeEnum; channel: string }
-  // >(PageDocument, {
-  //   variables: {
-  //     slug: params.slug,
-  //     ...defaultRegionQuery(),
-  //   },
-  //   revalidate: 60,
-  // });
-
-  // if (!page) {
-  //   notFound();
-  // }
-
   const content = page && "content" in page ? translate(page, "content") : null;
   const parsedContent = content ? edjsParser.parse(JSON.parse(content)).join("") : "";
   const richTextAttributes =

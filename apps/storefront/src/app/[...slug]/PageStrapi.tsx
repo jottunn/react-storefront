@@ -17,7 +17,7 @@ export default function PageStrapi({ page }: any) {
       item: item.href ? `${STOREFRONT_URL}${item.href}` : undefined,
     })),
   };
-  console.log(pageContent);
+  // console.log(pageContent);
   const hasHeroComponent = pageContent.filter(
     (section: { __component: string }) => section.__component === "sections.hero",
   );
