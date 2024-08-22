@@ -1,8 +1,0 @@
-query MainRightMenu($locale: LanguageCodeEnum!, $channel: String!) {
-  menu(slug: "navbar-right", channel: $channel) {
-    id
-    items {
-      ...MenuItemWithChildrenFragment
-    }
-  }
-}

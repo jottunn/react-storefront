@@ -3,8 +3,6 @@ import React, { Suspense, use } from "react";
 import { defaultRegionQuery } from "@/lib/regions";
 import { translate } from "@/lib/translations";
 import {
-  CheckoutAddProductLineDocument,
-  CheckoutAddProductLineMutation,
   CollectionBySlugDocument,
   CollectionBySlugQuery,
   LanguageCodeEnum,
@@ -14,14 +12,15 @@ import {
   ProductBySlugQuery,
   ProductCollectionDocument,
   ProductCollectionQuery,
+  ProductFilterInput,
+  ProductListDocument,
+  ProductListQuery,
 } from "@/saleor/api";
 import Image from "next/image";
 import { executeGraphQL } from "@/lib/graphql";
 import { notFound } from "next/navigation";
 import edjsHTML from "editorjs-html";
 import xss from "xss";
-import * as Checkout from "@/lib/checkout";
-import invariant from "ts-invariant";
 import { formatMoney } from "@/lib/utils/formatMoney";
 import { formatMoneyRange } from "@/lib/utils/formatMoneyRange";
 import { type WithContext, type Product } from "schema-dts";
@@ -41,7 +40,6 @@ import SwiperComponent from "@/components/SwiperComponent";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Script from "next/script";
 import RelatedProducts from "./RelatedProducts";
-import { addItem } from "@/components/checkout/actions";
 const edjsParser = edjsHTML();
 
 export async function generateMetadata(
@@ -101,17 +99,42 @@ export async function generateMetadata(
 }
 
 // export async function generateStaticParams() {
+//   let featuredCollection;
+//   try {
+//     const response = await executeGraphQL<
+//       CollectionBySlugQuery,
+//       { slug: string; channel: string; locale: LanguageCodeEnum }
+//     >(CollectionBySlugDocument, {
+//       variables: {
+//         slug: "highlights",
+//         ...defaultRegionQuery(),
+//       },
+//     });
+//     featuredCollection = response.collection;
+//   } catch {
+//     return [];
+//   }
+//   const filter: ProductFilterInput = {
+//     isPublished: true,
+//     stockAvailability: "IN_STOCK",
+//   };
+//   if (featuredCollection) {
+//     filter.collections = [featuredCollection.id];
+//   }
 //   const { products } = await executeGraphQL<
 //     ProductListQuery,
-//     { first: number; channel: string; locale: string }
+//     { first: number; channel: string; locale: string; filter: ProductFilterInput }
 //   >(ProductListDocument, {
 //     revalidate: 60,
-//     variables: { first: 30, ...defaultRegionQuery() },
+//     variables: {
+//       first: 30, ...defaultRegionQuery(), filter
+//     },
 //     withAuth: false,
 //   });
 
 //   const paths = products?.edges.map(({ node: { slug } }) => ({ slug })) || [];
 //   return paths;
+
 // }
 
 const Page = ({

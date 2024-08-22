@@ -145,7 +145,11 @@ export default function CartModal({ messages }: CartModalProps) {
                     </div> */}
                     <div className="mb-3 flex items-center justify-between border-b border-neutral-200 pb-1 pt-1 dark:border-neutral-700">
                       <p>{messages["app.checkout.shipping"]}</p>
-                      <p className="text-right">{messages["app.checkout.shippingInfo"]}</p>
+                      <p className="text-right">
+                        {checkout.shippingPrice?.gross?.amount
+                          ? formatMoney(checkout.shippingPrice.gross)
+                          : messages["app.checkout.shippingInfo"]}
+                      </p>
                     </div>
                     <div className="mb-3 flex items-center justify-between border-b border-neutral-200 pb-1 pt-1 dark:border-neutral-700">
                       <p>{messages["app.checkout.total"]}</p>

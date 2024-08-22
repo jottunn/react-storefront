@@ -13,7 +13,6 @@ query Orders($before: String, $after: String) {
         startCursor
         endCursor
       }
-      totalCount
     }
   }
 }

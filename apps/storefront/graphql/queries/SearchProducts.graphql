@@ -13,7 +13,6 @@ query SearchProducts(
 		sortBy: { field: $sortBy, direction: $sortDirection }
 		filter: { search: $search }
 	) {
-		totalCount
 		edges {
 			node {
 				...ProductListItem

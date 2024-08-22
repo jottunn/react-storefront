@@ -4,18 +4,11 @@ import { PageInfo } from "@/saleor/api";
 export interface PaginationProps {
   pageInfo?: PageInfo;
   onLoadMore: () => void;
-  totalCount?: number;
   itemsCount?: number;
   messages: Messages;
 }
 
-export function Pagination({
-  pageInfo,
-  onLoadMore,
-  itemsCount,
-  totalCount,
-  messages,
-}: PaginationProps) {
+export function Pagination({ pageInfo, onLoadMore, itemsCount, messages }: PaginationProps) {
   if (!pageInfo || !pageInfo?.hasNextPage) {
     return null;
   }

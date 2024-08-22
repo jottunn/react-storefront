@@ -26465,6 +26465,7 @@ export type Shop = ObjectWithMetadata & {
    * Resource limitations and current usage if any set for a shop
    *
    * Requires one of the following permissions: AUTHENTICATED_STAFF_USER.
+   * @deprecated This field will be removed in Saleor 4.0.
    */
   limits: LimitInfo;
   /** List of public metadata items. Can be accessed without permissions. */
@@ -32205,38 +32206,6 @@ export type AddressDetailsFragment = {
   country: { __typename?: "CountryDisplay"; code: string; country: string };
 };
 
-export type AttributeFilterChoiceFragment = {
-  __typename?: "AttributeValue";
-  id: string;
-  name?: string | null;
-  slug?: string | null;
-  translation?: { __typename?: "AttributeValueTranslation"; name: string } | null;
-};
-
-export type AttributeFilterFragment = {
-  __typename?: "Attribute";
-  id: string;
-  inputType?: AttributeInputTypeEnum | null;
-  name?: string | null;
-  slug?: string | null;
-  withChoices: boolean;
-  translation?: { __typename?: "AttributeTranslation"; id: string; name: string } | null;
-  choices?: {
-    __typename?: "AttributeValueCountableConnection";
-    edges: Array<{
-      __typename?: "AttributeValueCountableEdge";
-      cursor: string;
-      node: {
-        __typename?: "AttributeValue";
-        id: string;
-        name?: string | null;
-        slug?: string | null;
-        translation?: { __typename?: "AttributeValueTranslation"; name: string } | null;
-      };
-    }>;
-  } | null;
-};
-
 export type CategoryBasicFragment = {
   __typename?: "Category";
   id: string;
@@ -35705,6 +35674,95 @@ export type SetPasswordMutation = {
   } | null;
 };
 
+export type PaymentGatewaysInitializeMutationVariables = Exact<{
+  checkoutId: Scalars["ID"]["input"];
+  paymentGateways?: InputMaybe<Array<PaymentGatewayToInitialize> | PaymentGatewayToInitialize>;
+}>;
+
+export type PaymentGatewaysInitializeMutation = {
+  __typename?: "Mutation";
+  paymentGatewayInitialize?: {
+    __typename?: "PaymentGatewayInitialize";
+    errors: Array<{
+      __typename?: "PaymentGatewayInitializeError";
+      field?: string | null;
+      message?: string | null;
+      code: PaymentGatewayInitializeErrorCode;
+    }>;
+    gatewayConfigs?: Array<{
+      __typename?: "PaymentGatewayConfig";
+      id: string;
+      data?: any | null;
+      errors?: Array<{
+        __typename?: "PaymentGatewayConfigError";
+        field?: string | null;
+        message?: string | null;
+        code: PaymentGatewayConfigErrorCode;
+      }> | null;
+    }> | null;
+  } | null;
+};
+
+export type TransactionInitializeMutationVariables = Exact<{
+  checkoutId: Scalars["ID"]["input"];
+  action?: InputMaybe<TransactionFlowStrategyEnum>;
+  paymentGateway: PaymentGatewayToInitialize;
+  amount?: InputMaybe<Scalars["PositiveDecimal"]["input"]>;
+}>;
+
+export type TransactionInitializeMutation = {
+  __typename?: "Mutation";
+  transactionInitialize?: {
+    __typename?: "TransactionInitialize";
+    data?: any | null;
+    transaction?: {
+      __typename?: "TransactionItem";
+      id: string;
+      actions: Array<TransactionActionEnum>;
+    } | null;
+    transactionEvent?: {
+      __typename?: "TransactionEvent";
+      message: string;
+      type?: TransactionEventTypeEnum | null;
+    } | null;
+    errors: Array<{
+      __typename?: "TransactionInitializeError";
+      field?: string | null;
+      code: TransactionInitializeErrorCode;
+      message?: string | null;
+    }>;
+  } | null;
+};
+
+export type TransactionProcessMutationVariables = Exact<{
+  id: Scalars["ID"]["input"];
+  data?: InputMaybe<Scalars["JSON"]["input"]>;
+}>;
+
+export type TransactionProcessMutation = {
+  __typename?: "Mutation";
+  transactionProcess?: {
+    __typename?: "TransactionProcess";
+    data?: any | null;
+    transaction?: {
+      __typename?: "TransactionItem";
+      id: string;
+      actions: Array<TransactionActionEnum>;
+    } | null;
+    transactionEvent?: {
+      __typename?: "TransactionEvent";
+      message: string;
+      type?: TransactionEventTypeEnum | null;
+    } | null;
+    errors: Array<{
+      __typename?: "TransactionProcessError";
+      field?: string | null;
+      code: TransactionProcessErrorCode;
+      message?: string | null;
+    }>;
+  } | null;
+};
+
 export type AvailableProductFiltersQueryVariables = Exact<{
   filter?: InputMaybe<ProductFilterInput>;
   channel?: InputMaybe<Scalars["String"]["input"]>;
@@ -36422,63 +36480,6 @@ export type CollectionsByMetaKeyQuery = {
   } | null;
 };
 
-export type CurrentUserDetailsQueryVariables = Exact<{ [key: string]: never }>;
-
-export type CurrentUserDetailsQuery = {
-  __typename?: "Query";
-  me?: {
-    __typename?: "User";
-    id: string;
-    lastLogin?: string | null;
-    dateJoined: string;
-    email: string;
-    firstName: string;
-    lastName: string;
-    avatar?: { __typename?: "Image"; url: string; alt?: string | null } | null;
-    orders?: { __typename?: "OrderCountableConnection"; totalCount?: number | null } | null;
-  } | null;
-};
-
-export type FilteringAttributesQueryVariables = Exact<{
-  filter: AttributeFilterInput;
-  channel: Scalars["String"]["input"];
-  locale: LanguageCodeEnum;
-}>;
-
-export type FilteringAttributesQuery = {
-  __typename?: "Query";
-  attributes?: {
-    __typename?: "AttributeCountableConnection";
-    totalCount?: number | null;
-    edges: Array<{
-      __typename?: "AttributeCountableEdge";
-      node: {
-        __typename?: "Attribute";
-        id: string;
-        inputType?: AttributeInputTypeEnum | null;
-        name?: string | null;
-        slug?: string | null;
-        withChoices: boolean;
-        translation?: { __typename?: "AttributeTranslation"; id: string; name: string } | null;
-        choices?: {
-          __typename?: "AttributeValueCountableConnection";
-          edges: Array<{
-            __typename?: "AttributeValueCountableEdge";
-            cursor: string;
-            node: {
-              __typename?: "AttributeValue";
-              id: string;
-              name?: string | null;
-              slug?: string | null;
-              translation?: { __typename?: "AttributeValueTranslation"; name: string } | null;
-            };
-          }>;
-        } | null;
-      };
-    }>;
-  } | null;
-};
-
 export type FooterMenuQueryVariables = Exact<{
   locale: LanguageCodeEnum;
   channel: Scalars["String"]["input"];
@@ -36544,92 +36545,6 @@ export type HomepageBlocksQuery = {
           title?: string | null;
         } | null;
       } | null;
-    }> | null;
-  } | null;
-};
-
-export type MainMenuQueryVariables = Exact<{
-  locale: LanguageCodeEnum;
-  channel: Scalars["String"]["input"];
-}>;
-
-export type MainMenuQuery = {
-  __typename?: "Query";
-  menu?: {
-    __typename?: "Menu";
-    id: string;
-    items?: Array<{
-      __typename?: "MenuItem";
-      id: string;
-      name: string;
-      url?: string | null;
-      translation?: { __typename?: "MenuItemTranslation"; id: string; name: string } | null;
-      category?: { __typename?: "Category"; id: string; slug: string } | null;
-      collection?: { __typename?: "Collection"; id: string; slug: string } | null;
-      page?: { __typename?: "Page"; id: string; slug: string } | null;
-      children?: Array<{
-        __typename?: "MenuItem";
-        id: string;
-        name: string;
-        url?: string | null;
-        children?: Array<{
-          __typename?: "MenuItem";
-          id: string;
-          name: string;
-          url?: string | null;
-          translation?: { __typename?: "MenuItemTranslation"; id: string; name: string } | null;
-          category?: { __typename?: "Category"; id: string; slug: string } | null;
-          collection?: { __typename?: "Collection"; id: string; slug: string } | null;
-          page?: { __typename?: "Page"; id: string; slug: string } | null;
-        }> | null;
-        translation?: { __typename?: "MenuItemTranslation"; id: string; name: string } | null;
-        category?: { __typename?: "Category"; id: string; slug: string } | null;
-        collection?: { __typename?: "Collection"; id: string; slug: string } | null;
-        page?: { __typename?: "Page"; id: string; slug: string } | null;
-      }> | null;
-    }> | null;
-  } | null;
-};
-
-export type MainRightMenuQueryVariables = Exact<{
-  locale: LanguageCodeEnum;
-  channel: Scalars["String"]["input"];
-}>;
-
-export type MainRightMenuQuery = {
-  __typename?: "Query";
-  menu?: {
-    __typename?: "Menu";
-    id: string;
-    items?: Array<{
-      __typename?: "MenuItem";
-      id: string;
-      name: string;
-      url?: string | null;
-      translation?: { __typename?: "MenuItemTranslation"; id: string; name: string } | null;
-      category?: { __typename?: "Category"; id: string; slug: string } | null;
-      collection?: { __typename?: "Collection"; id: string; slug: string } | null;
-      page?: { __typename?: "Page"; id: string; slug: string } | null;
-      children?: Array<{
-        __typename?: "MenuItem";
-        id: string;
-        name: string;
-        url?: string | null;
-        children?: Array<{
-          __typename?: "MenuItem";
-          id: string;
-          name: string;
-          url?: string | null;
-          translation?: { __typename?: "MenuItemTranslation"; id: string; name: string } | null;
-          category?: { __typename?: "Category"; id: string; slug: string } | null;
-          collection?: { __typename?: "Collection"; id: string; slug: string } | null;
-          page?: { __typename?: "Page"; id: string; slug: string } | null;
-        }> | null;
-        translation?: { __typename?: "MenuItemTranslation"; id: string; name: string } | null;
-        category?: { __typename?: "Category"; id: string; slug: string } | null;
-        collection?: { __typename?: "Collection"; id: string; slug: string } | null;
-        page?: { __typename?: "Page"; id: string; slug: string } | null;
-      }> | null;
     }> | null;
   } | null;
 };
@@ -36764,7 +36679,6 @@ export type OrdersQuery = {
     __typename?: "User";
     orders?: {
       __typename?: "OrderCountableConnection";
-      totalCount?: number | null;
       edges: Array<{
         __typename?: "OrderCountableEdge";
         cursor: string;
@@ -36887,24 +36801,6 @@ export type PageByIdQuery = {
   } | null;
 };
 
-export type PagePathsQueryVariables = Exact<{
-  after?: InputMaybe<Scalars["String"]["input"]>;
-}>;
-
-export type PagePathsQuery = {
-  __typename?: "Query";
-  pages?: {
-    __typename?: "PageCountableConnection";
-    pageInfo: {
-      __typename?: "PageInfo";
-      hasNextPage: boolean;
-      startCursor?: string | null;
-      endCursor?: string | null;
-    };
-    edges: Array<{ __typename?: "PageCountableEdge"; node: { __typename?: "Page"; slug: string } }>;
-  } | null;
-};
-
 export type PageTypesQueryVariables = Exact<{
   filter?: InputMaybe<PageFilterInput>;
   locale: LanguageCodeEnum;
@@ -36946,21 +36842,6 @@ export type PageTypesQuery = {
           }>;
         }>;
       };
-    }>;
-  } | null;
-};
-
-export type PageTypesBySlugQueryVariables = Exact<{
-  filter?: InputMaybe<PageTypeFilterInput>;
-}>;
-
-export type PageTypesBySlugQuery = {
-  __typename?: "Query";
-  pageTypes?: {
-    __typename?: "PageTypeCountableConnection";
-    edges: Array<{
-      __typename?: "PageTypeCountableEdge";
-      node: { __typename?: "PageType"; id: string; slug: string };
     }>;
   } | null;
 };
@@ -37140,7 +37021,6 @@ export type ProductCollectionQuery = {
   __typename?: "Query";
   products?: {
     __typename?: "ProductCountableConnection";
-    totalCount?: number | null;
     edges: Array<{
       __typename?: "ProductCountableEdge";
       cursor: string;
@@ -37311,6 +37191,7 @@ export type ProductCollectionQuery = {
 export type ProductListQueryVariables = Exact<{
   first?: InputMaybe<Scalars["Int"]["input"]>;
   channel: Scalars["String"]["input"];
+  filter?: InputMaybe<ProductFilterInput>;
 }>;
 
 export type ProductListQuery = {
@@ -37341,28 +37222,6 @@ export type ProductListQuery = {
         category?: { __typename?: "Category"; id: string; name: string } | null;
         thumbnail?: { __typename?: "Image"; url: string; alt?: string | null } | null;
       };
-    }>;
-  } | null;
-};
-
-export type ProductPathsQueryVariables = Exact<{
-  after?: InputMaybe<Scalars["String"]["input"]>;
-  channel: Scalars["String"]["input"];
-}>;
-
-export type ProductPathsQuery = {
-  __typename?: "Query";
-  products?: {
-    __typename?: "ProductCountableConnection";
-    pageInfo: {
-      __typename?: "PageInfo";
-      hasNextPage: boolean;
-      startCursor?: string | null;
-      endCursor?: string | null;
-    };
-    edges: Array<{
-      __typename?: "ProductCountableEdge";
-      node: { __typename?: "Product"; slug: string };
     }>;
   } | null;
 };
@@ -37550,7 +37409,6 @@ export type SearchProductsQuery = {
   __typename?: "Query";
   products?: {
     __typename?: "ProductCountableConnection";
-    totalCount?: number | null;
     edges: Array<{
       __typename?: "ProductCountableEdge";
       cursor: string;
@@ -37642,37 +37500,6 @@ export type UserQuery = {
   } | null;
 };
 
-export const AttributeFilterChoiceFragmentDoc = gql`
-  fragment AttributeFilterChoiceFragment on AttributeValue {
-    id
-    name
-    slug
-    translation(languageCode: $locale) {
-      name
-    }
-  }
-`;
-export const AttributeFilterFragmentDoc = gql`
-  fragment AttributeFilterFragment on Attribute {
-    id
-    inputType
-    name
-    translation(languageCode: $locale) {
-      id
-      name
-    }
-    slug
-    withChoices
-    choices(first: 20) {
-      edges {
-        node {
-          ...AttributeFilterChoiceFragment
-        }
-        cursor
-      }
-    }
-  }
-`;
 export const CategoryBasicFragmentDoc = gql`
   fragment CategoryBasicFragment on Category {
     id
@@ -39882,6 +39709,210 @@ export type SetPasswordMutationOptions = Apollo.BaseMutationOptions<
   SetPasswordMutation,
   SetPasswordMutationVariables
 >;
+export const PaymentGatewaysInitializeDocument = gql`
+  mutation paymentGatewaysInitialize(
+    $checkoutId: ID!
+    $paymentGateways: [PaymentGatewayToInitialize!]
+  ) {
+    paymentGatewayInitialize(id: $checkoutId, paymentGateways: $paymentGateways) {
+      errors {
+        field
+        message
+        code
+      }
+      gatewayConfigs {
+        id
+        data
+        errors {
+          field
+          message
+          code
+        }
+      }
+    }
+  }
+`;
+export type PaymentGatewaysInitializeMutationFn = Apollo.MutationFunction<
+  PaymentGatewaysInitializeMutation,
+  PaymentGatewaysInitializeMutationVariables
+>;
+
+/**
+ * __usePaymentGatewaysInitializeMutation__
+ *
+ * To run a mutation, you first call `usePaymentGatewaysInitializeMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `usePaymentGatewaysInitializeMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [paymentGatewaysInitializeMutation, { data, loading, error }] = usePaymentGatewaysInitializeMutation({
+ *   variables: {
+ *      checkoutId: // value for 'checkoutId'
+ *      paymentGateways: // value for 'paymentGateways'
+ *   },
+ * });
+ */
+export function usePaymentGatewaysInitializeMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    PaymentGatewaysInitializeMutation,
+    PaymentGatewaysInitializeMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    PaymentGatewaysInitializeMutation,
+    PaymentGatewaysInitializeMutationVariables
+  >(PaymentGatewaysInitializeDocument, options);
+}
+export type PaymentGatewaysInitializeMutationHookResult = ReturnType<
+  typeof usePaymentGatewaysInitializeMutation
+>;
+export type PaymentGatewaysInitializeMutationResult =
+  Apollo.MutationResult<PaymentGatewaysInitializeMutation>;
+export type PaymentGatewaysInitializeMutationOptions = Apollo.BaseMutationOptions<
+  PaymentGatewaysInitializeMutation,
+  PaymentGatewaysInitializeMutationVariables
+>;
+export const TransactionInitializeDocument = gql`
+  mutation transactionInitialize(
+    $checkoutId: ID!
+    $action: TransactionFlowStrategyEnum
+    $paymentGateway: PaymentGatewayToInitialize!
+    $amount: PositiveDecimal
+  ) {
+    transactionInitialize(
+      id: $checkoutId
+      action: $action
+      paymentGateway: $paymentGateway
+      amount: $amount
+    ) {
+      transaction {
+        id
+        actions
+      }
+      transactionEvent {
+        message
+        type
+      }
+      data
+      errors {
+        field
+        code
+        message
+      }
+    }
+  }
+`;
+export type TransactionInitializeMutationFn = Apollo.MutationFunction<
+  TransactionInitializeMutation,
+  TransactionInitializeMutationVariables
+>;
+
+/**
+ * __useTransactionInitializeMutation__
+ *
+ * To run a mutation, you first call `useTransactionInitializeMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useTransactionInitializeMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [transactionInitializeMutation, { data, loading, error }] = useTransactionInitializeMutation({
+ *   variables: {
+ *      checkoutId: // value for 'checkoutId'
+ *      action: // value for 'action'
+ *      paymentGateway: // value for 'paymentGateway'
+ *      amount: // value for 'amount'
+ *   },
+ * });
+ */
+export function useTransactionInitializeMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    TransactionInitializeMutation,
+    TransactionInitializeMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<TransactionInitializeMutation, TransactionInitializeMutationVariables>(
+    TransactionInitializeDocument,
+    options,
+  );
+}
+export type TransactionInitializeMutationHookResult = ReturnType<
+  typeof useTransactionInitializeMutation
+>;
+export type TransactionInitializeMutationResult =
+  Apollo.MutationResult<TransactionInitializeMutation>;
+export type TransactionInitializeMutationOptions = Apollo.BaseMutationOptions<
+  TransactionInitializeMutation,
+  TransactionInitializeMutationVariables
+>;
+export const TransactionProcessDocument = gql`
+  mutation transactionProcess($id: ID!, $data: JSON) {
+    transactionProcess(id: $id, data: $data) {
+      transaction {
+        id
+        actions
+      }
+      transactionEvent {
+        message
+        type
+      }
+      data
+      errors {
+        field
+        code
+        message
+      }
+    }
+  }
+`;
+export type TransactionProcessMutationFn = Apollo.MutationFunction<
+  TransactionProcessMutation,
+  TransactionProcessMutationVariables
+>;
+
+/**
+ * __useTransactionProcessMutation__
+ *
+ * To run a mutation, you first call `useTransactionProcessMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useTransactionProcessMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [transactionProcessMutation, { data, loading, error }] = useTransactionProcessMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useTransactionProcessMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    TransactionProcessMutation,
+    TransactionProcessMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<TransactionProcessMutation, TransactionProcessMutationVariables>(
+    TransactionProcessDocument,
+    options,
+  );
+}
+export type TransactionProcessMutationHookResult = ReturnType<typeof useTransactionProcessMutation>;
+export type TransactionProcessMutationResult = Apollo.MutationResult<TransactionProcessMutation>;
+export type TransactionProcessMutationOptions = Apollo.BaseMutationOptions<
+  TransactionProcessMutation,
+  TransactionProcessMutationVariables
+>;
 export const AvailableProductFiltersDocument = gql`
   query AvailableProductFilters(
     $filter: ProductFilterInput
@@ -40727,170 +40758,6 @@ export type CollectionsByMetaKeyQueryResult = Apollo.QueryResult<
   CollectionsByMetaKeyQuery,
   CollectionsByMetaKeyQueryVariables
 >;
-export const CurrentUserDetailsDocument = gql`
-  query CurrentUserDetails {
-    me {
-      id
-      lastLogin
-      dateJoined
-      email
-      firstName
-      lastName
-      avatar {
-        ...ImageFragment
-      }
-      orders {
-        totalCount
-      }
-    }
-  }
-  ${ImageFragmentDoc}
-`;
-
-/**
- * __useCurrentUserDetailsQuery__
- *
- * To run a query within a React component, call `useCurrentUserDetailsQuery` and pass it any options that fit your needs.
- * When your component renders, `useCurrentUserDetailsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useCurrentUserDetailsQuery({
- *   variables: {
- *   },
- * });
- */
-export function useCurrentUserDetailsQuery(
-  baseOptions?: Apollo.QueryHookOptions<CurrentUserDetailsQuery, CurrentUserDetailsQueryVariables>,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<CurrentUserDetailsQuery, CurrentUserDetailsQueryVariables>(
-    CurrentUserDetailsDocument,
-    options,
-  );
-}
-export function useCurrentUserDetailsLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    CurrentUserDetailsQuery,
-    CurrentUserDetailsQueryVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<CurrentUserDetailsQuery, CurrentUserDetailsQueryVariables>(
-    CurrentUserDetailsDocument,
-    options,
-  );
-}
-export function useCurrentUserDetailsSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    CurrentUserDetailsQuery,
-    CurrentUserDetailsQueryVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<CurrentUserDetailsQuery, CurrentUserDetailsQueryVariables>(
-    CurrentUserDetailsDocument,
-    options,
-  );
-}
-export type CurrentUserDetailsQueryHookResult = ReturnType<typeof useCurrentUserDetailsQuery>;
-export type CurrentUserDetailsLazyQueryHookResult = ReturnType<
-  typeof useCurrentUserDetailsLazyQuery
->;
-export type CurrentUserDetailsSuspenseQueryHookResult = ReturnType<
-  typeof useCurrentUserDetailsSuspenseQuery
->;
-export type CurrentUserDetailsQueryResult = Apollo.QueryResult<
-  CurrentUserDetailsQuery,
-  CurrentUserDetailsQueryVariables
->;
-export const FilteringAttributesQueryDocument = gql`
-  query FilteringAttributesQuery(
-    $filter: AttributeFilterInput!
-    $channel: String!
-    $locale: LanguageCodeEnum!
-  ) {
-    attributes(filter: $filter, first: 100, channel: $channel) {
-      totalCount
-      edges {
-        node {
-          ...AttributeFilterFragment
-        }
-      }
-    }
-  }
-  ${AttributeFilterFragmentDoc}
-  ${AttributeFilterChoiceFragmentDoc}
-`;
-
-/**
- * __useFilteringAttributesQuery__
- *
- * To run a query within a React component, call `useFilteringAttributesQuery` and pass it any options that fit your needs.
- * When your component renders, `useFilteringAttributesQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useFilteringAttributesQuery({
- *   variables: {
- *      filter: // value for 'filter'
- *      channel: // value for 'channel'
- *      locale: // value for 'locale'
- *   },
- * });
- */
-export function useFilteringAttributesQuery(
-  baseOptions: Apollo.QueryHookOptions<
-    FilteringAttributesQuery,
-    FilteringAttributesQueryVariables
-  > &
-    ({ variables: FilteringAttributesQueryVariables; skip?: boolean } | { skip: boolean }),
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<FilteringAttributesQuery, FilteringAttributesQueryVariables>(
-    FilteringAttributesQueryDocument,
-    options,
-  );
-}
-export function useFilteringAttributesQueryLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    FilteringAttributesQuery,
-    FilteringAttributesQueryVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<FilteringAttributesQuery, FilteringAttributesQueryVariables>(
-    FilteringAttributesQueryDocument,
-    options,
-  );
-}
-export function useFilteringAttributesQuerySuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    FilteringAttributesQuery,
-    FilteringAttributesQueryVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<FilteringAttributesQuery, FilteringAttributesQueryVariables>(
-    FilteringAttributesQueryDocument,
-    options,
-  );
-}
-export type FilteringAttributesQueryHookResult = ReturnType<typeof useFilteringAttributesQuery>;
-export type FilteringAttributesQueryLazyQueryHookResult = ReturnType<
-  typeof useFilteringAttributesQueryLazyQuery
->;
-export type FilteringAttributesQuerySuspenseQueryHookResult = ReturnType<
-  typeof useFilteringAttributesQuerySuspenseQuery
->;
-export type FilteringAttributesQueryQueryResult = Apollo.QueryResult<
-  FilteringAttributesQuery,
-  FilteringAttributesQueryVariables
->;
 export const FooterMenuDocument = gql`
   query FooterMenu($locale: LanguageCodeEnum!, $channel: String!) {
     menu(slug: "footer", channel: $channel) {
@@ -41022,124 +40889,6 @@ export type HomepageBlocksQuerySuspenseQueryHookResult = ReturnType<
 export type HomepageBlocksQueryQueryResult = Apollo.QueryResult<
   HomepageBlocksQuery,
   HomepageBlocksQueryVariables
->;
-export const MainMenuDocument = gql`
-  query MainMenu($locale: LanguageCodeEnum!, $channel: String!) {
-    menu(slug: "navbar", channel: $channel) {
-      id
-      items {
-        ...MenuItemWithChildrenFragment
-      }
-    }
-  }
-  ${MenuItemWithChildrenFragmentDoc}
-  ${MenuItemFragmentDoc}
-`;
-
-/**
- * __useMainMenuQuery__
- *
- * To run a query within a React component, call `useMainMenuQuery` and pass it any options that fit your needs.
- * When your component renders, `useMainMenuQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useMainMenuQuery({
- *   variables: {
- *      locale: // value for 'locale'
- *      channel: // value for 'channel'
- *   },
- * });
- */
-export function useMainMenuQuery(
-  baseOptions: Apollo.QueryHookOptions<MainMenuQuery, MainMenuQueryVariables> &
-    ({ variables: MainMenuQueryVariables; skip?: boolean } | { skip: boolean }),
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<MainMenuQuery, MainMenuQueryVariables>(MainMenuDocument, options);
-}
-export function useMainMenuLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<MainMenuQuery, MainMenuQueryVariables>,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<MainMenuQuery, MainMenuQueryVariables>(MainMenuDocument, options);
-}
-export function useMainMenuSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<MainMenuQuery, MainMenuQueryVariables>,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<MainMenuQuery, MainMenuQueryVariables>(MainMenuDocument, options);
-}
-export type MainMenuQueryHookResult = ReturnType<typeof useMainMenuQuery>;
-export type MainMenuLazyQueryHookResult = ReturnType<typeof useMainMenuLazyQuery>;
-export type MainMenuSuspenseQueryHookResult = ReturnType<typeof useMainMenuSuspenseQuery>;
-export type MainMenuQueryResult = Apollo.QueryResult<MainMenuQuery, MainMenuQueryVariables>;
-export const MainRightMenuDocument = gql`
-  query MainRightMenu($locale: LanguageCodeEnum!, $channel: String!) {
-    menu(slug: "navbar-right", channel: $channel) {
-      id
-      items {
-        ...MenuItemWithChildrenFragment
-      }
-    }
-  }
-  ${MenuItemWithChildrenFragmentDoc}
-  ${MenuItemFragmentDoc}
-`;
-
-/**
- * __useMainRightMenuQuery__
- *
- * To run a query within a React component, call `useMainRightMenuQuery` and pass it any options that fit your needs.
- * When your component renders, `useMainRightMenuQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useMainRightMenuQuery({
- *   variables: {
- *      locale: // value for 'locale'
- *      channel: // value for 'channel'
- *   },
- * });
- */
-export function useMainRightMenuQuery(
-  baseOptions: Apollo.QueryHookOptions<MainRightMenuQuery, MainRightMenuQueryVariables> &
-    ({ variables: MainRightMenuQueryVariables; skip?: boolean } | { skip: boolean }),
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<MainRightMenuQuery, MainRightMenuQueryVariables>(
-    MainRightMenuDocument,
-    options,
-  );
-}
-export function useMainRightMenuLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<MainRightMenuQuery, MainRightMenuQueryVariables>,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<MainRightMenuQuery, MainRightMenuQueryVariables>(
-    MainRightMenuDocument,
-    options,
-  );
-}
-export function useMainRightMenuSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<MainRightMenuQuery, MainRightMenuQueryVariables>,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<MainRightMenuQuery, MainRightMenuQueryVariables>(
-    MainRightMenuDocument,
-    options,
-  );
-}
-export type MainRightMenuQueryHookResult = ReturnType<typeof useMainRightMenuQuery>;
-export type MainRightMenuLazyQueryHookResult = ReturnType<typeof useMainRightMenuLazyQuery>;
-export type MainRightMenuSuspenseQueryHookResult = ReturnType<typeof useMainRightMenuSuspenseQuery>;
-export type MainRightMenuQueryResult = Apollo.QueryResult<
-  MainRightMenuQuery,
-  MainRightMenuQueryVariables
 >;
 export const MenuGetBySlugDocument = gql`
   query MenuGetBySlug($slug: String!, $locale: LanguageCodeEnum!, $channel: String!) {
@@ -41335,7 +41084,6 @@ export const OrdersDocument = gql`
           startCursor
           endCursor
         }
-        totalCount
       }
     }
   }
@@ -41480,63 +41228,6 @@ export type PageByIdQueryHookResult = ReturnType<typeof usePageByIdQuery>;
 export type PageByIdLazyQueryHookResult = ReturnType<typeof usePageByIdLazyQuery>;
 export type PageByIdSuspenseQueryHookResult = ReturnType<typeof usePageByIdSuspenseQuery>;
 export type PageByIdQueryResult = Apollo.QueryResult<PageByIdQuery, PageByIdQueryVariables>;
-export const PagePathsDocument = gql`
-  query PagePaths($after: String) {
-    pages(first: 100, after: $after) {
-      pageInfo {
-        ...PageInfoFragment
-      }
-      edges {
-        node {
-          slug
-        }
-      }
-    }
-  }
-  ${PageInfoFragmentDoc}
-`;
-
-/**
- * __usePagePathsQuery__
- *
- * To run a query within a React component, call `usePagePathsQuery` and pass it any options that fit your needs.
- * When your component renders, `usePagePathsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = usePagePathsQuery({
- *   variables: {
- *      after: // value for 'after'
- *   },
- * });
- */
-export function usePagePathsQuery(
-  baseOptions?: Apollo.QueryHookOptions<PagePathsQuery, PagePathsQueryVariables>,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<PagePathsQuery, PagePathsQueryVariables>(PagePathsDocument, options);
-}
-export function usePagePathsLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<PagePathsQuery, PagePathsQueryVariables>,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<PagePathsQuery, PagePathsQueryVariables>(PagePathsDocument, options);
-}
-export function usePagePathsSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<PagePathsQuery, PagePathsQueryVariables>,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<PagePathsQuery, PagePathsQueryVariables>(
-    PagePathsDocument,
-    options,
-  );
-}
-export type PagePathsQueryHookResult = ReturnType<typeof usePagePathsQuery>;
-export type PagePathsLazyQueryHookResult = ReturnType<typeof usePagePathsLazyQuery>;
-export type PagePathsSuspenseQueryHookResult = ReturnType<typeof usePagePathsSuspenseQuery>;
-export type PagePathsQueryResult = Apollo.QueryResult<PagePathsQuery, PagePathsQueryVariables>;
 export const PageTypesDocument = gql`
   query PageTypes($filter: PageFilterInput, $locale: LanguageCodeEnum!) {
     pages(first: 20, filter: $filter) {
@@ -41620,74 +41311,6 @@ export type PageTypesQueryHookResult = ReturnType<typeof usePageTypesQuery>;
 export type PageTypesLazyQueryHookResult = ReturnType<typeof usePageTypesLazyQuery>;
 export type PageTypesSuspenseQueryHookResult = ReturnType<typeof usePageTypesSuspenseQuery>;
 export type PageTypesQueryResult = Apollo.QueryResult<PageTypesQuery, PageTypesQueryVariables>;
-export const PageTypesBySlugDocument = gql`
-  query PageTypesBySlug($filter: PageTypeFilterInput) {
-    pageTypes(first: 10, filter: $filter) {
-      edges {
-        node {
-          id
-          slug
-        }
-      }
-    }
-  }
-`;
-
-/**
- * __usePageTypesBySlugQuery__
- *
- * To run a query within a React component, call `usePageTypesBySlugQuery` and pass it any options that fit your needs.
- * When your component renders, `usePageTypesBySlugQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = usePageTypesBySlugQuery({
- *   variables: {
- *      filter: // value for 'filter'
- *   },
- * });
- */
-export function usePageTypesBySlugQuery(
-  baseOptions?: Apollo.QueryHookOptions<PageTypesBySlugQuery, PageTypesBySlugQueryVariables>,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<PageTypesBySlugQuery, PageTypesBySlugQueryVariables>(
-    PageTypesBySlugDocument,
-    options,
-  );
-}
-export function usePageTypesBySlugLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<PageTypesBySlugQuery, PageTypesBySlugQueryVariables>,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<PageTypesBySlugQuery, PageTypesBySlugQueryVariables>(
-    PageTypesBySlugDocument,
-    options,
-  );
-}
-export function usePageTypesBySlugSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    PageTypesBySlugQuery,
-    PageTypesBySlugQueryVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<PageTypesBySlugQuery, PageTypesBySlugQueryVariables>(
-    PageTypesBySlugDocument,
-    options,
-  );
-}
-export type PageTypesBySlugQueryHookResult = ReturnType<typeof usePageTypesBySlugQuery>;
-export type PageTypesBySlugLazyQueryHookResult = ReturnType<typeof usePageTypesBySlugLazyQuery>;
-export type PageTypesBySlugSuspenseQueryHookResult = ReturnType<
-  typeof usePageTypesBySlugSuspenseQuery
->;
-export type PageTypesBySlugQueryResult = Apollo.QueryResult<
-  PageTypesBySlugQuery,
-  PageTypesBySlugQueryVariables
->;
 export const ProductBySlugDocument = gql`
   query ProductBySlug($slug: String!, $channel: String!, $locale: LanguageCodeEnum!) {
     product(slug: $slug, channel: $channel) {
@@ -41773,7 +41396,6 @@ export const ProductCollectionDocument = gql`
       filter: $filter
       sortBy: $sortBy
     ) {
-      totalCount
       edges {
         cursor
         node {
@@ -41859,8 +41481,8 @@ export type ProductCollectionQueryResult = Apollo.QueryResult<
   ProductCollectionQueryVariables
 >;
 export const ProductListDocument = gql`
-  query ProductList($first: Int = 9, $channel: String!) {
-    products(first: $first, channel: $channel) {
+  query ProductList($first: Int = 9, $channel: String!, $filter: ProductFilterInput) {
+    products(first: $first, channel: $channel, filter: $filter) {
       edges {
         node {
           ...ProductListItem
@@ -41885,6 +41507,7 @@ export const ProductListDocument = gql`
  *   variables: {
  *      first: // value for 'first'
  *      channel: // value for 'channel'
+ *      filter: // value for 'filter'
  *   },
  * });
  */
@@ -41919,74 +41542,6 @@ export type ProductListSuspenseQueryHookResult = ReturnType<typeof useProductLis
 export type ProductListQueryResult = Apollo.QueryResult<
   ProductListQuery,
   ProductListQueryVariables
->;
-export const ProductPathsDocument = gql`
-  query ProductPaths($after: String, $channel: String!) {
-    products(first: 100, channel: $channel, after: $after) {
-      pageInfo {
-        ...PageInfoFragment
-      }
-      edges {
-        node {
-          slug
-        }
-      }
-    }
-  }
-  ${PageInfoFragmentDoc}
-`;
-
-/**
- * __useProductPathsQuery__
- *
- * To run a query within a React component, call `useProductPathsQuery` and pass it any options that fit your needs.
- * When your component renders, `useProductPathsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useProductPathsQuery({
- *   variables: {
- *      after: // value for 'after'
- *      channel: // value for 'channel'
- *   },
- * });
- */
-export function useProductPathsQuery(
-  baseOptions: Apollo.QueryHookOptions<ProductPathsQuery, ProductPathsQueryVariables> &
-    ({ variables: ProductPathsQueryVariables; skip?: boolean } | { skip: boolean }),
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<ProductPathsQuery, ProductPathsQueryVariables>(
-    ProductPathsDocument,
-    options,
-  );
-}
-export function useProductPathsLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<ProductPathsQuery, ProductPathsQueryVariables>,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<ProductPathsQuery, ProductPathsQueryVariables>(
-    ProductPathsDocument,
-    options,
-  );
-}
-export function useProductPathsSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<ProductPathsQuery, ProductPathsQueryVariables>,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<ProductPathsQuery, ProductPathsQueryVariables>(
-    ProductPathsDocument,
-    options,
-  );
-}
-export type ProductPathsQueryHookResult = ReturnType<typeof useProductPathsQuery>;
-export type ProductPathsLazyQueryHookResult = ReturnType<typeof useProductPathsLazyQuery>;
-export type ProductPathsSuspenseQueryHookResult = ReturnType<typeof useProductPathsSuspenseQuery>;
-export type ProductPathsQueryResult = Apollo.QueryResult<
-  ProductPathsQuery,
-  ProductPathsQueryVariables
 >;
 export const ProductsByAttributeDocument = gql`
   query ProductsByAttribute(
@@ -42090,7 +41645,6 @@ export const SearchProductsDocument = gql`
       sortBy: { field: $sortBy, direction: $sortDirection }
       filter: { search: $search }
     ) {
-      totalCount
       edges {
         node {
           ...ProductListItem
