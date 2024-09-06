@@ -35735,7 +35735,7 @@ export type TransactionInitializeMutation = {
 };
 
 export type TransactionProcessMutationVariables = Exact<{
-  id: Scalars["ID"]["input"];
+  transactionId: Scalars["ID"]["input"];
   data?: InputMaybe<Scalars["JSON"]["input"]>;
 }>;
 
@@ -39853,8 +39853,8 @@ export type TransactionInitializeMutationOptions = Apollo.BaseMutationOptions<
   TransactionInitializeMutationVariables
 >;
 export const TransactionProcessDocument = gql`
-  mutation transactionProcess($id: ID!, $data: JSON) {
-    transactionProcess(id: $id, data: $data) {
+  mutation transactionProcess($transactionId: ID!, $data: JSON) {
+    transactionProcess(id: $transactionId, data: $data) {
       transaction {
         id
         actions
@@ -39890,7 +39890,7 @@ export type TransactionProcessMutationFn = Apollo.MutationFunction<
  * @example
  * const [transactionProcessMutation, { data, loading, error }] = useTransactionProcessMutation({
  *   variables: {
- *      id: // value for 'id'
+ *      transactionId: // value for 'transactionId'
  *      data: // value for 'data'
  *   },
  * });

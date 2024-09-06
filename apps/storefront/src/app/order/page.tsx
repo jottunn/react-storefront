@@ -1,7 +1,6 @@
-import React, { ReactElement } from "react";
+import React from "react";
 
 export default function Page() {
-  // const checkout = useCheckout();
   return (
     <main className="container pt-18 px-8 pb-18 text-center">
       <h1 className="text-xl mb-5">Multumim!</h1>

@@ -28,9 +28,14 @@ import {
   CheckoutShippingAddressUpdateMutation,
   LanguageCodeEnum,
   MetadataInput,
+  PaymentGatewayToInitialize,
   PaymentInput,
   RemoveProductFromCheckoutDocument,
   RemoveProductFromCheckoutMutation,
+  TransactionFlowStrategyEnum,
+  TransactionInitializeDocument,
+  TransactionInitializeMutation,
+  TransactionInitializeMutationVariables,
 } from "@/saleor/api";
 import { AddressFormData } from "../account/AddressForm";
 import * as Checkout from "@/lib/checkout";
@@ -453,4 +458,43 @@ export const addItem = async ({ selectedVariantId }: AddItemArgs) => {
   }
 
   return { success: true, checkout: checkout };
+};
+
+type initializeTransactionArgs = {
+  checkoutId: string;
+  action?: TransactionFlowStrategyEnum;
+  paymentGateway: PaymentGatewayToInitialize;
+  amount?: number;
+};
+export const initializeTransaction = async ({
+  checkoutId,
+  action,
+  paymentGateway,
+  amount,
+}: initializeTransactionArgs) => {
+  try {
+    const response = await executeGraphQL<
+      TransactionInitializeMutation,
+      TransactionInitializeMutationVariables
+    >(TransactionInitializeDocument, {
+      variables: {
+        checkoutId,
+        action,
+        paymentGateway,
+        amount,
+      },
+      cache: "no-cache",
+    });
+
+    if (response.transactionInitialize?.errors.length) {
+      console.log(response.transactionInitialize?.errors);
+      const customError = response.transactionInitialize.errors as any;
+      return { success: false, errors: customError.map((error: { code: any }) => error.code) };
+    }
+    console.log(response.transactionInitialize);
+    return { success: true, transaction: response.transactionInitialize };
+  } catch (error) {
+    console.error("Failed to remove checkout line:", error);
+    return;
+  }
 };

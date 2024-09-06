@@ -41,8 +41,8 @@ mutation transactionInitialize(
 	}
 }
 
-mutation transactionProcess($id: ID!, $data: JSON) {
-	transactionProcess(id: $id, data: $data) {
+mutation transactionProcess($transactionId: ID!, $data: JSON) {
+	transactionProcess(id: $transactionId, data: $data) {
 		transaction {
 			id
 			actions
