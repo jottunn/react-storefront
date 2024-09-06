@@ -39,54 +39,29 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({
 }) => {
   const [relatedProducts, setRelatedProducts] = React.useState<Product[]>([]);
   const [loading, setLoading] = React.useState(true);
+
   React.useEffect(() => {
     const fetchRelatedProducts = async () => {
       const categoryId = product?.category?.id ?? "";
+      const ancestorId = product?.category?.ancestors.edges?.[0]["node"]["id"];
       const attributeGender = product.attributes.find(
         (attr: { attribute: { slug: string } }) => attr.attribute.slug === "gen",
       );
-      const gender = attributeGender?.values?.[0]?.name;
       let filterAttributes = [];
-      if (gender === "copii") {
-        filterAttributes.push({
-          slug: "gen",
-          values: [gender],
-        });
-      } else {
-        filterAttributes.push({
-          slug: "gen",
-          values: [gender, "unisex"],
-        });
+      if (attributeGender) {
+        const gender = attributeGender?.values?.[0]?.slug;
+        if (gender === "copii") {
+          filterAttributes.push({
+            slug: "gen",
+            values: [gender],
+          });
+        } else {
+          filterAttributes.push({
+            slug: "gen",
+            values: [gender, "unisex"],
+          });
+        }
       }
-
-      /** MAYbe to be implemented, to retreieve products from other bro categories */
-      // let parentsCategory;
-      //const parents = parentCategories.map(parentCategory => parentCategory.id);
-      //const parentCategories = mapEdgesToItems<Category>(product.category?.ancestors);
-      // const categoryFilter: CategoryFilterInput = {
-      //     ids: parents
-      // };
-      // try {
-      //     const response = await executeGraphQL<
-      //         CategoriesByFilterQuery,
-      //         { filter: CategoryFilterInput; locale: LanguageCodeEnum }
-      //     >(CategoriesByFilterDocument, {
-      //         variables: {
-      //             filter: categoryFilter,
-      //             ...defaultRegionQuery(),
-      //         },
-      //         revalidate: 60 * 5,
-      //     });
-      //     parentsCategory = response.categories ? mapEdgesToItems(response.categories) : [];
-      // } catch {
-      //     return [];
-      // }
-
-      // const allChildrenIds = parentsCategory.flatMap(parent =>
-      //     mapEdgesToItems(parent.children).map(child => child.id)
-      // );
-      // const filteredChildrenIds = allChildrenIds.filter(id => id !== categoryId);
-      // const filterCategories = [categoryId, filteredChildrenIds[0], filteredChildrenIds[1]];
 
       let relatedProductsResponse: ProductCountableConnection;
       try {
@@ -97,10 +72,10 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({
           variables: {
             filter: {
               attributes: filterAttributes,
-              categories: categoryId,
+              categories: [categoryId],
               stockAvailability: "IN_STOCK",
             },
-            first: 12,
+            first: 15,
             ...defaultRegionQuery(),
           },
           revalidate: 60 * 60,
@@ -116,6 +91,39 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({
           relatedProduct.slug !== product.slug && !recommendedSlugs.includes(relatedProduct.slug),
       );
       relatedProducts = groupProductsByColor(relatedProducts as GroupedProduct[]);
+
+      if (relatedProducts.length < 5 && ancestorId) {
+        try {
+          const response = await executeGraphQL<
+            ProductCollectionQuery,
+            { filter: any; first: number; channel: string; locale: string }
+          >(ProductCollectionDocument, {
+            variables: {
+              filter: {
+                attributes: filterAttributes,
+                categories: [ancestorId],
+                stockAvailability: "IN_STOCK",
+              },
+              first: 15,
+              ...defaultRegionQuery(),
+            },
+            revalidate: 60 * 60,
+          });
+          const additionalProductsResponse = response.products as ProductCountableConnection;
+          let additionalProducts = mapEdgesToItems(additionalProductsResponse).filter(
+            (additionalProduct) =>
+              additionalProduct.slug !== product.slug &&
+              !recommendedSlugs.includes(additionalProduct.slug) &&
+              !relatedProducts.some(
+                (existingProduct) => existingProduct.slug === additionalProduct.slug,
+              ),
+          );
+          additionalProducts = groupProductsByColor(additionalProducts as GroupedProduct[]);
+          relatedProducts = [...relatedProducts, ...additionalProducts];
+        } catch {
+          return null;
+        }
+      }
       setRelatedProducts(relatedProducts);
       setLoading(false);
     };
