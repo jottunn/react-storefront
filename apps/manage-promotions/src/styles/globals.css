@@ -5,3 +5,9 @@ a {
 code {
   background-color: var(--mu-colors-background-surface-brand-subdued);
 }
+
+@media screen and (min-width: 680px) {
+  .grid-row {
+    display: grid;
+  }
+}

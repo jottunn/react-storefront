@@ -59,7 +59,7 @@ export async function addRules(
           if (andRulesItem) {
             const rulesParsed = JSON.parse(andRulesItem.value);
             const rules = rulesParsed[0];
-            console.log("rules", rules);
+            // console.log("rules", rules);
             if (
               (!rules.categories || rules.categories.length === 0) &&
               (!rules.collections || rules.collections.length === 0)
@@ -73,11 +73,15 @@ export async function addRules(
           saleCollectionId,
           [{ key: "AndRules", value: metaValues }]
         );
-        console.log("metaValues", metaValues);
-        console.log(responseUpdateRules);
+        // console.log("metaValues", metaValues);
+        // console.log(responseUpdateRules);
       }
     } else {
       errors.push("No Sales collection found for the updated sale.");
+    }
+
+    if (errors.length > 0) {
+      return errors;
     }
 
     if (
@@ -107,8 +111,8 @@ export async function addRules(
         isVisibleInListing: true,
       };
 
-      //console.log('attributesInput', attributesInput);
-      //console.log('productsFilter', productsFilter);
+      // console.log('attributesInput', attributesInput);
+      // console.log('productsFilter', productsFilter);
       const { data: resultProducts, error: resultProductsErr } = await client.query(
         ProductCollectionDocument,
         { filter: productsFilter },
