@@ -73,10 +73,10 @@ const handler: NextWebhookApiHandler<OrderCreatedWebhookPayloadFragment> = async
   const useCase = useCaseFactory.createFromAuthData(authData);
 
   try {
-    return useCase
+    useCase
       .sendEventMessages({
         channelSlug: channel,
-        event: "ORDER_CREATED_STAFF",
+        event: "ORDER_CREATED",
         payload: { order: payload.order },
         recipientEmail,
       })
@@ -85,7 +85,7 @@ const handler: NextWebhookApiHandler<OrderCreatedWebhookPayloadFragment> = async
           (r) => {
             logger.info("Successfully sent email(s)");
 
-            return res.status(200).json({ message: "The event has been handled" });
+            // return res.status(200).json({ message: "The event has been handled" });
           },
           (err) => {
             const errorInstance = err[0];
@@ -111,6 +111,42 @@ const handler: NextWebhookApiHandler<OrderCreatedWebhookPayloadFragment> = async
           },
         ),
       );
+
+    // Send admin email
+    const adminEmail = process.env.ADMIN_EMAIL;
+    if (adminEmail) {
+      useCase
+        .sendEventMessages({
+          channelSlug: channel,
+          event: "ORDER_CREATED_STAFF",
+          payload: { order: payload.order, isAdmin: true },
+          recipientEmail: adminEmail,
+        })
+        .then((adminResult) =>
+          adminResult.match(
+            (r) => {
+              logger.info("Successfully sent admin email(s)");
+            },
+            (adminErr) => {
+              const errorInstance = adminErr[0];
+              if (errorInstance instanceof SendEventMessagesUseCase.ServerError) {
+                logger.error("Failed to send admin email(s) [server error]", { error: adminErr });
+              } else if (errorInstance instanceof SendEventMessagesUseCase.ClientError) {
+                logger.info("Failed to send admin email(s) [client error]", { error: adminErr });
+              } else if (errorInstance instanceof SendEventMessagesUseCase.NoOpError) {
+                logger.info("Admin email sending aborted [no op]", { error: adminErr });
+              } else {
+                logger.error("Failed to send admin email(s) [unhandled error]", {
+                  error: adminErr,
+                });
+                captureException(new Error("Unhandled admin useCase error", { cause: adminErr }));
+              }
+            },
+          ),
+        );
+    }
+
+    return res.status(200).json({ message: "Event has been handled" });
   } catch (e) {
     logger.error("Unhandled error from useCase", {
       error: e,
