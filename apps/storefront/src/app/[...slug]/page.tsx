@@ -18,7 +18,8 @@ type Props = {
 const isValidSlug = (slug: string): boolean => {
   const invalidPatterns = [
     /^\./,
-    /\.(env|example|json|js|ts|tsx|md|html|css|scss|png|php|jpg|jpeg|gif|svg|ico|map)$/,
+    /\.(env|example|json|js|ts|tsx|md|html|css|scss|png|php|php5|jpg|jpeg|gif|git|svg|ico|map|world|txt|yaml|bak|prod|production)$/, // Block specific file types
+    /cgi-bin|luci|admin|cdn-cgi|phpsysinfo|php-cgi/,
   ];
 
   return !invalidPatterns.some((pattern) => pattern.test(slug));
