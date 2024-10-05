@@ -82,6 +82,21 @@ services:
     volumes:
       - smtp-auth-volume:/app/apps/smtp/apl
     command: sh -c '(nginx &) && pnpm turbo run start --filter=smtp...'
+  payment:
+    container_name: payment
+    build:
+      context: .
+      dockerfile: Dockerfile.base
+      args:
+        - TARGET_APP=payment
+    ports:
+      - 3009:3009
+    networks:
+      - saleor-backend-tier
+    volumes:
+      - payment-auth-volume:/app/apps/payment/apl
+      - payment-logs-volume:/app/apps/payment/logs
+    command: sh -c '(nginx &) && pnpm turbo run start --filter=payment...'
 volumes:
   manage-promotions-auth-volume:
   smtp-auth-volume:
@@ -89,6 +104,8 @@ volumes:
   products-importer-auth-volume:
   manage-stock-auth-volume:
   manage-stock-logs-volume:
+  payment-auth-volume:
+  payment-logs-volume:
 
 networks:
   saleor-backend-tier:

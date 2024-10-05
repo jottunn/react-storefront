@@ -1,0 +1,66 @@
+{
+  "name": "payment",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm generate && NODE_OPTIONS='--inspect' next dev -p 3009",
+    "build": "pnpm generate && next build",
+    "start": "next start -p 3009",
+    "lint": "next lint",
+    "fetch-schema": "curl https://raw.githubusercontent.com/saleor/saleor/${npm_package_saleor_schemaVersion}/saleor/graphql/schema.graphql > graphql/schema.graphql",
+    "generate": "graphql-codegen",
+    "test": "vitest"
+  },
+  "saleor": {
+    "schemaVersion": "3.19"
+  },
+  "engines": {
+    "node": ">=18.17.0 <=20",
+    "pnpm": ">=9"
+  },
+  "dependencies": {
+    "@saleor/app-sdk": "link:../../node_modules/@saleor/app-sdk",
+    "@saleor/macaw-ui": "1.0.0-pre.7",
+    "@urql/exchange-auth": "^1.0.0",
+    "@vitejs/plugin-react": "4.3.1",
+    "shared-apl": "file:../../packages/shared-apl",
+    "@saleor/apps-logger": "workspace:*",
+    "graphql": "16.7.1",
+    "graphql-tag": "2.12.6",
+    "jsdom": "^20.0.3",
+    "next": "14.2.3",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "urql": "^4.0.4",
+    "vite": "5.2.11",
+    "vitest": "1.6.0",
+    "axios": "1.7.2",
+    "pino": "9.3.1",
+    "rotating-file-stream": "3.2.3"
+  },
+  "packageManager": "pnpm@9.1.4",
+  "devDependencies": {
+    "@graphql-codegen/cli": "3.3.1",
+    "@graphql-codegen/introspection": "3.0.1",
+    "@graphql-codegen/schema-ast": "^3.0.1",
+    "@graphql-codegen/typed-document-node": "4.0.1",
+    "@graphql-codegen/typescript": "3.0.4",
+    "@graphql-codegen/typescript-operations": "3.0.4",
+    "@graphql-codegen/typescript-urql": "^3.7.3",
+    "@graphql-codegen/urql-introspection": "2.2.1",
+    "@graphql-typed-document-node/core": "^3.2.0",
+    "@types/node": "20.12.11",
+    "@types/react": "18.2.5",
+    "@types/react-dom": "18.2.5",
+    "ts-loader": "^9.5.1",
+    "eslint": "8.46.0",
+    "eslint-config-next": "14.2.4",
+    "eslint-config-prettier": "9.1.0",
+    "prettier": "^2.8.2",
+    "typescript": "5.4.5"
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx}": "eslint --cache --fix",
+    "*.{js,ts,tsx,css,md,json}": "prettier --write"
+  }
+}

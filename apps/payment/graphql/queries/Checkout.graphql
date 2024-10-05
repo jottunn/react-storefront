@@ -1,0 +1,50 @@
+query CheckoutFind($id: ID!) {
+    checkout(id: $id) {
+        id
+        created
+        email
+        billingAddress {
+            id
+            phone
+            firstName
+            lastName
+            companyName
+            streetAddress1
+            streetAddress2
+            city
+            postalCode
+            countryArea
+            isDefaultBillingAddress
+            isDefaultShippingAddress
+            country {
+                code
+                country
+            }
+        }
+        shippingAddress {
+            id
+            phone
+            firstName
+            lastName
+            companyName
+            streetAddress1
+            streetAddress2
+            city
+            postalCode
+            countryArea
+            isDefaultBillingAddress
+            isDefaultShippingAddress
+            country {
+                code
+                country
+            }
+        }
+        totalPrice {
+            gross {
+                currency
+                amount
+            }
+        }
+    }
+}
+    

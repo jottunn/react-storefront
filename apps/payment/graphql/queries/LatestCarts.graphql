@@ -1,0 +1,38 @@
+ query LatestCarts {
+    checkouts (first: 20, sortBy: {direction: DESC, field: CREATION_DATE }) {
+      edges {
+        node {
+          id
+          chargeStatus
+          created
+          user {
+            firstName
+            lastName
+          }
+          lines {
+            variant {
+              product {
+                name
+                thumbnail {
+                  url
+                }
+              }
+            }
+          }
+          totalPrice {
+            gross {
+              amount
+            }
+          }
+          transactions {
+            id
+            pspReference
+            events {
+              type
+              message
+            }
+          }
+        }
+      }
+    }
+  }
