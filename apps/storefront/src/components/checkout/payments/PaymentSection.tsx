@@ -4,7 +4,7 @@ import { Messages } from "@/lib/util";
 import { useCheckout } from "@/lib/hooks/CheckoutContext";
 import CompleteCheckoutButton from "../CompleteCheckoutButton";
 import CheckoutNote from "../CheckoutNote";
-import { checkoutCompleteMutation, initializeTransaction } from "../actions";
+import { checkoutCompleteMutation, initializeTransaction, updateTransaction } from "../actions";
 import { useRouter } from "next/navigation";
 import xss from "xss";
 
@@ -43,37 +43,57 @@ export function PaymentSection({ active, messages }: PaymentSectionProps) {
     const rawNotes = formData.get("checkoutNotes") as string;
     const notes = xss(rawNotes);
 
-    if (chosenGateway === "saleor.app.ing.webpay") {
+    if (chosenGateway === process.env.NEXT_PUBLIC_PAYMENT_APP_ID) {
       // Handle ING WebPay payment processing
       try {
         // Step 1: Initialize Transaction
         const initTransactionResponse = await initializeTransaction({
           checkoutId: checkout.id,
           paymentGateway: {
-            id: "saleor.app.ing.webpay",
+            id: chosenGateway,
             data: {
               checkoutId: checkout.id,
             },
           },
         });
 
-        if (initTransactionResponse?.errors.length > 0) {
+        console.log("initTransactionResponse", initTransactionResponse);
+
+        if (initTransactionResponse?.errors?.length > 0) {
           setErrors(initTransactionResponse?.errors);
           setIsPaymentProcessing(false);
           return;
         }
-        const paymentUrl = initTransactionResponse?.transaction?.data.paymentUrl;
-
+        const paymentUrl = initTransactionResponse?.transactionInitialize?.data.paymentUrl;
         if (paymentUrl) {
-          //ING WebPay raspunde cu informatiile necesare pentru a continua plata: link-ul paginii platii si ID-ul
+          const transactionId = initTransactionResponse?.transactionInitialize?.transaction?.id;
+          //update transaction with notes
+          //TODO toreplace, when possible to add notes to checkout mutation
+          if (transactionId && notes) {
+            await updateTransaction(transactionId, notes);
+          }
+          //Schedule the task in 10 minutes, added to cover cases when user doesn't reach the return_url in order to process transaction
+          if (transactionId) {
+            const schedule = await fetch("/api/transactionQueue", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ transactionId }),
+            }).catch((err) => {
+              // Optionally log or handle any fetch error
+              console.error("Failed to schedule transaction in queue:", err);
+            });
+          }
+          //Proceed with the redirection regardless of fetch success or failure
           window.location.href = paymentUrl;
         } else {
-          setErrors([{ message: "No payment URL returned. Cannot proceed with payment." }]);
+          setErrors([messages["app.payment.noFormUrl"]]);
           setIsPaymentProcessing(false);
         }
       } catch (error) {
         console.error("Error during payment process:", error);
-        setErrors([{ message: error }]);
+        setErrors([error]);
         setIsPaymentProcessing(false);
       }
     } else {
@@ -127,7 +147,9 @@ export function PaymentSection({ active, messages }: PaymentSectionProps) {
                       value={gateway.id}
                       id={gateway.id}
                     />
-                    <span className="ml-2 text-base pl-5 relative top-1">{gateway.name}</span>
+                    <span className="ml-2 text-base pl-5 relative top-1">
+                      {gateway.name === "ING WebPay" ? messages["app.checkout.card"] : gateway.name}
+                    </span>
                   </label>
                 </Radio>
               ))}

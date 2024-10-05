@@ -13,7 +13,7 @@ import { getCurrentUser } from "src/app/actions";
 
 export async function getIdFromCookies(channel: string) {
   const cookieName = `checkoutId-${channel}`;
-  const checkoutId = cookies().get(cookieName)?.value || "";
+  const checkoutId = cookies().get(cookieName)?.value || null;
   return checkoutId;
 }
 

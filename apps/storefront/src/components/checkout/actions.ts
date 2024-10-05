@@ -39,6 +39,7 @@ import {
 } from "@/saleor/api";
 import { AddressFormData } from "../account/AddressForm";
 import * as Checkout from "@/lib/checkout";
+import axios from "axios";
 type updateEmailFromCheckoutArgs = {
   id: string;
   email: string;
@@ -417,7 +418,7 @@ export const addItem = async ({ selectedVariantId }: AddItemArgs) => {
 
   const checkoutId = await Checkout.getIdFromCookies(defaultRegionQuery().channel);
   const resultCheckoutCreate = await Checkout.findOrCreate({
-    checkoutId: checkoutId,
+    checkoutId: checkoutId || "",
     channel: defaultRegionQuery().channel,
   });
 
@@ -486,15 +487,74 @@ export const initializeTransaction = async ({
       cache: "no-cache",
     });
 
-    if (response.transactionInitialize?.errors.length) {
+    console.log(response.transactionInitialize);
+
+    if (response.transactionInitialize?.errors?.length) {
       console.log(response.transactionInitialize?.errors);
       const customError = response.transactionInitialize.errors as any;
       return { success: false, errors: customError.map((error: { code: any }) => error.code) };
     }
-    console.log(response.transactionInitialize);
-    return { success: true, transaction: response.transactionInitialize };
+
+    if (
+      response.transactionInitialize?.transactionEvent?.type === "CHARGE_FAILURE" ||
+      response.transactionInitialize?.transactionEvent?.type === "AUTHORIZATION_FAILURE"
+    ) {
+      return {
+        success: false,
+        ini: response.transactionInitialize,
+        errors: [response.transactionInitialize?.transactionEvent?.message],
+      };
+    }
+    return { transactionInitialize: response.transactionInitialize };
   } catch (error) {
-    console.error("Failed to remove checkout line:", error);
+    console.error("Failed to init transaction:", error);
     return;
   }
+};
+
+export const updateTransaction = async (transactionId: string, notes: string) => {
+  const paymentAppUrlUpdate = `${process.env.PAYMENT_APP_URL}/api/update-transaction`;
+  const data = {
+    transactionId: transactionId,
+    notes: notes,
+  };
+  const updateTransactionResponse = await axios.post(paymentAppUrlUpdate, data, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `${process.env.PROCESS_TRANSACTION_SECRET_KEY}`,
+    },
+  });
+  // console.log('updateTransactionResponse', updateTransactionResponse);
+  return true;
+};
+
+export const processTransaction = async (checkoutId: string) => {
+  const paymentAppUrlProcess = `${process.env.PAYMENT_APP_URL}/api/process-transaction`;
+  const data = {
+    checkoutId: checkoutId,
+  };
+  const processTransactionResponse = await axios.post(paymentAppUrlProcess, data, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `${process.env.PROCESS_TRANSACTION_SECRET_KEY}`,
+    },
+  });
+
+  // console.log('processTransactionResponse1', processTransactionResponse);
+  return processTransactionResponse.data;
+};
+
+export const checkTransactionStatus = async (transactionId: string) => {
+  const paymentAppUrlUpdate = `${process.env.PAYMENT_APP_URL}/api/check-transaction-status`;
+  const data = {
+    transactionId: transactionId,
+  };
+  const checkTransactionStatusResponse = await axios.post(paymentAppUrlUpdate, data, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `${process.env.PROCESS_TRANSACTION_SECRET_KEY}`,
+    },
+  });
+  console.log("checkTransactionStatusResponse", checkTransactionStatusResponse.data);
+  return checkTransactionStatusResponse;
 };

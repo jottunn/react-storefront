@@ -6,7 +6,7 @@ import { DEFAULT_LOCALE } from "@/lib/regions";
 import { getMessages } from "@/lib/util";
 import { executeGraphQL } from "@/lib/graphql";
 import { UserDocument, UserQuery } from "@/saleor/api";
-import Spinner from "@/components/Spinner";
+import { redirect } from "next/navigation";
 
 export const metadata = {
   title: "Checkout",
@@ -37,6 +37,10 @@ export default async function CheckoutPage({
     cache: "no-cache",
     withAuth: true,
   });
+
+  if (!checkout) {
+    redirect("/payment-confirm");
+  }
 
   return (
     <main className="mt-6 flex-1 container pt-8 px-8">

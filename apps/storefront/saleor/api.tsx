@@ -35763,6 +35763,29 @@ export type TransactionProcessMutation = {
   } | null;
 };
 
+export type TransactionUpdateMutationVariables = Exact<{
+  transactionId: Scalars["ID"]["input"];
+  transaction?: InputMaybe<TransactionUpdateInput>;
+}>;
+
+export type TransactionUpdateMutation = {
+  __typename?: "Mutation";
+  transactionUpdate?: {
+    __typename?: "TransactionUpdate";
+    transaction?: {
+      __typename?: "TransactionItem";
+      id: string;
+      actions: Array<TransactionActionEnum>;
+    } | null;
+    errors: Array<{
+      __typename?: "TransactionUpdateError";
+      field?: string | null;
+      code: TransactionUpdateErrorCode;
+      message?: string | null;
+    }>;
+  } | null;
+};
+
 export type AvailableProductFiltersQueryVariables = Exact<{
   filter?: InputMaybe<ProductFilterInput>;
   channel?: InputMaybe<Scalars["String"]["input"]>;
@@ -39912,6 +39935,62 @@ export type TransactionProcessMutationResult = Apollo.MutationResult<Transaction
 export type TransactionProcessMutationOptions = Apollo.BaseMutationOptions<
   TransactionProcessMutation,
   TransactionProcessMutationVariables
+>;
+export const TransactionUpdateDocument = gql`
+  mutation transactionUpdate($transactionId: ID!, $transaction: TransactionUpdateInput) {
+    transactionUpdate(id: $transactionId, transaction: $transaction) {
+      transaction {
+        id
+        actions
+      }
+      errors {
+        field
+        code
+        message
+      }
+    }
+  }
+`;
+export type TransactionUpdateMutationFn = Apollo.MutationFunction<
+  TransactionUpdateMutation,
+  TransactionUpdateMutationVariables
+>;
+
+/**
+ * __useTransactionUpdateMutation__
+ *
+ * To run a mutation, you first call `useTransactionUpdateMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useTransactionUpdateMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [transactionUpdateMutation, { data, loading, error }] = useTransactionUpdateMutation({
+ *   variables: {
+ *      transactionId: // value for 'transactionId'
+ *      transaction: // value for 'transaction'
+ *   },
+ * });
+ */
+export function useTransactionUpdateMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    TransactionUpdateMutation,
+    TransactionUpdateMutationVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<TransactionUpdateMutation, TransactionUpdateMutationVariables>(
+    TransactionUpdateDocument,
+    options,
+  );
+}
+export type TransactionUpdateMutationHookResult = ReturnType<typeof useTransactionUpdateMutation>;
+export type TransactionUpdateMutationResult = Apollo.MutationResult<TransactionUpdateMutation>;
+export type TransactionUpdateMutationOptions = Apollo.BaseMutationOptions<
+  TransactionUpdateMutation,
+  TransactionUpdateMutationVariables
 >;
 export const AvailableProductFiltersDocument = gql`
   query AvailableProductFilters(

@@ -39,7 +39,7 @@ export default function CartModal({ messages }: CartModalProps) {
   }, [refreshCheckout]);
 
   useEffect(() => {
-    if (pathname === "/checkout" || pathname === "/order") {
+    if (pathname === "/checkout" || pathname === "/order" || pathname === "/payment-confirm") {
       closeCart();
       if (counter !== prevCounter) {
         setPrevCounter(counter);
