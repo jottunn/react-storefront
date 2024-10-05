@@ -26,7 +26,7 @@ import SvgSprite from "../SvgSprite";
 export default async function Footer({ className, ...rest }: FooterProps) {
   "use server";
   const messages = getMessages(DEFAULT_LOCALE, "app.nwl");
-  let footerNavLinks, brandCollections, contactContentResponse;
+  let footerNavLinks, contactContentResponse;
   try {
     footerNavLinks = await executeGraphQL<
       FooterMenuQuery,
@@ -38,23 +38,7 @@ export default async function Footer({ className, ...rest }: FooterProps) {
   } catch {
     return null;
   }
-  try {
-    brandCollections = await executeGraphQL<
-      CollectionsByMetaKeyQuery,
-      { filter: any; channel: string; locale: string }
-    >(CollectionsByMetaKeyDocument, {
-      variables: {
-        filter: {
-          metadata: [{ key: "isBrand", value: "YES" }],
-          published: "PUBLISHED",
-        },
-        ...defaultRegionQuery(),
-      },
-      revalidate: 60 * 60 * 24,
-    });
-  } catch {
-    return null;
-  }
+
   try {
     contactContentResponse = await executeGraphQL<
       PageTypesQuery,
@@ -78,30 +62,6 @@ export default async function Footer({ className, ...rest }: FooterProps) {
     <footer className={clsx(styles.footer, className)} {...rest}>
       <SvgSprite />
       <Box className={styles["footer-inner"]}>
-        <div className="grid grid-cols-4 md:grid-cols-8 gap-6 md:gap-12 lg:gap-20 py-12 md:py-32 mb-20 items-center justify-items-center w-full border-b border-dark=300 md:min-h-[90px]">
-          {brandCollections &&
-            brandCollections.collections?.edges.map((brand) => {
-              return (
-                <Link
-                  key={brand.node.slug}
-                  href={`/collections/${brand.node.slug}`}
-                  className="text-md mt-2 font-medium text-gray-600 cursor-pointer text-center hover:text-green-600 block"
-                >
-                  {brand.node.backgroundImage ? (
-                    <Image
-                      src={brand.node.backgroundImage.url}
-                      alt={brand.node.name}
-                      width={200}
-                      height={200}
-                      className="hover:brightness-125 hover:contrast-115 transition-all duration-30"
-                    />
-                  ) : (
-                    brand.node.name
-                  )}
-                </Link>
-              );
-            })}
-        </div>
         <div className={styles["footer-grid"]}>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full mb-4">
             {footerNavLinks &&

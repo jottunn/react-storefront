@@ -29,6 +29,8 @@ import SwiperComponent from "@/components/SwiperComponent";
 import HomepageBlock from "@/components/homepage/HomepageBlock";
 import getBase64 from "@/lib/generateBlurPlaceholder";
 import Banner from "@/components/homepage/Banner";
+import Link from "next/link";
+import Image from "next/image";
 
 const parser = edjsHTML();
 const emptyTagsRegex = /^<[^>]+>\s*(<br\s*\/?>)?\s*<\/[^>]+>$/;
@@ -260,6 +262,26 @@ export default async function Home() {
   const parsedFeaturedCollectionText = featuredCollectionText
     ? parser.parse(JSON.parse(featuredCollectionText))
     : "";
+
+  let brandCollections;
+  try {
+    brandCollections = await executeGraphQL<
+      CollectionsByMetaKeyQuery,
+      { filter: any; channel: string; locale: string }
+    >(CollectionsByMetaKeyDocument, {
+      variables: {
+        filter: {
+          metadata: [{ key: "isBrand", value: "YES" }],
+          published: "PUBLISHED",
+        },
+        ...defaultRegionQuery(),
+      },
+      revalidate: 60 * 60 * 24,
+    });
+  } catch {
+    return null;
+  }
+
   return (
     <>
       {hasBanner1 && (
@@ -389,6 +411,33 @@ export default async function Home() {
           )}
         </div>
       )}
+
+      <div className=" py-12 md:py-32 mb-20 items-center justify-items-center w-full border-t border-dark=300 md:min-h-[90px]">
+        <div className="container grid grid-cols-4 md:grid-cols-8 gap-6 md:gap-12 lg:gap-20">
+          {brandCollections &&
+            brandCollections.collections?.edges.map((brand) => {
+              return (
+                <Link
+                  key={brand.node.slug}
+                  href={`/collections/${brand.node.slug}`}
+                  className="text-md mt-2 font-medium text-gray-600 cursor-pointer text-center hover:text-green-600 block"
+                >
+                  {brand.node.backgroundImage ? (
+                    <Image
+                      src={brand.node.backgroundImage.url}
+                      alt={brand.node.name}
+                      width={200}
+                      height={200}
+                      className="hover:brightness-125 hover:contrast-115 transition-all duration-30"
+                    />
+                  ) : (
+                    brand.node.name
+                  )}
+                </Link>
+              );
+            })}
+        </div>
+      </div>
     </>
   );
 }
