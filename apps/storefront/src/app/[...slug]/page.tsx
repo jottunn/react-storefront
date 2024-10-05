@@ -15,107 +15,111 @@ type Props = {
   };
 };
 
+// Slug validation function to ensure it's a valid URL part
 const isValidSlug = (slug: string): boolean => {
   const invalidPatterns = [
-    /^\./,
+    /^\./, // Prevents slugs starting with a dot
     /\.(env|example|json|js|ts|tsx|md|html|css|scss|png|php|php5|jpg|jpeg|gif|git|svg|ico|map|world|txt|yaml|bak|prod|production)$/, // Block specific file types
-    /cgi-bin|luci|admin|cdn-cgi|phpsysinfo|php-cgi/,
+    /cgi-bin|luci|admin|cdn-cgi|phpsysinfo|php-cgi/, // Block specific directory paths
   ];
 
   return !invalidPatterns.some((pattern) => pattern.test(slug));
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const currentSlug = params.slug[params.slug.length - 1];
-  if (!isValidSlug(currentSlug)) {
-    console.warn("Invalid slug attempt:", currentSlug);
-    return notFound();
-  }
+// Helper function to fetch page data from Saleor or Strapi
+async function fetchPageData(slug: string, lang: string) {
+  // Try fetching from Saleor
   try {
     const saleorPage = await executeGraphQL<
       PageQuery,
       { slug: string; locale: LanguageCodeEnum; channel: string }
     >(PageDocument, {
       variables: {
-        slug: currentSlug,
-        ...defaultRegionQuery(),
-      },
-      revalidate: 60 * 60,
-      withAuth: false,
-    });
-
-    if (saleorPage !== null && saleorPage.page) {
-      return {
-        title: saleorPage.page.seoTitle || `${saleorPage.page.title} | ${STOREFRONT_NAME}`,
-        description: saleorPage.page.seoDescription || `${saleorPage.page.title} - Surmont.ro`,
-      };
-    }
-  } catch (error) {
-    console.error("Failed to fetch saleor page:", error);
-  }
-
-  try {
-    const strapiPage = await getPageBySlug(params.slug, params.lang);
-
-    if (strapiPage?.data && strapiPage?.data.length === 0) return notFound();
-
-    if (strapiPage?.data && strapiPage?.data[0] && !strapiPage.data[0].attributes?.seo) {
-      return {
-        title: `${strapiPage.data[0].attributes.pageName} | ${STOREFRONT_NAME}`,
-        description: `${strapiPage.data[0].attributes.pageName} - Surmont.ro`,
-      };
-    } else {
-      const metadata = strapiPage.data[0] && strapiPage.data[0].attributes.seo;
-      return {
-        title: metadata && metadata.metaTitle,
-        description: metadata && metadata.metaDescription,
-      };
-    }
-  } catch (error) {
-    console.error("Failed to fetch strapi page:", error);
-    return notFound();
-  }
-}
-
-export async function generateStaticParams() {
-  const fixedSlugs = ["contact", "despre-noi"];
-  return fixedSlugs.map((slug) => ({
-    params: { slug },
-  }));
-}
-
-export default async function Page({ params }: { params: { slug: string } }) {
-  const currentSlug = params.slug[params.slug.length - 1];
-  if (!isValidSlug(currentSlug)) {
-    console.warn("Invalid slug attempt:", currentSlug);
-    return notFound();
-  }
-
-  try {
-    const saleorPage = await executeGraphQL<
-      PageQuery,
-      { slug: string; locale: LanguageCodeEnum; channel: string }
-    >(PageDocument, {
-      variables: {
-        slug: currentSlug,
+        slug,
         ...defaultRegionQuery(),
       },
       revalidate: 60 * 5,
       withAuth: false,
     });
 
-    if (saleorPage.page) {
-      return <PageSaleor page={saleorPage.page as PageFragment} />;
+    // If a Saleor page is found, return it
+    if (saleorPage && saleorPage.page) {
+      return { saleorPage: saleorPage.page };
     }
-  } catch {
-    console.log("server is down");
+  } catch (error) {
+    console.error("Failed to fetch Saleor page:", error);
   }
 
+  // If no Saleor page, try fetching from Strapi
   try {
-    const strapiPage = await getPageBySlug(params.slug, DEFAULT_LOCALE);
-    if (strapiPage.data && strapiPage.data.length === 0) return notFound();
-    return <PageStrapi page={strapiPage} />;
-  } catch {
-    console.log("server is down");
+    const strapiPage = await getPageBySlug(slug, lang);
+    if (strapiPage && strapiPage.data.length > 0) {
+      return { strapiPage };
+    }
+  } catch (error) {
+    console.error("Failed to fetch Strapi page:", error);
   }
+
+  // Return null if no page is found
+  return null;
+}
+
+// Generate Metadata based on the fetched page data
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const currentSlug = params.slug[params.slug.length - 1];
+  const lang = params.lang;
+
+  // Validate the slug before fetching data
+  if (!isValidSlug(currentSlug)) {
+    console.warn("Invalid slug attempt:", currentSlug);
+    return notFound();
+  }
+
+  // Fetch the page data from Saleor or Strapi
+  const pageData = await fetchPageData(currentSlug, lang);
+  if (!pageData) return notFound(); // Return 404 if no page is found
+
+  // If Saleor page is found, use Saleor metadata
+  if (pageData.saleorPage) {
+    return {
+      title: pageData.saleorPage.seoTitle || `${pageData.saleorPage.title} | ${STOREFRONT_NAME}`,
+      description:
+        pageData.saleorPage.seoDescription || `${pageData.saleorPage.title} - Surmont.ro`,
+    };
+  }
+
+  // If Strapi page is found, use Strapi metadata
+  const strapiPage = pageData.strapiPage;
+  const seo = strapiPage?.data[0].attributes.seo;
+  const pageName = strapiPage?.data[0].attributes.pageName;
+
+  return {
+    title: seo?.metaTitle || `${pageName} | ${STOREFRONT_NAME}`,
+    description: seo?.metaDescription || `${pageName} - Surmont.ro`,
+  };
+}
+
+// The main Page component that renders content from Saleor or Strapi
+export default async function Page({ params }: { params: { slug: string } }) {
+  const currentSlug = params.slug[params.slug.length - 1];
+  const lang = DEFAULT_LOCALE;
+
+  // Validate the slug before fetching data
+  if (!isValidSlug(currentSlug)) {
+    console.warn("Invalid slug attempt:", currentSlug);
+    return notFound();
+  }
+
+  // Fetch the page data from Saleor or Strapi
+  const pageData = await fetchPageData(currentSlug, lang);
+  if (!pageData) return notFound(); // Return 404 if no page is found
+
+  // If Saleor page is found, render Saleor page component
+  if (pageData.saleorPage) {
+    return <PageSaleor page={pageData.saleorPage as PageFragment} />;
+  }
+
+  // If Strapi page is found, render Strapi page component
+  const strapiPage = pageData.strapiPage;
+  return <PageStrapi page={strapiPage} />;
 }
