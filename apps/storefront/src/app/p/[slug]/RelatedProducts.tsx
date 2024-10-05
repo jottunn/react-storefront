@@ -4,10 +4,6 @@ import { executeGraphQL } from "@/lib/graphql";
 import { mapEdgesToItems } from "@/lib/maps";
 import { defaultRegionQuery } from "@/lib/regions";
 import {
-  CategoriesByFilterDocument,
-  CategoriesByFilterQuery,
-  CategoryFilterInput,
-  LanguageCodeEnum,
   Product,
   ProductCollectionDocument,
   ProductCollectionQuery,
@@ -18,7 +14,7 @@ import Spinner from "@/components/Spinner";
 import React from "react";
 import SwiperComponent from "@/components/SwiperComponent";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
-import { getOrderValue, Messages } from "@/lib/util";
+import { Messages } from "@/lib/util";
 
 interface RelatedProductsProps {
   product: any;
