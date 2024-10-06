@@ -158,7 +158,7 @@ importers:
         version: 4.6.14
       shared-apl:
         specifier: file:../../packages/shared-apl
-        version: file:packages/shared-apl(graphql@16.7.1)(next@14.2.3(@babel/core@7.24.7)(@opentelemetry/api@1.7.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        version: file:packages/shared-apl(graphql@16.7.1)(next@14.2.3(@opentelemetry/api@1.7.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       urql:
         specifier: ^4.0.4
         version: 4.0.4(graphql@16.7.1)(react@18.2.0)
@@ -243,7 +243,7 @@ importers:
         version: 3.2.3
       shared-apl:
         specifier: file:../../packages/shared-apl
-        version: file:packages/shared-apl(graphql@16.7.1)(next@14.2.3(@babel/core@7.24.7)(@opentelemetry/api@1.7.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        version: file:packages/shared-apl(graphql@16.7.1)(next@14.2.3(@opentelemetry/api@1.7.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       urql:
         specifier: ^4.0.4
         version: 4.0.4(graphql@16.7.1)(react@18.2.0)
@@ -328,7 +328,7 @@ importers:
         version: 3.2.3
       shared-apl:
         specifier: file:../../packages/shared-apl
-        version: file:packages/shared-apl(graphql@16.7.1)(next@14.2.3(@babel/core@7.24.7)(@opentelemetry/api@1.7.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        version: file:packages/shared-apl(graphql@16.7.1)(next@14.2.3(@opentelemetry/api@1.7.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       urql:
         specifier: ^4.0.4
         version: 4.0.4(graphql@16.7.1)(react@18.2.0)
@@ -431,7 +431,7 @@ importers:
         version: 18.2.0(react@18.2.0)
       shared-apl:
         specifier: file:../../packages/shared-apl
-        version: file:packages/shared-apl(graphql@16.7.1)(next@14.2.3(@babel/core@7.24.7)(@opentelemetry/api@1.7.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        version: file:packages/shared-apl(graphql@16.7.1)(next@14.2.3(@opentelemetry/api@1.7.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       urql:
         specifier: ^4.0.4
         version: 4.0.4(graphql@16.7.1)(react@18.2.0)
@@ -606,7 +606,7 @@ importers:
         version: 7.51.4(react@18.2.0)
       shared-apl:
         specifier: file:../../packages/shared-apl
-        version: file:packages/shared-apl(graphql@16.7.1)(next@14.2.3(@babel/core@7.24.7)(@opentelemetry/api@node_modules+@opentelemetry+api)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        version: file:packages/shared-apl(graphql@16.7.1)(next@14.2.3(@opentelemetry/api@node_modules+@opentelemetry+api)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       urql:
         specifier: 4.0.4
         version: 4.0.4(graphql@16.7.1)(react@18.2.0)
@@ -823,7 +823,7 @@ importers:
         version: 18.3.1
       shared-apl:
         specifier: file:../../packages/shared-apl
-        version: file:packages/shared-apl(graphql@16.7.1)(next@14.2.3(@babel/core@7.24.7)(@opentelemetry/api@node_modules+@opentelemetry+api)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        version: file:packages/shared-apl(graphql@16.7.1)(next@14.2.3(@opentelemetry/api@node_modules+@opentelemetry+api)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       urql:
         specifier: 4.0.4
         version: 4.0.4(graphql@16.7.1)(react@18.2.0)
@@ -1036,6 +1036,9 @@ importers:
       '@next/env':
         specifier: 14.0.4
         version: 14.0.4
+      '@next/third-parties':
+        specifier: 14.2.14
+        version: 14.2.14(next@14.2.3(@babel/core@7.24.7)(@opentelemetry/api@1.7.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)
       '@svgr/webpack':
         specifier: 8.1.0
         version: 8.1.0(typescript@5.4.5)
@@ -3824,6 +3827,12 @@ packages:
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [win32]
+
+  '@next/third-parties@14.2.14':
+    resolution: {integrity: sha512-Flyy7/HqQ5mqg/EkPh9gTh+Ea4Yv1rJM5pOCBYZoOA0eHdSROQO/qpNQ/gOPEMyg1EVDunH0nuAK82GC4BogRA==}
+    peerDependencies:
+      next: ^13.0.0 || ^14.0.0
+      react: ^18.2.0
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -11259,6 +11268,9 @@ packages:
   thenify@3.3.1:
     resolution: {integrity: sha512-RVZSIV5IG10Hk3enotrhvz0T9em6cyHBLkH/YAZuKqd8hRkKhSfCGIcP2KUY0EPxndzANBmNllzWPwak+bheSw==}
 
+  third-party-capital@1.0.20:
+    resolution: {integrity: sha512-oB7yIimd8SuGptespDAZnNkzIz+NWaJCu2RMsbs4Wmp9zSDUM8Nhi3s2OOcqYuv3mN4hitXc8DVx+LyUmbUDiA==}
+
   thread-stream@3.1.0:
     resolution: {integrity: sha512-OqyPZ9u96VohAyMfJykzmivOrY2wfMSf3C5TtFJVgN+Hm6aj+voFhlK+kZEIv2FBh1X6Xp3DlnCOfEQ3B2J86A==}
 
@@ -15738,6 +15750,12 @@ snapshots:
   '@next/swc-win32-x64-msvc@14.2.3':
     optional: true
 
+  '@next/third-parties@14.2.14(next@14.2.3(@babel/core@7.24.7)(@opentelemetry/api@1.7.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)':
+    dependencies:
+      next: 14.2.3(@babel/core@7.24.7)(@opentelemetry/api@1.7.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      react: 18.2.0
+      third-party-capital: 1.0.20
+
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
       '@nodelib/fs.stat': 2.0.5
@@ -16950,7 +16968,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@saleor/app-sdk@0.50.1(graphql@16.7.1)(next@14.2.3(@babel/core@7.24.7)(@opentelemetry/api@node_modules+@opentelemetry+api)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
+  '@saleor/app-sdk@0.50.1(graphql@16.7.1)(next@14.2.3(@opentelemetry/api@node_modules+@opentelemetry+api)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
       '@opentelemetry/api': 1.7.0
       '@opentelemetry/semantic-conventions': 1.18.1
@@ -24691,7 +24709,7 @@ snapshots:
     dependencies:
       kind-of: 6.0.3
 
-  shared-apl@file:packages/shared-apl(graphql@16.7.1)(next@14.2.3(@babel/core@7.24.7)(@opentelemetry/api@1.7.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
+  shared-apl@file:packages/shared-apl(graphql@16.7.1)(next@14.2.3(@opentelemetry/api@1.7.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
     dependencies:
       '@saleor/app-sdk': 0.50.1(graphql@16.7.1)(next@14.2.3(@babel/core@7.24.7)(@opentelemetry/api@1.7.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
     transitivePeerDependencies:
@@ -24702,9 +24720,9 @@ snapshots:
       - react-dom
       - supports-color
 
-  shared-apl@file:packages/shared-apl(graphql@16.7.1)(next@14.2.3(@babel/core@7.24.7)(@opentelemetry/api@node_modules+@opentelemetry+api)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
+  shared-apl@file:packages/shared-apl(graphql@16.7.1)(next@14.2.3(@opentelemetry/api@node_modules+@opentelemetry+api)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
     dependencies:
-      '@saleor/app-sdk': 0.50.1(graphql@16.7.1)(next@14.2.3(@babel/core@7.24.7)(@opentelemetry/api@node_modules+@opentelemetry+api)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      '@saleor/app-sdk': 0.50.1(graphql@16.7.1)(next@14.2.3(@opentelemetry/api@node_modules+@opentelemetry+api)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
     transitivePeerDependencies:
       - '@vercel/kv'
       - graphql
@@ -25236,6 +25254,8 @@ snapshots:
   thenify@3.3.1:
     dependencies:
       any-promise: 1.3.0
+
+  third-party-capital@1.0.20: {}
 
   thread-stream@3.1.0:
     dependencies:

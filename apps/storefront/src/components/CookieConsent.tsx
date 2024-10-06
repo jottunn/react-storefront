@@ -29,12 +29,24 @@ const CookieConsent: React.FC<Props> = ({ messages }) => {
     Cookies.set("essential-cookies", "accepted", { expires: 365 });
     Cookies.set("analytics-cookies", "accepted", { expires: 365 });
     Cookies.set("marketing-cookies", "accepted", { expires: 365 });
+    if (typeof window !== "undefined" && window.gtag) {
+      window.gtag("consent", "update", {
+        ad_storage: "granted",
+        analytics_storage: "granted",
+      });
+    }
     setShowBanner(false);
   };
 
   const handleDecline = () => {
     Cookies.set("cookie-consent", "declined", { expires: 365 });
     Cookies.set("essential-cookies", "accepted", { expires: 365 });
+    if (typeof window !== "undefined" && window.gtag) {
+      window.gtag("consent", "update", {
+        ad_storage: "denied",
+        analytics_storage: "denied",
+      });
+    }
     setShowBanner(false);
   };
 

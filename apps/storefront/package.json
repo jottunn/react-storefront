@@ -65,6 +65,7 @@
     "@graphql-codegen/typescript-react-apollo": "4.3.0",
     "@next/bundle-analyzer": "14.2.3",
     "@next/env": "14.0.4",
+    "@next/third-parties": "14.2.14",
     "@svgr/webpack": "8.1.0",
     "@types/node": "20.12.11",
     "@types/papaparse": "^5.3.14",

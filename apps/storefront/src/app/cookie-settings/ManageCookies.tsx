@@ -30,12 +30,22 @@ const ManageCookies: React.FC<Props> = ({ messages }) => {
     const isChecked = e.target.checked;
     setAnalyticalCookies(isChecked);
     Cookies.set("analytics-cookies", isChecked ? "accepted" : "declined", { expires: 365 });
+    if (typeof window !== "undefined" && window.gtag) {
+      window.gtag("consent", "update", {
+        analytics_storage: isChecked ? "granted" : "denied",
+      });
+    }
   };
 
   const handleMarketingCookiesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const isChecked = e.target.checked;
     setMarketingCookies(isChecked);
     Cookies.set("marketing-cookies", isChecked ? "accepted" : "declined", { expires: 365 });
+    if (typeof window !== "undefined" && window.gtag) {
+      window.gtag("consent", "update", {
+        ad_storage: isChecked ? "granted" : "denied",
+      });
+    }
   };
 
   const toggleEssentialCookies = () => {
