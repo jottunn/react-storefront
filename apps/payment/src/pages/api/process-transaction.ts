@@ -97,17 +97,13 @@ export default async (
       // console.log('resultGetOrder', resultGetOrder);
       existingOrder = resultGetOrder.data?.orders?.edges.length;
     } catch (error) {
-      logger.error(
-        `Error querying orders by checkout  Id details. Error: ${JSON.stringify(error)}`
-      );
+      logger.error(`Error querying orders by checkout Id details. Error: ${JSON.stringify(error)}`);
     }
     if (existingOrder > 0) {
-      return res
-        .status(200)
-        .json({
-          error: "Checkout already processes",
-          errorString: "app.payment.checkoutAlreadyProcessed",
-        });
+      return res.status(200).json({
+        error: "Checkout already processes",
+        errorString: "app.payment.checkoutAlreadyProcessed",
+      });
     }
     return res.status(200).json({ error: "Checkout not found" });
   }
@@ -136,11 +132,14 @@ export default async (
     `;
 
     const transaction = currentCheckout?.transactions
-      ?.filter((txn: { pspReference: string | null }) => txn.pspReference)
+      ?.filter(
+        (txn: { pspReference: string | null }) =>
+          txn.pspReference !== null && txn.pspReference.trim() !== ""
+      )
       ?.sort(
         (a: { createdAt: string }, b: { createdAt: string }) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      )?.[0]; // Sort by createdAt descending // Get the most recent transaction
+      )?.[0]; // Sort by createdAt descending and get the most recent transaction
 
     console.log("transaction", transaction);
     if (transaction?.id) {
@@ -152,28 +151,27 @@ export default async (
         const err = result.error || JSON.stringify(result.data.transactionProcess.errors);
         console.error("Error processing transaction1:", err);
         logger.error(`Failed to process transaction. Error: ${err}`);
-        return res
-          .status(200)
-          .json({
-            error: "Failed to process transaction.",
-            errorString: "app.payment.errorTransactionProcessing",
-          });
+        return res.status(200).json({
+          error: "Failed to process transaction.",
+          errorString: "app.payment.errorTransactionProcessing",
+        });
       }
       const transactionMetadata = transaction?.metadata?.find(
         (metadata: { key: string }) => metadata.key === "notes"
       );
       notes = transactionMetadata ? transactionMetadata.value : null;
       logger.info(`Transaction successfully processed for checkout: ${checkoutId}`);
+    } else {
+      logger.error(`No transaction found to be processed for checkout ${checkoutId}`);
+      return res.status(200).json({ error: "ING Transaction not found" });
     }
   } catch (error) {
     console.error("Error processing transaction2:", error);
     logger.error(`Error processing transaction. Error: ${JSON.stringify(error)}`);
-    return res
-      .status(500)
-      .json({
-        error: "Internal server error - Error processing transaction",
-        errorString: "app.payment.errorTransactionProcessing",
-      });
+    return res.status(500).json({
+      error: "Internal server error - Error processing transaction",
+      errorString: "app.payment.errorTransactionProcessing",
+    });
   }
 
   if (checkoutId) {
@@ -216,12 +214,10 @@ export default async (
       logger.info(
         `Order successfully created ${JSON.stringify(orderResult.data.checkoutComplete.order)}`
       );
-      return res
-        .status(200)
-        .json({
-          message: "Order successfully created",
-          order: orderResult.data.checkoutComplete.order,
-        });
+      return res.status(200).json({
+        message: "Order successfully created",
+        order: orderResult.data.checkoutComplete.order,
+      });
     } catch (error) {
       console.error(`Failed to complete checkout.Err: ${JSON.stringify(error)}`);
       logger.error(`Failed to complete checkout.Err: ${JSON.stringify(error)}`);

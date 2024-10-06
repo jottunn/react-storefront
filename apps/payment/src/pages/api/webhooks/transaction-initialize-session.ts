@@ -50,9 +50,9 @@ export default transactionInitializeSessionWebhook.createHandler(async (req, res
     const checkout = data.checkout;
 
     const paymentDataWithoutAuth = {
-      orderNumber: checkoutId,
+      orderNumber: "0001", //TODO
       amount: checkout.totalPrice.gross.amount,
-      currency: checkout.totalPrice.gross.currency === "RON" ? "946" : "946", // 946 for RON, 978 for EUR
+      currency: checkout.totalPrice.gross.currency === "RON" ? "946" : "978", // 946 for RON, 978 for EUR
       language: "ro",
       email: checkout.email,
       orderBundle: JSON.stringify({
@@ -108,13 +108,13 @@ export default transactionInitializeSessionWebhook.createHandler(async (req, res
       });
 
       console.log("ING response", response);
-      console.log("API Response: errorCode", response.data.ErrorCode);
+      console.log("API Response: errorCode", response.data.errorCode);
       //check if any errors are returned, errorCode > 0
-      if (response.data?.ErrorCode > 0 || response.status !== 200) {
+      if (response.data?.errorCode > 0 || response.status !== 200) {
         logger.error(
           `Failed to initiate payment with ING WebPay: paymentData: ${JSON.stringify(
             paymentDataWithoutAuth
-          )} ///// Error code ${response.data?.ErrorCode} : ${response.data?.errorMessage}`
+          )} ///// Error code ${response.data?.errorCode} : ${response.data?.errorMessage}`
         );
         // return res.status(400).json({
         //   error: response.data?.errorMessage || "Failed to delivery request. Please contact us!",
@@ -123,7 +123,7 @@ export default transactionInitializeSessionWebhook.createHandler(async (req, res
           result: "AUTHORIZATION_FAILURE",
           pspReference: response.data.orderId,
           amount: payload.action.amount,
-          message: response.data?.ErrorMessage || "Failed to delivery request. Please contact us!",
+          message: response.data?.errorMessage || "Failed to delivery request. Please contact us!",
           data: {
             exception: true,
           },
