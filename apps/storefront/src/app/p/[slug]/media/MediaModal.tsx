@@ -90,9 +90,7 @@ const MediaModal = ({ galleryMedia, closeModal, currentIndex, placeholder }: Ima
                     {
                       <iframe
                         title={media.alt || "Video"}
-                        src={`https://www.youtube.com/embed/${
-                          getYouTubeIDFromURL(media.url) as string
-                        }?autoplay=1`}
+                        src={`https://www.youtube.com/embed/${getYouTubeIDFromURL(media.url) as string}?autoplay=1`}
                         className="w-full h-[800px] md:w-4/5 m-auto"
                         onLoad={handleIframeLoad}
                         allow="autoplay"

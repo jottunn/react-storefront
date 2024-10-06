@@ -45,21 +45,23 @@ export function ProductCard({
   const productDisplayName = `${productName}${colorName ? ` - ${colorName}` : ""}`;
   // Find the first and second image, falling back to the thumbnail if only one exists
   let thumbnailUrl = product.thumbnail?.url || "";
-  let hoverImageUrl = product.media?.[1]?.url || thumbnailUrl; // Use the second image or fallback to the first
+  //console.log('productmedia', product.media, product.thumbnail);
+  let hoverImageUrl =
+    product.media?.[1]?.url && product.media?.[1]?.type === "IMAGE"
+      ? product.media?.[1]?.url
+      : thumbnailUrl; // Use the second image or fallback to the first
   // If variant has images, use those instead
   if (variant && variant.media && variant.media.length > 0) {
     //sort media by sortOrder
-    const sortedMedia = variant.media.sort((a, b) => {
-      if (a.type === "IMAGE" && b.type === "IMAGE") {
+    const sortedMedia = variant.media
+      .filter((item) => item.type !== "VIDEO")
+      .sort((a, b) => {
         if (typeof a.sortOrder === "number" && typeof b.sortOrder === "number") {
           return a.sortOrder - b.sortOrder;
-        } else {
-          return 30;
         }
-      } else {
         return 30;
-      }
-    });
+      });
+
     if (sortedMedia && sortedMedia.length > 0) {
       thumbnailUrl = sortedMedia[0].url;
       hoverImageUrl = sortedMedia.length > 1 ? sortedMedia[1].url : thumbnailUrl; // Fallback to the first if only one exists

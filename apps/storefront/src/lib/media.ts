@@ -41,17 +41,14 @@ export const getGalleryMedia = ({
   // Ensure the media is not null or undefined before filtering
   const filteredMedia = sourceMedia?.filter(notNullable) || [];
   //make sure the media is correctly sorted
-  filteredMedia.sort((a, b) => {
-    if (a.type === "IMAGE" && b.type === "IMAGE") {
+  filteredMedia
+    .filter((item) => item.type !== "VIDEO")
+    .sort((a, b) => {
       if (typeof a.sortOrder === "number" && typeof b.sortOrder === "number") {
         return a.sortOrder - b.sortOrder;
-      } else {
-        return 30;
       }
-    } else {
       return 30;
-    }
-  });
+    });
 
   // Enhance media items with thumbnail URLs for videos
   const enhancedMediaItems = filteredMedia.map((mediaItem): EnhancedProductMedia => {

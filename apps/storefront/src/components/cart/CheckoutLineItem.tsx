@@ -118,7 +118,7 @@ export default function CheckoutLineItem({ line, messages }: CheckoutLineItemPro
   return (
     <li className="flex flex-col py-4 border-b border-neutral-200 dark:border-neutral-700">
       <div
-        className="items-center mb-2 md:space-x-4 cursor-pointer grid grid-cols-[80px_auto_1fr]"
+        className="items-center mb-2 md:space-x-4 cursor-pointer grid grid-cols-[80px_auto_100px]"
         data-testid={`cartProductItem${line.variant.product.name}`}
       >
         <Link href={getProductLink()} passHref legacyBehavior>
