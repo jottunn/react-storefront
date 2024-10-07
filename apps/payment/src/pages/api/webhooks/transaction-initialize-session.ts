@@ -42,6 +42,7 @@ export const transactionInitializeSessionWebhook =
 export default transactionInitializeSessionWebhook.createHandler(async (req, res, ctx) => {
   const { payload, event, baseUrl, authData } = ctx;
   const checkoutId = payload.data.checkoutId;
+  console.log("payload", payload);
 
   const client = createClient(authData.saleorApiUrl, async () => ({ token: authData.token }));
   const { data } = await client.query(CheckoutFindDocument, { id: checkoutId }).toPromise();
