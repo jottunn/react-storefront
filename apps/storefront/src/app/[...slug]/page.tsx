@@ -7,7 +7,6 @@ import PageSaleor from "./PageSaleor";
 import { DEFAULT_LOCALE, defaultRegionQuery } from "@/lib/regions";
 import PageStrapi from "./PageStrapi";
 import { notFound } from "next/navigation";
-import { headers } from "next/headers";
 
 type Props = {
   params: {
@@ -22,20 +21,12 @@ const isValidSlug = (slug: string): boolean => {
     /^\./, // Prevents slugs starting with a dot
     /\.(env|example|json|js|ts|tsx|md|html|css|scss|png|php|php5|jpg|jpeg|gif|git|svg|ico|map|world|txt|yaml|bak|prod|production)$/, // Block specific file types
     /cgi-bin|luci|admin|cdn-cgi|phpsysinfo|php-cgi/, // Block specific directory paths
-    /^api\//, // Block paths starting with 'api/'
-    /^transaction-initialize-session$/, // Block the specific webhook path
   ];
   return !invalidPatterns.some((pattern) => pattern.test(slug));
 };
 
 // Helper function to fetch page data from Saleor or Strapi
 async function fetchPageData(slug: string, lang: string) {
-  // Check if the request is coming from the Saleor webhook
-  const headersList = headers();
-  const userAgent = headersList.get("user-agent");
-  if (userAgent && userAgent.toLowerCase().includes("saleor")) {
-    return null; // Return null for Saleor webhook requests
-  }
   try {
     const saleorPage = await executeGraphQL<
       PageQuery,
