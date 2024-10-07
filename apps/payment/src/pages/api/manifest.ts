@@ -34,8 +34,8 @@ export default createManifestHandler({
        * https://github.com/saleor/saleor-app-sdk/blob/main/docs/saleor-webhook.md
        */
       webhooks: [
-        transactionInitializeSessionWebhook.getWebhookManifest(appBaseUrl),
-        transactionProcessSessionWebhook.getWebhookManifest(appBaseUrl),
+        transactionInitializeSessionWebhook.getWebhookManifest(apiBaseURL),
+        transactionProcessSessionWebhook.getWebhookManifest(apiBaseURL),
       ],
       /**
        * Optionally, extend Dashboard with custom UIs
