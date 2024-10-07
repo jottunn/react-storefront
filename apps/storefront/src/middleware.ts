@@ -9,6 +9,12 @@ const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute in milliseconds
 
 export async function middleware(req: NextRequest) {
   const url = req.nextUrl;
+
+  // Handle locale redirects
+  if (url.pathname.startsWith("/api") || url.pathname.startsWith("/_next")) {
+    return NextResponse.next();
+  }
+
   const ip = req.ip || req.headers.get("x-forwarded-for")?.split(",")[0].trim() || "127.0.0.1";
 
   // Get the user-agent from the request headers
@@ -91,7 +97,7 @@ export async function middleware(req: NextRequest) {
   // Slug validation for common invalid requests
   const invalidPatterns = [
     /^\./, // No dot-prefixed files
-    /\.(env|example|json|js|ts|tsx|md|html|css|scss|png|php|php5|jpg|jpeg|gif|git|svg|ico|map|world|txt|yaml|bak|prod|production|log|backup|xml)$/, // Block specific file types
+    /\.(env|example|json|js|jsp|ts|tsx|md|html|css|scss|png|php|php5|jpg|jpeg|gif|git|svg|ico|map|world|txt|yaml|bak|prod|production|log|backup|xml)$/, // Block specific file types
     /cgi-bin|luci|admin|cdn-cgi|phpsysinfo|php-cgi|actuator|health|git/, // Block common bot slugs
   ];
 
