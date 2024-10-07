@@ -102,9 +102,16 @@ export default transactionInitializeSessionWebhook.createHandler(async (req, res
     try {
       // Make the API call to ING WebPay
       const apiUrl = apiInitUrl || "";
-      const response = await axios.post(apiUrl, paymentData, {
+      const urlEncodedData = new URLSearchParams(
+        Object.entries(paymentData).reduce((acc, [key, value]) => {
+          acc[key] = String(value);
+          return acc;
+        }, {} as Record<string, string>)
+      ).toString();
+
+      const response = await axios.post(apiUrl, urlEncodedData, {
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
         },
       });
 

@@ -35,20 +35,18 @@ async function getINGWebPayPaymentStatus(orderId: string): Promise<{
     };
   }
   try {
-    const response = await axios.post<INGWebPayStatusResponse>(
-      apiUrl,
-      {
-        userName: username,
-        password: password,
-        orderId: orderId,
-        language: "ro",
+    const sendData = {
+      userName: username || "",
+      password: password || "",
+      orderId: orderId,
+      language: "ro",
+    };
+    const urlEncodedData = new URLSearchParams(sendData).toString();
+    const response = await axios.post<INGWebPayStatusResponse>(apiUrl, urlEncodedData, {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
       },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    });
 
     // Log the response from ING WebPay
     console.log("ING WebPay Payment Status Response:", response.data);
