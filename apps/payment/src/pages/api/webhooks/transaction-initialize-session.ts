@@ -58,7 +58,7 @@ export default transactionInitializeSessionWebhook.createHandler(async (req, res
       email: checkout.email,
       description: "Test plata shop",
       // description: `Plata shop surmont.ro - ${checkout.billingAddress?.firstName} ${checkout.billingAddress?.lastName}`,
-      orderBundle: {},
+      orderBundle: JSON.stringify({}),
       // JSON.stringify({
       //   orderCreationDate: checkout.created,
       //   customerDetails: {
