@@ -57,34 +57,13 @@ export default transactionInitializeSessionWebhook.createHandler(async (req, res
       language: "ro",
       email: checkout.email,
       description: "Test plata shop",
-      // description: `Plata shop surmont.ro - ${checkout.billingAddress?.firstName} ${checkout.billingAddress?.lastName}`,
-      orderBundle: JSON.stringify({}),
-      // JSON.stringify({
-      //   orderCreationDate: checkout.created,
-      //   customerDetails: {
-      //     email: checkout.email,
-      //     phone: checkout.billingAddress?.phone || "NA",
-      //     contact: `${checkout.billingAddress?.firstName} ${checkout.billingAddress?.lastName}`,
-      //   },
-      //   billingInfo: {
-      //     country: checkout.billingAddress?.country.code,
-      //     city: checkout.billingAddress?.city,
-      //     postAddress: checkout.billingAddress?.streetAddress1,
-      //     postAddress2: checkout.billingAddress?.streetAddress2 || "NA",
-      //     postAddress3: "NA",
-      //     postalCode: checkout.billingAddress?.postalCode || "010011",
-      //     state: checkout.billingAddress?.countryArea || "B",
-      //   },
-      //   deliveryInfo: {
-      //     country: checkout.shippingAddress?.country.code,
-      //     city: checkout.shippingAddress?.city,
-      //     postAddress: checkout.shippingAddress?.streetAddress1,
-      //     postAddress2: checkout.shippingAddress?.streetAddress2 || "NA",
-      //     postAddress3: "NA",
-      //     postalCode: checkout.shippingAddress?.postalCode || "010011",
-      //     state: checkout.shippingAddress?.countryArea || "B",
-      //   },
-      // }),
+      // description: "Plata shop surmont.ro"
+      orderBundle: JSON.stringify({
+        email: checkout.email,
+        contact: `${checkout.billingAddress?.firstName || ""} ${
+          checkout.billingAddress?.lastName || ""
+        }`,
+      }),
       returnUrl: `${process.env.RETURN_URL}?checkoutId=${checkoutId}`,
       jsonParams: JSON.stringify({ FORCE_3DS2: "true" }),
     };

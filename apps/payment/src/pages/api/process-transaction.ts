@@ -156,6 +156,14 @@ export default async (
           errorString: "app.payment.errorTransactionProcessing",
         });
       }
+
+      console.log("result processTransaction", result);
+      if (result.data.errorCode && result.data.errorCode !== "0") {
+        return res.status(200).json({
+          error: "Failed to process transaction.",
+          errorString: "app.payment.errorTransactionProcessing",
+        });
+      }
       const transactionMetadata = transaction?.metadata?.find(
         (metadata: { key: string }) => metadata.key === "notes"
       );
