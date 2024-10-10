@@ -4,7 +4,7 @@ import { TransactionEventTypeEnum } from "../../generated/graphql";
 interface INGWebPayStatusResponse {
   errorCode: string;
   errorMessage: string;
-  orderStatus: string;
+  orderStatus: number;
   orderNumber: string;
   actionCode: string;
   actionCodeDescription: string;
@@ -78,7 +78,7 @@ async function getINGWebPayPaymentStatus(orderId: string): Promise<{
     }
 
     switch (response.data.orderStatus) {
-      case "0":
+      case 0:
         // Pre-authorization state; further action required (e.g., capture)
         return {
           errorCode: response.data.errorCode || "",
@@ -89,7 +89,7 @@ async function getINGWebPayPaymentStatus(orderId: string): Promise<{
           result: "AUTHORIZATION_ACTION_REQUIRED",
           message: "Comanda inregistrata, dar neplatita",
         };
-      case "1":
+      case 1:
         // Pre-authorization state; further action required (e.g., capture)
         return {
           errorCode: response.data.errorCode || "",
@@ -101,7 +101,7 @@ async function getINGWebPayPaymentStatus(orderId: string): Promise<{
           message: "Plata preautorizata",
         };
 
-      case "2":
+      case 2:
         // Payment fully captured and successful
         return {
           errorCode: response.data.errorCode || "",
@@ -113,7 +113,7 @@ async function getINGWebPayPaymentStatus(orderId: string): Promise<{
           message: "Tranzactie autorizata",
         };
 
-      case "3":
+      case 3:
         // Payment was declined
         return {
           errorCode: response.data.errorCode || "",
@@ -125,7 +125,7 @@ async function getINGWebPayPaymentStatus(orderId: string): Promise<{
           message: "Tranzactie anulata",
         };
 
-      case "4":
+      case 4:
         // Payment was reversed (refund or cancel)
         return {
           errorCode: response.data.errorCode || "",
@@ -137,7 +137,7 @@ async function getINGWebPayPaymentStatus(orderId: string): Promise<{
           message: "Tranzactie reversata",
         };
 
-      case "6":
+      case 6:
         // Payment was reversed (refund or cancel)
         return {
           errorCode: response.data.errorCode || "",
