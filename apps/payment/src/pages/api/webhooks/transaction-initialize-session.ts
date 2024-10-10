@@ -59,10 +59,12 @@ export default transactionInitializeSessionWebhook.createHandler(async (req, res
       description: "Test plata shop",
       // description: "Plata shop surmont.ro"
       orderBundle: JSON.stringify({
-        email: checkout.email,
-        contact: `${checkout.billingAddress?.firstName || ""} ${
-          checkout.billingAddress?.lastName || ""
-        }`,
+        customerDetails: {
+          email: checkout.email,
+          contact: `${checkout.billingAddress?.firstName || ""} ${
+            checkout.billingAddress?.lastName || ""
+          }`,
+        },
       }),
       returnUrl: `${process.env.RETURN_URL}?checkoutId=${checkoutId}`,
       jsonParams: JSON.stringify({ FORCE_3DS2: "true" }),
