@@ -1,8 +1,7 @@
 import axios from "axios";
-import { TransactionEventTypeEnum } from "../../generated/graphql";
 
 interface INGWebPayStatusResponse {
-  errorCode: string;
+  errorCode: number;
   errorMessage: string;
   orderStatus: number;
   orderNumber: string;
@@ -11,7 +10,7 @@ interface INGWebPayStatusResponse {
 }
 
 async function getINGWebPayPaymentStatus(orderId: string): Promise<{
-  errorCode: string;
+  errorCode: number;
   errorMessage: string;
   orderNumber?: string;
   actionCode?: string;
@@ -34,7 +33,7 @@ async function getINGWebPayPaymentStatus(orderId: string): Promise<{
 
   if (!apiUrl) {
     return {
-      errorCode: "1",
+      errorCode: 1,
       errorMessage: "No ING API URL",
       result: "AUTHORIZATION_FAILURE",
       message: "No ING API URL",
@@ -42,7 +41,7 @@ async function getINGWebPayPaymentStatus(orderId: string): Promise<{
   }
   if (!username || !password) {
     return {
-      errorCode: "1",
+      errorCode: 1,
       errorMessage: "No ING API credentials",
       result: "AUTHORIZATION_FAILURE",
       message: "No ING API credentials",
@@ -70,7 +69,7 @@ async function getINGWebPayPaymentStatus(orderId: string): Promise<{
     if (!response.data || response.status !== 200) {
       console.error("Error retrieving payment status:", response);
       return {
-        errorCode: "1",
+        errorCode: 1,
         errorMessage: "Error calling ING WebPay API",
         result: "AUTHORIZATION_FAILURE",
         message: "Error calling ING WebPay API to get Payment Status Response",
@@ -81,7 +80,7 @@ async function getINGWebPayPaymentStatus(orderId: string): Promise<{
       case 0:
         // Pre-authorization state; further action required (e.g., capture)
         return {
-          errorCode: response.data.errorCode || "",
+          errorCode: response.data.errorCode || 0,
           errorMessage: response.data.errorMessage || "",
           orderNumber: response.data.orderNumber || "",
           actionCode: response.data.actionCode || "",
@@ -92,7 +91,7 @@ async function getINGWebPayPaymentStatus(orderId: string): Promise<{
       case 1:
         // Pre-authorization state; further action required (e.g., capture)
         return {
-          errorCode: response.data.errorCode || "",
+          errorCode: response.data.errorCode || 0,
           errorMessage: response.data.errorMessage || "",
           orderNumber: response.data.orderNumber || "",
           actionCode: response.data.actionCode || "",
@@ -104,7 +103,7 @@ async function getINGWebPayPaymentStatus(orderId: string): Promise<{
       case 2:
         // Payment fully captured and successful
         return {
-          errorCode: response.data.errorCode || "",
+          errorCode: response.data.errorCode || 0,
           errorMessage: response.data.errorMessage || "",
           orderNumber: response.data.orderNumber || "",
           actionCode: response.data.actionCode || "",
@@ -116,7 +115,7 @@ async function getINGWebPayPaymentStatus(orderId: string): Promise<{
       case 3:
         // Payment was declined
         return {
-          errorCode: response.data.errorCode || "",
+          errorCode: response.data.errorCode || 0,
           errorMessage: response.data.errorMessage || "",
           orderNumber: response.data.orderNumber || "",
           actionCode: response.data.actionCode || "",
@@ -128,7 +127,7 @@ async function getINGWebPayPaymentStatus(orderId: string): Promise<{
       case 4:
         // Payment was reversed (refund or cancel)
         return {
-          errorCode: response.data.errorCode || "",
+          errorCode: response.data.errorCode || 0,
           errorMessage: response.data.errorMessage || "",
           orderNumber: response.data.orderNumber || "",
           actionCode: response.data.actionCode || "",
@@ -140,7 +139,7 @@ async function getINGWebPayPaymentStatus(orderId: string): Promise<{
       case 6:
         // Payment was reversed (refund or cancel)
         return {
-          errorCode: response.data.errorCode || "",
+          errorCode: response.data.errorCode || 0,
           errorMessage: response.data.errorMessage || "",
           orderNumber: response.data.orderNumber || "",
           actionCode: response.data.actionCode || "",
@@ -151,7 +150,7 @@ async function getINGWebPayPaymentStatus(orderId: string): Promise<{
       default:
         // Unhandled status
         return {
-          errorCode: response.data.errorCode || "1",
+          errorCode: response.data.errorCode || 1,
           errorMessage: response.data.errorMessage || "Unknown payment status",
           orderNumber: response.data.orderNumber || "",
           actionCode: response.data.actionCode || "",
@@ -163,7 +162,7 @@ async function getINGWebPayPaymentStatus(orderId: string): Promise<{
   } catch (error) {
     console.error("Error calling ING WebPay API:", error);
     return {
-      errorCode: "1",
+      errorCode: 1,
       errorMessage: "Error calling ING WebPay API",
       result: "AUTHORIZATION_FAILURE",
       orderNumber: "",

@@ -63,9 +63,11 @@ export default transactionProcessSessionWebhook.createHandler(async (req, res, c
       result: statusResponse.result,
       amount: payload.action.amount,
       pspReference: pspReference || "",
-      errorCode: statusResponse.errorCode,
-      errorMessage: statusResponse.errorMessage,
-      message: statusResponse.message,
+      data: {
+        errorCode: statusResponse.errorCode,
+        errorMessage: statusResponse.errorMessage,
+        message: statusResponse.message,
+      },
     });
   } catch (error) {
     logger.error(`Error processing transaction: ${error}`);

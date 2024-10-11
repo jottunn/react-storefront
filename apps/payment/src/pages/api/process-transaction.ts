@@ -158,7 +158,7 @@ export default async (
       }
 
       console.log("result processTransaction", result);
-      if (result.data.errorCode && result.data.errorCode !== "0") {
+      if (result.data.errorCode && Number(result.data.errorCode) !== 0) {
         return res.status(200).json({
           error: "Failed to process transaction.",
           errorString: "app.payment.errorTransactionProcessing",

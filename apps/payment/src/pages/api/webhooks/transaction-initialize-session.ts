@@ -102,7 +102,10 @@ export default transactionInitializeSessionWebhook.createHandler(async (req, res
       console.log("ING response", response);
       console.log("API Response: errorCode", response.data.errorCode);
       //check if any errors are returned, errorCode > 0
-      if ((response.data?.errorCode && response.data?.errorCode > 0) || response.status !== 200) {
+      if (
+        (response.data?.errorCode && Number(response.data?.errorCode) > 0) ||
+        response.status !== 200
+      ) {
         logger.error(
           `Failed to initiate payment with ING WebPay: paymentData: ${JSON.stringify(
             paymentDataWithoutAuth
