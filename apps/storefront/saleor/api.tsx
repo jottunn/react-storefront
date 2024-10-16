@@ -285,7 +285,6 @@ export type AccountError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type AccountErrorCode =
   | "ACCOUNT_NOT_CONFIRMED"
   | "ACTIVATE_OWN_ACCOUNT"
@@ -687,7 +686,6 @@ export type AddressSetDefault = {
   user?: Maybe<User>;
 };
 
-/** An enumeration. */
 export type AddressTypeEnum = "BILLING" | "SHIPPING";
 
 /**
@@ -1141,7 +1139,6 @@ export type AppError = {
   permissions?: Maybe<Array<PermissionEnum>>;
 };
 
-/** An enumeration. */
 export type AppErrorCode =
   | "FORBIDDEN"
   | "GRAPHQL_ERROR"
@@ -1573,7 +1570,6 @@ export type AppUpdated = Event & {
   version?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type AreaUnitsEnum =
   | "SQ_CM"
   | "SQ_DM"
@@ -1780,7 +1776,6 @@ export type AttributeBulkCreateError = {
   path?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type AttributeBulkCreateErrorCode =
   | "ALREADY_EXISTS"
   | "BLANK"
@@ -1895,7 +1890,6 @@ export type AttributeBulkUpdateError = {
   path?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type AttributeBulkUpdateErrorCode =
   | "ALREADY_EXISTS"
   | "BLANK"
@@ -2076,7 +2070,6 @@ export type AttributeDeleted = Event & {
   version?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type AttributeEntityTypeEnum = "PAGE" | "PRODUCT" | "PRODUCT_VARIANT";
 
 export type AttributeEntityTypeEnumFilterInput = {
@@ -2096,7 +2089,6 @@ export type AttributeError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type AttributeErrorCode =
   | "ALREADY_EXISTS"
   | "GRAPHQL_ERROR"
@@ -2142,7 +2134,6 @@ export type AttributeInput = {
   valuesRange?: InputMaybe<IntRangeInput>;
 };
 
-/** An enumeration. */
 export type AttributeInputTypeEnum =
   | "BOOLEAN"
   | "DATE"
@@ -2248,7 +2239,6 @@ export type AttributeTranslate = {
   translationErrors: Array<TranslationError>;
 };
 
-/** An enumeration. */
 export type AttributeTranslateErrorCode = "GRAPHQL_ERROR" | "INVALID" | "NOT_FOUND" | "REQUIRED";
 
 /** Represents attribute translations. */
@@ -2268,7 +2258,6 @@ export type AttributeTranslation = Node & {
   translatableContent?: Maybe<AttributeTranslatableContent>;
 };
 
-/** An enumeration. */
 export type AttributeTypeEnum = "PAGE_TYPE" | "PRODUCT_TYPE";
 
 export type AttributeTypeEnumFilterInput = {
@@ -2733,7 +2722,6 @@ export type AttributeValueTranslate = {
   translationErrors: Array<TranslationError>;
 };
 
-/** An enumeration. */
 export type AttributeValueTranslateErrorCode =
   | "GRAPHQL_ERROR"
   | "INVALID"
@@ -3839,7 +3827,6 @@ export type ChannelError = {
   warehouses?: Maybe<Array<Scalars["ID"]["output"]>>;
 };
 
-/** An enumeration. */
 export type ChannelErrorCode =
   | "ALREADY_EXISTS"
   | "CHANNELS_CURRENCY_MUST_BE_THE_SAME"
@@ -4451,7 +4438,6 @@ export type CheckoutCreateFromOrderError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type CheckoutCreateFromOrderErrorCode =
   | "CHANNEL_INACTIVE"
   | "GRAPHQL_ERROR"
@@ -4471,7 +4457,6 @@ export type CheckoutCreateFromOrderUnavailableVariant = {
   variantId: Scalars["ID"]["output"];
 };
 
-/** An enumeration. */
 export type CheckoutCreateFromOrderUnavailableVariantErrorCode =
   | "INSUFFICIENT_STOCK"
   | "NOT_FOUND"
@@ -4601,7 +4586,6 @@ export type CheckoutError = {
   variants?: Maybe<Array<Scalars["ID"]["output"]>>;
 };
 
-/** An enumeration. */
 export type CheckoutErrorCode =
   | "BILLING_ADDRESS_NOT_SET"
   | "CHANNEL_INACTIVE"
@@ -4672,7 +4656,7 @@ export type CheckoutFilterShippingMethods = Event & {
 };
 
 /**
- * Event sent when checkout is fully paid with transactions.
+ * Event sent when checkout is fully paid with transactions. The checkout is considered as fully paid when the checkout `charge_status` is `FULL` or `OVERCHARGED`. The event is not sent when the checkout authorization flow strategy is used.
  *
  * Added in Saleor 3.13.
  *
@@ -5046,6 +5030,12 @@ export type CheckoutRemovePromoCode = {
 export type CheckoutSettings = {
   __typename?: "CheckoutSettings";
   /**
+   * Default `false`. Determines if the paid checkouts should be automatically completed. This setting applies only to checkouts where payment was processed through transactions.When enabled, the checkout will be automatically completed once the checkout `charge_status` reaches `FULL`. This occurs when the total sum of charged and authorized transaction amounts equals or exceeds the checkout's total amount.
+   *
+   * Added in Saleor 3.20.
+   */
+  automaticallyCompleteFullyPaidCheckouts: Scalars["Boolean"]["output"];
+  /**
    * Default `true`. Determines if the checkout mutations should use legacy error flow. In legacy flow, all mutations can raise an exception unrelated to the requested action - (e.g. out-of-stock exception when updating checkoutShippingAddress.) If `false`, the errors will be aggregated in `checkout.problems` field. Some of the `problems` can block the finalizing checkout process. The legacy flow will be removed in Saleor 4.0. The flow with `checkout.problems` will be the default one.
    *
    * Added in Saleor 3.15.This field will be removed in Saleor 4.0.
@@ -5054,6 +5044,12 @@ export type CheckoutSettings = {
 };
 
 export type CheckoutSettingsInput = {
+  /**
+   * Default `false`. Determines if the paid checkouts should be automatically completed. This setting applies only to checkouts where payment was processed through transactions.When enabled, the checkout will be automatically completed once the checkout `charge_status` reaches `FULL`. This occurs when the total sum of charged and authorized transaction amounts equals or exceeds the checkout's total amount.
+   *
+   * Added in Saleor 3.20.
+   */
+  automaticallyCompleteFullyPaidCheckouts?: InputMaybe<Scalars["Boolean"]["input"]>;
   /**
    * Default `true`. Determines if the checkout mutations should use legacy error flow. In legacy flow, all mutations can raise an exception unrelated to the requested action - (e.g. out-of-stock exception when updating checkoutShippingAddress.) If `false`, the errors will be aggregated in `checkout.problems` field. Some of the `problems` can block the finalizing checkout process. The legacy flow will be removed in Saleor 4.0. The flow with `checkout.problems` will be the default one.
    *
@@ -5498,7 +5494,6 @@ export type CollectionError = {
   products?: Maybe<Array<Scalars["ID"]["output"]>>;
 };
 
-/** An enumeration. */
 export type CollectionErrorCode =
   | "CANNOT_MANAGE_PRODUCT_WITHOUT_VARIANT"
   | "DUPLICATED_INPUT_ITEM"
@@ -5819,7 +5814,6 @@ export type ConfigurationItemInput = {
   value?: InputMaybe<Scalars["String"]["input"]>;
 };
 
-/** An enumeration. */
 export type ConfigurationTypeFieldEnum =
   | "BOOLEAN"
   | "MULTILINE"
@@ -6239,7 +6233,6 @@ export type CustomerBulkUpdateError = {
   path?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type CustomerBulkUpdateErrorCode =
   | "BLANK"
   | "DUPLICATED_INPUT_ITEM"
@@ -6336,7 +6329,6 @@ export type CustomerEvent = Node & {
   user?: Maybe<User>;
 };
 
-/** An enumeration. */
 export type CustomerEventsEnum =
   | "ACCOUNT_ACTIVATED"
   | "ACCOUNT_CREATED"
@@ -6793,7 +6785,6 @@ export type DiscountError = {
   voucherCodes?: Maybe<Array<Scalars["String"]["output"]>>;
 };
 
-/** An enumeration. */
 export type DiscountErrorCode =
   | "ALREADY_EXISTS"
   | "CANNOT_MANAGE_PRODUCT_WITHOUT_VARIANT"
@@ -6820,7 +6811,6 @@ export type DiscountedObjectWhereInput = {
   baseTotalPrice?: InputMaybe<DecimalFilterInput>;
 };
 
-/** An enumeration. */
 export type DistanceUnitsEnum = "CM" | "DM" | "FT" | "INCH" | "KM" | "M" | "MM" | "YD";
 
 /** Represents API domain. */
@@ -7197,7 +7187,6 @@ export type ExportError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type ExportErrorCode = "GRAPHQL_ERROR" | "INVALID" | "NOT_FOUND" | "REQUIRED";
 
 /** History log of export file. */
@@ -7217,7 +7206,6 @@ export type ExportEvent = Node & {
   user?: Maybe<User>;
 };
 
-/** An enumeration. */
 export type ExportEventsEnum =
   | "EXPORTED_FILE_SENT"
   | "EXPORT_DELETED"
@@ -7430,7 +7418,6 @@ export type ExternalNotificationError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type ExternalNotificationErrorCodes =
   | "CHANNEL_INACTIVE"
   | "INVALID_MODEL_TYPE"
@@ -7510,7 +7497,6 @@ export type File = {
   url: Scalars["String"]["output"];
 };
 
-/** An enumeration. */
 export type FileTypesEnum = "CSV" | "XLSX";
 
 /**
@@ -7797,7 +7783,6 @@ export type FulfillmentReturnProducts = {
   returnFulfillment?: Maybe<Fulfillment>;
 };
 
-/** An enumeration. */
 export type FulfillmentStatus =
   | "CANCELED"
   | "FULFILLED"
@@ -8325,7 +8310,6 @@ export type GiftCardError = {
   tags?: Maybe<Array<Scalars["String"]["output"]>>;
 };
 
-/** An enumeration. */
 export type GiftCardErrorCode =
   | "ALREADY_EXISTS"
   | "DUPLICATED_INPUT_ITEM"
@@ -8390,7 +8374,6 @@ export type GiftCardEventFilterInput = {
   type?: InputMaybe<GiftCardEventsEnum>;
 };
 
-/** An enumeration. */
 export type GiftCardEventsEnum =
   | "ACTIVATED"
   | "BALANCE_RESET"
@@ -8527,10 +8510,8 @@ export type GiftCardSettingsError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type GiftCardSettingsErrorCode = "GRAPHQL_ERROR" | "INVALID" | "REQUIRED";
 
-/** An enumeration. */
 export type GiftCardSettingsExpiryTypeEnum = "EXPIRY_PERIOD" | "NEVER_EXPIRE";
 
 /**
@@ -8949,7 +8930,6 @@ export type InvoiceError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type InvoiceErrorCode =
   | "EMAIL_NOT_SET"
   | "INVALID_STATUS"
@@ -9087,10 +9067,8 @@ export type Job = {
   updatedAt: Scalars["DateTime"]["output"];
 };
 
-/** An enumeration. */
 export type JobStatusEnum = "DELETED" | "FAILED" | "PENDING" | "SUCCESS";
 
-/** An enumeration. */
 export type LanguageCodeEnum =
   | "AF"
   | "AF_NA"
@@ -10021,7 +9999,6 @@ export type Margin = {
  */
 export type MarkAsPaidStrategyEnum = "PAYMENT_FLOW" | "TRANSACTION_FLOW";
 
-/** An enumeration. */
 export type MeasurementUnitsEnum =
   | "ACRE_FT"
   | "ACRE_IN"
@@ -10292,7 +10269,6 @@ export type MenuError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type MenuErrorCode =
   | "CANNOT_ASSIGN_NODE"
   | "GRAPHQL_ERROR"
@@ -10765,7 +10741,6 @@ export type MetadataError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type MetadataErrorCode =
   | "GRAPHQL_ERROR"
   | "INVALID"
@@ -13114,6 +13089,11 @@ export type Mutation = {
    * Note: this API is currently in Feature Preview and can be subject to changes at later point.
    *
    * Requires the following permissions: OWNER and HANDLE_PAYMENTS for apps, HANDLE_PAYMENTS for staff users. Staff user cannot update a transaction that is owned by the app.
+   *
+   * Triggers the following webhook events:
+   * - TRANSACTION_ITEM_METADATA_UPDATED (async): Optionally called when transaction's metadata was updated.
+   * - CHECKOUT_FULLY_PAID (async): Optionally called when the checkout charge status changed to `FULL` or `OVERCHARGED`.
+   * - ORDER_UPDATED (async): Optionally called when the transaction is related to the order and the order was updated.
    */
   transactionEventReport?: Maybe<TransactionEventReport>;
   /**
@@ -14766,7 +14746,7 @@ export type MutationTransactionCreateArgs = {
 };
 
 export type MutationTransactionEventReportArgs = {
-  amount: Scalars["PositiveDecimal"]["input"];
+  amount?: InputMaybe<Scalars["PositiveDecimal"]["input"]>;
   availableActions?: InputMaybe<Array<TransactionActionEnum>>;
   externalUrl?: InputMaybe<Scalars["String"]["input"]>;
   id?: InputMaybe<Scalars["ID"]["input"]>;
@@ -14774,6 +14754,8 @@ export type MutationTransactionEventReportArgs = {
   pspReference: Scalars["String"]["input"];
   time?: InputMaybe<Scalars["DateTime"]["input"]>;
   token?: InputMaybe<Scalars["UUID"]["input"]>;
+  transactionMetadata?: InputMaybe<Array<MetadataInput>>;
+  transactionPrivateMetadata?: InputMaybe<Array<MetadataInput>>;
   type: TransactionEventTypeEnum;
 };
 
@@ -15458,7 +15440,6 @@ export type OrderBulkCreateError = {
   path?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type OrderBulkCreateErrorCode =
   | "BULK_LIMIT"
   | "FUTURE_DATE"
@@ -15824,7 +15805,6 @@ export type OrderCreateFromCheckoutError = {
   variants?: Maybe<Array<Scalars["ID"]["output"]>>;
 };
 
-/** An enumeration. */
 export type OrderCreateFromCheckoutErrorCode =
   | "BILLING_ADDRESS_NOT_SET"
   | "CHANNEL_INACTIVE"
@@ -15928,7 +15908,6 @@ export type OrderDiscountDelete = {
   orderErrors: Array<OrderError>;
 };
 
-/** An enumeration. */
 export type OrderDiscountType = "MANUAL" | "ORDER_PROMOTION" | "PROMOTION" | "SALE" | "VOUCHER";
 
 /**
@@ -15971,7 +15950,6 @@ export type OrderError = {
   warehouse?: Maybe<Scalars["ID"]["output"]>;
 };
 
-/** An enumeration. */
 export type OrderErrorCode =
   | "BILLING_ADDRESS_NOT_SET"
   | "CANNOT_CANCEL_FULFILLMENT"
@@ -16118,7 +16096,6 @@ export type OrderEventOrderLineObject = {
   quantity?: Maybe<Scalars["Int"]["output"]>;
 };
 
-/** An enumeration. */
 export type OrderEventsEmailsEnum =
   | "CONFIRMED"
   | "DIGITAL_LINKS"
@@ -16172,6 +16149,7 @@ export type OrderEventsEnum =
   | "PAYMENT_REFUNDED"
   | "PAYMENT_VOIDED"
   | "PLACED"
+  | "PLACED_AUTOMATICALLY_FROM_PAID_CHECKOUT"
   | "PLACED_FROM_DRAFT"
   | "REMOVED_PRODUCTS"
   | "TRACKING_UPDATED"
@@ -16395,7 +16373,6 @@ export type OrderGrantRefundCreateError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type OrderGrantRefundCreateErrorCode =
   | "AMOUNT_GREATER_THAN_AVAILABLE"
   | "GRAPHQL_ERROR"
@@ -16447,7 +16424,6 @@ export type OrderGrantRefundCreateLineError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type OrderGrantRefundCreateLineErrorCode =
   | "GRAPHQL_ERROR"
   | "NOT_FOUND"
@@ -16506,7 +16482,6 @@ export type OrderGrantRefundUpdateError = {
   removeLines?: Maybe<Array<OrderGrantRefundUpdateLineError>>;
 };
 
-/** An enumeration. */
 export type OrderGrantRefundUpdateErrorCode =
   | "AMOUNT_GREATER_THAN_AVAILABLE"
   | "GRAPHQL_ERROR"
@@ -16575,7 +16550,6 @@ export type OrderGrantRefundUpdateLineError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type OrderGrantRefundUpdateLineErrorCode =
   | "GRAPHQL_ERROR"
   | "NOT_FOUND"
@@ -17012,7 +16986,6 @@ export type OrderNoteAddError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type OrderNoteAddErrorCode = "GRAPHQL_ERROR" | "REQUIRED";
 
 export type OrderNoteInput = {
@@ -17048,12 +17021,10 @@ export type OrderNoteUpdateError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type OrderNoteUpdateErrorCode = "GRAPHQL_ERROR" | "NOT_FOUND" | "REQUIRED";
 
 export type OrderOrCheckout = Checkout | Order;
 
-/** An enumeration. */
 export type OrderOriginEnum = "BULK_CREATE" | "CHECKOUT" | "DRAFT" | "REISSUE";
 
 /**
@@ -17238,7 +17209,6 @@ export type OrderSettingsError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type OrderSettingsErrorCode = "INVALID";
 
 export type OrderSettingsInput = {
@@ -17346,7 +17316,6 @@ export type OrderSortingInput = {
   field: OrderSortField;
 };
 
-/** An enumeration. */
 export type OrderStatus =
   | "CANCELED"
   | "DRAFT"
@@ -17735,7 +17704,6 @@ export type PageError = {
   values?: Maybe<Array<Scalars["ID"]["output"]>>;
 };
 
-/** An enumeration. */
 export type PageErrorCode =
   | "ATTRIBUTE_ALREADY_ASSIGNED"
   | "DUPLICATED_INPUT_ITEM"
@@ -18446,7 +18414,6 @@ export type PaymentCaptureEvent = Event & {
   version?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type PaymentChargeStatusEnum =
   | "CANCELLED"
   | "FULLY_CHARGED"
@@ -18526,7 +18493,6 @@ export type PaymentError = {
   variants?: Maybe<Array<Scalars["ID"]["output"]>>;
 };
 
-/** An enumeration. */
 export type PaymentErrorCode =
   | "BALANCE_CHECK_ERROR"
   | "BILLING_ADDRESS_NOT_SET"
@@ -18589,7 +18555,6 @@ export type PaymentGatewayConfigError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type PaymentGatewayConfigErrorCode = "GRAPHQL_ERROR" | "INVALID" | "NOT_FOUND";
 
 /**
@@ -18616,7 +18581,6 @@ export type PaymentGatewayInitializeError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type PaymentGatewayInitializeErrorCode = "GRAPHQL_ERROR" | "INVALID" | "NOT_FOUND";
 
 /**
@@ -18675,7 +18639,6 @@ export type PaymentGatewayInitializeTokenizationError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type PaymentGatewayInitializeTokenizationErrorCode =
   | "CHANNEL_INACTIVE"
   | "GATEWAY_ERROR"
@@ -18825,7 +18788,6 @@ export type PaymentMethodInitializeTokenizationError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type PaymentMethodInitializeTokenizationErrorCode =
   | "CHANNEL_INACTIVE"
   | "GATEWAY_ERROR"
@@ -18893,7 +18855,6 @@ export type PaymentMethodProcessTokenizationError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type PaymentMethodProcessTokenizationErrorCode =
   | "CHANNEL_INACTIVE"
   | "GATEWAY_ERROR"
@@ -19093,7 +19054,6 @@ export type Permission = {
   name: Scalars["String"]["output"];
 };
 
-/** An enumeration. */
 export type PermissionEnum =
   | "HANDLE_CHECKOUTS"
   | "HANDLE_PAYMENTS"
@@ -19231,7 +19191,6 @@ export type PermissionGroupError = {
   users?: Maybe<Array<Scalars["ID"]["output"]>>;
 };
 
-/** An enumeration. */
 export type PermissionGroupErrorCode =
   | "ASSIGN_NON_STAFF_MEMBER"
   | "CANNOT_REMOVE_FROM_LAST_GROUP"
@@ -19387,7 +19346,6 @@ export type PluginError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type PluginErrorCode =
   | "GRAPHQL_ERROR"
   | "INVALID"
@@ -19436,7 +19394,6 @@ export type PluginUpdateInput = {
   configuration?: InputMaybe<Array<ConfigurationItemInput>>;
 };
 
-/** An enumeration. */
 export type PostalCodeRuleInclusionTypeEnum = "EXCLUDE" | "INCLUDE";
 
 /** Represents preorder settings for product variant. */
@@ -19812,7 +19769,6 @@ export type ProductBulkCreateError = {
   warehouses?: Maybe<Array<Scalars["ID"]["output"]>>;
 };
 
-/** An enumeration. */
 export type ProductBulkCreateErrorCode =
   | "ATTRIBUTE_ALREADY_ASSIGNED"
   | "ATTRIBUTE_CANNOT_BE_ASSIGNED"
@@ -20277,7 +20233,6 @@ export type ProductError = {
   values?: Maybe<Array<Scalars["ID"]["output"]>>;
 };
 
-/** An enumeration. */
 export type ProductErrorCode =
   | "ALREADY_EXISTS"
   | "ATTRIBUTE_ALREADY_ASSIGNED"
@@ -20658,7 +20613,6 @@ export type ProductMediaReorder = {
   productErrors: Array<ProductError>;
 };
 
-/** An enumeration. */
 export type ProductMediaType = "IMAGE" | "VIDEO";
 
 /**
@@ -20912,7 +20866,6 @@ export type ProductTranslate = {
   translationErrors: Array<TranslationError>;
 };
 
-/** An enumeration. */
 export type ProductTranslateErrorCode = "GRAPHQL_ERROR" | "INVALID" | "NOT_FOUND" | "REQUIRED";
 
 /** Represents product translations. */
@@ -21187,7 +21140,6 @@ export type ProductTypeInput = {
   weight?: InputMaybe<Scalars["WeightScalar"]["input"]>;
 };
 
-/** An enumeration. */
 export type ProductTypeKindEnum = "GIFT_CARD" | "NORMAL";
 
 /**
@@ -21593,7 +21545,6 @@ export type ProductVariantBulkError = {
   warehouses?: Maybe<Array<Scalars["ID"]["output"]>>;
 };
 
-/** An enumeration. */
 export type ProductVariantBulkErrorCode =
   | "ATTRIBUTE_ALREADY_ASSIGNED"
   | "ATTRIBUTE_CANNOT_BE_ASSIGNED"
@@ -22262,7 +22213,6 @@ export type ProductVariantTranslate = {
   translationErrors: Array<TranslationError>;
 };
 
-/** An enumeration. */
 export type ProductVariantTranslateErrorCode =
   | "GRAPHQL_ERROR"
   | "INVALID"
@@ -22584,7 +22534,6 @@ export type PromotionCreateError = {
   rulesLimitExceedBy?: Maybe<Scalars["Int"]["output"]>;
 };
 
-/** An enumeration. */
 export type PromotionCreateErrorCode =
   | "GIFTS_NUMBER_LIMIT"
   | "GRAPHQL_ERROR"
@@ -22688,7 +22637,6 @@ export type PromotionDeleteError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type PromotionDeleteErrorCode = "GRAPHQL_ERROR" | "NOT_FOUND";
 
 /**
@@ -22779,7 +22727,6 @@ export type PromotionEventInterface = {
   type: PromotionEventsEnum;
 };
 
-/** An enumeration. */
 export type PromotionEventsEnum =
   | "PROMOTION_CREATED"
   | "PROMOTION_ENDED"
@@ -22914,7 +22861,6 @@ export type PromotionRuleCreateError = {
   rulesLimitExceedBy?: Maybe<Scalars["Int"]["output"]>;
 };
 
-/** An enumeration. */
 export type PromotionRuleCreateErrorCode =
   | "GIFTS_NUMBER_LIMIT"
   | "GRAPHQL_ERROR"
@@ -23043,7 +22989,6 @@ export type PromotionRuleDeleteError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type PromotionRuleDeleteErrorCode = "GRAPHQL_ERROR" | "NOT_FOUND";
 
 /**
@@ -23264,7 +23209,6 @@ export type PromotionRuleUpdateError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type PromotionRuleUpdateErrorCode =
   | "DUPLICATED_INPUT_ITEM"
   | "GIFTS_NUMBER_LIMIT"
@@ -23516,7 +23460,6 @@ export type PromotionTranslationInput = {
   name?: InputMaybe<Scalars["String"]["input"]>;
 };
 
-/** An enumeration. */
 export type PromotionTypeEnum = "CATALOGUE" | "ORDER";
 
 export type PromotionTypeEnumFilterInput = {
@@ -23556,7 +23499,6 @@ export type PromotionUpdateError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type PromotionUpdateErrorCode = "GRAPHQL_ERROR" | "INVALID" | "NOT_FOUND" | "REQUIRED";
 
 export type PromotionUpdateInput = {
@@ -24679,10 +24621,8 @@ export type RequestPasswordReset = {
   errors: Array<AccountError>;
 };
 
-/** An enumeration. */
 export type RewardTypeEnum = "GIFT" | "SUBTOTAL_DISCOUNT";
 
-/** An enumeration. */
 export type RewardValueTypeEnum = "FIXED" | "PERCENTAGE";
 
 /**
@@ -25348,7 +25288,6 @@ export type SendConfirmationEmailError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type SendConfirmationEmailErrorCode =
   | "ACCOUNT_CONFIRMED"
   | "CONFIRMATION_ALREADY_REQUESTED"
@@ -25392,7 +25331,6 @@ export type ShippingError = {
   warehouses?: Maybe<Array<Scalars["ID"]["output"]>>;
 };
 
-/** An enumeration. */
 export type ShippingErrorCode =
   | "ALREADY_EXISTS"
   | "DUPLICATED_INPUT_ITEM"
@@ -25629,7 +25567,7 @@ export type ShippingMethodTranslation = Node & {
   /** Translation language. */
   language: LanguageDisplay;
   /** Translated shipping method name. */
-  name: Scalars["String"]["output"];
+  name?: Maybe<Scalars["String"]["output"]>;
   /**
    * Represents the shipping method fields to translate.
    *
@@ -25755,7 +25693,6 @@ export type ShippingMethodTypeTranslationArgs = {
   languageCode: LanguageCodeEnum;
 };
 
-/** An enumeration. */
 export type ShippingMethodTypeEnum = "PRICE" | "WEIGHT";
 
 /**
@@ -26617,7 +26554,6 @@ export type ShopError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type ShopErrorCode =
   | "ALREADY_EXISTS"
   | "CANNOT_FETCH_TAX_RATES"
@@ -27184,7 +27120,6 @@ export type StockBulkUpdateError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type StockBulkUpdateErrorCode = "GRAPHQL_ERROR" | "INVALID" | "NOT_FOUND" | "REQUIRED";
 
 export type StockBulkUpdateInput = {
@@ -27227,7 +27162,6 @@ export type StockError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type StockErrorCode =
   | "ALREADY_EXISTS"
   | "GRAPHQL_ERROR"
@@ -27360,7 +27294,6 @@ export type StoredPaymentMethodRequestDelete = {
   result: StoredPaymentMethodRequestDeleteResult;
 };
 
-/** An enumeration. */
 export type StoredPaymentMethodRequestDeleteErrorCode =
   | "CHANNEL_INACTIVE"
   | "GATEWAY_ERROR"
@@ -27400,11 +27333,191 @@ export type StringFilterInput = {
 export type Subscription = {
   __typename?: "Subscription";
   /**
+   * Event sent when new draft order is created.
+   *
+   * Added in Saleor 3.20.
+   *
+   * Note: this API is currently in Feature Preview and can be subject to changes at later point.
+   */
+  draftOrderCreated?: Maybe<DraftOrderCreated>;
+  /**
+   * Event sent when draft order is deleted.
+   *
+   * Added in Saleor 3.20.
+   *
+   * Note: this API is currently in Feature Preview and can be subject to changes at later point.
+   */
+  draftOrderDeleted?: Maybe<DraftOrderDeleted>;
+  /**
+   * Event sent when draft order is updated.
+   *
+   * Added in Saleor 3.20.
+   *
+   * Note: this API is currently in Feature Preview and can be subject to changes at later point.
+   */
+  draftOrderUpdated?: Maybe<DraftOrderUpdated>;
+  /**
    * Look up subscription event.
    *
    * Added in Saleor 3.2.
    */
   event?: Maybe<Event>;
+  /**
+   * Event sent when orders are imported.
+   *
+   * Added in Saleor 3.20.
+   *
+   * Note: this API is currently in Feature Preview and can be subject to changes at later point.
+   */
+  orderBulkCreated?: Maybe<OrderBulkCreated>;
+  /**
+   * Event sent when order is cancelled.
+   *
+   * Added in Saleor 3.20.
+   *
+   * Note: this API is currently in Feature Preview and can be subject to changes at later point.
+   */
+  orderCancelled?: Maybe<OrderCancelled>;
+  /**
+   * Event sent when order is confirmed.
+   *
+   * Added in Saleor 3.20.
+   *
+   * Note: this API is currently in Feature Preview and can be subject to changes at later point.
+   */
+  orderConfirmed?: Maybe<OrderConfirmed>;
+  /**
+   * Event sent when new order is created.
+   *
+   * Added in Saleor 3.20.
+   *
+   * Note: this API is currently in Feature Preview and can be subject to changes at later point.
+   */
+  orderCreated?: Maybe<OrderCreated>;
+  /**
+   * Event sent when order becomes expired.
+   *
+   * Added in Saleor 3.20.
+   *
+   * Note: this API is currently in Feature Preview and can be subject to changes at later point.
+   */
+  orderExpired?: Maybe<OrderExpired>;
+  /**
+   * Event sent when order is fulfilled.
+   *
+   * Added in Saleor 3.20.
+   *
+   * Note: this API is currently in Feature Preview and can be subject to changes at later point.
+   */
+  orderFulfilled?: Maybe<OrderFulfilled>;
+  /**
+   * Event sent when order is fully paid.
+   *
+   * Added in Saleor 3.20.
+   *
+   * Note: this API is currently in Feature Preview and can be subject to changes at later point.
+   */
+  orderFullyPaid?: Maybe<OrderFullyPaid>;
+  /**
+   * The order is fully refunded.
+   *
+   * Added in Saleor 3.20.
+   *
+   * Note: this API is currently in Feature Preview and can be subject to changes at later point.
+   */
+  orderFullyRefunded?: Maybe<OrderFullyRefunded>;
+  /**
+   * Event sent when order metadata is updated.
+   *
+   * Added in Saleor 3.20.
+   *
+   * Note: this API is currently in Feature Preview and can be subject to changes at later point.
+   */
+  orderMetadataUpdated?: Maybe<OrderMetadataUpdated>;
+  /**
+   * Payment has been made. The order may be partially or fully paid.
+   *
+   * Added in Saleor 3.20.
+   *
+   * Note: this API is currently in Feature Preview and can be subject to changes at later point.
+   */
+  orderPaid?: Maybe<OrderPaid>;
+  /**
+   * The order received a refund. The order may be partially or fully refunded.
+   *
+   * Added in Saleor 3.20.
+   *
+   * Note: this API is currently in Feature Preview and can be subject to changes at later point.
+   */
+  orderRefunded?: Maybe<OrderRefunded>;
+  /**
+   * Event sent when order is updated.
+   *
+   * Added in Saleor 3.20.
+   *
+   * Note: this API is currently in Feature Preview and can be subject to changes at later point.
+   */
+  orderUpdated?: Maybe<OrderUpdated>;
+};
+
+export type SubscriptionDraftOrderCreatedArgs = {
+  channels?: InputMaybe<Array<Scalars["String"]["input"]>>;
+};
+
+export type SubscriptionDraftOrderDeletedArgs = {
+  channels?: InputMaybe<Array<Scalars["String"]["input"]>>;
+};
+
+export type SubscriptionDraftOrderUpdatedArgs = {
+  channels?: InputMaybe<Array<Scalars["String"]["input"]>>;
+};
+
+export type SubscriptionOrderBulkCreatedArgs = {
+  channels?: InputMaybe<Array<Scalars["String"]["input"]>>;
+};
+
+export type SubscriptionOrderCancelledArgs = {
+  channels?: InputMaybe<Array<Scalars["String"]["input"]>>;
+};
+
+export type SubscriptionOrderConfirmedArgs = {
+  channels?: InputMaybe<Array<Scalars["String"]["input"]>>;
+};
+
+export type SubscriptionOrderCreatedArgs = {
+  channels?: InputMaybe<Array<Scalars["String"]["input"]>>;
+};
+
+export type SubscriptionOrderExpiredArgs = {
+  channels?: InputMaybe<Array<Scalars["String"]["input"]>>;
+};
+
+export type SubscriptionOrderFulfilledArgs = {
+  channels?: InputMaybe<Array<Scalars["String"]["input"]>>;
+};
+
+export type SubscriptionOrderFullyPaidArgs = {
+  channels?: InputMaybe<Array<Scalars["String"]["input"]>>;
+};
+
+export type SubscriptionOrderFullyRefundedArgs = {
+  channels?: InputMaybe<Array<Scalars["String"]["input"]>>;
+};
+
+export type SubscriptionOrderMetadataUpdatedArgs = {
+  channels?: InputMaybe<Array<Scalars["String"]["input"]>>;
+};
+
+export type SubscriptionOrderPaidArgs = {
+  channels?: InputMaybe<Array<Scalars["String"]["input"]>>;
+};
+
+export type SubscriptionOrderRefundedArgs = {
+  channels?: InputMaybe<Array<Scalars["String"]["input"]>>;
+};
+
+export type SubscriptionOrderUpdatedArgs = {
+  channels?: InputMaybe<Array<Scalars["String"]["input"]>>;
 };
 
 export type TaxCalculationStrategy = "FLAT_RATES" | "TAX_APP";
@@ -27550,7 +27663,6 @@ export type TaxClassCreateError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type TaxClassCreateErrorCode = "GRAPHQL_ERROR" | "INVALID" | "NOT_FOUND";
 
 export type TaxClassCreateInput = {
@@ -27583,7 +27695,6 @@ export type TaxClassDeleteError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type TaxClassDeleteErrorCode = "GRAPHQL_ERROR" | "INVALID" | "NOT_FOUND";
 
 export type TaxClassFilterInput = {
@@ -27635,7 +27746,6 @@ export type TaxClassUpdateError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type TaxClassUpdateErrorCode =
   | "DUPLICATED_INPUT_ITEM"
   | "GRAPHQL_ERROR"
@@ -27836,7 +27946,6 @@ export type TaxConfigurationUpdateError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type TaxConfigurationUpdateErrorCode =
   | "DUPLICATED_INPUT_ITEM"
   | "GRAPHQL_ERROR"
@@ -27901,7 +28010,6 @@ export type TaxCountryConfigurationDeleteError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type TaxCountryConfigurationDeleteErrorCode = "GRAPHQL_ERROR" | "INVALID" | "NOT_FOUND";
 
 /**
@@ -27930,7 +28038,6 @@ export type TaxCountryConfigurationUpdateError = {
   taxClassIds: Array<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type TaxCountryConfigurationUpdateErrorCode =
   | "CANNOT_CREATE_NEGATIVE_RATE"
   | "GRAPHQL_ERROR"
@@ -27961,7 +28068,6 @@ export type TaxExemptionManageError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type TaxExemptionManageErrorCode =
   | "GRAPHQL_ERROR"
   | "INVALID"
@@ -28008,7 +28114,12 @@ export type TaxableObjectDiscount = {
   amount: Money;
   /** The name of the discount. */
   name?: Maybe<Scalars["String"]["output"]>;
+  /** Indicates which part of the order the discount should affect: SUBTOTAL or SHIPPING. */
+  type: TaxableObjectDiscountTypeEnum;
 };
+
+/** Indicates which part of the order the discount should affect: SUBTOTAL or SHIPPING. */
+export type TaxableObjectDiscountTypeEnum = "SHIPPING" | "SUBTOTAL";
 
 export type TaxableObjectLine = {
   __typename?: "TaxableObjectLine";
@@ -28100,7 +28211,6 @@ export type ThumbnailCreated = Event & {
   version?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type ThumbnailFormatEnum = "AVIF" | "ORIGINAL" | "WEBP";
 
 export type TimePeriod = {
@@ -28118,7 +28228,6 @@ export type TimePeriodInputType = {
   type: TimePeriodTypeEnum;
 };
 
-/** An enumeration. */
 export type TimePeriodTypeEnum = "DAY" | "MONTH" | "WEEK" | "YEAR";
 
 /**
@@ -28250,7 +28359,6 @@ export type TransactionCreateError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type TransactionCreateErrorCode =
   | "GRAPHQL_ERROR"
   | "INCORRECT_CURRENCY"
@@ -28378,6 +28486,11 @@ export type TransactionEventInput = {
  * Note: this API is currently in Feature Preview and can be subject to changes at later point.
  *
  * Requires the following permissions: OWNER and HANDLE_PAYMENTS for apps, HANDLE_PAYMENTS for staff users. Staff user cannot update a transaction that is owned by the app.
+ *
+ * Triggers the following webhook events:
+ * - TRANSACTION_ITEM_METADATA_UPDATED (async): Optionally called when transaction's metadata was updated.
+ * - CHECKOUT_FULLY_PAID (async): Optionally called when the checkout charge status changed to `FULL` or `OVERCHARGED`.
+ * - ORDER_UPDATED (async): Optionally called when the transaction is related to the order and the order was updated.
  */
 export type TransactionEventReport = {
   __typename?: "TransactionEventReport";
@@ -28400,13 +28513,13 @@ export type TransactionEventReportError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type TransactionEventReportErrorCode =
   | "ALREADY_EXISTS"
   | "GRAPHQL_ERROR"
   | "INCORRECT_DETAILS"
   | "INVALID"
-  | "NOT_FOUND";
+  | "NOT_FOUND"
+  | "REQUIRED";
 
 /**
  * Represents possible event types.
@@ -28493,7 +28606,6 @@ export type TransactionInitializeError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type TransactionInitializeErrorCode =
   | "CHECKOUT_COMPLETION_IN_PROGRESS"
   | "GRAPHQL_ERROR"
@@ -28743,7 +28855,6 @@ export type TransactionItemMetadataUpdated = Event & {
   version?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type TransactionKind =
   | "ACTION_TO_CONFIRM"
   | "AUTH"
@@ -28793,7 +28904,6 @@ export type TransactionProcessError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type TransactionProcessErrorCode =
   | "CHECKOUT_COMPLETION_IN_PROGRESS"
   | "GRAPHQL_ERROR"
@@ -28894,7 +29004,6 @@ export type TransactionRequestActionError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type TransactionRequestActionErrorCode =
   | "GRAPHQL_ERROR"
   | "INVALID"
@@ -28926,7 +29035,6 @@ export type TransactionRequestRefundForGrantedRefundError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type TransactionRequestRefundForGrantedRefundErrorCode =
   | "AMOUNT_GREATER_THAN_AVAILABLE"
   | "GRAPHQL_ERROR"
@@ -28961,7 +29069,6 @@ export type TransactionUpdateError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type TransactionUpdateErrorCode =
   | "GRAPHQL_ERROR"
   | "INCORRECT_CURRENCY"
@@ -29091,7 +29198,6 @@ export type TranslationError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type TranslationErrorCode = "GRAPHQL_ERROR" | "INVALID" | "NOT_FOUND" | "REQUIRED";
 
 export type TranslationInput = {
@@ -29187,7 +29293,6 @@ export type UploadError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type UploadErrorCode = "GRAPHQL_ERROR";
 
 /** Represents user data. */
@@ -29632,7 +29737,6 @@ export type VerifyToken = {
   user?: Maybe<User>;
 };
 
-/** An enumeration. */
 export type VolumeUnitsEnum =
   | "ACRE_FT"
   | "ACRE_IN"
@@ -29961,7 +30065,6 @@ export type VoucherCodeBulkDeleteError = {
   voucherCodes?: Maybe<Array<Scalars["ID"]["output"]>>;
 };
 
-/** An enumeration. */
 export type VoucherCodeBulkDeleteErrorCode = "GRAPHQL_ERROR" | "INVALID" | "NOT_FOUND";
 
 export type VoucherCodeCountableConnection = {
@@ -30524,7 +30627,6 @@ export type WarehouseStocksArgs = {
   last?: InputMaybe<Scalars["Int"]["input"]>;
 };
 
-/** An enumeration. */
 export type WarehouseClickAndCollectOptionEnum = "ALL" | "DISABLED" | "LOCAL";
 
 export type WarehouseCountableConnection = {
@@ -30643,7 +30745,6 @@ export type WarehouseError = {
   shippingZones?: Maybe<Array<Scalars["ID"]["output"]>>;
 };
 
-/** An enumeration. */
 export type WarehouseErrorCode =
   | "ALREADY_EXISTS"
   | "GRAPHQL_ERROR"
@@ -30923,7 +31024,6 @@ export type WebhookDryRunError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type WebhookDryRunErrorCode =
   | "GRAPHQL_ERROR"
   | "INVALID_ID"
@@ -30945,7 +31045,6 @@ export type WebhookError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type WebhookErrorCode =
   | "DELETE_FAILED"
   | "GRAPHQL_ERROR"
@@ -31920,7 +32019,6 @@ export type WebhookEventTypeSyncEnum =
    */
   | "TRANSACTION_REFUND_REQUESTED";
 
-/** An enumeration. */
 export type WebhookSampleEventTypeEnum =
   | "ACCOUNT_CHANGE_EMAIL_REQUESTED"
   | "ACCOUNT_CONFIRMATION_REQUESTED"
@@ -32089,7 +32187,6 @@ export type WebhookTriggerError = {
   message?: Maybe<Scalars["String"]["output"]>;
 };
 
-/** An enumeration. */
 export type WebhookTriggerErrorCode =
   | "GRAPHQL_ERROR"
   | "INVALID_ID"
@@ -32165,7 +32262,6 @@ export type Weight = {
   value: Scalars["Float"]["output"];
 };
 
-/** An enumeration. */
 export type WeightUnitsEnum = "G" | "KG" | "LB" | "OZ" | "TONNE";
 
 /** _Entity union as defined by Federation spec. */
@@ -32371,7 +32467,7 @@ export type CheckoutDetailsFragment = {
         translation?: {
           __typename?: "ShippingMethodTranslation";
           id: string;
-          name: string;
+          name?: string | null;
           description?: string | null;
         } | null;
         price: { __typename?: "Money"; currency: string; amount: number };
@@ -32388,7 +32484,7 @@ export type CheckoutDetailsFragment = {
     translation?: {
       __typename?: "ShippingMethodTranslation";
       id: string;
-      name: string;
+      name?: string | null;
       description?: string | null;
     } | null;
     price: { __typename?: "Money"; currency: string; amount: number };
@@ -32624,7 +32720,7 @@ export type DeliveryMethodFragment = {
   translation?: {
     __typename?: "ShippingMethodTranslation";
     id: string;
-    name: string;
+    name?: string | null;
     description?: string | null;
   } | null;
   price: { __typename?: "Money"; currency: string; amount: number };
@@ -32778,8 +32874,50 @@ export type ProductCardFragment = {
     __typename?: "Category";
     id: string;
     name: string;
+    slug: string;
     translation?: { __typename?: "CategoryTranslation"; id: string; name?: string | null } | null;
+    ancestors?: {
+      __typename?: "CategoryCountableConnection";
+      edges: Array<{
+        __typename?: "CategoryCountableEdge";
+        node: {
+          __typename?: "Category";
+          id: string;
+          name: string;
+          slug: string;
+          translation?: {
+            __typename?: "CategoryTranslation";
+            id: string;
+            name?: string | null;
+          } | null;
+          metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
+          ancestors?: {
+            __typename?: "CategoryCountableConnection";
+            edges: Array<{
+              __typename?: "CategoryCountableEdge";
+              node: {
+                __typename?: "Category";
+                id: string;
+                name: string;
+                slug: string;
+                translation?: {
+                  __typename?: "CategoryTranslation";
+                  id: string;
+                  name?: string | null;
+                } | null;
+              };
+            }>;
+          } | null;
+        };
+      }>;
+    } | null;
   } | null;
+  collections?: Array<{
+    __typename?: "Collection";
+    id: string;
+    name: string;
+    translation?: { __typename?: "CollectionTranslation"; id: string; name?: string | null } | null;
+  }> | null;
   media?: Array<{
     __typename?: "ProductMedia";
     url: string;
@@ -33328,7 +33466,7 @@ export type CheckoutAddProductLineMutation = {
             translation?: {
               __typename?: "ShippingMethodTranslation";
               id: string;
-              name: string;
+              name?: string | null;
               description?: string | null;
             } | null;
             price: { __typename?: "Money"; currency: string; amount: number };
@@ -33345,7 +33483,7 @@ export type CheckoutAddProductLineMutation = {
         translation?: {
           __typename?: "ShippingMethodTranslation";
           id: string;
-          name: string;
+          name?: string | null;
           description?: string | null;
         } | null;
         price: { __typename?: "Money"; currency: string; amount: number };
@@ -33540,7 +33678,7 @@ export type CheckoutAddPromoCodeMutation = {
             translation?: {
               __typename?: "ShippingMethodTranslation";
               id: string;
-              name: string;
+              name?: string | null;
               description?: string | null;
             } | null;
             price: { __typename?: "Money"; currency: string; amount: number };
@@ -33557,7 +33695,7 @@ export type CheckoutAddPromoCodeMutation = {
         translation?: {
           __typename?: "ShippingMethodTranslation";
           id: string;
-          name: string;
+          name?: string | null;
           description?: string | null;
         } | null;
         price: { __typename?: "Money"; currency: string; amount: number };
@@ -33748,7 +33886,7 @@ export type CheckoutBillingAddressUpdateMutation = {
             translation?: {
               __typename?: "ShippingMethodTranslation";
               id: string;
-              name: string;
+              name?: string | null;
               description?: string | null;
             } | null;
             price: { __typename?: "Money"; currency: string; amount: number };
@@ -33765,7 +33903,7 @@ export type CheckoutBillingAddressUpdateMutation = {
         translation?: {
           __typename?: "ShippingMethodTranslation";
           id: string;
-          name: string;
+          name?: string | null;
           description?: string | null;
         } | null;
         price: { __typename?: "Money"; currency: string; amount: number };
@@ -34094,7 +34232,7 @@ export type CheckoutCustomerAttachMutation = {
             translation?: {
               __typename?: "ShippingMethodTranslation";
               id: string;
-              name: string;
+              name?: string | null;
               description?: string | null;
             } | null;
             price: { __typename?: "Money"; currency: string; amount: number };
@@ -34111,7 +34249,7 @@ export type CheckoutCustomerAttachMutation = {
         translation?: {
           __typename?: "ShippingMethodTranslation";
           id: string;
-          name: string;
+          name?: string | null;
           description?: string | null;
         } | null;
         price: { __typename?: "Money"; currency: string; amount: number };
@@ -34306,7 +34444,7 @@ export type CheckoutCustomerDetachMutation = {
             translation?: {
               __typename?: "ShippingMethodTranslation";
               id: string;
-              name: string;
+              name?: string | null;
               description?: string | null;
             } | null;
             price: { __typename?: "Money"; currency: string; amount: number };
@@ -34323,7 +34461,7 @@ export type CheckoutCustomerDetachMutation = {
         translation?: {
           __typename?: "ShippingMethodTranslation";
           id: string;
-          name: string;
+          name?: string | null;
           description?: string | null;
         } | null;
         price: { __typename?: "Money"; currency: string; amount: number };
@@ -34513,7 +34651,7 @@ export type CheckoutDeliveryMethodUpdateMutation = {
             translation?: {
               __typename?: "ShippingMethodTranslation";
               id: string;
-              name: string;
+              name?: string | null;
               description?: string | null;
             } | null;
             price: { __typename?: "Money"; currency: string; amount: number };
@@ -34530,7 +34668,7 @@ export type CheckoutDeliveryMethodUpdateMutation = {
         translation?: {
           __typename?: "ShippingMethodTranslation";
           id: string;
-          name: string;
+          name?: string | null;
           description?: string | null;
         } | null;
         price: { __typename?: "Money"; currency: string; amount: number };
@@ -34726,7 +34864,7 @@ export type CheckoutEmailUpdateMutation = {
             translation?: {
               __typename?: "ShippingMethodTranslation";
               id: string;
-              name: string;
+              name?: string | null;
               description?: string | null;
             } | null;
             price: { __typename?: "Money"; currency: string; amount: number };
@@ -34743,7 +34881,7 @@ export type CheckoutEmailUpdateMutation = {
         translation?: {
           __typename?: "ShippingMethodTranslation";
           id: string;
-          name: string;
+          name?: string | null;
           description?: string | null;
         } | null;
         price: { __typename?: "Money"; currency: string; amount: number };
@@ -34934,7 +35072,7 @@ export type CheckoutLineUpdateMutation = {
             translation?: {
               __typename?: "ShippingMethodTranslation";
               id: string;
-              name: string;
+              name?: string | null;
               description?: string | null;
             } | null;
             price: { __typename?: "Money"; currency: string; amount: number };
@@ -34951,7 +35089,7 @@ export type CheckoutLineUpdateMutation = {
         translation?: {
           __typename?: "ShippingMethodTranslation";
           id: string;
-          name: string;
+          name?: string | null;
           description?: string | null;
         } | null;
         price: { __typename?: "Money"; currency: string; amount: number };
@@ -35147,7 +35285,7 @@ export type RemoveProductFromCheckoutMutation = {
             translation?: {
               __typename?: "ShippingMethodTranslation";
               id: string;
-              name: string;
+              name?: string | null;
               description?: string | null;
             } | null;
             price: { __typename?: "Money"; currency: string; amount: number };
@@ -35164,7 +35302,7 @@ export type RemoveProductFromCheckoutMutation = {
         translation?: {
           __typename?: "ShippingMethodTranslation";
           id: string;
-          name: string;
+          name?: string | null;
           description?: string | null;
         } | null;
         price: { __typename?: "Money"; currency: string; amount: number };
@@ -35355,7 +35493,7 @@ export type CheckoutShippingAddressUpdateMutation = {
             translation?: {
               __typename?: "ShippingMethodTranslation";
               id: string;
-              name: string;
+              name?: string | null;
               description?: string | null;
             } | null;
             price: { __typename?: "Money"; currency: string; amount: number };
@@ -35372,7 +35510,7 @@ export type CheckoutShippingAddressUpdateMutation = {
         translation?: {
           __typename?: "ShippingMethodTranslation";
           id: string;
-          name: string;
+          name?: string | null;
           description?: string | null;
         } | null;
         price: { __typename?: "Money"; currency: string; amount: number };
@@ -35763,29 +35901,6 @@ export type TransactionProcessMutation = {
   } | null;
 };
 
-export type TransactionUpdateMutationVariables = Exact<{
-  transactionId: Scalars["ID"]["input"];
-  transaction?: InputMaybe<TransactionUpdateInput>;
-}>;
-
-export type TransactionUpdateMutation = {
-  __typename?: "Mutation";
-  transactionUpdate?: {
-    __typename?: "TransactionUpdate";
-    transaction?: {
-      __typename?: "TransactionItem";
-      id: string;
-      actions: Array<TransactionActionEnum>;
-    } | null;
-    errors: Array<{
-      __typename?: "TransactionUpdateError";
-      field?: string | null;
-      code: TransactionUpdateErrorCode;
-      message?: string | null;
-    }>;
-  } | null;
-};
-
 export type AvailableProductFiltersQueryVariables = Exact<{
   filter?: InputMaybe<ProductFilterInput>;
   channel?: InputMaybe<Scalars["String"]["input"]>;
@@ -35852,7 +35967,19 @@ export type AvailableProductFiltersQuery = {
             }>;
           }>;
         }> | null;
-        category?: { __typename?: "Category"; id: string; slug: string; name: string } | null;
+        category?: {
+          __typename?: "Category";
+          id: string;
+          slug: string;
+          name: string;
+          ancestors?: {
+            __typename?: "CategoryCountableConnection";
+            edges: Array<{
+              __typename?: "CategoryCountableEdge";
+              node: { __typename?: "Category"; id: string; slug: string };
+            }>;
+          } | null;
+        } | null;
       };
     }>;
   } | null;
@@ -35874,7 +36001,7 @@ export type AvailableShippingMethodsQuery = {
       translation?: {
         __typename?: "ShippingMethodTranslation";
         id: string;
-        name: string;
+        name?: string | null;
         description?: string | null;
       } | null;
       price: { __typename?: "Money"; currency: string; amount: number };
@@ -36275,7 +36402,7 @@ export type CheckoutFindQuery = {
           translation?: {
             __typename?: "ShippingMethodTranslation";
             id: string;
-            name: string;
+            name?: string | null;
             description?: string | null;
           } | null;
           price: { __typename?: "Money"; currency: string; amount: number };
@@ -36292,7 +36419,7 @@ export type CheckoutFindQuery = {
       translation?: {
         __typename?: "ShippingMethodTranslation";
         id: string;
-        name: string;
+        name?: string | null;
         description?: string | null;
       } | null;
       price: { __typename?: "Money"; currency: string; amount: number };
@@ -37065,12 +37192,58 @@ export type ProductCollectionQuery = {
           __typename?: "Category";
           id: string;
           name: string;
+          slug: string;
           translation?: {
             __typename?: "CategoryTranslation";
             id: string;
             name?: string | null;
           } | null;
+          ancestors?: {
+            __typename?: "CategoryCountableConnection";
+            edges: Array<{
+              __typename?: "CategoryCountableEdge";
+              node: {
+                __typename?: "Category";
+                id: string;
+                name: string;
+                slug: string;
+                translation?: {
+                  __typename?: "CategoryTranslation";
+                  id: string;
+                  name?: string | null;
+                } | null;
+                metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
+                ancestors?: {
+                  __typename?: "CategoryCountableConnection";
+                  edges: Array<{
+                    __typename?: "CategoryCountableEdge";
+                    node: {
+                      __typename?: "Category";
+                      id: string;
+                      name: string;
+                      slug: string;
+                      translation?: {
+                        __typename?: "CategoryTranslation";
+                        id: string;
+                        name?: string | null;
+                      } | null;
+                    };
+                  }>;
+                } | null;
+              };
+            }>;
+          } | null;
         } | null;
+        collections?: Array<{
+          __typename?: "Collection";
+          id: string;
+          name: string;
+          translation?: {
+            __typename?: "CollectionTranslation";
+            id: string;
+            name?: string | null;
+          } | null;
+        }> | null;
         media?: Array<{
           __typename?: "ProductMedia";
           url: string;
@@ -37280,12 +37453,58 @@ export type ProductsByAttributeQuery = {
           __typename?: "Category";
           id: string;
           name: string;
+          slug: string;
           translation?: {
             __typename?: "CategoryTranslation";
             id: string;
             name?: string | null;
           } | null;
+          ancestors?: {
+            __typename?: "CategoryCountableConnection";
+            edges: Array<{
+              __typename?: "CategoryCountableEdge";
+              node: {
+                __typename?: "Category";
+                id: string;
+                name: string;
+                slug: string;
+                translation?: {
+                  __typename?: "CategoryTranslation";
+                  id: string;
+                  name?: string | null;
+                } | null;
+                metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
+                ancestors?: {
+                  __typename?: "CategoryCountableConnection";
+                  edges: Array<{
+                    __typename?: "CategoryCountableEdge";
+                    node: {
+                      __typename?: "Category";
+                      id: string;
+                      name: string;
+                      slug: string;
+                      translation?: {
+                        __typename?: "CategoryTranslation";
+                        id: string;
+                        name?: string | null;
+                      } | null;
+                    };
+                  }>;
+                } | null;
+              };
+            }>;
+          } | null;
         } | null;
+        collections?: Array<{
+          __typename?: "Collection";
+          id: string;
+          name: string;
+          translation?: {
+            __typename?: "CollectionTranslation";
+            id: string;
+            name?: string | null;
+          } | null;
+        }> | null;
         media?: Array<{
           __typename?: "ProductMedia";
           url: string;
@@ -38078,6 +38297,22 @@ export const ProductCardFragmentDoc = gql`
       ...ImageFragment
     }
     category {
+      id
+      name
+      slug
+      translation(languageCode: $locale) {
+        id
+        name
+      }
+      ancestors(first: 5) {
+        edges {
+          node {
+            ...CategoryBasicFragment
+          }
+        }
+      }
+    }
+    collections {
       id
       name
       translation(languageCode: $locale) {
@@ -39936,62 +40171,6 @@ export type TransactionProcessMutationOptions = Apollo.BaseMutationOptions<
   TransactionProcessMutation,
   TransactionProcessMutationVariables
 >;
-export const TransactionUpdateDocument = gql`
-  mutation transactionUpdate($transactionId: ID!, $transaction: TransactionUpdateInput) {
-    transactionUpdate(id: $transactionId, transaction: $transaction) {
-      transaction {
-        id
-        actions
-      }
-      errors {
-        field
-        code
-        message
-      }
-    }
-  }
-`;
-export type TransactionUpdateMutationFn = Apollo.MutationFunction<
-  TransactionUpdateMutation,
-  TransactionUpdateMutationVariables
->;
-
-/**
- * __useTransactionUpdateMutation__
- *
- * To run a mutation, you first call `useTransactionUpdateMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useTransactionUpdateMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [transactionUpdateMutation, { data, loading, error }] = useTransactionUpdateMutation({
- *   variables: {
- *      transactionId: // value for 'transactionId'
- *      transaction: // value for 'transaction'
- *   },
- * });
- */
-export function useTransactionUpdateMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    TransactionUpdateMutation,
-    TransactionUpdateMutationVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<TransactionUpdateMutation, TransactionUpdateMutationVariables>(
-    TransactionUpdateDocument,
-    options,
-  );
-}
-export type TransactionUpdateMutationHookResult = ReturnType<typeof useTransactionUpdateMutation>;
-export type TransactionUpdateMutationResult = Apollo.MutationResult<TransactionUpdateMutation>;
-export type TransactionUpdateMutationOptions = Apollo.BaseMutationOptions<
-  TransactionUpdateMutation,
-  TransactionUpdateMutationVariables
->;
 export const AvailableProductFiltersDocument = gql`
   query AvailableProductFilters(
     $filter: ProductFilterInput
@@ -40025,6 +40204,14 @@ export const AvailableProductFiltersDocument = gql`
             id
             slug
             name
+            ancestors(first: 5) {
+              edges {
+                node {
+                  id
+                  slug
+                }
+              }
+            }
           }
         }
       }
@@ -41491,6 +41678,7 @@ export const ProductCollectionDocument = gql`
   }
   ${ProductCardFragmentDoc}
   ${ImageFragmentDoc}
+  ${CategoryBasicFragmentDoc}
   ${ProductVariantDetailsFragmentDoc}
 `;
 
@@ -41639,6 +41827,7 @@ export const ProductsByAttributeDocument = gql`
   }
   ${ProductCardFragmentDoc}
   ${ImageFragmentDoc}
+  ${CategoryBasicFragmentDoc}
   ${ProductVariantDetailsFragmentDoc}
 `;
 
@@ -44208,8 +44397,13 @@ export type CheckoutRemovePromoCodeFieldPolicy = {
   checkoutErrors?: FieldPolicy<any> | FieldReadFunction<any>;
   errors?: FieldPolicy<any> | FieldReadFunction<any>;
 };
-export type CheckoutSettingsKeySpecifier = ("useLegacyErrorFlow" | CheckoutSettingsKeySpecifier)[];
+export type CheckoutSettingsKeySpecifier = (
+  | "automaticallyCompleteFullyPaidCheckouts"
+  | "useLegacyErrorFlow"
+  | CheckoutSettingsKeySpecifier
+)[];
 export type CheckoutSettingsFieldPolicy = {
+  automaticallyCompleteFullyPaidCheckouts?: FieldPolicy<any> | FieldReadFunction<any>;
   useLegacyErrorFlow?: FieldPolicy<any> | FieldReadFunction<any>;
 };
 export type CheckoutShippingAddressUpdateKeySpecifier = (
@@ -52790,9 +52984,42 @@ export type StoredPaymentMethodRequestDeleteFieldPolicy = {
   errors?: FieldPolicy<any> | FieldReadFunction<any>;
   result?: FieldPolicy<any> | FieldReadFunction<any>;
 };
-export type SubscriptionKeySpecifier = ("event" | SubscriptionKeySpecifier)[];
+export type SubscriptionKeySpecifier = (
+  | "draftOrderCreated"
+  | "draftOrderDeleted"
+  | "draftOrderUpdated"
+  | "event"
+  | "orderBulkCreated"
+  | "orderCancelled"
+  | "orderConfirmed"
+  | "orderCreated"
+  | "orderExpired"
+  | "orderFulfilled"
+  | "orderFullyPaid"
+  | "orderFullyRefunded"
+  | "orderMetadataUpdated"
+  | "orderPaid"
+  | "orderRefunded"
+  | "orderUpdated"
+  | SubscriptionKeySpecifier
+)[];
 export type SubscriptionFieldPolicy = {
+  draftOrderCreated?: FieldPolicy<any> | FieldReadFunction<any>;
+  draftOrderDeleted?: FieldPolicy<any> | FieldReadFunction<any>;
+  draftOrderUpdated?: FieldPolicy<any> | FieldReadFunction<any>;
   event?: FieldPolicy<any> | FieldReadFunction<any>;
+  orderBulkCreated?: FieldPolicy<any> | FieldReadFunction<any>;
+  orderCancelled?: FieldPolicy<any> | FieldReadFunction<any>;
+  orderConfirmed?: FieldPolicy<any> | FieldReadFunction<any>;
+  orderCreated?: FieldPolicy<any> | FieldReadFunction<any>;
+  orderExpired?: FieldPolicy<any> | FieldReadFunction<any>;
+  orderFulfilled?: FieldPolicy<any> | FieldReadFunction<any>;
+  orderFullyPaid?: FieldPolicy<any> | FieldReadFunction<any>;
+  orderFullyRefunded?: FieldPolicy<any> | FieldReadFunction<any>;
+  orderMetadataUpdated?: FieldPolicy<any> | FieldReadFunction<any>;
+  orderPaid?: FieldPolicy<any> | FieldReadFunction<any>;
+  orderRefunded?: FieldPolicy<any> | FieldReadFunction<any>;
+  orderUpdated?: FieldPolicy<any> | FieldReadFunction<any>;
 };
 export type TaxClassKeySpecifier = (
   | "countries"
@@ -53090,11 +53317,13 @@ export type TaxableObjectFieldPolicy = {
 export type TaxableObjectDiscountKeySpecifier = (
   | "amount"
   | "name"
+  | "type"
   | TaxableObjectDiscountKeySpecifier
 )[];
 export type TaxableObjectDiscountFieldPolicy = {
   amount?: FieldPolicy<any> | FieldReadFunction<any>;
   name?: FieldPolicy<any> | FieldReadFunction<any>;
+  type?: FieldPolicy<any> | FieldReadFunction<any>;
 };
 export type TaxableObjectLineKeySpecifier = (
   | "chargeTaxes"

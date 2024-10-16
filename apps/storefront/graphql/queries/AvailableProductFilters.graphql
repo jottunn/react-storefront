@@ -26,6 +26,14 @@ query AvailableProductFilters( $filter: ProductFilterInput, $channel: String, $l
           id
           slug
           name
+          ancestors(first: 5) {
+          edges {
+            node {
+              id
+              slug
+            }
+          }
+        }
         }
       }
     }

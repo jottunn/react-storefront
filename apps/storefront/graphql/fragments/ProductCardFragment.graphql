@@ -15,6 +15,22 @@ fragment ProductCardFragment on Product {
   category {
     id
     name
+    slug
+    translation(languageCode: $locale) {
+      id
+      name
+    }
+    ancestors(first: 5) {
+      edges {
+        node {
+          ...CategoryBasicFragment
+        }
+      }
+    }
+  }
+  collections {
+    id
+    name
     translation(languageCode: $locale) {
       id
       name

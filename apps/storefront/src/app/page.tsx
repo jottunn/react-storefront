@@ -34,7 +34,6 @@ import Image from "next/image";
 
 const parser = edjsHTML();
 const emptyTagsRegex = /^<[^>]+>\s*(<br\s*\/?>)?\s*<\/[^>]+>$/;
-
 export const generateMetadata = async (): Promise<Metadata | []> => {
   let page;
   try {
@@ -413,7 +412,7 @@ export default async function Home() {
       )}
 
       <div className=" py-12 md:py-32 mb-20 items-center justify-items-center w-full border-t border-dark=300 md:min-h-[90px]">
-        <div className="container grid grid-cols-4 md:grid-cols-8 gap-6 md:gap-12 lg:gap-20">
+        <div className="container grid grid-cols-4 md:grid-cols-8 gap-6 md:gap-12 lg:gap-20 items-center">
           {brandCollections &&
             brandCollections.collections?.edges.map((brand) => {
               return (

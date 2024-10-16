@@ -9,6 +9,7 @@ import {
   AddressInput,
   AvailableProductFiltersDocument,
   AvailableProductFiltersQuery,
+  Category,
   ChannelDocument,
   ChannelQuery,
   ConfirmAccountDocument,
@@ -22,6 +23,7 @@ import {
   PasswordChangeMutation,
   ProductCollectionDocument,
   ProductCollectionQuery,
+  ProductCountableEdge,
   ProductFilterInput,
   RegisterDocument,
   RegisterMutation,
@@ -47,6 +49,8 @@ import { ResetPasswordFormData } from "./reset/ResetPasswordForm";
 import { ConfirmData } from "./confirm/ConfirmResult";
 import { customerDetach } from "@/components/checkout/actions";
 import { cookies } from "next/headers";
+import { readFile } from "fs/promises";
+import path from "path";
 
 export async function logout() {
   //if any checkout and attached customer  =>  detach
@@ -231,20 +235,108 @@ export async function getCurrentUser(): Promise<User | null> {
     return null;
   }
 }
+const PRODUCTS_JSON_PATH = path.join(process.cwd(), "public", "products.json");
+function isCategoryDescendant(category: any | null, filterCategories: string[]): boolean {
+  if (!category) {
+    // console.log('Category is null');
+    return false;
+  }
+  if (filterCategories.includes(category.id)) {
+    // console.log(`Direct match found: ${category.id}`);
+    return true;
+  }
+  // console.log('Checking ancestors:', category.ancestors);
+  const isDescendant =
+    category.ancestors?.some((ancestor: { id: string }) => {
+      const match = filterCategories.includes(ancestor.id);
+      if (match) {
+        // console.log(`Ancestor match found: ${ancestor.id}`);
+      }
+      return match;
+    }) || false;
+  // console.log(`Is descendant: ${isDescendant}`);
+  return isDescendant;
+}
 
 export async function getAvailableFilters(productsFilter: ProductFilterInput) {
   try {
-    const { products } = await executeGraphQL<
-      AvailableProductFiltersQuery,
-      { filter: ProductFilterInput; channel: string; locale: LanguageCodeEnum }
-    >(AvailableProductFiltersDocument, {
-      variables: {
-        filter: productsFilter,
-        ...defaultRegionQuery(),
-      },
-      revalidate: 60 * 60,
+    console.log("productsFilter", productsFilter);
+    //const products = JSON.parse(await readFile(PRODUCTS_JSON_PATH, 'utf8'));
+    // const { products } = await executeGraphQL<
+    //   AvailableProductFiltersQuery,
+    //   { filter: ProductFilterInput; channel: string; locale: LanguageCodeEnum }
+    // >(AvailableProductFiltersDocument, {
+    //   variables: {
+    //     filter: productsFilter,
+    //     ...defaultRegionQuery(),
+    //   },
+    //   revalidate: 60 * 60,
+    // });
+    console.log("productsFilter", productsFilter);
+    const productsData = JSON.parse(await readFile(PRODUCTS_JSON_PATH, "utf8"));
+    const filteredEdges = productsData.edges.filter((edge: any) => {
+      const product = edge.node;
+
+      // Filter by attributes (both product-level and variant-level)
+      if (productsFilter.attributes && productsFilter.attributes.length > 0) {
+        const matchesAllAttributes = productsFilter.attributes.every((filterAttr) => {
+          // Check product-level attributes
+          const productAttr = product.attributes.find(
+            (attr: { attribute: { slug: string } }) => attr.attribute.slug === filterAttr.slug,
+          );
+          if (productAttr) {
+            return filterAttr?.values?.some((value) =>
+              productAttr.values.some((attrValue: { slug: string }) => attrValue.slug === value),
+            );
+          }
+
+          // If not found in product attributes, check variant attributes
+          return product?.variants?.some((variant: { attributes: any[] }) => {
+            const variantAttr = variant.attributes.find(
+              (attr) => attr.attribute.slug === filterAttr.slug,
+            );
+            if (!variantAttr) return false;
+            return filterAttr?.values?.some((value) =>
+              variantAttr.values.some((attrValue: { slug: string }) => attrValue.slug === value),
+            );
+          });
+        });
+        if (!matchesAllAttributes) return false;
+      }
+
+      // Filter by categories (including parent categories)
+      if (productsFilter.categories && productsFilter.categories.length > 0) {
+        const categoryMatch = isCategoryDescendant(product.category, productsFilter.categories);
+        // console.log('Category match:', categoryMatch);
+        if (!categoryMatch) {
+          return false;
+        }
+      }
+
+      // Filter by collections
+      if (productsFilter.collections && productsFilter.collections.length > 0) {
+        const collectionMatch = productsFilter.collections.some((filterCollection) =>
+          product?.collections?.includes(filterCollection),
+        );
+        console.log(
+          "Product:",
+          product.name,
+          "Collections:",
+          product.collections,
+          "Match:",
+          collectionMatch,
+        );
+        if (!collectionMatch) return false;
+      }
+
+      return true;
     });
-    return products;
+
+    const filteredProducts = {
+      edges: filteredEdges,
+    };
+
+    return filteredProducts;
   } catch (error) {
     console.error("Failed to execute AvailableProductFiltersQuery", error);
     return null;
