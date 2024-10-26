@@ -63,10 +63,12 @@ export default transactionProcessSessionWebhook.createHandler(async (req, res, c
       result: statusResponse.result,
       amount: payload.action.amount,
       pspReference: pspReference || "",
+      message: `${statusResponse?.message} ${statusResponse?.actionCodeDescription}`,
       data: {
         errorCode: statusResponse.errorCode,
         errorMessage: statusResponse.errorMessage,
-        message: statusResponse.message,
+        message: statusResponse.message || "",
+        actionCodeDescription: statusResponse.actionCodeDescription || "",
       },
     });
   } catch (error) {

@@ -13,6 +13,11 @@ const LATEST_CARTS_QUERY = gql`
             firstName
             lastName
           }
+          email
+          billingAddress {
+            firstName
+            lastName
+          }
           lines {
             variant {
               product {
@@ -76,7 +81,10 @@ function Checkouts() {
     <div className="container mx-auto p-4">
       <ul role="list" className="space-y-6 container-grid">
         {latestCarts.map(
-          ({ node: { id, created, chargeStatus, user, lines, totalPrice, transactions } }, i) => (
+          (
+            { node: { id, created, user, email, billingAddress, lines, totalPrice, transactions } },
+            i
+          ) => (
             <li
               key={`id${i}`}
               className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg"
@@ -100,7 +108,10 @@ function Checkouts() {
                   <input type="hidden" value={id} id="checkoutId" />
                   <p>{created}</p>
                   <p style={{ marginTop: "10px" }}>
-                    <strong>User:</strong> {user?.firstName || "Anonymous"} {user?.lastName || ""}
+                    <strong>User:</strong> {user?.firstName || billingAddress?.firstName}{" "}
+                    {user?.lastName || billingAddress?.lastName}
+                    <br />
+                    {email}
                   </p>
                   <p>
                     <strong>Total Price:</strong> ${totalPrice.gross.amount}

@@ -152,15 +152,32 @@ export default async (
         console.error("Error processing transaction1:", err);
         logger.error(`Failed to process transaction. Error: ${err}`);
         return res.status(200).json({
-          error: "Failed to process transaction.",
+          error: "Error in ING",
           errorString: "app.payment.errorTransactionProcessing",
         });
       }
 
+      console.log("result.data.transactionProcess", JSON.stringify(result.data.transactionProcess));
+      if (
+        result.data.transactionProcess.transactionEvent.type === "CHARGE_FAILURE" ||
+        result.data.transactionProcess.transactionEvent.type === "AUTHORIZATION_FAILURE"
+      ) {
+        logger.error(
+          `Error ${result.data.transactionProcess.data?.message || ""}: ${
+            result.data.transactionProcess.data?.actionCodeDescription || ""
+          }`
+        );
+        return res.status(200).json({
+          error: "Error in ING",
+          errorString: `${result.data.transactionProcess.transactionEvent?.message || ""}`,
+        });
+      }
+
       console.log("result processTransaction", result);
+      console.log("result processTransatonData", JSON.stringify(result.data));
       if (result.data.errorCode && Number(result.data.errorCode) !== 0) {
         return res.status(200).json({
-          error: "Failed to process transaction.",
+          error: "Error in ING2",
           errorString: "app.payment.errorTransactionProcessing",
         });
       }

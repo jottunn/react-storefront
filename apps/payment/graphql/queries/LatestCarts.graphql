@@ -9,6 +9,11 @@
             firstName
             lastName
           }
+          email
+          billingAddress {
+            firstName
+            lastName
+          }
           lines {
             variant {
               product {
