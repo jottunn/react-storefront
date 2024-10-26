@@ -46,7 +46,9 @@ const PaymentConfirmClient = ({ messages }: PaymentConfirmClientProps) => {
       </main>
     );
   }
-  return <CheckoutResult messages={messages} statusResponse={responseMessage} />;
+  return (
+    <CheckoutResult messages={messages} statusResponse={responseMessage} checkoutId={checkoutId} />
+  );
 };
 
 export default PaymentConfirmClient;

@@ -378,7 +378,7 @@ const ProductDetail = async ({
           {brandAttribute && (
             <Link
               href={`/collections/${brandAttribute?.values[0]?.slug}`}
-              className="text-md my-4 md:mb-6 font-medium text-gray-600 cursor-pointer text-left hover:text-green-600 inlin-block w-auto"
+              className="text-md my-4 md:mb-6 font-medium text-gray-600 cursor-pointer text-left hover:text-green-600 w-auto"
             >
               {brandCollection &&
               brandCollection.collection &&

@@ -1,11 +1,17 @@
 import { Messages } from "@/lib/util";
+import Link from "next/link";
 
 export interface CheckoutResultProps {
   messages: Messages;
   statusResponse: any; //{message, error, order}
+  checkoutId?: string;
 }
 
-export default function CheckoutResult({ messages, statusResponse }: CheckoutResultProps) {
+export default function CheckoutResult({
+  messages,
+  statusResponse,
+  checkoutId,
+}: CheckoutResultProps) {
   return (
     <main className="container pt-18 px-8 pb-18 text-center">
       {!statusResponse.error ? (
@@ -24,11 +30,17 @@ export default function CheckoutResult({ messages, statusResponse }: CheckoutRes
         </>
       ) : (
         <>
-          <p className="text-base font-semibold ">
+          <div className="font-semibold text-md mb-5 text-red-500">
+            {messages["app.payment.errorCompletePayment"]}
+          </div>
+          <p className="text-base font-semibold mb-4">
             {statusResponse.errorString
-              ? messages[statusResponse.errorString]
+              ? messages[statusResponse.errorString] || statusResponse.errorString
               : statusResponse.error}
           </p>
+          <Link href={`/checkout?checkout=${checkoutId}`} className="button button-tertiary">
+            {messages["app.payment.backCheckout"]}
+          </Link>
         </>
       )}
     </main>

@@ -1,10 +1,7 @@
-import { callPaymentAppApi } from "@/components/checkout/payments/callPaymentApi";
-import { DEFAULT_LOCALE, defaultRegionQuery } from "@/lib/regions";
+import { DEFAULT_LOCALE } from "@/lib/regions";
 import { getMessages } from "@/lib/util";
 import PaymentConfirmClient from "./PaymentConfirmClient";
-import * as Checkout from "@/lib/checkout";
 import { STOREFRONT_NAME, STOREFRONT_URL } from "@/lib/const";
-import CheckoutResult from "@/components/checkout/CheckoutResult";
 
 export const metadata = {
   title: `Confirmare plata | ${STOREFRONT_NAME}`,
@@ -16,14 +13,7 @@ export const metadata = {
 
 const PaymentReturnPage = async () => {
   const messages = getMessages(DEFAULT_LOCALE, "app.payment");
-  const checkoutId = await Checkout.getIdFromCookies(defaultRegionQuery().channel);
-  let responseMessage = messages["app.payment.processing"];
-
-  if (!checkoutId) {
-    return <PaymentConfirmClient messages={messages} />;
-  }
-  responseMessage = await callPaymentAppApi(checkoutId);
-  return <CheckoutResult messages={messages} statusResponse={responseMessage} />;
+  return <PaymentConfirmClient messages={messages} />;
 };
 
 export default PaymentReturnPage;

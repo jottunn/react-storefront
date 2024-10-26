@@ -1,8 +1,8 @@
 import { processTransaction } from "../actions";
 
 //Function to call the API and return the response message
-
 export const callPaymentAppApi = async (checkoutId: string) => {
+  console.log("callPaymentAppApi");
   try {
     const response = await processTransaction(checkoutId);
     console.log("responseProcess - callPaymentAppApi", response);
