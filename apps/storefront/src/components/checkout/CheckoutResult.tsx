@@ -31,16 +31,19 @@ export default function CheckoutResult({
       ) : (
         <>
           <div className="font-semibold text-md mb-5 text-red-500">
-            {messages["app.payment.errorCompletePayment"]}
+            {statusResponse.errorString !== "app.payment.checkoutAlreadyProcessed" &&
+              messages["app.payment.errorCompletePayment"]}
           </div>
           <p className="text-base font-semibold mb-4">
             {statusResponse.errorString
               ? messages[statusResponse.errorString] || statusResponse.errorString
               : statusResponse.error}
           </p>
-          <Link href={`/checkout?checkout=${checkoutId}`} className="button button-tertiary">
-            {messages["app.payment.backCheckout"]}
-          </Link>
+          {statusResponse.errorString !== "app.payment.checkoutAlreadyProcessed" && (
+            <Link href={`/checkout?checkout=${checkoutId}`} className="button button-tertiary">
+              {messages["app.payment.backCheckout"]}
+            </Link>
+          )}
         </>
       )}
     </main>

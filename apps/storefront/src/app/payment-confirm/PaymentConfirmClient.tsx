@@ -20,7 +20,7 @@ const PaymentConfirmClient = ({ messages }: PaymentConfirmClientProps) => {
 
   useEffect(() => {
     if (checkoutId) {
-      console.log("effect checkout id");
+      // console.log("effect checkout id");
       const processPayment = async () => {
         try {
           const response = await callPaymentAppApi(checkoutId);
