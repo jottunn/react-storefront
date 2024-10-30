@@ -114,7 +114,7 @@ function Checkouts() {
                     {email}
                   </p>
                   <p>
-                    <strong>Total Price:</strong> ${totalPrice.gross.amount}
+                    <strong>Total Price:</strong> {totalPrice.gross.amount} lei
                   </p>
                 </div>
 

@@ -51,21 +51,13 @@ export default transactionInitializeSessionWebhook.createHandler(async (req, res
     const checkout = data.checkout;
 
     const paymentDataWithoutAuth = {
-      orderNumber: "0001", //TODO
       amount: checkout.totalPrice.gross.amount * 100,
       currency: checkout.totalPrice.gross.currency === "RON" ? "946" : "978", // 946 for RON, 978 for EUR
       language: "ro",
       email: checkout.email,
       description: "Test plata shop",
       // description: "Plata shop surmont.ro"
-      orderBundle: JSON.stringify({
-        customerDetails: {
-          email: checkout.email,
-          contact: `${checkout.billingAddress?.firstName || ""} ${
-            checkout.billingAddress?.lastName || ""
-          }`,
-        },
-      }),
+      orderBundle: JSON.stringify({}),
       returnUrl: `${process.env.RETURN_URL}?checkoutId=${checkoutId}`,
       jsonParams: JSON.stringify({ FORCE_3DS2: "true" }),
     };

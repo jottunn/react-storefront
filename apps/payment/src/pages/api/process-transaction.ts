@@ -27,7 +27,7 @@ export default async (
 
   // Assuming the body parser is enabled for this route, if you're receiving JSON:
   const { checkoutId } = req.body;
-  let notes;
+  let notes, orderNumber;
   const authData = await saleorApp.apl.getAll();
 
   if (!authData || !authData[0] || !authData[0]["saleorApiUrl"] || !authData[0]["token"]) {
@@ -181,6 +181,7 @@ export default async (
           errorString: "app.payment.errorTransactionProcessing",
         });
       }
+      orderNumber = result.data.transactionProcess.data?.orderNumber;
       const transactionMetadata = transaction?.metadata?.find(
         (metadata: { key: string }) => metadata.key === "notes"
       );
@@ -223,6 +224,10 @@ export default async (
             {
               key: "observatii-comanda",
               value: notes || "",
+            },
+            {
+              key: "orderNumber",
+              value: orderNumber || "",
             },
           ],
         })

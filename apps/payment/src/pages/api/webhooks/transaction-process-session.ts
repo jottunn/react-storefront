@@ -69,6 +69,7 @@ export default transactionProcessSessionWebhook.createHandler(async (req, res, c
         errorMessage: statusResponse.errorMessage,
         message: statusResponse.message || "",
         actionCodeDescription: statusResponse.actionCodeDescription || "",
+        orderNumber: statusResponse.orderNumber,
       },
     });
   } catch (error) {
