@@ -42,7 +42,7 @@ import {
 import { saleorAuthClient } from "src/app/config";
 import { LoginFormData } from "./login/LoginForm";
 import { RegisterFormData } from "./register/RegisterForm";
-import { STOREFRONT_URL } from "@/lib/const";
+import { BASE_URL, STOREFRONT_URL } from "@/lib/const";
 import { DEFAULT_CHANNEL, defaultRegionQuery } from "@/lib/regions";
 import { ResetFormData } from "./reset/ForgotPassword";
 import { ResetPasswordFormData } from "./reset/ResetPasswordForm";
@@ -51,6 +51,7 @@ import { customerDetach } from "@/components/checkout/actions";
 import { cookies } from "next/headers";
 import { readFile } from "fs/promises";
 import path from "path";
+import { generateProductsJson } from "@/lib/generateProductsJson";
 
 export async function logout() {
   //if any checkout and attached customer  =>  detach
@@ -260,7 +261,7 @@ function isCategoryDescendant(category: any | null, filterCategories: string[]):
 
 export async function getAvailableFilters(productsFilter: ProductFilterInput) {
   try {
-    console.log("productsFilter", productsFilter);
+    // console.log("productsFilter", productsFilter);
     //const products = JSON.parse(await readFile(PRODUCTS_JSON_PATH, 'utf8'));
     // const { products } = await executeGraphQL<
     //   AvailableProductFiltersQuery,
@@ -272,65 +273,123 @@ export async function getAvailableFilters(productsFilter: ProductFilterInput) {
     //   },
     //   revalidate: 60 * 60,
     // });
-    console.log("productsFilter", productsFilter);
-    const productsData = JSON.parse(await readFile(PRODUCTS_JSON_PATH, "utf8"));
-    const filteredEdges = productsData.edges.filter((edge: any) => {
-      const product = edge.node;
 
-      // Filter by attributes (both product-level and variant-level)
-      if (productsFilter.attributes && productsFilter.attributes.length > 0) {
-        const matchesAllAttributes = productsFilter.attributes.every((filterAttr) => {
-          // Check product-level attributes
-          const productAttr = product.attributes.find(
-            (attr: { attribute: { slug: string } }) => attr.attribute.slug === filterAttr.slug,
-          );
-          if (productAttr) {
-            return filterAttr?.values?.some((value) =>
-              productAttr.values.some((attrValue: { slug: string }) => attrValue.slug === value),
-            );
-          }
-
-          // If not found in product attributes, check variant attributes
-          return product?.variants?.some((variant: { attributes: any[] }) => {
-            const variantAttr = variant.attributes.find(
-              (attr) => attr.attribute.slug === filterAttr.slug,
-            );
-            if (!variantAttr) return false;
-            return filterAttr?.values?.some((value) =>
-              variantAttr.values.some((attrValue: { slug: string }) => attrValue.slug === value),
-            );
-          });
+    let productsData;
+    try {
+      productsData = JSON.parse(await readFile(PRODUCTS_JSON_PATH, "utf8"));
+    } catch (error: unknown) {
+      if ((error as { code?: string }).code === "ENOENT") {
+        console.error("File does not exist:", PRODUCTS_JSON_PATH);
+        //generate the json file
+        await generateProductsJson();
+        productsData = JSON.parse(await readFile(PRODUCTS_JSON_PATH, "utf8"));
+        //start the bull queue
+        const Bull = require("bull");
+        const generateProductsQueue = new Bull("generateProductsQueue", {
+          redis: {
+            host: process.env.REDIS_HOST || "localhost",
+            port: Number(process.env.REDIS_PORT) || 6379,
+            maxRetriesPerRequest: 1,
+            connectTimeout: 2000,
+          },
+          defaultJobOptions: {
+            removeOnComplete: 10,
+            removeOnFail: 10,
+          },
         });
-        if (!matchesAllAttributes) return false;
-      }
 
-      // Filter by categories (including parent categories)
-      if (productsFilter.categories && productsFilter.categories.length > 0) {
-        const categoryMatch = isCategoryDescendant(product.category, productsFilter.categories);
-        // console.log('Category match:', categoryMatch);
-        if (!categoryMatch) {
-          return false;
+        // Define the processor
+        generateProductsQueue.process(async () => {
+          try {
+            //console.log('Starting products generation job');
+            await generateProductsJson();
+            //console.log('Products JSON created successfully');
+            return { status: "success" };
+          } catch (error) {
+            console.error("Error generating products json:", error);
+            throw error;
+          }
+        });
+
+        try {
+          const job = await generateProductsQueue.add(
+            {},
+            {
+              repeat: {
+                cron: "0 4 * * *",
+              },
+              removeOnComplete: true,
+            },
+          );
+          console.log("Queue job scheduled successfully:", job.id);
+        } catch (queueError) {
+          console.error("Failed to schedule queue job:", queueError);
         }
+      } else {
+        // Handle other possible errors, if necessary
+        console.error("Error reading file:", error);
       }
+    }
 
-      // Filter by collections
-      if (productsFilter.collections && productsFilter.collections.length > 0) {
-        const collectionMatch = productsFilter.collections.some((filterCollection) =>
-          product?.collections?.includes(filterCollection),
-        );
-        console.log(
-          "Product:",
-          product.name,
-          "Collections:",
-          product.collections,
-          "Match:",
-          collectionMatch,
-        );
-        if (!collectionMatch) return false;
-      }
+    const filteredEdges =
+      productsData &&
+      productsData.edges.filter((edge: any) => {
+        const product = edge.node;
 
-      return true;
-    });
+        // Filter by attributes (both product-level and variant-level)
+        if (productsFilter.attributes && productsFilter.attributes.length > 0) {
+          const matchesAllAttributes = productsFilter.attributes.every((filterAttr) => {
+            // Check product-level attributes
+            const productAttr = product.attributes.find(
+              (attr: { attribute: { slug: string } }) => attr.attribute.slug === filterAttr.slug,
+            );
+            if (productAttr) {
+              return filterAttr?.values?.some((value) =>
+                productAttr.values.some((attrValue: { slug: string }) => attrValue.slug === value),
+              );
+            }
+
+            // If not found in product attributes, check variant attributes
+            return product?.variants?.some((variant: { attributes: any[] }) => {
+              const variantAttr = variant.attributes.find(
+                (attr) => attr.attribute.slug === filterAttr.slug,
+              );
+              if (!variantAttr) return false;
+              return filterAttr?.values?.some((value) =>
+                variantAttr.values.some((attrValue: { slug: string }) => attrValue.slug === value),
+              );
+            });
+          });
+          if (!matchesAllAttributes) return false;
+        }
+
+        // Filter by categories (including parent categories)
+        if (productsFilter.categories && productsFilter.categories.length > 0) {
+          const categoryMatch = isCategoryDescendant(product.category, productsFilter.categories);
+          // console.log('Category match:', categoryMatch);
+          if (!categoryMatch) {
+            return false;
+          }
+        }
+
+        // Filter by collections
+        if (productsFilter.collections && productsFilter.collections.length > 0) {
+          const collectionMatch = productsFilter.collections.some((filterCollection) =>
+            product?.collections?.includes(filterCollection),
+          );
+          console.log(
+            "Product:",
+            product.name,
+            "Collections:",
+            product.collections,
+            "Match:",
+            collectionMatch,
+          );
+          if (!collectionMatch) return false;
+        }
+
+        return true;
+      });
 
     const filteredProducts = {
       edges: filteredEdges,
