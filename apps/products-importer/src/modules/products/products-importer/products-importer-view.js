@@ -686,7 +686,7 @@ export const ProductsImporterView = () => {
           }
         }
       }
-      console.log(products);
+      console.log("products", products);
       return Object.values(products);
     } catch (error) {
       handleErrors(error.message);
@@ -745,8 +745,8 @@ export const ProductsImporterView = () => {
               }
             });
           }
-          setUploading(false);
         }
+        setUploading(false);
       }
     } catch (error) {
       handleErrors(error.message);
