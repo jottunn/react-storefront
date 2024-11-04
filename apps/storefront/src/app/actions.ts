@@ -42,16 +42,17 @@ import {
 import { saleorAuthClient } from "src/app/config";
 import { LoginFormData } from "./login/LoginForm";
 import { RegisterFormData } from "./register/RegisterForm";
-import { BASE_URL, STOREFRONT_URL } from "@/lib/const";
+import { STOREFRONT_URL } from "@/lib/const";
 import { DEFAULT_CHANNEL, defaultRegionQuery } from "@/lib/regions";
 import { ResetFormData } from "./reset/ForgotPassword";
 import { ResetPasswordFormData } from "./reset/ResetPasswordForm";
 import { ConfirmData } from "./confirm/ConfirmResult";
 import { customerDetach } from "@/components/checkout/actions";
 import { cookies } from "next/headers";
-import { readFile } from "fs/promises";
+import { readFile, stat } from "fs/promises";
 import path from "path";
 import { generateProductsJson } from "@/lib/generateProductsJson";
+import Bull from "bull";
 
 export async function logout() {
   //if any checkout and attached customer  =>  detach
@@ -236,7 +237,7 @@ export async function getCurrentUser(): Promise<User | null> {
     return null;
   }
 }
-const PRODUCTS_JSON_PATH = path.join(process.cwd(), "public", "products.json");
+
 function isCategoryDescendant(category: any | null, filterCategories: string[]): boolean {
   if (!category) {
     // console.log('Category is null');
@@ -259,6 +260,122 @@ function isCategoryDescendant(category: any | null, filterCategories: string[]):
   return isDescendant;
 }
 
+//generate products.json for faster product filtering
+//cache the file reading operation + Only sets up the Bull queue when the file needs to be generated initially
+const PRODUCTS_JSON_PATH = path.join(process.cwd(), "public", "products.json");
+let cachedProductsData: any = null;
+let lastUpdated = 0;
+let lastModifiedTime: number | null = null;
+
+const getProductsFromDisk = async () => {
+  //console.log("Reading products.json from disk");
+  try {
+    const data = await readFile(PRODUCTS_JSON_PATH, "utf8");
+    cachedProductsData = JSON.parse(data);
+    lastUpdated = Date.now(); // Update the cache timestamp
+    lastModifiedTime = (await stat(PRODUCTS_JSON_PATH)).mtimeMs;
+    return cachedProductsData;
+  } catch (error) {
+    console.error("Error reading products.json:", error);
+    return null;
+  }
+};
+
+const checkAndScheduleJob = async (queue: Bull.Queue) => {
+  try {
+    // Get all repeat jobs
+    const repeatableJobs = await queue.getRepeatableJobs();
+    console.log("Existing repeatable jobs:", repeatableJobs);
+
+    // Check if our specific job already exists
+    const existingJob = repeatableJobs.find(
+      (job: { cron: string }) => job.cron === "0 5 * * *", // Same cron pattern
+    );
+
+    if (existingJob) {
+      console.log("Job already scheduled:", existingJob);
+      return;
+    }
+
+    // Schedule new job only if none exists
+    const job = await queue.add(
+      {},
+      {
+        repeat: {
+          cron: "0 5 * * *", // Run daily at 5 AM
+        },
+        removeOnComplete: true,
+      },
+    );
+    console.log("New daily products generation scheduled, job ID:", job.id);
+  } catch (error) {
+    console.error("Error checking/scheduling job:", error);
+  }
+};
+
+export const getProductsData = async (): Promise<any | null> => {
+  //console.log("getProductsData called");
+  // Log the current state of the cache
+  // console.log(`Current cachedProductsData: ${cachedProductsData ? "Exists" : "Does not exist"}`);
+  // console.log(`Current lastUpdated: ${lastUpdated}`);
+  // console.log(`Current lastModifiedTime: ${lastModifiedTime}`);
+
+  let fileStats;
+  try {
+    fileStats = await stat(PRODUCTS_JSON_PATH);
+    const currentModifiedTime = fileStats.mtimeMs;
+
+    if (
+      !cachedProductsData ||
+      Date.now() - lastUpdated > 24 * 60 * 60 * 1000 ||
+      (lastModifiedTime !== null && currentModifiedTime !== lastModifiedTime)
+    ) {
+      console.log("Cache expired or missing, reloading products.json from disk");
+      return await getProductsFromDisk();
+    }
+  } catch (error: unknown) {
+    if ((error as { code?: string }).code === "ENOENT") {
+      console.log("Products file not found, generating new file...");
+      await generateProductsJson();
+      fileStats = await stat(PRODUCTS_JSON_PATH);
+
+      // Set up Bull queue for daily updates
+      const Bull = require("bull");
+      const generateProductsQueue = new Bull("generateProductsQueue", {
+        redis: {
+          host: process.env.REDIS_HOST || "localhost",
+          port: Number(process.env.REDIS_PORT) || 6379,
+          maxRetriesPerRequest: 1,
+          connectTimeout: 2000,
+        },
+      });
+      // Define the processor
+      generateProductsQueue.process(async () => {
+        try {
+          //console.log('Starting scheduled products generation');
+          await generateProductsJson();
+          console.log("Scheduled products JSON created successfully");
+          return { status: "success" };
+        } catch (error) {
+          console.error("Error in scheduled products generation:", error);
+          throw error;
+        }
+      });
+
+      // Check and schedule job
+      await checkAndScheduleJob(generateProductsQueue);
+
+      return await getProductsFromDisk();
+    } else {
+      console.error("Unexpected error reading products file:", error);
+      throw error;
+    }
+  }
+
+  //console.log("Returning cached data");
+  return cachedProductsData;
+};
+
 export async function getAvailableFilters(productsFilter: ProductFilterInput) {
   try {
     // console.log("productsFilter", productsFilter);
@@ -274,63 +391,7 @@ export async function getAvailableFilters(productsFilter: ProductFilterInput) {
     //   revalidate: 60 * 60,
     // });
 
-    let productsData;
-    try {
-      productsData = JSON.parse(await readFile(PRODUCTS_JSON_PATH, "utf8"));
-    } catch (error: unknown) {
-      if ((error as { code?: string }).code === "ENOENT") {
-        console.error("File does not exist:", PRODUCTS_JSON_PATH);
-        //generate the json file
-        await generateProductsJson();
-        productsData = JSON.parse(await readFile(PRODUCTS_JSON_PATH, "utf8"));
-        //start the bull queue
-        const Bull = require("bull");
-        const generateProductsQueue = new Bull("generateProductsQueue", {
-          redis: {
-            host: process.env.REDIS_HOST || "localhost",
-            port: Number(process.env.REDIS_PORT) || 6379,
-            maxRetriesPerRequest: 1,
-            connectTimeout: 2000,
-          },
-          defaultJobOptions: {
-            removeOnComplete: 10,
-            removeOnFail: 10,
-          },
-        });
-
-        // Define the processor
-        generateProductsQueue.process(async () => {
-          try {
-            //console.log('Starting products generation job');
-            await generateProductsJson();
-            //console.log('Products JSON created successfully');
-            return { status: "success" };
-          } catch (error) {
-            console.error("Error generating products json:", error);
-            throw error;
-          }
-        });
-
-        try {
-          const job = await generateProductsQueue.add(
-            {},
-            {
-              repeat: {
-                cron: "0 4 * * *",
-              },
-              removeOnComplete: true,
-            },
-          );
-          console.log("Queue job scheduled successfully:", job.id);
-        } catch (queueError) {
-          console.error("Failed to schedule queue job:", queueError);
-        }
-      } else {
-        // Handle other possible errors, if necessary
-        console.error("Error reading file:", error);
-      }
-    }
-
+    const productsData = await getProductsData();
     const filteredEdges =
       productsData &&
       productsData.edges.filter((edge: any) => {

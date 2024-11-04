@@ -10,8 +10,6 @@ services:
       - 3000:3000
     networks:
       - saleor-backend-tier
-    volumes:
-      - storefront-public-volume:/app/apps/storefront/public
     command: sh -c '(nginx &) && pnpm turbo run start --filter=storefront...'
   products-importer:
     container_name: products-importer
@@ -108,7 +106,6 @@ volumes:
   manage-stock-logs-volume:
   payment-auth-volume:
   payment-logs-volume:
-  storefront-public-volume:
 
 networks:
   saleor-backend-tier:
