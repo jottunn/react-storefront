@@ -114,9 +114,11 @@ const SaleForm: React.FC<SaleFormProps> = ({
           />
         </div>
         <Box>
-          <br />
           <Button type="submit" margin={4} disabled={isSaveDisabled}>
             Save changes for {sale.name}
+          </Button>
+          <Button type="submit" margin={4}>
+            Resync {sale.name}
           </Button>
         </Box>
       </div>
