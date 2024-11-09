@@ -14,7 +14,11 @@ const SyncPage = () => {
     setLoading(true);
     const response = await syncStock(client, codStoc);
     if (response) {
-      setResult(response);
+      if (Array.isArray(response)) {
+        setResult(response);
+      } else if (response.messages) {
+        setResult(response.messages);
+      }
     }
     setLoading(false);
   };
@@ -30,7 +34,9 @@ const SyncPage = () => {
         <Spinner />
       ) : (
         <>
-          <label htmlFor="codstoc">Enter cod stoc or leave empty to resync all products</label>
+          <label htmlFor="codstoc">
+            Enter cod stoc or leave empty to schedule the resync for all products
+          </label>
           <br />
           <input
             type="text"

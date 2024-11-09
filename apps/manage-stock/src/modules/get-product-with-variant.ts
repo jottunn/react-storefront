@@ -1,9 +1,5 @@
 import { Client } from "urql";
-import {
-  GetProductVariantBySkuDocument,
-  ProductCollectionDocument,
-  ProductFilterInput,
-} from "../../generated/graphql";
+import { GetProductVariantBySkuDocument } from "../../generated/graphql";
 
 export async function getProductWithVariant(client: Client, sku: string) {
   const { data } = await client.query(

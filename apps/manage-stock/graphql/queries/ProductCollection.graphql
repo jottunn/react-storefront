@@ -1,5 +1,5 @@
-query ProductCollection($filter: ProductFilterInput, $channel: String) {
-  products(first: 1000, channel: $channel, filter: $filter) {
+query ProductCollection($filter: ProductFilterInput, $channel: String, $first: Int, $after: String) {
+  products(first: $first, after: $after, channel: $channel, filter: $filter) {
     edges {
       node {
         id
@@ -9,10 +9,17 @@ query ProductCollection($filter: ProductFilterInput, $channel: String) {
           sku
           quantityLimitPerCustomer
           stocks {
+            warehouse {
+              slug
+            }
             quantity
           }
         }
       }    
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
     }
   }
 }
