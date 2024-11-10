@@ -438,14 +438,14 @@ export async function getAvailableFilters(productsFilter: ProductFilterInput) {
           const collectionMatch = productsFilter.collections.some((filterCollection) =>
             product?.collections?.includes(filterCollection),
           );
-          console.log(
-            "Product:",
-            product.name,
-            "Collections:",
-            product.collections,
-            "Match:",
-            collectionMatch,
-          );
+          // console.log(
+          //   "Product:",
+          //   product.name,
+          //   "Collections:",
+          //   product.collections,
+          //   "Match:",
+          //   collectionMatch,
+          // );
           if (!collectionMatch) return false;
         }
 
