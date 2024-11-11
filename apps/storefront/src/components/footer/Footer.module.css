@@ -6,12 +6,6 @@
   @apply sm:container px-6;
 }
 
-@screen sm {
-  .footer-inner {
-    padding: calc(theme("spacing.10") - theme("borderWidth.2"));
-  }
-}
-
 .menu {
   @apply list-none mb-8;
 }
