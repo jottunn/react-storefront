@@ -36,12 +36,14 @@ export default function PageStrapi({ page }: any) {
         </div>
       </header>
       <main className="pt-6 px-8 pb-12 text-base container">
-        {!hasHeroComponent && (
+        {(!hasHeroComponent || hasHeroComponent.length === 0) && (
           <h1 className="text-4xl font-bold pb-8" data-testid={`titleOf${pageTitle}`}>
             {pageTitle}
           </h1>
         )}
-        {pageContent.map((section: any, index: number) => sectionRenderer(section, index))}
+        {pageContent &&
+          pageContent.length > 0 &&
+          pageContent.map((section: any, index: number) => sectionRenderer(section, index))}
       </main>
     </>
   );

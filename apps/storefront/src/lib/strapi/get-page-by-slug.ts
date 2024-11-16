@@ -13,12 +13,6 @@ export async function getPageBySlug(slug: string, lang: string) {
       seo: {
         populate: "*",
       },
-      media: {
-        populate: "*",
-      },
-      hero: {
-        fields: "*",
-      },
     },
   };
   const options = { headers: { Authorization: `Bearer ${token}` } };

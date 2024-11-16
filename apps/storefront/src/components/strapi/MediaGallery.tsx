@@ -1,28 +1,20 @@
 "use client";
-import { generateSrcset, getStrapiMedia } from "@/lib/strapi/api-helpers";
+import { getStrapiMedia } from "@/lib/strapi/api-helpers";
 import Image from "next/image";
 import { useState } from "react";
 import MediaModal from "src/app/p/[slug]/media/MediaModal";
 
-interface Image {
-  id: number;
-  attributes: {
-    alternativeText: string | null;
-    caption: string | null;
-    url: string;
-    formats: any;
-    width: number;
-    height: number;
-  };
-}
+const getNumColumns = (length: number) => {
+  let numColumns = 3;
+  if (length < 3) {
+    numColumns = 2;
+  } else if (length % 4 === 0) {
+    numColumns = 4;
+  }
+  return numColumns;
+};
 
-interface SlidShowProps {
-  mediaGallery: {
-    data: Image[];
-  };
-}
-
-export default function MediaGallery({ data }: { data: SlidShowProps }) {
+export default function MediaGallery({ data }: { data: any }) {
   const [currentIndex, setCurrentIndex] = useState<number | null>(null);
   const handleImageClick = (index: number) => {
     setCurrentIndex(index);
@@ -32,20 +24,29 @@ export default function MediaGallery({ data }: { data: SlidShowProps }) {
     setCurrentIndex(null);
   };
   let mediaGalleryMap: { url: string | null; alt: string }[] = [];
+  const mediaGallery = data.mediaGallery?.data; //strapi5  const mediaGallery = data.mediaGallery;
+  const numColumnsHPCollections =
+    mediaGallery && mediaGallery !== null ? getNumColumns(mediaGallery.length) : 1;
+
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 py-12">
-        {data.mediaGallery &&
-          data.mediaGallery.data &&
-          data.mediaGallery.data.length > 0 &&
-          data.mediaGallery.data.map((fadeImage: Image, index) => {
-            const imageUrl = getStrapiMedia(fadeImage.attributes.url);
-            const smallImage = fadeImage?.attributes?.formats && fadeImage.attributes.formats.small;
+      <div
+        className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-${numColumnsHPCollections} gap-4 mt-10 md:mt-20 md:mb-40`}
+      >
+        {mediaGallery &&
+          mediaGallery.length > 0 &&
+          mediaGallery.map((fadeImage: any, index: any) => {
+            const fadeImageData = fadeImage.attributes; //strapi 5, use directly fadeIMage
+            const imageUrl = getStrapiMedia(fadeImageData.url);
+            const smallImage =
+              fadeImageData?.formats && fadeImageData?.formats.small
+                ? fadeImageData?.formats.small
+                : "";
             const imageUrlSmall = smallImage && smallImage.url && getStrapiMedia(smallImage.url);
 
             mediaGalleryMap.push({
               url: imageUrl,
-              alt: fadeImage?.attributes?.alternativeText || "",
+              alt: fadeImageData?.alternativeText || "",
             });
             return (
               <div
@@ -53,16 +54,17 @@ export default function MediaGallery({ data }: { data: SlidShowProps }) {
                 onClick={() => handleImageClick(index)}
                 className="cursor-pointer m-auto hover:brightness-125 hover:contrast-115 transition-all duration-30"
               >
-                <img
+                <Image
                   src={imageUrlSmall || imageUrl}
+                  alt={fadeImageData?.alternativeText || ""}
+                  priority={index <= 1 ? true : false}
+                  loading={index <= 1 ? "eager" : "lazy"}
+                  sizes="(max-width: 640px) 100vw, 100vw"
                   className="w-full h-96 object-cover rounded-lg"
-                  height={smallImage ? smallImage.height : fadeImage.attributes.height}
-                  width={smallImage ? smallImage.width : fadeImage.attributes.width}
-                  alt={fadeImage?.attributes?.alternativeText || ""}
+                  height={smallImage ? smallImage.height : fadeImageData.height}
+                  width={smallImage ? smallImage.width : fadeImageData.width}
                 />
-                {fadeImage.attributes?.caption && (
-                  <p className="text-base my-2">{fadeImage?.attributes?.caption}</p>
-                )}
+                {fadeImageData.caption && <p className="text-base my-2">{fadeImageData.caption}</p>}
               </div>
             );
           })}

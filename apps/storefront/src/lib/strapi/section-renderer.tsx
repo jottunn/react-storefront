@@ -2,6 +2,7 @@ import HtmlContent from "@/components/HtmlContent";
 import VideoEmbed from "@/components/VideoEmbed";
 import Accordion from "@/components/strapi/Accordion";
 import BlockRendererClient from "@/components/strapi/BlocksRendererClient";
+import ButtonLink from "@/components/strapi/ButtonLink";
 import GoogleMap from "@/components/strapi/GoogleMap";
 import GridLayout from "@/components/strapi/GridLayout";
 import Hero from "@/components/strapi/Hero";
@@ -28,6 +29,8 @@ export function sectionRenderer(section: any, index: number) {
       return <Accordion key={index} data={section} />;
     case "links.google-map":
       return <GoogleMap key={index} data={section} />;
+    case "links.button-link":
+      return <ButtonLink key={index} data={section} />;
     default:
       return null;
   }

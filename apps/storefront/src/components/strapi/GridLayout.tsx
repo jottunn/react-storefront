@@ -14,7 +14,7 @@ export default function GridLayout({ data }: GridLayoutProps) {
         data.gridColumn.map((column, index) => {
           return (
             <div key={index}>
-              <HtmlContent htmlContent={column} />
+              <HtmlContent htmlContent={column.columnContent} />
             </div>
           );
         })}
