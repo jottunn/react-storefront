@@ -5,9 +5,9 @@ import { HTMLAttributes } from "react";
 import styles from "./Footer.module.css";
 import Box from "../Box";
 import {
-  FooterMenuDocument,
-  FooterMenuQuery,
   LanguageCodeEnum,
+  MenuGetBySlugDocument,
+  MenuGetBySlugQuery,
   PageTypesDocument,
   PageTypesQuery,
 } from "@/saleor/api";
@@ -25,13 +25,25 @@ import CartNavItem from "../cart/CartNavItem";
 export default async function Footer({ className, ...rest }: FooterProps) {
   "use server";
   const messages = getMessages(DEFAULT_LOCALE, "app.nwl");
-  let footerNavLinks, contactContentResponse;
+  let footerNavLinks, contactContentResponse, legalNavLinks;
   try {
     footerNavLinks = await executeGraphQL<
-      FooterMenuQuery,
+      MenuGetBySlugQuery,
       { slug: string; channel: string; locale: string }
-    >(FooterMenuDocument, {
-      variables: { slug: "navbar", ...defaultRegionQuery() },
+    >(MenuGetBySlugDocument, {
+      variables: { slug: "footer", ...defaultRegionQuery() },
+      revalidate: 60 * 60,
+    });
+  } catch {
+    return null;
+  }
+
+  try {
+    legalNavLinks = await executeGraphQL<
+      MenuGetBySlugQuery,
+      { slug: string; channel: string; locale: string }
+    >(MenuGetBySlugDocument, {
+      variables: { slug: "legal", ...defaultRegionQuery() },
       revalidate: 60 * 60,
     });
   } catch {
@@ -62,7 +74,7 @@ export default async function Footer({ className, ...rest }: FooterProps) {
       <SvgSprite />
       <Box className={styles["footer-inner"]}>
         <div className={styles["footer-grid"]}>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 w-full mb-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full mb-4">
             {footerNavLinks &&
               footerNavLinks.menu &&
               footerNavLinks.menu.items &&
@@ -141,11 +153,8 @@ export default async function Footer({ className, ...rest }: FooterProps) {
           </div>
         </div>
 
-        <div className="md:flex items-start items-center pt-8 border-t border-main-6">
-          <p className="text-sm text-main-2 flex-grow text-left mb-4">
-            © Copyright {new Date().getFullYear()} Surmont Shop. Toate drepturile rezervate.
-          </p>
-          <div className="flex justify-center space-x-4">
+        <div className="md:flex justify-center pt-8 pb-2 border-t border-main-6">
+          <div className="flex space-x-4">
             <a href="#" className="mb-2 inline-block">
               <Image
                 src={"/visa-master-card-logos.jpg"}
@@ -174,6 +183,28 @@ export default async function Footer({ className, ...rest }: FooterProps) {
           </div>
         </div>
       </Box>
+      <div className="bg-gray-100 pt-8 pb-10">
+        <div className="container text-center">
+          <p className="text-base text-main-1 flex-grow text-left mb-2 block md:inline">
+            © Copyright {new Date().getFullYear()} Surmont Shop. Toate drepturile rezervate.
+            <span className="pl-6 hidden md:inline">|</span>
+          </p>
+          {legalNavLinks &&
+            legalNavLinks.menu &&
+            legalNavLinks.menu.items &&
+            legalNavLinks.menu?.items.length > 0 &&
+            legalNavLinks.menu?.items?.map((item, i) => (
+              <Link
+                key={item.id}
+                href={item.url ? item.url : "#"}
+                rel="noreferrer"
+                className="text-base px-4 hover:text-action-1 hover:underline block md:inline"
+              >
+                {item?.name}
+              </Link>
+            ))}
+        </div>
+      </div>
     </footer>
   );
 }

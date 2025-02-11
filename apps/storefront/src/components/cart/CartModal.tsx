@@ -75,10 +75,11 @@ export default function CartModal({ messages, display }: CartModalProps) {
         onClick={openCart}
         type="button"
         title={messages["app.checkout.openCart"]}
+        className={display === "footer" ? "text-left mt-2" : ""}
       >
         {" "}
         {display === "footer" ? (
-          <span className="text-base cursor-pointer hover:underline leading-[2.4]">
+          <span className="text-base cursor-pointer hover:underline">
             {messages["app.cart.link"]}
           </span>
         ) : (

@@ -32,7 +32,7 @@ export function ShippingMethodSection({ active, messages }: ShippingMethodSectio
     loading: false,
   });
 
-  console.log("checkout", checkout);
+  //console.log("checkout", checkout);
   if (!checkout) {
     return;
   }

@@ -1,5 +1,5 @@
 .footer {
-  @apply pb-18 sm:mb-15 pt-10 border-t-2;
+  @apply pt-10 border-t-2;
 }
 
 .footer-inner {

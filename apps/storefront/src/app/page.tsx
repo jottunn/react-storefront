@@ -288,7 +288,7 @@ export default async function Home() {
     <>
       {hasBanner1 && (
         <div
-          className={`flex overflow-hidden mb-10 md:mb-18 !px-0 ${bannerContainerSize && bannerContainerSize === "YES" ? "" : "max-w-[1920px] mx-auto"}`}
+          className={`flex overflow-hidden mb-1 md:mb-1 !px-0 ${bannerContainerSize && bannerContainerSize === "YES" ? "" : "max-w-[1920px] mx-auto"}`}
         >
           <div
             className={`flex flex-col w-full md:max-h-[80vh] ${hasBanner1 && hasBanner2 ? "h-auto md:w-[98%] mx-auto md:flex-row gap-4 md:gap-6" : ""} ${hasBanner1 && !hasBanner2 ? "h-[125vw]" : ""}`}
@@ -316,7 +316,7 @@ export default async function Home() {
       )}
 
       {parsedContent && !isEmptyContent && (
-        <div className="container mb-4 md:mb-14 mx-auto max-w-[800px] text-center prose-2xl">
+        <div className="container my-4 md:my-8 mx-auto max-w-[800px] text-center prose-2xl">
           <div dangerouslySetInnerHTML={{ __html: parsedContent }} />
         </div>
       )}
@@ -324,7 +324,7 @@ export default async function Home() {
       <div className="container block">
         {homepageCollections && homepageCollections.length > 0 && (
           <div
-            className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-${numColumnsHPCollections} gap-4 mt-10 md:mt-20 md:mb-40`}
+            className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-${numColumnsHPCollections} gap-4 my-6`}
           >
             {homepageCollections.map((collection) => (
               <HomepageBlock key={collection.id} item={collection} type="collection" />
@@ -333,7 +333,7 @@ export default async function Home() {
         )}
         {homepageCategories && homepageCategories.length > 0 && (
           <div
-            className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-${numColumnsHPCategories} gap-4 my-10 md:mt-20 md:mb-40`}
+            className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-${numColumnsHPCategories} gap-4 my-6`}
           >
             {homepageCategories.map((category) => (
               <HomepageBlock key={category.id} item={category} type="category" />
@@ -343,7 +343,7 @@ export default async function Home() {
       </div>
 
       {displayedSalesProducts && displayedSalesProducts.length > 0 && (
-        <div className="container px-8 pb-2 md:pb-24">
+        <div className="container py-4 md:pt-10 md:pb-24">
           <div className="swiper-header flex justify-center items-center space-x-4">
             <h2 className="text-lg uppercase m-0 flex-1 text-left mb-8">
               {messages["app.search.outletTitle"]}
@@ -372,7 +372,7 @@ export default async function Home() {
         displayNewProducts === "YES" &&
         newProducts &&
         newProducts.length > 0 && (
-          <div className="container px-8 py-4 md:pb-24">
+          <div className="container py-4 md:pt-10 md:pb-24">
             <div className="swiper-header flex justify-center items-center space-x-4">
               <h2 className="text-lg uppercase m-0 flex-1 text-left mb-8">
                 {messages["app.newProducts"]}
@@ -397,7 +397,7 @@ export default async function Home() {
           </div>
         )}
 
-      <div className=" py-12 md:py-32 mb-20 items-center justify-items-center w-full border-t border-dark=300 md:min-h-[90px]">
+      <div className=" py-12 md:py-20 mb-10 items-center justify-items-center w-full border-t border-dark=300 md:min-h-[90px]">
         <div className="container grid grid-cols-4 md:grid-cols-8 gap-6 md:gap-12 lg:gap-20 items-center">
           {brandCollections &&
             brandCollections.collections?.edges.map((brand) => {

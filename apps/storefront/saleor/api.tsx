@@ -36672,39 +36672,6 @@ export type CollectionsByMetaKeyQuery = {
   } | null;
 };
 
-export type FooterMenuQueryVariables = Exact<{
-  locale: LanguageCodeEnum;
-  channel: Scalars["String"]["input"];
-}>;
-
-export type FooterMenuQuery = {
-  __typename?: "Query";
-  menu?: {
-    __typename?: "Menu";
-    id: string;
-    items?: Array<{
-      __typename?: "MenuItem";
-      id: string;
-      name: string;
-      url?: string | null;
-      children?: Array<{
-        __typename?: "MenuItem";
-        id: string;
-        name: string;
-        url?: string | null;
-        translation?: { __typename?: "MenuItemTranslation"; id: string; name: string } | null;
-        category?: { __typename?: "Category"; id: string; slug: string } | null;
-        collection?: { __typename?: "Collection"; id: string; slug: string } | null;
-        page?: { __typename?: "Page"; id: string; slug: string } | null;
-      }> | null;
-      translation?: { __typename?: "MenuItemTranslation"; id: string; name: string } | null;
-      category?: { __typename?: "Category"; id: string; slug: string } | null;
-      collection?: { __typename?: "Collection"; id: string; slug: string } | null;
-      page?: { __typename?: "Page"; id: string; slug: string } | null;
-    }> | null;
-  } | null;
-};
-
 export type HomepageBlocksQueryVariables = Exact<{
   slug: Scalars["String"]["input"];
   channel: Scalars["String"]["input"];
@@ -41212,67 +41179,6 @@ export type CollectionsByMetaKeyQueryResult = Apollo.QueryResult<
   CollectionsByMetaKeyQuery,
   CollectionsByMetaKeyQueryVariables
 >;
-export const FooterMenuDocument = gql`
-  query FooterMenu($locale: LanguageCodeEnum!, $channel: String!) {
-    menu(slug: "footer", channel: $channel) {
-      id
-      items {
-        children {
-          ...MenuItemFragment
-        }
-        ...MenuItemFragment
-      }
-    }
-  }
-  ${MenuItemFragmentDoc}
-`;
-
-/**
- * __useFooterMenuQuery__
- *
- * To run a query within a React component, call `useFooterMenuQuery` and pass it any options that fit your needs.
- * When your component renders, `useFooterMenuQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useFooterMenuQuery({
- *   variables: {
- *      locale: // value for 'locale'
- *      channel: // value for 'channel'
- *   },
- * });
- */
-export function useFooterMenuQuery(
-  baseOptions: Apollo.QueryHookOptions<FooterMenuQuery, FooterMenuQueryVariables> &
-    ({ variables: FooterMenuQueryVariables; skip?: boolean } | { skip: boolean }),
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<FooterMenuQuery, FooterMenuQueryVariables>(FooterMenuDocument, options);
-}
-export function useFooterMenuLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<FooterMenuQuery, FooterMenuQueryVariables>,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<FooterMenuQuery, FooterMenuQueryVariables>(
-    FooterMenuDocument,
-    options,
-  );
-}
-export function useFooterMenuSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<FooterMenuQuery, FooterMenuQueryVariables>,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<FooterMenuQuery, FooterMenuQueryVariables>(
-    FooterMenuDocument,
-    options,
-  );
-}
-export type FooterMenuQueryHookResult = ReturnType<typeof useFooterMenuQuery>;
-export type FooterMenuLazyQueryHookResult = ReturnType<typeof useFooterMenuLazyQuery>;
-export type FooterMenuSuspenseQueryHookResult = ReturnType<typeof useFooterMenuSuspenseQuery>;
-export type FooterMenuQueryResult = Apollo.QueryResult<FooterMenuQuery, FooterMenuQueryVariables>;
 export const HomepageBlocksQueryDocument = gql`
   query HomepageBlocksQuery($slug: String!, $channel: String!, $locale: LanguageCodeEnum!) {
     menu(channel: $channel, slug: $slug) {
