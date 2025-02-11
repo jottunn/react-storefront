@@ -19,7 +19,7 @@ export default function CartModal({ messages }: CartModalProps) {
   const { checkout, refreshCheckout } = useCheckout();
   const pathname = usePathname();
   const [cartModalOpen, setCartModalOpen] = useState(false);
-  const [prevCounter, setPrevCounter] = useState(0);
+  const [prevCounter, setPrevCounter] = useState<number | null>(null);
 
   const openCart = useCallback(() => setCartModalOpen(true), []);
   const closeCart = useCallback(() => setCartModalOpen(false), []);
@@ -39,11 +39,20 @@ export default function CartModal({ messages }: CartModalProps) {
   }, [refreshCheckout]);
 
   useEffect(() => {
+    if (!checkout) {
+      return;
+    }
+
     if (pathname === "/checkout" || pathname === "/order" || pathname === "/payment-confirm") {
       closeCart();
       if (counter !== prevCounter) {
         setPrevCounter(counter);
       }
+      return;
+    }
+    if (prevCounter === null) {
+      // Initialize prevCounter to counter on first render
+      setPrevCounter(counter);
       return;
     }
 
