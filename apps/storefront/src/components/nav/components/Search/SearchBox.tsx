@@ -105,11 +105,11 @@ function CustomSearchBox() {
         className="group relative my-2 flex w-full items-center justify-items-center text-sm lg:w-[32rem]"
       >
         <label className="w-full">
-          <span className="sr-only">TODO:searchTitle</span>
+          <span className="sr-only"></span>
           <Input
             id="algolia_search"
             type="search"
-            placeholder="Search for products"
+            placeholder="Cauta produse"
             value={inputValue}
             onChange={handleChange}
             onFocus={handleFocus}
@@ -122,7 +122,7 @@ function CustomSearchBox() {
             type="submit"
             className="inline-flex aspect-square w-10 items-center justify-center text-neutral-500 hover:text-neutral-700 focus:text-neutral-700 group-invalid:pointer-events-none group-invalid:opacity-80 mt-1"
           >
-            <span className="sr-only">TODO:search</span>
+            <span className="sr-only"></span>
             <MagnifyingGlassIcon className="w-6 h-6 relative top-1" />
           </button>
         </div>

@@ -9,7 +9,6 @@ import { MenuGetBySlugQuery, User } from "@/saleor/api";
 import { ReactNode, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getCurrentUser, logout } from "src/app/actions";
-import { useUser } from "@/lib/hooks/useUser";
 
 interface ClientMobileMenuProps {
   leftNavLinks: MenuGetBySlugQuery;

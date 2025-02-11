@@ -10,6 +10,7 @@ import CartNavItem from "../cart/CartNavItem";
 import { getMessages } from "@/lib/util";
 import { DEFAULT_LOCALE } from "@/lib/regions";
 import UserMenu from "./components/UserMenu/UserMenu";
+import IconWithPopover from "../IconWithPopover";
 const messages = getMessages(DEFAULT_LOCALE, "app.navigation");
 
 export const Navbar = async () => {
@@ -34,6 +35,7 @@ export const Navbar = async () => {
             <Suspense fallback={<div className="w-6" />}>
               <CartNavItem />
             </Suspense>
+            <IconWithPopover />
             <MobileMenu />
           </div>
         </div>

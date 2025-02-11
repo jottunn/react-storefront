@@ -5,8 +5,6 @@ import { HTMLAttributes } from "react";
 import styles from "./Footer.module.css";
 import Box from "../Box";
 import {
-  CollectionsByMetaKeyDocument,
-  CollectionsByMetaKeyQuery,
   FooterMenuDocument,
   FooterMenuQuery,
   LanguageCodeEnum,
@@ -63,7 +61,7 @@ export default async function Footer({ className, ...rest }: FooterProps) {
       <SvgSprite />
       <Box className={styles["footer-inner"]}>
         <div className={styles["footer-grid"]}>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full mb-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 w-full mb-4">
             {footerNavLinks &&
               footerNavLinks.menu &&
               footerNavLinks.menu.items &&
@@ -75,11 +73,7 @@ export default async function Footer({ className, ...rest }: FooterProps) {
                       {item?.name}
                     </Link>
                   ) : (
-                    <Link href={getLinkPath(item)} passHref legacyBehavior>
-                      <a href="pass" className={styles["menu-heading"]}>
-                        {item?.name}
-                      </a>
-                    </Link>
+                    <span className={styles["menu-heading"]}>{item?.name}</span>
                   )}
                   <ul className={styles.menu}>
                     {item?.children?.map((sub) => (
