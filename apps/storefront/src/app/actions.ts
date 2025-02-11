@@ -4,6 +4,9 @@ import { executeGraphQL } from "@/lib/graphql";
 import {
   AccountAddressUpdateDocument,
   AccountAddressUpdateMutation,
+  AccountInput,
+  AccountUpdateDocument,
+  AccountUpdateMutation,
   AddressDeleteDocument,
   AddressDeleteMutation,
   AddressInput,
@@ -651,6 +654,58 @@ export const setAddressDefaultMutation = async (args: { id: string; type: string
     return { success: true, addresses: response.accountSetDefaultAddress?.user?.addresses };
   } catch (error) {
     console.error("Failed to set default adresss:", error);
+    return;
+  }
+};
+
+export const updateWishlist = async ({ selectedVariantId }: { selectedVariantId: string }) => {
+  if (!selectedVariantId) {
+    return;
+  }
+  const user = await getCurrentUser();
+  if (!user) {
+    return { error: true, message: "app.product.loginWishlist" };
+  }
+
+  const userWishlist = user?.metadata.find((meta) => meta.key === "wishlist");
+  const currentWishlist = userWishlist ? JSON.parse(userWishlist.value) : [];
+  let newWishlist;
+  if (currentWishlist.includes(decodeURIComponent(selectedVariantId))) {
+    //remove it
+    newWishlist = currentWishlist.filter(
+      (item: string) => item !== decodeURIComponent(selectedVariantId),
+    );
+  } else {
+    newWishlist = [...currentWishlist, decodeURIComponent(selectedVariantId)];
+  }
+
+  try {
+    const response = await executeGraphQL<
+      AccountUpdateMutation,
+      {
+        input: AccountInput;
+      }
+    >(AccountUpdateDocument, {
+      variables: {
+        input: {
+          metadata: [
+            {
+              key: "wishlist",
+              value: JSON.stringify(newWishlist),
+            },
+          ],
+        },
+      },
+      cache: "no-cache",
+      withAuth: true,
+    });
+
+    if (response.accountUpdate?.errors.length) {
+      return { errors: response.accountUpdate?.errors };
+    }
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to update address:", error);
     return;
   }
 };

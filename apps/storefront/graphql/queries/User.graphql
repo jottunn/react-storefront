@@ -13,5 +13,9 @@ query User {
     defaultShippingAddress {
       ...AddressDetailsFragment
     }
+    metadata {
+      key
+      value
+    }
   }
 }

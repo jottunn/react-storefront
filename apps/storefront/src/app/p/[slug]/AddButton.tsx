@@ -3,9 +3,6 @@
 import { addItem } from "@/components/checkout/actions";
 import { Messages } from "@/lib/util";
 import { useState } from "react";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//@ts-ignore
-import { useFormStatus } from "react-dom";
 
 export function AddButton({
   disabled,
@@ -16,20 +13,22 @@ export function AddButton({
   messages: Messages;
   selectedVariantId?: string;
 }) {
-  const { pending } = useFormStatus();
-  const isButtonDisabled = disabled || pending;
   const [variantId, setVariantId] = useState(selectedVariantId);
   const [error, setError] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
+  const isButtonDisabled = disabled || pending;
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setError(null); // Clear previous errors
+    setError(null);
+    setPending(true);
 
     const formData = new FormData(event.currentTarget);
     const selectedVariantId = formData.get("selectedVariantId")?.toString();
 
     if (!selectedVariantId) {
       setError("No variant selected");
+      setPending(false);
       return;
     }
 
@@ -40,10 +39,12 @@ export function AddButton({
     } else {
       // Handle success, e.g., display a success message or redirect
     }
+    setPending(false);
   }
+
   return (
     <>
-      <form onSubmit={handleSubmit} className="m-auto text-left">
+      <form onSubmit={handleSubmit} className="m-auto text-left add-to-cart-frm">
         <input type="hidden" name="selectedVariantId" value={variantId} />
         <button
           type="submit"

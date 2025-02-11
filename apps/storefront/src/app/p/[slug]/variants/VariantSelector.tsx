@@ -1,7 +1,7 @@
-import clsx from "clsx";
+"use client";
 import React from "react";
+import clsx from "clsx";
 import {
-  PageFragment,
   ProductDetailsFragment,
   ProductVariant,
   ProductVariantDetailsFragment,
@@ -12,14 +12,17 @@ import { formatMoney } from "@/lib/utils/formatMoney";
 import VariantSelectorClient from "./VariantSelectorClient";
 import SizeGuide from "./SizeGuide";
 import { VariantColorSelector } from "./VariantColorSelector";
+import { AddButton } from "../AddButton";
+import { AddToWishlist } from "../AddToWishlist";
 
 export interface VariantSelectorProps {
   product: ProductDetailsFragment;
   selectedVariant?: ProductVariantDetailsFragment | null;
   messages: Messages;
   price: string;
-  // setShowSizeGuideModal?: React.Dispatch<React.SetStateAction<boolean>>;
   sizeGuide?: any;
+  isAvailable: boolean;
+  isAddToCartButtonDisabled: boolean;
 }
 
 function getColorOfVariant(productVariant: ProductVariantDetailsFragment, attrSlug: string) {
@@ -74,6 +77,8 @@ export function VariantSelector({
   messages,
   price,
   sizeGuide,
+  isAvailable,
+  isAddToCartButtonDisabled,
 }: VariantSelectorProps) {
   const { variants } = product;
   const availableVariants =
@@ -101,7 +106,10 @@ export function VariantSelector({
   if (!availableVariants || availableVariants.length === 0) {
     return null;
   }
-
+  const [sizeSelected, setSizeSelected] = React.useState(sizes?.length === 1);
+  const handleSizeSelect = (isSizeSelected: boolean) => {
+    setSizeSelected(isSizeSelected);
+  };
   return (
     <>
       <div className="w-full">
@@ -142,7 +150,7 @@ export function VariantSelector({
         )}
 
         <div
-          className={clsx("m-auto mb-6 mt-6", {
+          className={clsx("m-auto mb-2 mt-6", {
             "grid grid-cols-2 lg:gap-[50px]": sizeGuide,
             flex: !sizeGuide,
           })}
@@ -167,6 +175,8 @@ export function VariantSelector({
                 selectedVariant={selectedVariant as ProductVariantDetailsFragment}
                 product={product}
                 hasSizeGuide={sizeGuide ? true : false}
+                messages={messages}
+                handleSizeSelect={handleSizeSelect}
               />
             )}
           </div>
@@ -174,6 +184,35 @@ export function VariantSelector({
           {sizeGuide && <SizeGuide sizeGuide={sizeGuide} messages={messages} />}
         </div>
       </div>
+
+      {isAvailable && (
+        <div className="flex items-start">
+          <div className="flex-1 pr-6">
+            <AddButton
+              disabled={isAddToCartButtonDisabled || !sizeSelected}
+              messages={messages}
+              selectedVariantId={selectedVariant?.id}
+            />
+            {!sizeSelected && (
+              <p className="text-sm text-left font-semibold text-neutral-400 pt-2">
+                {messages["app.chooseSizeCart"]}
+              </p>
+            )}
+            {selectedVariant?.quantityAvailable === 0 && (
+              <p className="text-base text-left font-semibold text-red-500 pt-2">
+                {messages["app.product.soldOutVariant"]}
+              </p>
+            )}
+          </div>
+          <div className="flex justify-end w-12">
+            <AddToWishlist
+              disabled={!sizeSelected}
+              messages={messages}
+              selectedVariantId={selectedVariant?.id}
+            />
+          </div>
+        </div>
+      )}
     </>
   );
 }

@@ -1,0 +1,87 @@
+query ProductVariants($ids: [ID!],$first: Int = 20, $channel: String) {
+  productVariants( ids: $ids, first: $first, channel: $channel) {
+   edges {
+      node {
+        id
+        name
+        metadata {
+            key
+            value
+        }
+        quantityAvailable
+        attributes {
+            attribute {
+                id
+                slug
+                name
+                inputType
+                type
+                unit
+            }
+            values {
+                id
+                name
+                slug
+                value
+                reference
+            }
+        }
+        media {
+            alt
+            type
+            url(size: 800, format: WEBP)
+            sortOrder
+        }
+        pricing {
+            onSale
+            priceUndiscounted {
+            gross {
+                currency
+                amount
+                }
+            }
+            discount {
+            gross {
+                currency
+                amount
+                }
+            }
+            price {
+            gross {
+                currency
+                amount
+                }
+            }
+        }
+
+        product {
+           slug
+           name
+            isAvailable
+            isAvailableForPurchase
+            availableForPurchaseAt
+            thumbnail {
+                ...ImageFragment
+            }
+            attributes {
+                attribute {
+                    id
+                    slug
+                    name
+                    inputType
+                    type
+                    unit
+                }
+                values {
+                    id
+                    name
+                    slug
+                    value
+                    reference
+                }
+            }
+        }
+      }
+    }
+  }
+}

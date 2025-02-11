@@ -15578,6 +15578,12 @@ export type OrderBulkCreateOrderLineInput = {
   privateMetadata?: InputMaybe<Array<MetadataInput>>;
   /** The name of the product. */
   productName?: InputMaybe<Scalars["String"]["input"]>;
+  /**
+   * The SKU of the product.
+   *
+   * Added in Saleor 3.18.
+   */
+  productSku?: InputMaybe<Scalars["String"]["input"]>;
   /** Number of items in the order line */
   quantity: Scalars["Int"]["input"];
   /** The ID of the tax class. */
@@ -15598,6 +15604,24 @@ export type OrderBulkCreateOrderLineInput = {
   translatedVariantName?: InputMaybe<Scalars["String"]["input"]>;
   /** Price of the order line excluding applied discount. */
   undiscountedTotalPrice: TaxedMoneyInput;
+  /**
+   * Reason of the discount on order line.
+   *
+   * Added in Saleor 3.19.
+   */
+  unitDiscountReason?: InputMaybe<Scalars["String"]["input"]>;
+  /**
+   * Type of the discount: fixed or percent
+   *
+   * Added in Saleor 3.19.
+   */
+  unitDiscountType?: InputMaybe<DiscountValueTypeEnum>;
+  /**
+   * Value of the discount. Can store fixed value or percent value
+   *
+   * Added in Saleor 3.19.
+   */
+  unitDiscountValue?: InputMaybe<Scalars["PositiveDecimal"]["input"]>;
   /** The external ID of the product variant. */
   variantExternalReference?: InputMaybe<Scalars["String"]["input"]>;
   /** The ID of the product variant. */
@@ -16770,17 +16794,17 @@ export type OrderLine = Node &
     translatedVariantName: Scalars["String"]["output"];
     /** Price of the order line without discounts. */
     undiscountedTotalPrice: TaxedMoney;
-    /** Price of the single item in the order line without applied an order line discount. */
+    /** Price of the single item in the order line without any discount applied. */
     undiscountedUnitPrice: TaxedMoney;
-    /** The discount applied to the single order line. */
+    /** Sum of the line-level discounts applied to the order line. Order-level discounts which affect the line are not visible in this field. For order-level discount portion (if any), please query `order.discounts` field. */
     unitDiscount: Money;
-    /** Reason for any discounts applied on a product in the order. */
+    /** Reason for line-level discounts applied on the order line. Order-level discounts which affect the line are not visible in this field. For order-level discount reason (if any), please query `order.discounts` field. */
     unitDiscountReason?: Maybe<Scalars["String"]["output"]>;
-    /** Type of the discount: fixed or percent */
+    /** Type of the discount: `fixed` or `percent`. This field shouldn't be used when multiple discounts affect the line. There is a limitation, that after running `checkoutComplete` mutation the field is always set to `fixed`. */
     unitDiscountType?: Maybe<DiscountValueTypeEnum>;
-    /** Value of the discount. Can store fixed value or percent value */
+    /** Value of the discount. Can store fixed value or percent value. This field shouldn't be used when multiple discounts affect the line. There is a limitation, that after running `checkoutComplete` mutation the field always stores fixed value. */
     unitDiscountValue: Scalars["PositiveDecimal"]["output"];
-    /** Price of the single item in the order line. */
+    /** Price of the single item in the order line with all the line-level discounts and order-level discount portions applied. */
     unitPrice: TaxedMoney;
     /** A purchased product variant. Note: this field may be null if the variant has been removed from stock at all. Requires one of the following permissions to include the unpublished items: MANAGE_ORDERS, MANAGE_DISCOUNTS, MANAGE_PRODUCTS. */
     variant?: Maybe<ProductVariant>;
@@ -33036,6 +33060,7 @@ export type ProductDetailsFragment = {
   description?: string | null;
   seoDescription?: string | null;
   seoTitle?: string | null;
+  isAvailable?: boolean | null;
   isAvailableForPurchase?: boolean | null;
   translation?: {
     __typename?: "ProductTranslation";
@@ -33298,6 +33323,23 @@ export type SelectedAttributeDetailsFragment = {
       richText?: string | null;
     } | null;
   }>;
+};
+
+export type AccountUpdateMutationVariables = Exact<{
+  input: AccountInput;
+}>;
+
+export type AccountUpdateMutation = {
+  __typename?: "Mutation";
+  accountUpdate?: {
+    __typename?: "AccountUpdate";
+    errors: Array<{
+      __typename?: "AccountError";
+      message?: string | null;
+      field?: string | null;
+      code: AccountErrorCode;
+    }>;
+  } | null;
 };
 
 export type AddressDeleteMutationVariables = Exact<{
@@ -37012,6 +37054,7 @@ export type ProductBySlugQuery = {
     description?: string | null;
     seoDescription?: string | null;
     seoTitle?: string | null;
+    isAvailable?: boolean | null;
     isAvailableForPurchase?: boolean | null;
     translation?: {
       __typename?: "ProductTranslation";
@@ -37422,6 +37465,101 @@ export type ProductListQuery = {
   } | null;
 };
 
+export type ProductVariantsQueryVariables = Exact<{
+  ids?: InputMaybe<Array<Scalars["ID"]["input"]> | Scalars["ID"]["input"]>;
+  first?: InputMaybe<Scalars["Int"]["input"]>;
+  channel?: InputMaybe<Scalars["String"]["input"]>;
+}>;
+
+export type ProductVariantsQuery = {
+  __typename?: "Query";
+  productVariants?: {
+    __typename?: "ProductVariantCountableConnection";
+    edges: Array<{
+      __typename?: "ProductVariantCountableEdge";
+      node: {
+        __typename?: "ProductVariant";
+        id: string;
+        name: string;
+        quantityAvailable?: number | null;
+        metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
+        attributes: Array<{
+          __typename?: "SelectedAttribute";
+          attribute: {
+            __typename?: "Attribute";
+            id: string;
+            slug?: string | null;
+            name?: string | null;
+            inputType?: AttributeInputTypeEnum | null;
+            type?: AttributeTypeEnum | null;
+            unit?: MeasurementUnitsEnum | null;
+          };
+          values: Array<{
+            __typename?: "AttributeValue";
+            id: string;
+            name?: string | null;
+            slug?: string | null;
+            value?: string | null;
+            reference?: string | null;
+          }>;
+        }>;
+        media?: Array<{
+          __typename?: "ProductMedia";
+          alt: string;
+          type: ProductMediaType;
+          url: string;
+          sortOrder?: number | null;
+        }> | null;
+        pricing?: {
+          __typename?: "VariantPricingInfo";
+          onSale?: boolean | null;
+          priceUndiscounted?: {
+            __typename?: "TaxedMoney";
+            gross: { __typename?: "Money"; currency: string; amount: number };
+          } | null;
+          discount?: {
+            __typename?: "TaxedMoney";
+            gross: { __typename?: "Money"; currency: string; amount: number };
+          } | null;
+          price?: {
+            __typename?: "TaxedMoney";
+            gross: { __typename?: "Money"; currency: string; amount: number };
+          } | null;
+        } | null;
+        product: {
+          __typename?: "Product";
+          slug: string;
+          name: string;
+          isAvailable?: boolean | null;
+          isAvailableForPurchase?: boolean | null;
+          availableForPurchaseAt?: string | null;
+          thumbnail?: { __typename?: "Image"; url: string; alt?: string | null } | null;
+          attributes: Array<{
+            __typename?: "SelectedAttribute";
+            attribute: {
+              __typename?: "Attribute";
+              id: string;
+              slug?: string | null;
+              name?: string | null;
+              inputType?: AttributeInputTypeEnum | null;
+              type?: AttributeTypeEnum | null;
+              unit?: MeasurementUnitsEnum | null;
+            };
+            values: Array<{
+              __typename?: "AttributeValue";
+              id: string;
+              name?: string | null;
+              slug?: string | null;
+              value?: string | null;
+              reference?: string | null;
+            }>;
+          }>;
+        };
+      };
+    }>;
+  } | null;
+};
+
 export type ProductsByAttributeQueryVariables = Exact<{
   filter?: InputMaybe<ProductFilterInput>;
   channel?: InputMaybe<Scalars["String"]["input"]>;
@@ -37739,6 +37877,7 @@ export type UserQuery = {
       isDefaultShippingAddress?: boolean | null;
       country: { __typename?: "CountryDisplay"; code: string; country: string };
     } | null;
+    metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
   } | null;
 };
 
@@ -38392,6 +38531,7 @@ export const ProductDetailsFragmentDoc = gql`
     description
     seoDescription
     seoTitle
+    isAvailable
     isAvailableForPurchase
     translation(languageCode: $locale) {
       id
@@ -38469,6 +38609,54 @@ export const ProductListItemFragmentDoc = gql`
     }
   }
 `;
+export const AccountUpdateDocument = gql`
+  mutation AccountUpdate($input: AccountInput!) {
+    accountUpdate(input: $input) {
+      errors {
+        message
+        field
+        code
+      }
+    }
+  }
+`;
+export type AccountUpdateMutationFn = Apollo.MutationFunction<
+  AccountUpdateMutation,
+  AccountUpdateMutationVariables
+>;
+
+/**
+ * __useAccountUpdateMutation__
+ *
+ * To run a mutation, you first call `useAccountUpdateMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAccountUpdateMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [accountUpdateMutation, { data, loading, error }] = useAccountUpdateMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useAccountUpdateMutation(
+  baseOptions?: Apollo.MutationHookOptions<AccountUpdateMutation, AccountUpdateMutationVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<AccountUpdateMutation, AccountUpdateMutationVariables>(
+    AccountUpdateDocument,
+    options,
+  );
+}
+export type AccountUpdateMutationHookResult = ReturnType<typeof useAccountUpdateMutation>;
+export type AccountUpdateMutationResult = Apollo.MutationResult<AccountUpdateMutation>;
+export type AccountUpdateMutationOptions = Apollo.BaseMutationOptions<
+  AccountUpdateMutation,
+  AccountUpdateMutationVariables
+>;
 export const AddressDeleteDocument = gql`
   mutation AddressDelete($id: ID!) {
     accountAddressDelete(id: $id) {
@@ -41810,6 +41998,153 @@ export type ProductListQueryResult = Apollo.QueryResult<
   ProductListQuery,
   ProductListQueryVariables
 >;
+export const ProductVariantsDocument = gql`
+  query ProductVariants($ids: [ID!], $first: Int = 20, $channel: String) {
+    productVariants(ids: $ids, first: $first, channel: $channel) {
+      edges {
+        node {
+          id
+          name
+          metadata {
+            key
+            value
+          }
+          quantityAvailable
+          attributes {
+            attribute {
+              id
+              slug
+              name
+              inputType
+              type
+              unit
+            }
+            values {
+              id
+              name
+              slug
+              value
+              reference
+            }
+          }
+          media {
+            alt
+            type
+            url(size: 800, format: WEBP)
+            sortOrder
+          }
+          pricing {
+            onSale
+            priceUndiscounted {
+              gross {
+                currency
+                amount
+              }
+            }
+            discount {
+              gross {
+                currency
+                amount
+              }
+            }
+            price {
+              gross {
+                currency
+                amount
+              }
+            }
+          }
+          product {
+            slug
+            name
+            isAvailable
+            isAvailableForPurchase
+            availableForPurchaseAt
+            thumbnail {
+              ...ImageFragment
+            }
+            attributes {
+              attribute {
+                id
+                slug
+                name
+                inputType
+                type
+                unit
+              }
+              values {
+                id
+                name
+                slug
+                value
+                reference
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  ${ImageFragmentDoc}
+`;
+
+/**
+ * __useProductVariantsQuery__
+ *
+ * To run a query within a React component, call `useProductVariantsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useProductVariantsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useProductVariantsQuery({
+ *   variables: {
+ *      ids: // value for 'ids'
+ *      first: // value for 'first'
+ *      channel: // value for 'channel'
+ *   },
+ * });
+ */
+export function useProductVariantsQuery(
+  baseOptions?: Apollo.QueryHookOptions<ProductVariantsQuery, ProductVariantsQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<ProductVariantsQuery, ProductVariantsQueryVariables>(
+    ProductVariantsDocument,
+    options,
+  );
+}
+export function useProductVariantsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<ProductVariantsQuery, ProductVariantsQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<ProductVariantsQuery, ProductVariantsQueryVariables>(
+    ProductVariantsDocument,
+    options,
+  );
+}
+export function useProductVariantsSuspenseQuery(
+  baseOptions?: Apollo.SuspenseQueryHookOptions<
+    ProductVariantsQuery,
+    ProductVariantsQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useSuspenseQuery<ProductVariantsQuery, ProductVariantsQueryVariables>(
+    ProductVariantsDocument,
+    options,
+  );
+}
+export type ProductVariantsQueryHookResult = ReturnType<typeof useProductVariantsQuery>;
+export type ProductVariantsLazyQueryHookResult = ReturnType<typeof useProductVariantsLazyQuery>;
+export type ProductVariantsSuspenseQueryHookResult = ReturnType<
+  typeof useProductVariantsSuspenseQuery
+>;
+export type ProductVariantsQueryResult = Apollo.QueryResult<
+  ProductVariantsQuery,
+  ProductVariantsQueryVariables
+>;
 export const ProductsByAttributeDocument = gql`
   query ProductsByAttribute(
     $filter: ProductFilterInput
@@ -42001,6 +42336,10 @@ export const UserDocument = gql`
       }
       defaultShippingAddress {
         ...AddressDetailsFragment
+      }
+      metadata {
+        key
+        value
       }
     }
   }

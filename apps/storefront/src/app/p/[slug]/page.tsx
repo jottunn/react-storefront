@@ -12,9 +12,6 @@ import {
   ProductBySlugQuery,
   ProductCollectionDocument,
   ProductCollectionQuery,
-  ProductFilterInput,
-  ProductListDocument,
-  ProductListQuery,
 } from "@/saleor/api";
 import Image from "next/image";
 import { executeGraphQL } from "@/lib/graphql";
@@ -24,7 +21,6 @@ import xss from "xss";
 import { formatMoney } from "@/lib/utils/formatMoney";
 import { formatMoneyRange } from "@/lib/utils/formatMoneyRange";
 import { type WithContext, type Product } from "schema-dts";
-import { AddButton } from "./AddButton";
 import { ProductGallery } from "./media/ProductGallery";
 import getBase64 from "@/lib/generateBlurPlaceholder";
 import clsx from "clsx";
@@ -206,6 +202,7 @@ const ProductDetail = async ({
         ? await getBase64(firstImage.url)
         : null;
   const isAddToCartButtonDisabled =
+    !product.isAvailable ||
     !product.isAvailableForPurchase ||
     (product.variants && product.variants.length > 1 && !selectedVariantID) ||
     selectedVariant?.quantityAvailable === 0;
@@ -276,7 +273,8 @@ const ProductDetail = async ({
     recommendedProducts = mapEdgesToItems(recommendedProductsResponse);
     recommendedProducts = groupProductsByColor(recommendedProducts as GroupedProduct[]);
   }
-  const isAvailable = variants?.some((variant) => variant.quantityAvailable) ?? false;
+  const isAvailable =
+    (product.isAvailable && variants?.some((variant) => variant.quantityAvailable)) ?? false;
   const price = selectedVariant?.pricing?.price?.gross
     ? formatMoney(selectedVariant.pricing.price.gross)
     : isAvailable
@@ -430,27 +428,14 @@ const ProductDetail = async ({
               messages={messages}
               price={price}
               sizeGuide={sizeGuide}
+              isAvailable={isAvailable}
+              isAddToCartButtonDisabled={isAddToCartButtonDisabled}
             />
           )}
           {!isAvailable && (
             <p className="text-base text-left font-semibold text-red-500 uppercase">
               {messages["app.product.soldOut"]}
             </p>
-          )}
-
-          {isAvailable && (
-            <div className="mt-8 block">
-              <AddButton
-                disabled={isAddToCartButtonDisabled}
-                messages={messages}
-                selectedVariantId={selectedVariantID}
-              />
-              {selectedVariant?.quantityAvailable === 0 && (
-                <p className="text-base text-left font-semibold text-red-500 pt-2">
-                  {messages["app.product.soldOutVariant"]}
-                </p>
-              )}
-            </div>
           )}
         </div>
       </div>

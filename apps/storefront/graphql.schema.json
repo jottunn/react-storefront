@@ -63608,7 +63608,7 @@
               },
               {
                 "name": "message",
-                "description": "The message related to the event.",
+                "description": "The message related to the event. The maximum length is 512 characters; any text exceeding this limit will be truncated.",
                 "type": {
                   "kind": "SCALAR",
                   "name": "String",
@@ -68860,6 +68860,18 @@
             "deprecationReason": null
           },
           {
+            "name": "productSku",
+            "description": "The SKU of the product.\n\nAdded in Saleor 3.18.",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "quantity",
             "description": "Number of items in the order line",
             "type": {
@@ -69002,6 +69014,42 @@
                 "name": "TaxedMoneyInput",
                 "ofType": null
               }
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "unitDiscountReason",
+            "description": "Reason of the discount on order line.\n\nAdded in Saleor 3.19.",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "unitDiscountType",
+            "description": "Type of the discount: fixed or percent\n\nAdded in Saleor 3.19.",
+            "type": {
+              "kind": "ENUM",
+              "name": "DiscountValueTypeEnum",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "unitDiscountValue",
+            "description": "Value of the discount. Can store fixed value or percent value\n\nAdded in Saleor 3.19.",
+            "type": {
+              "kind": "SCALAR",
+              "name": "PositiveDecimal",
+              "ofType": null
             },
             "defaultValue": null,
             "isDeprecated": false,
@@ -74627,7 +74675,7 @@
           },
           {
             "name": "undiscountedUnitPrice",
-            "description": "Price of the single item in the order line without applied an order line discount.",
+            "description": "Price of the single item in the order line without any discount applied.",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -74643,7 +74691,7 @@
           },
           {
             "name": "unitDiscount",
-            "description": "The discount applied to the single order line.",
+            "description": "Sum of the line-level discounts applied to the order line. Order-level discounts which affect the line are not visible in this field. For order-level discount portion (if any), please query `order.discounts` field.",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -74659,7 +74707,7 @@
           },
           {
             "name": "unitDiscountReason",
-            "description": "Reason for any discounts applied on a product in the order.",
+            "description": "Reason for line-level discounts applied on the order line. Order-level discounts which affect the line are not visible in this field. For order-level discount reason (if any), please query `order.discounts` field.",
             "args": [],
             "type": {
               "kind": "SCALAR",
@@ -74671,7 +74719,7 @@
           },
           {
             "name": "unitDiscountType",
-            "description": "Type of the discount: fixed or percent",
+            "description": "Type of the discount: `fixed` or `percent`. This field shouldn't be used when multiple discounts affect the line. There is a limitation, that after running `checkoutComplete` mutation the field is always set to `fixed`.",
             "args": [],
             "type": {
               "kind": "ENUM",
@@ -74683,7 +74731,7 @@
           },
           {
             "name": "unitDiscountValue",
-            "description": "Value of the discount. Can store fixed value or percent value",
+            "description": "Value of the discount. Can store fixed value or percent value. This field shouldn't be used when multiple discounts affect the line. There is a limitation, that after running `checkoutComplete` mutation the field always stores fixed value.",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -74699,7 +74747,7 @@
           },
           {
             "name": "unitPrice",
-            "description": "Price of the single item in the order line.",
+            "description": "Price of the single item in the order line with all the line-level discounts and order-level discount portions applied.",
             "args": [],
             "type": {
               "kind": "NON_NULL",

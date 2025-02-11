@@ -5,6 +5,7 @@ fragment ProductDetailsFragment on Product {
   description
   seoDescription
   seoTitle
+  isAvailable
   isAvailableForPurchase
   translation(languageCode: $locale) {
     id

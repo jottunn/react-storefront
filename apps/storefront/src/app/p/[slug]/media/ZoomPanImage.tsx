@@ -18,9 +18,10 @@ const Controls = () => {
 interface ZoomPanImageProps {
   src: string;
   alt: string;
+  unoptimized?: boolean;
 }
 
-const ZoomPanImage = ({ src, alt }: ZoomPanImageProps) => {
+const ZoomPanImage = ({ src, alt, unoptimized }: ZoomPanImageProps) => {
   return (
     <TransformWrapper initialScale={1} initialPositionX={0} initialPositionY={0}>
       {({ zoomIn, zoomOut, resetTransform, ...rest }) => (
@@ -36,7 +37,7 @@ const ZoomPanImage = ({ src, alt }: ZoomPanImageProps) => {
               sizes="100vw"
               style={{ width: "100%", height: "auto" }}
               loading="lazy"
-              unoptimized
+              {...(unoptimized !== true ? { unoptimized: true } : {})}
             />
           </TransformComponent>
         </>

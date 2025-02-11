@@ -9,7 +9,7 @@ import {
 } from "@headlessui/react";
 import { CheckIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
-import React from "react";
+import React, { useState } from "react";
 import {
   ProductVariant,
   ProductDetailsFragment,
@@ -17,12 +17,15 @@ import {
 } from "@/saleor/api";
 import { translate } from "@/lib/translations";
 import { useRouter } from "next/navigation";
+import { Messages } from "@/lib/util";
 
 interface VariantSelectorClientProps {
   sizes: ProductVariant[];
   selectedVariant?: ProductVariantDetailsFragment;
   product: ProductDetailsFragment;
   hasSizeGuide: boolean;
+  messages: Messages;
+  handleSizeSelect: any;
 }
 
 const VariantSelectorClient: React.FC<VariantSelectorClientProps> = ({
@@ -30,17 +33,22 @@ const VariantSelectorClient: React.FC<VariantSelectorClientProps> = ({
   selectedVariant,
   product,
   hasSizeGuide,
+  messages,
+  handleSizeSelect,
 }) => {
   const router = useRouter();
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
 
   const handleSelect = (variantId: string) => {
+    setSelectedSize(variantId);
+    handleSizeSelect(variantId ? true : false);
     const selectedVariant = sizes.find((variant) => variant.id === variantId);
     if (selectedVariant) {
       router.push(`/p/${product.slug}?variant=${selectedVariant.id}`); // Adjust the path as needed
     }
   };
   return (
-    <Listbox value={selectedVariant?.id} onChange={handleSelect}>
+    <Listbox value={selectedSize} onChange={handleSelect}>
       <ListboxButton
         className={clsx(
           "relative block h-[40px] min-w-[120px] border border-1 border-dark-900 py-2 pr-8 pl-3 text-left text-[1.5rem] text-dark-700",
@@ -48,7 +56,7 @@ const VariantSelectorClient: React.FC<VariantSelectorClientProps> = ({
           { "m-auto": !hasSizeGuide },
         )}
       >
-        {selectedVariant?.name}
+        {selectedSize ? sizes.find((s) => s.id === selectedSize)?.name : messages["app.size"]}
         <ChevronDownIcon
           className="group pointer-events-none absolute top-3 right-2.5 size-4 fill-dark/60"
           aria-hidden="true"

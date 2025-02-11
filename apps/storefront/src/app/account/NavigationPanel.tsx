@@ -44,6 +44,11 @@ export function NavigationPanel({ messages }: NavProps) {
           {messages["app.preferences.navigation.orders"]}
         </span>
       </Link>
+      <Link href="/account/wishlist" className={wrapLinkClassName}>
+        <span className={clsx(linkClassname, pathname === "/account/wishlist" && "text-action-1")}>
+          {messages["app.preferences.navigation.wishlist"]}
+        </span>
+      </Link>
       {user && (
         <button
           type="button"

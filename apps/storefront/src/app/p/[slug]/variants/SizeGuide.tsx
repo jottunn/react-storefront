@@ -21,7 +21,7 @@ export default function SizeGuide({ sizeGuide, messages }: { sizeGuide: any; mes
   return (
     <>
       <div className="flex justify-start items-end md:py-6">
-        <div className="min-w-[180px] w-full">
+        <div className="w-full text-right">
           <a
             href="#"
             onClick={(e) => {
@@ -36,7 +36,7 @@ export default function SizeGuide({ sizeGuide, messages }: { sizeGuide: any; mes
               height="32"
               fill="none"
               viewBox="0 0 32 32"
-              className="inline-flex relative shrink justify-center items-center transition w-xl h-xl touch:group-active:[&amp;>*]:fill-ghost [&amp;>*]:fill-ink [&amp;>*]:hover:fill-ink-hover"
+              className="inline-block relative shrink justify-center items-center transition w-xl h-xl touch:group-active:[&amp;>*]:fill-ghost [&amp;>*]:fill-ink [&amp;>*]:hover:fill-ink-hover"
             >
               <path
                 fill="#000"
@@ -45,7 +45,7 @@ export default function SizeGuide({ sizeGuide, messages }: { sizeGuide: any; mes
                 clipRule="evenodd"
               ></path>
             </svg>
-            {messages["app.sizeGuide"]}
+            <span className="inline-block">{messages["app.sizeGuide"]}</span>
           </a>
         </div>
       </div>
@@ -77,6 +77,7 @@ export default function SizeGuide({ sizeGuide, messages }: { sizeGuide: any; mes
                           key={attr?.values?.[0]?.name}
                           src={`${UPLOAD_FOLDER ?? ""}/${attr?.values?.[0]?.name ?? ""}`}
                           alt={sizeGuide.page.title}
+                          unoptimized={true}
                         />
                       ),
                     )}

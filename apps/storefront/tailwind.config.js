@@ -86,6 +86,7 @@ module.exports = {
       gridTemplateColumns: {
         listing: "250px auto",
         product: "2fr 1fr",
+        wishlist: "1fr 2fr 50px 1fr",
       },
     },
   },
