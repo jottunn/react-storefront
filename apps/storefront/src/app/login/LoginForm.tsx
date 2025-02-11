@@ -5,6 +5,8 @@ import { useForm } from "react-hook-form";
 import Link from "next/link";
 import { Button } from "@/components/Button/Button";
 import PasswordField from "@/components/account/PasswordField";
+import { useState } from "react";
+import Spinner from "@/components/Spinner";
 
 export interface LoginFormData {
   email: string;
@@ -19,6 +21,7 @@ export default function LoginForm({ messages }: FormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const confirmed = searchParams.get("confirmed");
+  const [loading, setLoading] = useState(false);
 
   const {
     register: registerForm,
@@ -28,12 +31,14 @@ export default function LoginForm({ messages }: FormProps) {
   } = useForm<LoginFormData>();
 
   const handleSubmit = handleSubmitForm(async (formData: LoginFormData) => {
+    setLoading(true);
     const result = await login(formData);
     if (result.success) {
       window.dispatchEvent(new Event("user-login"));
       router.push("/account");
     } else if (result.errors) {
       setErrorForm("email", { message: result?.errors.join(", ") });
+      setLoading(false);
     }
   });
 
@@ -80,13 +85,17 @@ export default function LoginForm({ messages }: FormProps) {
           {messages["app.login.remindPassword"]}
         </Link>
       </div>
-      <div>
-        <Button
-          type="submit"
-          label={messages["app.navigation.login"]}
-          variant="tertiary"
-          className="mt-4 mb-3 !h-12"
-        />
+      <div className="h-[70px] mt-4 mb-3">
+        {loading ? (
+          <Spinner className="!h-12 justify-start" />
+        ) : (
+          <Button
+            type="submit"
+            label={messages["app.navigation.login"]}
+            variant="tertiary"
+            className="!h-12"
+          />
+        )}
         {!!errorsForm.email && (
           <p className="text-sm text-red-700 pt-2 font-semibold">
             {errorsForm.email?.message && messages[errorsForm.email.message]}

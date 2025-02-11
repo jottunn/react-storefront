@@ -1,6 +1,6 @@
-export function Spinner() {
+export function Spinner({ className }: { className?: string }) {
   return (
-    <div className="flex items-center justify-center w-full flex-grow gap-2">
+    <div className={`${className || "flex items-center justify-center w-full flex-grow gap-2"}`}>
       <svg
         aria-hidden="true"
         className="inline w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-green-400"

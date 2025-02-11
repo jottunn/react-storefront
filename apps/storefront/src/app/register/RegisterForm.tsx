@@ -8,6 +8,7 @@ import { register } from "../actions";
 import Link from "next/link";
 import { Button } from "@/components/Button/Button";
 import PasswordField from "@/components/account/PasswordField";
+import Spinner from "@/components/Spinner";
 
 export interface RegisterFormData {
   firstName: string;
@@ -21,7 +22,7 @@ export interface RegisterFormData {
 
 export default function RegisterForm({ messages }: FormProps) {
   const router = useRouter();
-
+  const [loading, setLoading] = useState(false);
   const {
     register: registerForm,
     handleSubmit: handleSubmitForm,
@@ -42,6 +43,7 @@ export default function RegisterForm({ messages }: FormProps) {
       setErrorForm("gdprConsent", { message: "gdprConsentErr" });
       return;
     }
+    setLoading(true);
 
     const result = await register(formData);
     if (result.errors) {
@@ -56,6 +58,7 @@ export default function RegisterForm({ messages }: FormProps) {
           console.error("Registration error:", e);
         }
       });
+      setLoading(false);
       return;
     }
     // User signed in successfully.
@@ -108,7 +111,7 @@ export default function RegisterForm({ messages }: FormProps) {
           })}
         />
         {!!errorsForm.email && (
-          <p className="text-sm text-red-500 pt-2">
+          <p className="text-sm text-red-500 font-semibold pt-2">
             {messages[errorsForm.email?.type || ""] || messages[errorsForm.email?.message || ""]}
             {errorsForm.email?.message === "UNIQUE" && (
               <Link
@@ -186,13 +189,17 @@ export default function RegisterForm({ messages }: FormProps) {
         </label>
       </div>
 
-      <div className="">
-        <Button
-          type="submit"
-          label={messages["app.register.registerButton"]}
-          variant="tertiary"
-          className="mt-4 mb-3 !h-12"
-        />
+      <div className="h-[70px] mt-4 mb-3">
+        {loading ? (
+          <Spinner className="!h-12 justify-start" />
+        ) : (
+          <Button
+            type="submit"
+            label={messages["app.register.registerButton"]}
+            variant="tertiary"
+            className="!h-12"
+          />
+        )}
       </div>
     </form>
   );
