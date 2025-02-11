@@ -47,7 +47,7 @@ export default function ForgotPassword({ messages }: FormProps) {
         )}
       </div>
       <div className="my-6">
-        <label htmlFor="email" className="block text-grey-darker text-md mb-2 uppercase">
+        <label htmlFor="email" className="block text-grey-darker text-base mb-2 uppercase">
           {messages["app.login.emailField"]}
         </label>
         <input
@@ -64,7 +64,7 @@ export default function ForgotPassword({ messages }: FormProps) {
           type="submit"
           label={messages["app.login.forgotPasswordSendLinkButton"]}
           variant="tertiary"
-          className="w-full mb-3 !h-12 "
+          className="mb-3 !h-12 "
         />
       </div>
       {successMessage && (

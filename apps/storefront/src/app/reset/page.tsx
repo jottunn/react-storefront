@@ -4,6 +4,8 @@ import { getMessages } from "@/lib/util";
 import { DEFAULT_LOCALE } from "@/lib/regions";
 import { STOREFRONT_NAME, STOREFRONT_URL } from "@/lib/const";
 import ResetPageClient from "./ResetPageClient";
+import styles from "../login/Login.module.css";
+import clsx from "clsx";
 
 const messages = getMessages(DEFAULT_LOCALE);
 export const metadata = {
@@ -22,8 +24,8 @@ export default function ResetPage() {
         </div>
       }
     >
-      <section className="mx-auto max-w-8xl p-4 min-h-[400px]">
-        <div className="container bg-white pb-40 pt-40 flex justify-center items-center">
+      <section className={clsx(styles["account-bkg"], "mx-auto max-w-10xl min-h-[400px] p-4")}>
+        <div className="container pb-40 pt-40 flex justify-center items-center">
           <ResetPageClient messages={messages} />
         </div>
       </section>

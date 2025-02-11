@@ -51,7 +51,7 @@ export default function LoginForm({ messages }: FormProps) {
       </div>
 
       <div className="my-3">
-        <label htmlFor="email" className="block text-md mb-2 uppercase">
+        <label htmlFor="email" className="block text-base mb-2 uppercase">
           {messages["app.login.emailField"]}
         </label>
         <input
@@ -85,7 +85,7 @@ export default function LoginForm({ messages }: FormProps) {
           type="submit"
           label={messages["app.navigation.login"]}
           variant="tertiary"
-          className="w-full mt-4 mb-3 !h-12"
+          className="mt-4 mb-3 !h-12"
         />
         {!!errorsForm.email && (
           <p className="text-sm text-red-700 pt-2 font-semibold">

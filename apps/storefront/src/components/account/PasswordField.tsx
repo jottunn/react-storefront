@@ -17,7 +17,7 @@ export default function PasswordField({
   register,
   error,
   validationRules,
-  labelClassName = "block text-md mb-2 uppercase",
+  labelClassName = "block text-base mb-2 uppercase",
 }: PasswordFieldProps) {
   const [passwordVisible, setPasswordVisible] = useState(false);
 

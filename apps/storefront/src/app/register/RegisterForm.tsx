@@ -69,7 +69,7 @@ export default function RegisterForm({ messages }: FormProps) {
       </div>
       <div className="grid grid-cols-2 gap-4 mt-4">
         <div className="my-3">
-          <label htmlFor="lastName" className="block text-md mb-2 uppercase">
+          <label htmlFor="lastName" className="block text-base mb-2 uppercase">
             {messages["app.checkout.lastNameField"]}
           </label>
           <input
@@ -82,7 +82,7 @@ export default function RegisterForm({ messages }: FormProps) {
         </div>
 
         <div className="my-3">
-          <label htmlFor="firstName" className="block text-md mb-2 uppercase">
+          <label htmlFor="firstName" className="block text-base mb-2 uppercase">
             {messages["app.checkout.firstNameField"]}
           </label>
           <input
@@ -95,7 +95,7 @@ export default function RegisterForm({ messages }: FormProps) {
         </div>
       </div>
       <div className="my-3">
-        <label htmlFor="email" className="block text-md mb-2 uppercase">
+        <label htmlFor="email" className="block text-base mb-2 uppercase">
           {messages["app.login.emailField"]}
         </label>
         <input
@@ -152,7 +152,6 @@ export default function RegisterForm({ messages }: FormProps) {
             messages[errorsForm.confirmPassword?.type || ""]) ||
           messages[errorsForm.confirmPassword?.message || ""]
         }
-        labelClassName="block pl-1 text-sm font-medium text-gray-700"
       />
 
       {/* GDPR Consent Checkbox */}
@@ -192,7 +191,7 @@ export default function RegisterForm({ messages }: FormProps) {
           type="submit"
           label={messages["app.register.registerButton"]}
           variant="tertiary"
-          className="w-full mt-4 mb-3 !h-12"
+          className="mt-4 mb-3 !h-12"
         />
       </div>
     </form>

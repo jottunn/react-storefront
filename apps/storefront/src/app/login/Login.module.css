@@ -1,0 +1,5 @@
+.account-bkg {
+  background-image: url("/bkg_login.webp");
+  background-size: cover;
+  background-position: 70% 10%;
+}
