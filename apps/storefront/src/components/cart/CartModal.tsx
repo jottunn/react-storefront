@@ -14,8 +14,9 @@ import { ShoppingBagIcon } from "@heroicons/react/24/outline";
 
 interface CartModalProps {
   messages: { [key: string]: string };
+  display?: string;
 }
-export default function CartModal({ messages }: CartModalProps) {
+export default function CartModal({ messages, display }: CartModalProps) {
   const { checkout, refreshCheckout } = useCheckout();
   const pathname = usePathname();
   const [cartModalOpen, setCartModalOpen] = useState(false);
@@ -75,14 +76,21 @@ export default function CartModal({ messages }: CartModalProps) {
         type="button"
         title={messages["app.checkout.openCart"]}
       >
-        <span className={styles["nav-icon-button"]}>
-          {!!counter && (
-            <span className={styles["nav-icon-counter"]} data-testid="cartCounter">
-              {counter}
-            </span>
-          )}
-          <ShoppingBagIcon className="h-8 w-8" />
-        </span>
+        {" "}
+        {display === "footer" ? (
+          <span className="text-base cursor-pointer hover:underline leading-[2.4]">
+            {messages["app.cart.link"]}
+          </span>
+        ) : (
+          <span className={styles["nav-icon-button"]}>
+            {!!counter && (
+              <span className={styles["nav-icon-counter"]} data-testid="cartCounter">
+                {counter}
+              </span>
+            )}
+            <ShoppingBagIcon className="h-8 w-8" />
+          </span>
+        )}
       </button>
       <Transition show={cartModalOpen}>
         <Dialog onClose={closeCart} className="relative z-50">

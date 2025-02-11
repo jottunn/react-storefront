@@ -357,7 +357,7 @@ export default async function Home() {
               </button>
             </div>
           </div>
-          <div style={{ maxHeight: "400px" }}>
+          <div>
             <SwiperComponent
               isLoop={true}
               products={displayedSalesProducts as Product[]}
@@ -372,7 +372,7 @@ export default async function Home() {
         displayNewProducts === "YES" &&
         newProducts &&
         newProducts.length > 0 && (
-          <div className="container px-8 pb-2 md:pb-24">
+          <div className="container px-8 py-4 md:pb-24">
             <div className="swiper-header flex justify-center items-center space-x-4">
               <h2 className="text-lg uppercase m-0 flex-1 text-left mb-8">
                 {messages["app.newProducts"]}
@@ -386,7 +386,7 @@ export default async function Home() {
                 </button>
               </div>
             </div>
-            <div style={{ maxHeight: "400px" }}>
+            <div>
               <SwiperComponent
                 isLoop={true}
                 products={newProducts as Product[]}

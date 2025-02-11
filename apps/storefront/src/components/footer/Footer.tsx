@@ -20,6 +20,7 @@ import NewsletterSubscribe from "../Newsletter/NewsletterSubscribe";
 export type FooterProps = HTMLAttributes<HTMLElement>;
 import { getMessages } from "src/lib/util";
 import SvgSprite from "../SvgSprite";
+import CartNavItem from "../cart/CartNavItem";
 
 export default async function Footer({ className, ...rest }: FooterProps) {
   "use server";
@@ -66,15 +67,9 @@ export default async function Footer({ className, ...rest }: FooterProps) {
               footerNavLinks.menu &&
               footerNavLinks.menu.items &&
               footerNavLinks.menu?.items.length > 0 &&
-              footerNavLinks.menu?.items?.map((item) => (
+              footerNavLinks.menu?.items?.map((item, i) => (
                 <div className="" key={item?.id}>
-                  {item?.url ? (
-                    <Link href={item.url} rel="noreferrer" className={styles["menu-heading"]}>
-                      {item?.name}
-                    </Link>
-                  ) : (
-                    <span className={styles["menu-heading"]}>{item?.name}</span>
-                  )}
+                  <span className={styles["menu-heading"]}>{item?.name}</span>
                   <ul className={styles.menu}>
                     {item?.children?.map((sub) => (
                       <li key={sub?.id}>
@@ -98,16 +93,15 @@ export default async function Footer({ className, ...rest }: FooterProps) {
                         )}
                       </li>
                     ))}
+                    {i === 0 && <CartNavItem display="footer" />}
                   </ul>
                 </div>
               ))}
 
-            <div className="no-margin-p mb-6 prose-2xl">
+            <div className={clsx("no-margin-p mb-6 prose-2xl", styles["contact-footer"])}>
               {contactContent && (
                 <>
-                  <p className="title-font font-bold text-[1.3rem] md:text-md uppercase mb-5">
-                    {contactContent.node.title}
-                  </p>
+                  <p className={styles["menu-heading"]}>{contactContent.node.title}</p>
                   {contactParsedContent &&
                     contactParsedContent.map((content: any) => (
                       <div key={content} dangerouslySetInnerHTML={{ __html: xss(content) }} />

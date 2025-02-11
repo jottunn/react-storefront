@@ -15,7 +15,7 @@
 }
 
 .menu-heading {
-  @apply block text-[1.3rem] md:text-md font-bold mb-4 cursor-pointer uppercase;
+  @apply block text-[1.3rem] md:text-md font-bold mb-4 uppercase;
 }
 
 .menu-link {
@@ -36,5 +36,11 @@
     display: grid;
     grid-gap: 1rem;
     grid-template-columns: 3fr 1fr;
+  }
+}
+@media (max-width: 600px) {
+  .contact-footer {
+    grid-column: 1/3;
+    grid-row: 3/4;
   }
 }
