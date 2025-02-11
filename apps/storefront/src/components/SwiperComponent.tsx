@@ -11,15 +11,18 @@ export interface SwiperComponentProps {
   prevButtonClass: string;
   nextButtonClass: string;
   type?: string;
+  isLoop?: boolean;
 }
 export default function SwiperComponent({
   products,
   prevButtonClass,
   nextButtonClass,
   type,
+  isLoop,
 }: SwiperComponentProps) {
   return (
     <Swiper
+      loop={isLoop ? true : false}
       slidesPerView={2}
       spaceBetween={10}
       modules={[Navigation]}

@@ -81,58 +81,24 @@ export default async function Home() {
     ...defaultRegionQuery(),
     sortBy,
   };
-
-  let newProductsH;
-  try {
-    const response = await executeGraphQL<ProductCollectionQuery, { filter: any }>(
-      ProductCollectionDocument,
-      {
-        variables: queryVariables,
-        revalidate: 60 * 60 * 24,
-      },
-    );
-    newProductsH = response.products;
-  } catch {
-    return [];
-  }
-  let newProducts = newProductsH ? mapEdgesToItems(newProductsH) : [];
-
-  /** feature-products collection */
-  let featuredCollection;
-  try {
-    const response = await executeGraphQL<
-      CollectionBySlugQuery,
-      { slug: string; channel: string; locale: LanguageCodeEnum }
-    >(CollectionBySlugDocument, {
-      variables: {
-        slug: "highlights",
-        ...defaultRegionQuery(),
-      },
-    });
-    featuredCollection = response.collection;
-  } catch {
-    return [];
-  }
-
-  let featuredProducts;
-  if (featuredCollection) {
-    const { products: featuredProductsH } = await executeGraphQL<
-      ProductCollectionQuery,
-      { filter: any; sortBy: any; first: number; locale: string; channel: string }
-    >(ProductCollectionDocument, {
-      variables: {
-        filter: {
-          isPublished: true,
-          stockAvailability: "IN_STOCK",
-          collections: [featuredCollection?.id],
+  const displayNewProducts =
+    page && "metadata" in page ? getMetadataValue(page.metadata, "Display Noutati") : "";
+  let newProducts;
+  if (displayNewProducts === "YES") {
+    let newProductsH;
+    try {
+      const response = await executeGraphQL<ProductCollectionQuery, { filter: any }>(
+        ProductCollectionDocument,
+        {
+          variables: queryVariables,
+          revalidate: 60 * 60,
         },
-        first: 10,
-        ...defaultRegionQuery(),
-        sortBy,
-      },
-      revalidate: 60 * 5,
-    });
-    featuredProducts = featuredProductsH ? mapEdgesToItems(featuredProductsH) : [];
+      );
+      newProductsH = response.products;
+    } catch {
+      return [];
+    }
+    newProducts = newProductsH ? mapEdgesToItems(newProductsH) : [];
   }
 
   /** categories to be displayed on homepage */
@@ -179,6 +145,57 @@ export default async function Home() {
     collections = response.collections;
   } catch {
     return [];
+  }
+  /** sales collections */
+  let salesCollections;
+  try {
+    const result = await executeGraphQL<
+      CollectionsByMetaKeyQuery,
+      { filter: any; locale: LanguageCodeEnum; channel: string }
+    >(CollectionsByMetaKeyDocument, {
+      variables: {
+        filter: {
+          metadata: [{ key: "isSale", value: "YES" }],
+          published: "PUBLISHED",
+        },
+        ...defaultRegionQuery(),
+      },
+      revalidate: 60 * 60 * 60,
+    });
+    salesCollections = result.collections;
+  } catch {
+    return null;
+  }
+  const outletCollections = mapEdgesToItems(salesCollections);
+  const outletCollectionsIds = outletCollections && outletCollections.map((collect) => collect.id);
+  /** get 30 products from sales collection */
+  let salesProducts;
+  let displayedSalesProducts;
+  if (outletCollectionsIds && outletCollectionsIds.length > 0) {
+    const { products: salesProductsH } = await executeGraphQL<
+      ProductCollectionQuery,
+      { filter: any; sortBy: any; first: number; locale: string; channel: string }
+    >(ProductCollectionDocument, {
+      variables: {
+        filter: {
+          isPublished: true,
+          stockAvailability: "IN_STOCK",
+          collections: outletCollectionsIds,
+        },
+        first: 30,
+        ...defaultRegionQuery(),
+        sortBy,
+      },
+      revalidate: 60 * 60 * 60,
+    });
+    salesProducts = salesProductsH ? mapEdgesToItems(salesProductsH) : [];
+    if (salesProducts && salesProducts.length > 0) {
+      // Randomize the array using sort with a random comparator
+      salesProducts.sort(() => Math.random() - 0.5);
+
+      // Select only the first 6 products
+      displayedSalesProducts = salesProducts.slice(0, 12);
+    }
   }
 
   const homepageCollections = collections ? mapEdgesToItems(collections) : [];
@@ -243,24 +260,10 @@ export default async function Home() {
       (await getBase64(`${UPLOAD_FOLDER ?? ""}/${banner2Attribute.values[0].name}`));
     placeholder_2 = base64_2 || null;
   }
-  const shopRichTextAttributes =
-    page && "attributes" in page
-      ? page.attributes.filter(
-          (attr) =>
-            attr.attribute.inputType === "RICH_TEXT" &&
-            (attr.attribute.name === "Content column1" ||
-              attr.attribute.name === "Content column2"),
-        )
-      : [];
 
   const content = page && "content" in page ? translate(page, "content") : null;
   const parsedContent = content ? parser.parse(JSON.parse(content)).join("") : "";
   const isEmptyContent = emptyTagsRegex.test(parsedContent);
-  const featuredCollectionText =
-    (featuredCollection && translate(featuredCollection, "description")) || "";
-  const parsedFeaturedCollectionText = featuredCollectionText
-    ? parser.parse(JSON.parse(featuredCollectionText))
-    : "";
 
   let brandCollections;
   try {
@@ -285,7 +288,7 @@ export default async function Home() {
     <>
       {hasBanner1 && (
         <div
-          className={`flex overflow-hidden mb-20 md:mb-28 !px-0 ${bannerContainerSize && bannerContainerSize === "YES" ? "" : "max-w-[1920px] mx-auto"}`}
+          className={`flex overflow-hidden mb-10 md:mb-18 !px-0 ${bannerContainerSize && bannerContainerSize === "YES" ? "" : "max-w-[1920px] mx-auto"}`}
         >
           <div
             className={`flex flex-col w-full md:max-h-[80vh] ${hasBanner1 && hasBanner2 ? "h-auto md:w-[98%] mx-auto md:flex-row gap-4 md:gap-6" : ""} ${hasBanner1 && !hasBanner2 ? "h-[125vw]" : ""}`}
@@ -318,34 +321,6 @@ export default async function Home() {
         </div>
       )}
 
-      {featuredCollection && featuredProducts && (
-        <div className="container p-8 md:py-24">
-          <div className="swiper-header flex justify-center items-center space-x-4">
-            <h2 className="text-lg uppercase m-0 flex-1 text-left">
-              {translate(featuredCollection, "name") || messages["app.featuredProducts"]}
-            </h2>
-            <div className="swiper-navigation flex">
-              <button className="swiper-button-prev-featured custom-prev inline-flex justify-center items-center w-10 h-10 border border-gray-600 hover:border-gray-700 disabled:border-gray-200 rounded-full transition-colors cursor-pointer">
-                <ChevronLeftIcon className="h-6 w-6 text-gray-500" />
-              </button>
-              <button className="swiper-button-next-featured custom-next inline-flex justify-center items-center w-10 h-10 border border-gray-600 hover:border-gray-700 disabled:border-gray-200 ml-2 rounded-full transition-colors cursor-pointer">
-                <ChevronRightIcon className="h-6 w-6 text-gray-500" />
-              </button>
-            </div>
-          </div>
-          <div className="prose-2xl mb-8">
-            <div dangerouslySetInnerHTML={{ __html: parsedFeaturedCollectionText }} />
-          </div>
-          <div>
-            <SwiperComponent
-              products={featuredProducts as Product[]}
-              prevButtonClass="swiper-button-prev-featured"
-              nextButtonClass="swiper-button-next-featured"
-              type="featured"
-            />
-          </div>
-        </div>
-      )}
       <div className="container block">
         {homepageCollections && homepageCollections.length > 0 && (
           <div
@@ -367,49 +342,60 @@ export default async function Home() {
         )}
       </div>
 
-      {newProducts && newProducts.length > 0 && (
+      {displayedSalesProducts && displayedSalesProducts.length > 0 && (
         <div className="container px-8 pb-2 md:pb-24">
           <div className="swiper-header flex justify-center items-center space-x-4">
             <h2 className="text-lg uppercase m-0 flex-1 text-left mb-8">
-              {messages["app.newProducts"]}
+              {messages["app.search.outletTitle"]}
             </h2>
             <div className="swiper-navigation flex mb-8">
-              <button className="swiper-button-prev-new custom-prev inline-flex justify-center items-center w-10 h-10 border border-gray-600 hover:border-gray-700 disabled:border-gray-200 rounded-full transition-colors cursor-pointer">
+              <button className="swiper-button-prev-sales custom-prev inline-flex justify-center items-center w-10 h-10 border border-gray-600 hover:border-gray-700 disabled:border-gray-200 rounded-full transition-colors cursor-pointer">
                 <ChevronLeftIcon className="h-6 w-6 text-gray-500" />
               </button>
-              <button className="swiper-button-next-new custom-next inline-flex justify-center items-center w-10 h-10 border border-gray-600 hover:border-gray-700 disabled:border-gray-200 ml-2 rounded-full transition-colors cursor-pointer">
+              <button className="swiper-button-next-sales ew custom-next inline-flex justify-center items-center w-10 h-10 border border-gray-600 hover:border-gray-700 disabled:border-gray-200 ml-2 rounded-full transition-colors cursor-pointer">
                 <ChevronRightIcon className="h-6 w-6 text-gray-500" />
               </button>
             </div>
           </div>
           <div style={{ maxHeight: "400px" }}>
             <SwiperComponent
-              products={newProducts as Product[]}
-              prevButtonClass="swiper-button-prev-new"
-              nextButtonClass="swiper-button-next-new"
+              isLoop={true}
+              products={displayedSalesProducts as Product[]}
+              prevButtonClass="swiper-button-prev-sales"
+              nextButtonClass="swiper-button-next-sales"
             />
           </div>
         </div>
       )}
 
-      {shopRichTextAttributes && shopRichTextAttributes.length > 0 && (
-        <div className="container flex flex-col prose-2xl border-t border-gray-300 pb-20 pt-24">
-          {shopRichTextAttributes.map((attr, index) =>
-            attr.values.map((item) => {
-              const parsedRichText = item.richText
-                ? parser.parse(JSON.parse(item.richText)).join("")
-                : "";
-              if (parsedRichText) {
-                return (
-                  <div key={`${index}`} className="md:w-3/4 mx-auto">
-                    <div className="p-2" dangerouslySetInnerHTML={{ __html: parsedRichText }} />
-                  </div>
-                );
-              }
-            }),
-          )}
-        </div>
-      )}
+      {displayNewProducts &&
+        displayNewProducts === "YES" &&
+        newProducts &&
+        newProducts.length > 0 && (
+          <div className="container px-8 pb-2 md:pb-24">
+            <div className="swiper-header flex justify-center items-center space-x-4">
+              <h2 className="text-lg uppercase m-0 flex-1 text-left mb-8">
+                {messages["app.newProducts"]}
+              </h2>
+              <div className="swiper-navigation flex mb-8">
+                <button className="swiper-button-prev-new custom-prev inline-flex justify-center items-center w-10 h-10 border border-gray-600 hover:border-gray-700 disabled:border-gray-200 rounded-full transition-colors cursor-pointer">
+                  <ChevronLeftIcon className="h-6 w-6 text-gray-500" />
+                </button>
+                <button className="swiper-button-next-new custom-next inline-flex justify-center items-center w-10 h-10 border border-gray-600 hover:border-gray-700 disabled:border-gray-200 ml-2 rounded-full transition-colors cursor-pointer">
+                  <ChevronRightIcon className="h-6 w-6 text-gray-500" />
+                </button>
+              </div>
+            </div>
+            <div style={{ maxHeight: "400px" }}>
+              <SwiperComponent
+                isLoop={true}
+                products={newProducts as Product[]}
+                prevButtonClass="swiper-button-prev-new"
+                nextButtonClass="swiper-button-next-new"
+              />
+            </div>
+          </div>
+        )}
 
       <div className=" py-12 md:py-32 mb-20 items-center justify-items-center w-full border-t border-dark=300 md:min-h-[90px]">
         <div className="container grid grid-cols-4 md:grid-cols-8 gap-6 md:gap-12 lg:gap-20 items-center">

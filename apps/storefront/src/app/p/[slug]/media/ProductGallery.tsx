@@ -81,6 +81,7 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
               prevEl: `.swiper-button-prev-mobile`,
               nextEl: `.swiper-button-next-mobile`,
             }}
+            loop
           >
             {galleryMedia.map((media, index) => (
               <SwiperSlide key={index}>
@@ -134,6 +135,7 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
             ref={mainSwiperRef}
             modules={[Navigation, Keyboard]}
             navigation
+            loop
             onSlideChange={onSlideChange}
             slidesPerView={1}
             spaceBetween={10}
