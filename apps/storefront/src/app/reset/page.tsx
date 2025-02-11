@@ -25,7 +25,7 @@ export default function ResetPage() {
       }
     >
       <section className={clsx(styles["account-bkg"], "mx-auto max-w-10xl min-h-[400px] p-4")}>
-        <div className="container pb-40 pt-40 flex justify-center items-center">
+        <div className="container pb-40 pt-20 md:pt-40 flex justify-center items-center">
           <ResetPageClient messages={messages} />
         </div>
       </section>

@@ -27,7 +27,7 @@ export const Navbar = async () => {
               priority={true}
             />
           </Link>
-          <div className="ml-auto flex items-center justify-center gap-4 whitespace-nowrap lg:gap-6">
+          <div className="ml-auto flex items-center justify-center gap-4 whitespace-nowrap lg:gap-6 mt-[-10px] md:mt-0">
             <div className="hidden md:flex">
               <CustomSearchBox />
             </div>

@@ -185,7 +185,7 @@ export default async function Footer({ className, ...rest }: FooterProps) {
       </Box>
       <div className="bg-gray-100 pt-8 pb-10">
         <div className="container text-center">
-          <p className="text-base text-main-1 flex-grow text-left mb-2 block md:inline">
+          <p className="text-sm md:text-base text-main-1 flex-grow text-left mb-4 block md:inline">
             © Copyright {new Date().getFullYear()} Surmont Shop. Toate drepturile rezervate.
             <span className="pl-6 hidden md:inline">|</span>
           </p>
@@ -198,7 +198,7 @@ export default async function Footer({ className, ...rest }: FooterProps) {
                 key={item.id}
                 href={item.url ? item.url : "#"}
                 rel="noreferrer"
-                className="text-base px-4 hover:text-action-1 hover:underline block md:inline"
+                className="text-sm md:text-base px-4 hover:text-action-1 hover:underline inline-block pb-2"
               >
                 {item?.name}
               </Link>

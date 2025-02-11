@@ -38,9 +38,3 @@
     grid-template-columns: 3fr 1fr;
   }
 }
-@media (max-width: 600px) {
-  .contact-footer {
-    grid-column: 1/3;
-    grid-row: 3/4;
-  }
-}
