@@ -193,16 +193,26 @@ export default async function Footer({ className, ...rest }: FooterProps) {
             legalNavLinks.menu &&
             legalNavLinks.menu.items &&
             legalNavLinks.menu?.items.length > 0 &&
-            legalNavLinks.menu?.items?.map((item, i) => (
-              <Link
-                key={item.id}
-                href={item.url ? item.url : "#"}
-                rel="noreferrer"
-                className="text-sm md:text-base px-4 hover:text-action-1 hover:underline inline-block pb-2"
-              >
-                {item?.name}
-              </Link>
-            ))}
+            legalNavLinks.menu?.items?.map((item, i) =>
+              item?.url ? (
+                <Link
+                  href={item.url}
+                  rel="noreferrer"
+                  className="text-sm md:text-base px-4 hover:text-action-1 hover:underline inline-block pb-2"
+                  data-testid={`footerExternalLinks${item?.name}`}
+                >
+                  {item?.name}
+                </Link>
+              ) : (
+                <Link
+                  href={getLinkPath(item)}
+                  className="text-sm md:text-base px-4 hover:text-action-1 hover:underline inline-block pb-2"
+                  data-testid={`footerInternalLinks${item?.name}`}
+                >
+                  {item?.name}
+                </Link>
+              ),
+            )}
         </div>
       </div>
     </footer>
