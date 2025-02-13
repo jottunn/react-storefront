@@ -21,6 +21,7 @@ export type FooterProps = HTMLAttributes<HTMLElement>;
 import { getMessages } from "src/lib/util";
 import SvgSprite from "../SvgSprite";
 import CartNavItem from "../cart/CartNavItem";
+import UserMenu from "../nav/components/UserMenu/UserMenu";
 
 export default async function Footer({ className, ...rest }: FooterProps) {
   "use server";
@@ -83,6 +84,7 @@ export default async function Footer({ className, ...rest }: FooterProps) {
                 <div className="" key={item?.id}>
                   <span className={styles["menu-heading"]}>{item?.name}</span>
                   <ul className={styles.menu}>
+                    {i === 0 && <UserMenu display="footer" messages={messages} />}
                     {item?.children?.map((sub) => (
                       <li key={sub?.id}>
                         {sub?.url ? (
