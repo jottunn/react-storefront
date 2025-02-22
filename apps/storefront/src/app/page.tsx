@@ -396,31 +396,56 @@ export default async function Home() {
             </div>
           </div>
         )}
-
-      <div className=" py-12 md:py-20 mb-10 items-center justify-items-center w-full border-t border-dark=300 md:min-h-[90px]">
-        <div className="container grid grid-cols-4 md:grid-cols-8 gap-6 md:gap-12 lg:gap-20 items-center">
+      <div className="py-12 md:py-20 mb-10 items-center justify-items-center w-full border-t border-dark-300 md:min-h-[90px]">
+        <div className="container md:flex flex-col gap-6 md:gap-12 lg:gap-20">
           {brandCollections &&
-            brandCollections.collections?.edges.map((brand) => {
-              return (
-                <Link
-                  key={brand.node.slug}
-                  href={`/collections/${brand.node.slug}`}
-                  className="text-md mt-2 font-medium text-gray-600 cursor-pointer text-center hover:text-green-600 block"
+            (() => {
+              const totalBrands = brandCollections.collections?.edges.length || 0;
+              const remainder = totalBrands % 8;
+
+              const numColumns = !totalBrands
+                ? 8 // If no brands, default to 8 columns
+                : remainder === 0
+                  ? 8 // If remainder is 0, use 8 columns
+                  : remainder <= 2
+                    ? 6 // Remainder ≤ 2: 6 columns
+                    : remainder <= 5
+                      ? 7 // Remainder 3-5: 7 columns
+                      : 8; // Otherwise: 8 columns
+              const brandCollectionsRows = [];
+              const brandCollectionsEdges = brandCollections.collections?.edges || [];
+
+              for (let i = 0; i < brandCollectionsEdges.length; i += numColumns) {
+                brandCollectionsRows.push(brandCollectionsEdges.slice(i, i + numColumns));
+              }
+
+              return brandCollectionsRows.map((row, rowIndex) => (
+                <div
+                  key={rowIndex}
+                  className="grid grid-cols-4 md:flex md:justify-center gap-6 md:gap-12 lg:gap-20"
                 >
-                  {brand.node.backgroundImage ? (
-                    <Image
-                      src={brand.node.backgroundImage.url}
-                      alt={brand.node.name}
-                      width={200}
-                      height={200}
-                      className="hover:brightness-125 hover:contrast-115 transition-all duration-30"
-                    />
-                  ) : (
-                    brand.node.name
-                  )}
-                </Link>
-              );
-            })}
+                  {row.map((brand) => (
+                    <Link
+                      key={brand.node.slug}
+                      href={`/collections/${brand.node.slug}`}
+                      className="text-md mt-2 font-medium text-gray-600 cursor-pointer text-center hover:text-green-600 block"
+                    >
+                      {brand.node.backgroundImage ? (
+                        <Image
+                          src={brand.node.backgroundImage.url}
+                          alt={brand.node.name}
+                          width={200}
+                          height={200}
+                          className="hover:brightness-125 hover:contrast-115 transition-all duration-30"
+                        />
+                      ) : (
+                        brand.node.name
+                      )}
+                    </Link>
+                  ))}
+                </div>
+              ));
+            })()}
         </div>
       </div>
     </>
