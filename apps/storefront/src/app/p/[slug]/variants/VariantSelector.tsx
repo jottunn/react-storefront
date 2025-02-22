@@ -107,6 +107,11 @@ export function VariantSelector({
     return null;
   }
   const [sizeSelected, setSizeSelected] = React.useState(sizes?.length === 1);
+  React.useEffect(() => {
+    //if color variant changes, reset the size select
+    setSizeSelected(sizes?.length === 1);
+  }, [currentColor]);
+
   const handleSizeSelect = (isSizeSelected: boolean) => {
     setSizeSelected(isSizeSelected);
   };
@@ -172,7 +177,6 @@ export function VariantSelector({
             {sizes && sizes.length > 1 && (
               <VariantSelectorClient
                 sizes={sizes as ProductVariant[]}
-                selectedVariant={selectedVariant as ProductVariantDetailsFragment}
                 product={product}
                 hasSizeGuide={sizeGuide ? true : false}
                 messages={messages}

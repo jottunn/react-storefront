@@ -21,7 +21,6 @@ import { Messages } from "@/lib/util";
 
 interface VariantSelectorClientProps {
   sizes: ProductVariant[];
-  selectedVariant?: ProductVariantDetailsFragment;
   product: ProductDetailsFragment;
   hasSizeGuide: boolean;
   messages: Messages;
@@ -30,7 +29,6 @@ interface VariantSelectorClientProps {
 
 const VariantSelectorClient: React.FC<VariantSelectorClientProps> = ({
   sizes,
-  selectedVariant,
   product,
   hasSizeGuide,
   messages,
