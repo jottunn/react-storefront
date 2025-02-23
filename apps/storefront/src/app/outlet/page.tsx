@@ -50,7 +50,8 @@ export default async function Page() {
   const outletCollectionsWithImage = outletCollections.filter(
     (collection) => collection.backgroundImage && collection.backgroundImage.url,
   );
-  const numColumnsHPCollections = getNumColumns(outletCollectionsWithImage.length);
+  const numColumnsHPCollections =
+    outletCollectionsWithImage.length > 1 ? getNumColumns(outletCollectionsWithImage.length) : 1;
   const collectionsIds = outletCollections && outletCollections.map((collect) => collect.id);
   const messages = getMessages(DEFAULT_LOCALE);
   const breadcrumbItems = [
@@ -84,9 +85,7 @@ export default async function Page() {
           <PageHero title={messages["app.search.outletTitle"]} description="" />
           {outletCollectionsWithImage && outletCollectionsWithImage.length > 0 && (
             <div
-              className={`grid grid-cols-1 md:grid-cols-${numColumnsHPCollections} gap-4 mt-4 mb-20 md:mt-20 md:mb-40 ${
-                numColumnsHPCollections === 1 ? "flex flex-col items-center" : ""
-              }`}
+              className={`${numColumnsHPCollections === 1 ? "flex flex-col items-center" : `grid grid-cols-1 md:grid-cols-${numColumnsHPCollections}`} gap-4 mt-4 mb-20 md:mt-20 md:mb-40`}
             >
               {outletCollectionsWithImage.map((collection) => (
                 <HomepageBlock key={collection.id} item={collection} type="collection" />

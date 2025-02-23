@@ -2,17 +2,13 @@ import { getMessages, getMetadataValue, getNumColumns, getOrderValue } from "src
 import { DEFAULT_LOCALE, defaultRegionQuery } from "src/lib/regions";
 import { executeGraphQL } from "@/lib/graphql";
 import {
-  CategoriesByFilterDocument,
-  CategoriesByFilterQuery,
-  CategoryFilterInput,
-  CollectionBySlugDocument,
-  CollectionBySlugQuery,
-  CollectionFilterInput,
   CollectionsByMetaKeyDocument,
   CollectionsByMetaKeyQuery,
   LanguageCodeEnum,
   PageDocument,
   PageQuery,
+  PageTypesDocument,
+  PageTypesQuery,
   Product,
   ProductCollectionDocument,
   ProductCollectionQuery,
@@ -101,51 +97,34 @@ export default async function Home() {
     newProducts = newProductsH ? mapEdgesToItems(newProductsH) : [];
   }
 
-  /** categories to be displayed on homepage */
-  const categoryFilter: CategoryFilterInput = {
-    metadata: [{ key: "Show on Homepage", value: "YES" }],
-  };
-  let categories;
+  /** get banners to be displayed on homepage - content-type = banner */
+  let homepageBanners;
   try {
-    const response = await executeGraphQL<
-      CategoriesByFilterQuery,
-      { filter: CategoryFilterInput; locale: LanguageCodeEnum }
-    >(CategoriesByFilterDocument, {
-      variables: {
-        filter: categoryFilter,
-        ...defaultRegionQuery(),
-      },
-      revalidate: 60 * 5,
+    const homepageBannersResponse = await executeGraphQL<
+      PageTypesQuery,
+      { filter: any; locale: LanguageCodeEnum }
+    >(PageTypesDocument, {
+      variables: { filter: { pageTypes: ["UGFnZVR5cGU6OA=="] }, locale: DEFAULT_LOCALE },
+      revalidate: 60,
     });
-    categories = response.categories;
+    homepageBanners = homepageBannersResponse.pages;
   } catch {
-    return [];
+    return null;
   }
-  const homepageCategories = categories ? mapEdgesToItems(categories) : [];
-  homepageCategories.sort((a, b) => getOrderValue(a.metadata) - getOrderValue(b.metadata));
-  const numColumnsHPCategories = getNumColumns(homepageCategories.length);
 
-  /** collections to be displayed on homepage */
-  const collectionFilter: CollectionFilterInput = {
-    metadata: [{ key: "Show on Homepage", value: "YES" }],
-  };
+  const displayHomepageBanners = homepageBanners ? mapEdgesToItems(homepageBanners) : [];
+  displayHomepageBanners.sort((a, b) => {
+    const orderA = Number(
+      a.attributes.find((attr) => attr.attribute.slug === "order")?.values[0]?.name || 0,
+    );
+    const orderB = Number(
+      b.attributes.find((attr) => attr.attribute.slug === "order")?.values[0]?.name || 0,
+    );
 
-  let collections;
-  try {
-    const response = await executeGraphQL<
-      CollectionsByMetaKeyQuery,
-      { filter: CollectionFilterInput; locale: LanguageCodeEnum }
-    >(CollectionsByMetaKeyDocument, {
-      variables: {
-        filter: collectionFilter,
-        ...defaultRegionQuery(),
-      },
-      revalidate: 60 * 5,
-    });
-    collections = response.collections;
-  } catch {
-    return [];
-  }
+    return orderA - orderB;
+  });
+  const numColumnsHPBanners = getNumColumns(displayHomepageBanners.length);
+
   /** sales collections */
   let salesCollections;
   try {
@@ -197,11 +176,6 @@ export default async function Home() {
       displayedSalesProducts = salesProducts.slice(0, 12);
     }
   }
-
-  const homepageCollections = collections ? mapEdgesToItems(collections) : [];
-  homepageCollections.sort((a, b) => getOrderValue(a.metadata) - getOrderValue(b.metadata));
-  const numColumnsHPCollections = getNumColumns(homepageCollections.length);
-
   /** banner1 */
   const banner1Attribute =
     page && "attributes" in page
@@ -291,7 +265,7 @@ export default async function Home() {
           className={`flex overflow-hidden mb-1 md:mb-1 !px-0 ${bannerContainerSize && bannerContainerSize === "YES" ? "" : "max-w-[1920px] mx-auto"}`}
         >
           <div
-            className={`flex flex-col w-full md:max-h-[80vh] ${hasBanner1 && hasBanner2 ? "h-auto md:w-[98%] mx-auto md:flex-row gap-4 md:gap-6" : ""} ${hasBanner1 && !hasBanner2 ? "h-[125vw]" : ""}`}
+            className={`flex flex-col w-full md:max-h-[80vh] ${hasBanner1 && hasBanner2 ? "h-auto md:w-[98%] mx-auto md:flex-row gap-4 md:gap-4" : ""} ${hasBanner1 && !hasBanner2 ? "h-[125vw]" : ""}`}
           >
             <Banner
               bannerAttribute={banner1Attribute}
@@ -321,22 +295,13 @@ export default async function Home() {
         </div>
       )}
 
-      <div className="container block">
-        {homepageCollections && homepageCollections.length > 0 && (
+      <div className="container block p-0">
+        {displayHomepageBanners && displayHomepageBanners.length > 0 && (
           <div
-            className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-${numColumnsHPCollections} gap-4 my-6`}
+            className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-${numColumnsHPBanners} gap-4 my-6`}
           >
-            {homepageCollections.map((collection) => (
-              <HomepageBlock key={collection.id} item={collection} type="collection" />
-            ))}
-          </div>
-        )}
-        {homepageCategories && homepageCategories.length > 0 && (
-          <div
-            className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-${numColumnsHPCategories} gap-4 my-6`}
-          >
-            {homepageCategories.map((category) => (
-              <HomepageBlock key={category.id} item={category} type="category" />
+            {displayHomepageBanners.map((banner) => (
+              <HomepageBlock key={banner.id} item={banner} type="homepage" />
             ))}
           </div>
         )}
@@ -345,7 +310,7 @@ export default async function Home() {
       {displayedSalesProducts && displayedSalesProducts.length > 0 && (
         <div className="container py-4 md:pt-10 md:pb-24">
           <div className="swiper-header flex justify-center items-center space-x-4">
-            <h2 className="text-lg uppercase m-0 flex-1 text-left mb-8">
+            <h2 className="text-lg uppercase m-0 flex-1 text-left mb-8 text-center">
               {messages["app.search.outletTitle"]}
             </h2>
             <div className="swiper-navigation flex mb-8">
@@ -374,7 +339,7 @@ export default async function Home() {
         newProducts.length > 0 && (
           <div className="container py-4 md:pt-10 md:pb-24">
             <div className="swiper-header flex justify-center items-center space-x-4">
-              <h2 className="text-lg uppercase m-0 flex-1 text-left mb-8">
+              <h2 className="text-lg uppercase m-0 flex-1 text-left mb-8 text-center">
                 {messages["app.newProducts"]}
               </h2>
               <div className="swiper-navigation flex mb-8">

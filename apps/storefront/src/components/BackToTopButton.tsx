@@ -17,7 +17,7 @@ export default function BackToTopButton() {
       {scrollPosition > 500 && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-4 right-4 p-3 rounded-full bg-gray-600 text-white hover:bg-black focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
+          className="fixed bottom-4 right-4 p-3 rounded-full bg-gray-600 text-white hover:bg-black focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 z-10"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
