@@ -3,27 +3,32 @@ import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   const { email } = await request.json();
-  const listId = Number(process.env.BREVO_LIST_ID);
-  if (!listId) {
-    return NextResponse.json({ message: "An error occurred. Please try again." }, { status: 500 });
+  const audienceId = process.env.MAILCHIMP_AUDIENCE_ID;
+  if (!audienceId) {
+    return NextResponse.json({ message: "Audience ID is missing" }, { status: 500 });
   }
 
-  try {
-    const response = await axios.post(
-      "https://api.brevo.com/v3/contacts",
-      {
-        email: email,
-        listIds: [listId],
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          "api-key": process.env.BREVO_API_KEY,
-        },
-      },
-    );
+  const apiKey = process.env.MAILCHIMP_API_KEY || "";
+  const serverPrefix = apiKey.split("-")[1];
 
-    if (response.status === 201) {
+  if (!serverPrefix) {
+    return NextResponse.json({ message: "Invalid API key." }, { status: 500 });
+  }
+
+  const url = `https://${serverPrefix}.api.mailchimp.com/3.0/lists/${audienceId}/members`;
+  const data = {
+    email_address: email,
+    status: "subscribed",
+  };
+  try {
+    const response = await axios.post(url, data, {
+      auth: {
+        username: "surmont",
+        password: apiKey,
+      },
+    });
+
+    if (response.status === 201 || response.status === 200) {
       return NextResponse.json({ message: "Subscription successful!" });
     } else {
       return NextResponse.json(
@@ -32,10 +37,10 @@ export async function POST(request: Request) {
       );
     }
   } catch (error: any) {
-    //console.log(error);
+    // console.log(error);
     // console.log(error.code);
-    // console.log(error.response.data.code);
-    if (error.response.data.code === "duplicate_parameter") {
+    console.log(error.response.data);
+    if (error.response.data.title === "Member Exists") {
       return NextResponse.json({ message: "duplicate_parameter" }, { status: 200 });
     }
     return NextResponse.json({ message: "An error occurred. Please try again." }, { status: 500 });
