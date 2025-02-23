@@ -12,7 +12,7 @@ interface UserMenuProps {
 
 export default function UserMenu({ messages, display }: UserMenuProps) {
   const user = useUser();
-  console.log("UserMenu re-rendered with user:", user); // Log the user state
+  //console.log("UserMenu re-rendered with user:", user); // Log the user state
   return (
     <Link
       href={user ? "/account" : "/login"}
