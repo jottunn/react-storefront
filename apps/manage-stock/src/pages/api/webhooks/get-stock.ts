@@ -3,6 +3,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { saleorApp } from "../../../saleor-app";
 import { WebhookError } from "../../../../generated/graphql";
 import { createClient } from "../../../lib/create-graphq-client";
+import { handleStockUpdate } from "../../../modules/handle-sync-stock-update";
 
 type ProductVariantPayload = {
   productVariant: {
@@ -50,23 +51,6 @@ export const getStockWebhook = new SaleorAsyncWebhook<ProductVariantPayload>({
   },
 });
 
-async function fetchStockQuantityFromExternalService(sku: string) {
-  // TODO - for when in PROD
-  // Use fetch or any HTTP client to call the external service
-  // This is a placeholder: replace with your actual call to the external service
-  // const response = await fetch('https://external-service.com/api/get-stock', {
-  //   method: 'POST',
-  //   headers: {
-  //     'Content-Type': 'application/json',
-  //   },
-  //   body: JSON.stringify({ sku }),
-  // });
-
-  // const data = await response.json();
-  // return data.quantity; // Adjust based on the actual response structure
-  return 1;
-}
-
 /**
  * Handler has to be a default export so the Next.js will be able to use it
  */
@@ -74,56 +58,19 @@ export default getStockWebhook.createHandler(async (req, res, context) => {
   const { baseUrl, event, payload, authData } = context;
   console.log(payload);
   const sku = payload.productVariant.sku;
+  const client = createClient(authData.saleorApiUrl, async () => ({ token: authData.token }));
 
   if (!sku) {
     return res.status(400).json({ error: "SKU not provided" });
   }
 
   try {
-    // Call the external service to get the stock quantity
-    const quantity = await fetchStockQuantityFromExternalService(sku);
-
-    if (quantity) {
-      // Create a GraphQL client
-      if (!authData.saleorApiUrl || !authData.token) {
-        console.error("Authentication data is missing or incomplete:", authData);
-        return res.status(500).json({ error: "Failed to retrieve valid authentication data" });
-      }
-      const client = createClient(authData.saleorApiUrl, async () => ({ token: authData.token }));
-
-      //Update the stock of the variant in Saleor
-      const mutation = `
-      mutation UpdateProductVariantStocks($sku: String!, $stocks: [StockInput!]!) {
-        productVariantStocksUpdate(sku: $sku, stocks: $stocks) {
-          errors {
-            message
-          }
-        }
-      }
-    `;
-
-      const variables = {
-        sku,
-        stocks: [{ warehouse: process.env.APP_DEFAULT_WAREHOUSE, quantity }],
-      };
-
-      const result = await client.mutation(mutation, variables).toPromise();
-
-      console.log(variables);
-
-      if (result.error) {
-        console.error("Error updating stock:", result.error);
-        return res.status(500).json({ error: "Failed to update stock in Saleor" });
-      }
-
-      // Successfully updated stock
-      return res.status(200).json({ message: "Stock updated successfully" });
-    }
+    //call existing function to get the stoick for newly added variant
+    const stockUpdate = await handleStockUpdate(client, sku);
+    console.log("stockUpdate", stockUpdate);
+    return res.status(200).json({ message: "Stock updated successfully" });
   } catch (error) {
     console.error("Error handling webhook:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
-
-  // End with status 200
-  return res.status(200).end();
 });

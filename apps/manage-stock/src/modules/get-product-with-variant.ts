@@ -9,5 +9,5 @@ export async function getProductWithVariant(client: Client, sku: string) {
     },
     { requestPolicy: "network-only" }
   );
-  return data?.productVariant?.product?.id;
+  return data?.productVariant;
 }

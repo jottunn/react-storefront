@@ -15,6 +15,7 @@ export const syncStock = async (client: Client, codStoc?: string) => {
     }).catch((err) => {
       messages.push("Failed to schedule stock update in queue");
       console.error("Failed to schedule stock update in queue:", err);
+      return null;
     });
 
     if (schedule && schedule.ok) {

@@ -11,16 +11,23 @@ const SyncPage = () => {
   const [codStoc, setCodStoc] = useState("");
 
   const syncStoc = async () => {
-    setLoading(true);
-    const response = await syncStock(client, codStoc);
-    if (response) {
-      if (Array.isArray(response)) {
-        setResult(response);
-      } else if (response.messages) {
-        setResult(response.messages);
+    setLoading(true); // Set loading state to true
+    try {
+      const response = await syncStock(client, codStoc); // Call the syncStock function
+      if (response) {
+        if (Array.isArray(response)) {
+          setResult(response); // Set the result if the response is an array
+        } else if (response.messages) {
+          setResult(response.messages); // Set the result if the response contains messages
+        }
       }
+    } catch (error) {
+      console.error("Error during sync:", error);
+      setResult(["Error during synchronization."]); // Handle errors
+    } finally {
+      setLoading(false); // Set loading state to false
+      setCodStoc(""); // Reset the input field
     }
-    setLoading(false);
   };
 
   return (

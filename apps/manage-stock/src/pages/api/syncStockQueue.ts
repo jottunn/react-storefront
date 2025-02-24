@@ -3,6 +3,7 @@ import Bull from "bull";
 import { handleStockUpdate } from "../../modules/handle-sync-stock-update";
 import { saleorApp } from "../../saleor-app";
 import { createClient } from "../../lib/create-graphq-client";
+import logger from "../../logger";
 
 const checkAndScheduleJob = async (queue: Bull.Queue) => {
   try {
@@ -51,6 +52,8 @@ stockUpdateQueue.process(async () => {
     token: authData[0]["token"],
   }));
   const stockUpdate = await handleStockUpdate(client);
+  logger.info("handleStockUpdate job done");
+
   return { status: "success" };
 });
 
