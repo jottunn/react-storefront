@@ -15,7 +15,7 @@ export default function HomepageBlock({ item, type }: HomepageBlockProps) {
     (type === "homepage" &&
       item.attributes.find(
         (attr: { attribute: { slug: string } }) => attr.attribute.slug === "link",
-      )?.values[0]?.value) ||
+      )?.values[0]?.name) ||
     "#";
   let bannerImg =
     (type === "homepage" &&
