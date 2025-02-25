@@ -110,8 +110,6 @@ export default async function Home() {
   } catch {
     //return null;
   }
-  console.log("homepageBanners", homepageBanners, PAGE_TYPE_HP_BANNERS_ID);
-
   const displayHomepageBanners = homepageBanners ? mapEdgesToItems(homepageBanners) : [];
   displayHomepageBanners.sort((a, b) => {
     const orderA = Number(
