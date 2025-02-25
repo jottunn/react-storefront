@@ -9,3 +9,4 @@ export const ATTR_COLOR_SLUG = "culoare";
 export const ATTR_COLOR_COMMERCIAL_SLUG = "culoare-comerciala";
 export const ATTR_GHID_MARIMI = "ghid-marimi";
 export const ATTR_BRAND_REF = "brand-ref";
+export const PAGE_TYPE_HP_BANNERS_ID = process.env.PAGE_TYPE_HPBANNERS;

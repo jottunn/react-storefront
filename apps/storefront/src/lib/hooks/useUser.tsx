@@ -9,7 +9,7 @@ export const useUser = () => {
     const fetchCurrentUser = async () => {
       try {
         const currentUser = await getCurrentUser();
-        console.log("Fetched user:", currentUser); // Log the fetched user
+        //console.log("Fetched user:", currentUser);
         setUser(currentUser);
       } catch (error) {
         console.error("Failed to fetch user:", error);

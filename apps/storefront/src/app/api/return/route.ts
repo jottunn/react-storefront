@@ -35,7 +35,7 @@ export async function POST(request: Request) {
       },
     );
 
-    if (response.status === 201) {
+    if (response.status === 201 || response.status === 200) {
       return NextResponse.json({ status: "ok", message: "Notification email sent successfully!" });
     } else {
       return NextResponse.json(

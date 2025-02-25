@@ -91,7 +91,7 @@ export default async function Page() {
               return brandCollectionsRows.map((row, rowIndex) => (
                 <div
                   key={rowIndex}
-                  className="grid grid-cols-4 md:flex md:justify-center gap-6 md:gap-12 lg:gap-20"
+                  className="grid grid-cols-4 md:flex md:justify-center gap-6 md:gap-12 lg:gap-20 items-center"
                 >
                   {row.map((brand) => (
                     <Link

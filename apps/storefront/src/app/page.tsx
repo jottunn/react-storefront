@@ -17,7 +17,7 @@ import {
 } from "@/saleor/api";
 import { mapEdgesToItems } from "@/lib/maps";
 import { Metadata } from "next";
-import { STOREFRONT_NAME, UPLOAD_FOLDER } from "@/lib/const";
+import { PAGE_TYPE_HP_BANNERS_ID, STOREFRONT_NAME, UPLOAD_FOLDER } from "@/lib/const";
 import { translate } from "@/lib/translations";
 import edjsHTML from "editorjs-html";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
@@ -42,7 +42,7 @@ export const generateMetadata = async (): Promise<Metadata | []> => {
     );
     page = response.page;
   } catch {
-    return [];
+    //return [];
   }
 
   return {
@@ -66,8 +66,7 @@ export default async function Home() {
     );
     page = response.page;
   } catch {
-    return [];
-    //throw new Error("Server is down")
+    //return [];
   }
   const filter: ProductFilterInput = { isPublished: true, stockAvailability: "IN_STOCK" };
   const sortBy: ProductOrder = { direction: "DESC", field: "PUBLICATION_DATE" };
@@ -92,7 +91,7 @@ export default async function Home() {
       );
       newProductsH = response.products;
     } catch {
-      return [];
+      //return [];
     }
     newProducts = newProductsH ? mapEdgesToItems(newProductsH) : [];
   }
@@ -104,13 +103,14 @@ export default async function Home() {
       PageTypesQuery,
       { filter: any; locale: LanguageCodeEnum }
     >(PageTypesDocument, {
-      variables: { filter: { pageTypes: ["UGFnZVR5cGU6OA=="] }, locale: DEFAULT_LOCALE },
+      variables: { filter: { pageTypes: [PAGE_TYPE_HP_BANNERS_ID] }, locale: DEFAULT_LOCALE },
       revalidate: 60,
     });
     homepageBanners = homepageBannersResponse.pages;
   } catch {
-    return null;
+    //return null;
   }
+  console.log("homepageBanners", homepageBanners, PAGE_TYPE_HP_BANNERS_ID);
 
   const displayHomepageBanners = homepageBanners ? mapEdgesToItems(homepageBanners) : [];
   displayHomepageBanners.sort((a, b) => {
@@ -143,7 +143,7 @@ export default async function Home() {
     });
     salesCollections = result.collections;
   } catch {
-    return null;
+    //return null;
   }
   const outletCollections = mapEdgesToItems(salesCollections);
   const outletCollectionsIds = outletCollections && outletCollections.map((collect) => collect.id);
@@ -255,7 +255,7 @@ export default async function Home() {
       revalidate: 60 * 60 * 24,
     });
   } catch {
-    return null;
+    //return null;
   }
 
   return (
@@ -387,7 +387,7 @@ export default async function Home() {
               return brandCollectionsRows.map((row, rowIndex) => (
                 <div
                   key={rowIndex}
-                  className="grid grid-cols-4 md:flex md:justify-center gap-6 md:gap-12 lg:gap-20"
+                  className="grid grid-cols-4 md:flex md:justify-center gap-6 md:gap-12 lg:gap-20 items-center"
                 >
                   {row.map((brand) => (
                     <Link

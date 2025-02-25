@@ -2,6 +2,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { CategoryDetailsFragment, CollectionDetailsFragment } from "@/saleor/api";
 import { UPLOAD_FOLDER } from "@/lib/const";
+import { translate } from "@/lib/translations";
+import edjsHTML from "editorjs-html";
 
 export interface HomepageBlockProps {
   item: CategoryDetailsFragment | CollectionDetailsFragment | any;
@@ -22,6 +24,11 @@ export default function HomepageBlock({ item, type }: HomepageBlockProps) {
       )?.values[0]?.name) ||
     "";
   let bannerImgSrc = bannerImg ? `${UPLOAD_FOLDER ?? ""}/${bannerImg}` : "";
+  const parser = edjsHTML();
+  const emptyTagsRegex = /^<[^>]+>\s*(<br\s*\/?>)?\s*<\/[^>]+>$/;
+  const content = item && "content" in item ? translate(item, "content") : null;
+  const parsedContent = content ? parser.parse(JSON.parse(content)).join("") : "";
+  const isEmptyContent = emptyTagsRegex.test(parsedContent);
   return (
     <div className="mb-6 md:mb-0">
       <div className="relative">
@@ -52,7 +59,15 @@ export default function HomepageBlock({ item, type }: HomepageBlockProps) {
       </div>
       {item.backgroundImage?.alt && <p className="text-sm pt-2">{item.backgroundImage?.alt}</p>}
       {bannerImgSrc && (
-        <h3 className="text-md uppercase mt-3 font-bold text-center">{item.title}</h3>
+        <>
+          <h3 className="text-md uppercase mt-3 font-bold text-center">{item.title}</h3>
+          {parsedContent && !isEmptyContent && (
+            <div
+              className="text-sm pt-2 text-center"
+              dangerouslySetInnerHTML={{ __html: parsedContent }}
+            />
+          )}
+        </>
       )}
     </div>
   );

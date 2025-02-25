@@ -158,12 +158,11 @@ export default async function Footer({ className, ...rest }: FooterProps) {
         <div className="md:flex justify-center pt-8 pb-2 border-t border-main-6">
           <div className="flex space-x-4">
             <a href="#" className="mb-2 inline-block">
-              <Image
-                src={"/visa-master-card-logos.jpg"}
+              <img
+                src="/visa-master-card-logos.jpg"
                 alt="visa mastercard"
                 width="232"
                 height="54"
-                priority={false}
               />
             </a>
             <a
