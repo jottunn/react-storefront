@@ -22,6 +22,7 @@ import { getMessages } from "src/lib/util";
 import SvgSprite from "../SvgSprite";
 import CartNavItem from "../cart/CartNavItem";
 import UserMenu from "../nav/components/UserMenu/UserMenu";
+import FooterCartButton from "./FooterCartButton";
 
 export default async function Footer({ className, ...rest }: FooterProps) {
   "use server";
@@ -107,7 +108,7 @@ export default async function Footer({ className, ...rest }: FooterProps) {
                         )}
                       </li>
                     ))}
-                    {i === 0 && <CartNavItem display="footer" />}
+                    {i === 0 && <FooterCartButton messages={messages} />}
                   </ul>
                 </div>
               ))}

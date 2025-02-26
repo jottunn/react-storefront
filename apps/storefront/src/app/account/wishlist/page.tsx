@@ -155,6 +155,7 @@ const WishlistPage = async () => {
                     disabled={
                       variant?.quantityAvailable === 0 || variant.product.isAvailable === false
                     }
+                    loading={false}
                     messages={messages}
                     selectedVariantId={variant?.id}
                   />

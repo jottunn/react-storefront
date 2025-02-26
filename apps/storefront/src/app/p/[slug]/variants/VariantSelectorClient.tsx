@@ -10,11 +10,7 @@ import {
 import { CheckIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 import React, { useState } from "react";
-import {
-  ProductVariant,
-  ProductDetailsFragment,
-  ProductVariantDetailsFragment,
-} from "@/saleor/api";
+import { ProductVariant, ProductDetailsFragment } from "@/saleor/api";
 import { translate } from "@/lib/translations";
 import { useRouter } from "next/navigation";
 import { Messages } from "@/lib/util";
@@ -25,6 +21,7 @@ interface VariantSelectorClientProps {
   hasSizeGuide: boolean;
   messages: Messages;
   handleSizeSelect: any;
+  handleSizeLoading: any;
 }
 
 const VariantSelectorClient: React.FC<VariantSelectorClientProps> = ({
@@ -33,18 +30,25 @@ const VariantSelectorClient: React.FC<VariantSelectorClientProps> = ({
   hasSizeGuide,
   messages,
   handleSizeSelect,
+  handleSizeLoading,
 }) => {
   const router = useRouter();
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
 
-  const handleSelect = (variantId: string) => {
-    setSelectedSize(variantId);
-    handleSizeSelect(variantId ? true : false);
-    const selectedVariant = sizes.find((variant) => variant.id === variantId);
-    if (selectedVariant) {
-      router.push(`/p/${product.slug}?variant=${selectedVariant.id}`); // Adjust the path as needed
+  const handleSelect = async (variantId: string) => {
+    if (variantId !== selectedSize) {
+      setSelectedSize(variantId);
+      handleSizeLoading(true);
+      const selectedVariant = sizes.find((variant) => variant.id === variantId);
+      if (selectedVariant) {
+        await router.push(`/p/${product.slug}?variant=${selectedVariant.id}`);
+        setTimeout(() => {
+          handleSizeSelect(variantId ? true : false);
+        }, 500);
+      }
     }
   };
+
   return (
     <Listbox value={selectedSize} onChange={handleSelect}>
       <ListboxButton

@@ -14,13 +14,11 @@ import { ShoppingBagIcon } from "@heroicons/react/24/outline";
 
 interface CartModalProps {
   messages: { [key: string]: string };
-  display?: string;
 }
-export default function CartModal({ messages, display }: CartModalProps) {
+export default function CartModal({ messages }: CartModalProps) {
   const { checkout, refreshCheckout } = useCheckout();
   const pathname = usePathname();
   const [cartModalOpen, setCartModalOpen] = useState(false);
-  const [prevCounter, setPrevCounter] = useState<number | null>(null);
 
   const openCart = useCallback(() => setCartModalOpen(true), []);
   const closeCart = useCallback(() => setCartModalOpen(false), []);
@@ -46,21 +44,8 @@ export default function CartModal({ messages, display }: CartModalProps) {
 
     if (pathname === "/checkout" || pathname === "/order" || pathname === "/payment-confirm") {
       closeCart();
-      if (counter !== prevCounter) {
-        setPrevCounter(counter);
-      }
       return;
     }
-    if (prevCounter === null) {
-      // Initialize prevCounter to counter on first render
-      setPrevCounter(counter);
-      return;
-    }
-
-    if (counter > prevCounter) {
-      setCartModalOpen(true);
-    }
-    setPrevCounter(counter);
   }, [pathname, counter]);
 
   const saleorApiUrl = process.env.NEXT_PUBLIC_API_URI;
@@ -75,23 +60,17 @@ export default function CartModal({ messages, display }: CartModalProps) {
         onClick={openCart}
         type="button"
         title={messages["app.checkout.openCart"]}
-        className={display === "footer" ? "text-left mt-2" : ""}
+        id="navbar-cart-button"
       >
         {" "}
-        {display === "footer" ? (
-          <span className="text-base cursor-pointer hover:underline">
-            {messages["app.cart.link"]}
-          </span>
-        ) : (
-          <span className={styles["nav-icon-button"]}>
-            {!!counter && (
-              <span className={styles["nav-icon-counter"]} data-testid="cartCounter">
-                {counter}
-              </span>
-            )}
-            <ShoppingBagIcon className="h-8 w-8" />
-          </span>
-        )}
+        <span className={styles["nav-icon-button"]}>
+          {!!counter && (
+            <span className={styles["nav-icon-counter"]} data-testid="cartCounter">
+              {counter}
+            </span>
+          )}
+          <ShoppingBagIcon className="h-8 w-8" />
+        </span>
       </button>
       <Transition show={cartModalOpen}>
         <Dialog onClose={closeCart} className="relative z-50">

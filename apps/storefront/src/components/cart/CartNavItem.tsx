@@ -1,11 +1,9 @@
 import CartModal from "./CartModal";
 import CartNavItemServer from "./CartNavItemServer";
 
-export default function CartNavItem({ display }: { display?: string }) {
+export default function CartNavItem() {
   return (
     /** @ts-expect-error Async Server Component  */
-    <CartNavItemServer>
-      {(messages) => <CartModal messages={messages} display={display} />}
-    </CartNavItemServer>
+    <CartNavItemServer>{(messages) => <CartModal messages={messages} />}</CartNavItemServer>
   );
 }

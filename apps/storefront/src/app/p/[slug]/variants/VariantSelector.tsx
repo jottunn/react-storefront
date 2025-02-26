@@ -1,5 +1,4 @@
 "use client";
-import React from "react";
 import clsx from "clsx";
 import {
   ProductDetailsFragment,
@@ -14,7 +13,7 @@ import SizeGuide from "./SizeGuide";
 import { VariantColorSelector } from "./VariantColorSelector";
 import { AddButton } from "../AddButton";
 import { AddToWishlist } from "../AddToWishlist";
-
+import React from "react";
 export interface VariantSelectorProps {
   product: ProductDetailsFragment;
   selectedVariant?: ProductVariantDetailsFragment | null;
@@ -107,6 +106,7 @@ export function VariantSelector({
     return null;
   }
   const [sizeSelected, setSizeSelected] = React.useState(sizes?.length === 1);
+  const [loadingSize, setLoadingSize] = React.useState(false);
   React.useEffect(() => {
     //if color variant changes, reset the size select
     setSizeSelected(sizes?.length === 1);
@@ -114,6 +114,13 @@ export function VariantSelector({
 
   const handleSizeSelect = (isSizeSelected: boolean) => {
     setSizeSelected(isSizeSelected);
+    if (isSizeSelected) {
+      setLoadingSize(false);
+    }
+  };
+
+  const handleSizeLoading = (isLoading: boolean) => {
+    setLoadingSize(isLoading);
   };
   return (
     <>
@@ -181,6 +188,7 @@ export function VariantSelector({
                 hasSizeGuide={sizeGuide ? true : false}
                 messages={messages}
                 handleSizeSelect={handleSizeSelect}
+                handleSizeLoading={handleSizeLoading}
               />
             )}
           </div>
@@ -194,14 +202,13 @@ export function VariantSelector({
           <div className="flex-1 pr-6">
             <AddButton
               disabled={isAddToCartButtonDisabled || !sizeSelected}
+              loading={loadingSize}
               messages={messages}
               selectedVariantId={selectedVariant?.id}
             />
-            {!sizeSelected && (
-              <p className="text-sm text-left font-semibold text-neutral-400 pt-2">
-                {messages["app.chooseSizeCart"]}
-              </p>
-            )}
+            <p className="text-sm text-left font-semibold text-neutral-400 pt-2">
+              {!sizeSelected && messages["app.chooseSizeCart"]}
+            </p>
             {selectedVariant?.quantityAvailable === 0 && (
               <p className="text-base text-left font-semibold text-red-500 pt-2">
                 {messages["app.product.soldOutVariant"]}

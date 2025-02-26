@@ -2,21 +2,23 @@
 
 import { addItem } from "@/components/checkout/actions";
 import { Messages } from "@/lib/util";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export function AddButton({
   disabled,
+  loading,
   messages,
   selectedVariantId,
 }: {
   disabled?: boolean;
+  loading: boolean;
   messages: Messages;
   selectedVariantId?: string;
 }) {
-  const [variantId, setVariantId] = useState(selectedVariantId);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
-  const isButtonDisabled = disabled || pending;
+  const [isUpdating, setIsUpdating] = useState(false);
+  const isButtonDisabled = disabled || pending || isUpdating;
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -38,6 +40,10 @@ export function AddButton({
       setError(result.error);
     } else {
       // Handle success, e.g., display a success message or redirect
+      //open cart
+      setTimeout(() => {
+        document.getElementById("navbar-cart-button")?.click();
+      }, 300);
     }
     setPending(false);
   }
@@ -45,16 +51,16 @@ export function AddButton({
   return (
     <>
       <form onSubmit={handleSubmit} className="m-auto text-left add-to-cart-frm">
-        <input type="hidden" name="selectedVariantId" value={variantId} />
+        <input type="hidden" name="selectedVariantId" value={selectedVariantId} />
         <button
           type="submit"
           aria-disabled={isButtonDisabled}
-          aria-busy={pending}
+          aria-busy={pending || loading}
           aria-label={messages["app.product.addToCart"]}
-          onClick={(e) => isButtonDisabled && e.preventDefault()}
+          onClick={(e) => (isButtonDisabled || loading) && e.preventDefault()}
           className="w-full h-12 bg-action-1 m-auto px-6 py-3 text-md font-medium leading-6 text-white shadow hover:bg-action-2 disabled:cursor-not-allowed disabled:opacity-70 hover:disabled:bg-neutral-700 aria-disabled:cursor-not-allowed aria-disabled:bg-neutral-500	hover:aria-disabled:bg-neutral-600"
         >
-          {pending ? (
+          {pending || loading ? (
             <div className="inline-flex items-center">
               <svg
                 className="-ml-1 mr-3 h-5 w-5 animate-spin text-white"
@@ -76,7 +82,9 @@ export function AddButton({
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 ></path>
               </svg>
-              <span>{messages["app.product.adding"]}</span>
+              <span>
+                {pending ? messages["app.product.adding"] : messages["app.product.addToCart"]}
+              </span>
             </div>
           ) : (
             <span>{messages["app.product.addToCart"]}</span>
