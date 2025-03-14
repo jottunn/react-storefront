@@ -495,7 +495,7 @@ export const ProductsImporterView = () => {
         let categoryCsv = row["Categorie site"] && row["Categorie site"].trim();
         const category = createSlug(categoryCsv);
         //console.log("categoryslug", category);
-        let productType = row["Tip produs"] && row["Tip produs"].trim();
+        let productType = row["Tip produs"] && row["Tip produs"].trim().toLowerCase();
         let channel = row["Channel"] ? row["Channel"].trim() : "default-channel";
         let description = row["descriere"] ? convertDescriereToEditorJS(row["descriere"]) : "";
 
@@ -831,7 +831,7 @@ export const ProductsImporterView = () => {
   const handleUpload = async (isCsv) => {
     //current represents the currently rendered DOM node (literally, the element as it's rendered in the browser).
     const input = inputRef?.current;
-    let files = input.files;
+    let files = Array.from(input.files);
     if (files.length === 0) {
       return;
     }
