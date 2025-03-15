@@ -18,12 +18,13 @@ export const Navbar = async () => {
     <>
       <div className={clsx(styles.navbar)}>
         <div className="container w-full flex py-4 lg:pb-0 items-center	">
-          <Link href="/" className={styles.logo}>
+          <Link href="/">
             <Image
               src="/logo-surmont.png"
               alt="Surmont - The bike shop logo"
-              width="200"
-              height="31"
+              width={200}
+              height={54}
+              style={{ height: "auto", width: "200px" }}
               priority={true}
             />
           </Link>

@@ -6,10 +6,6 @@
   @apply container h-18 flex-nowrap items-center hidden lg:flex pl-0 pr-0;
 }
 
-.logo {
-  @apply hover:text-brand;
-}
-
 .nav {
   @apply pl-0.5 h-full hidden lg:flex md:justify-between;
 }
