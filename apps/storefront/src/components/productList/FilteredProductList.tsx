@@ -122,11 +122,44 @@ export function FilteredProductList({
       }
     });
 
+    // Define a function to get the sort order for size values
+    const getSizeSortOrder = (size: string): number => {
+      const sizeOrder: Record<string, number> = {
+        XXS: 0,
+        XS: 1,
+        S: 2,
+        "S/M": 3,
+        M: 4,
+        "M/L": 5,
+        L: 6,
+        XL: 7,
+        XXL: 8,
+        XXXL: 9,
+        "2XL": 10,
+        "3XL": 11,
+        "4XL": 12,
+      };
+
+      return sizeOrder[size] !== undefined ? sizeOrder[size] : 999; // Unknown sizes go to the end
+    };
+
     // Convert Map values to array and map each attribute to include values as an array
-    const attributes = Array.from(attributesMap.values()).map((attr) => ({
-      ...attr,
-      values: Array.from(attr.values),
-    }));
+    const attributes = Array.from(attributesMap.values())
+      .map((attr) => ({
+        ...attr,
+        values: Array.from(attr.values).sort((a, b) => {
+          // Special handling for size attributes
+          if (attr.slug === "marime") {
+            return getSizeSortOrder(a.name ?? "") - getSizeSortOrder(b.name ?? "");
+          }
+          // Sort values alphabetically by name, ensuring name is not null or undefined
+          return (a.name ?? "").localeCompare(b.name ?? "");
+        }),
+      }))
+      .sort((a, b) => {
+        // Sort attributes alphabetically by name, ensuring name is not null or undefined
+        return (a.name ?? "").localeCompare(b.name ?? "");
+      });
 
     // Convert Map values to array for categories
     const categories = Array.from(categoriesMap.values());
@@ -163,13 +196,29 @@ export function FilteredProductList({
   const fetchAvailableFilters = useCallback(async () => {
     try {
       const products = await getAvailableFilters(debouncedProductsFilter as ProductFilterInput);
+
       if (products) {
         const avFilter = aggregateAttributesFromProducts(products.edges as ProductCountableEdge[]);
+
         if (avFilter["attributes"] && avFilter["attributes"].length > 0) {
           setAttributeFilters(avFilter["attributes"]);
         }
+
         if (avFilter["categories"] && avFilter["categories"].length > 0) {
-          setCategoryFilters(avFilter["categories"]);
+          setCategoryFilters((prevCategories) => {
+            // Create a map of existing categories by ID
+            const existingCategoriesMap = new Map(
+              prevCategories.map((category) => [category.id, category]),
+            );
+
+            // Add new categories from the filter
+            avFilter["categories"].forEach((category) => {
+              existingCategoriesMap.set(category.id, category);
+            });
+
+            // Convert map back to array
+            return Array.from(existingCategoriesMap.values());
+          });
         }
       }
     } catch (err) {

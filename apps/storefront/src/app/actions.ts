@@ -394,15 +394,22 @@ export async function getAvailableFilters(productsFilter: ProductFilterInput) {
     //   revalidate: 60 * 60,
     // });
 
+    // Create a new filter object without the brand attribute
+    const filterWithoutBrand = {
+      ...productsFilter,
+      attributes: productsFilter.attributes?.filter((attr) => attr.slug !== "brand"),
+    };
+
     const productsData = await getProductsData();
+
     const filteredEdges =
       productsData &&
       productsData.edges.filter((edge: any) => {
         const product = edge.node;
 
-        // Filter by attributes (both product-level and variant-level)
-        if (productsFilter.attributes && productsFilter.attributes.length > 0) {
-          const matchesAllAttributes = productsFilter.attributes.every((filterAttr) => {
+        // Filter by attributes (both product-level and variant-level), excluding brand
+        if (filterWithoutBrand.attributes && filterWithoutBrand.attributes.length > 0) {
+          const matchesAllAttributes = filterWithoutBrand.attributes.every((filterAttr) => {
             // Check product-level attributes
             const productAttr = product.attributes.find(
               (attr: { attribute: { slug: string } }) => attr.attribute.slug === filterAttr.slug,
@@ -441,14 +448,6 @@ export async function getAvailableFilters(productsFilter: ProductFilterInput) {
           const collectionMatch = productsFilter.collections.some((filterCollection) =>
             product?.collections?.includes(filterCollection),
           );
-          // console.log(
-          //   "Product:",
-          //   product.name,
-          //   "Collections:",
-          //   product.collections,
-          //   "Match:",
-          //   collectionMatch,
-          // );
           if (!collectionMatch) return false;
         }
 
@@ -466,12 +465,13 @@ export async function getAvailableFilters(productsFilter: ProductFilterInput) {
   }
 }
 
-export async function getProductCollection(queryVariables: any) {
+export async function getProductCollection(queryVariables: any, cache?: RequestCache) {
   try {
     const { products } = await executeGraphQL<ProductCollectionQuery, { variables: any }>(
       ProductCollectionDocument,
       {
         variables: queryVariables,
+        cache: cache ? cache : "default",
       },
     );
     return products;
