@@ -48,7 +48,7 @@ async function generateProductsJson() {
       first: 1000,
       ...defaultRegionQuery(),
     };
-    const products = await getProductCollection(queryVariables);
+    const products = await getProductCollection(queryVariables, "no-cache");
 
     if (!products) {
       console.log("No products found");
@@ -80,7 +80,7 @@ async function generateProductsJson() {
             },
             values: attr.values.map((value: any) => ({
               id: value.id,
-              name: value.name,
+              name: value.name.replace(/[-_]/g, ""),
               slug: value.slug,
             })),
           })),

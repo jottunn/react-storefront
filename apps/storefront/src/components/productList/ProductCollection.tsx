@@ -19,18 +19,19 @@ import { Messages } from "@/lib/util";
 import { ProductCard } from "./ProductCard";
 import { Pagination } from "./Pagination";
 import isEqual from "lodash.isequal";
+import { ATTR_GEN_ID } from "@/lib/const";
 
 export interface ProductCollectionProps {
   filter?: ProductFilterInput;
   where?: ProductWhereInput;
   sortBy?: {
-    field: ProductOrderField;
+    field?: ProductOrderField;
     direction?: OrderDirection;
+    attributeId?: string;
   };
   allowMore?: boolean;
   perPage?: number;
   messages: Messages;
-  // setCounter?: (value: number) => void;
 }
 
 export function ProductCollection({
@@ -38,7 +39,6 @@ export function ProductCollection({
   where,
   sortBy,
   messages,
-  // setCounter,
   allowMore = true,
   perPage,
 }: ProductCollectionProps) {
@@ -48,26 +48,28 @@ export function ProductCollection({
 
   type SortByType =
     | {
-        field: ProductOrderField;
+        field?: ProductOrderField;
         direction?: OrderDirection;
+        attributeId?: string;
       }
     | undefined;
   const fetchProductCollection = useCallback(
     async (afterCursor?: string) => {
       setIsLoading(true);
+      if (!sortBy) {
+        sortBy = {
+          direction: "ASC",
+          attributeId: ATTR_GEN_ID,
+        };
+      }
+
       const queryVariables = {
         filter,
         where,
         first: perPage,
         after: afterCursor,
         ...defaultRegionQuery(),
-        ...(sortBy?.field &&
-          sortBy?.direction && {
-            sortBy: {
-              direction: sortBy.direction,
-              field: sortBy.field,
-            },
-          }),
+        sortBy,
       };
       try {
         const products = await getProductCollection(queryVariables);
@@ -256,15 +258,7 @@ export function ProductCollection({
       return acc;
     }, []);
   }
-  // useEffect(() => {
-  //   if (setCounter) {
-  //     setCounter(data?.products?.totalCount || 0);
-  //   }
-  // }, [setCounter, data?.products?.totalCount]);
 
-  // if (error) return <p>Error</p>;
-
-  // console.log('productCollection', productCollection);
   if (!productCollection) {
     return <Spinner />;
   }
@@ -278,6 +272,8 @@ export function ProductCollection({
   }
 
   products = groupProductsByColor(products as GroupedProduct[]);
+
+  // console.log('products', products);
 
   return (
     <>
@@ -299,8 +295,6 @@ export function ProductCollection({
           onLoadMore={onLoadMore}
           pageInfo={(productCollection as any).pageInfo}
           messages={messages}
-          // itemsCount={productCollection?.products?.edges.length}
-          // totalCount={productCollection?.products?.totalCount || undefined}
         />
       )}
     </>
