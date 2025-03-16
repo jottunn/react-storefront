@@ -3,7 +3,7 @@
 import { ChevronLeftIcon, ChevronRightIcon, PlayIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import Image from "next/image";
-import { useState, useEffect, useRef, useMemo, useCallback, Suspense } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { getGalleryMedia, getYouTubeIDFromURL } from "@/lib/media";
 import { ProductDetailsFragment, ProductVariantDetailsFragment } from "@/saleor/api";
 
@@ -69,7 +69,22 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
         </div>
       );
     }
-    if (isMobile && galleryMedia.length > 1) {
+    if (galleryMedia.length === 0) {
+      return (
+        <div className="relative w-full h-[350px] md:h-[600px] flex items-center justify-center">
+          <Image
+            src="/nopic.png"
+            alt={selectedVariant?.name || ""}
+            width={300}
+            height={200}
+            style={{ objectFit: "contain" }}
+            className="block mx-auto p-6 max-h-[100%] cursor-pointer"
+            priority={true}
+            loading={"eager"}
+          />
+        </div>
+      );
+    } else if (isMobile && galleryMedia.length > 1) {
       return (
         <>
           <Swiper

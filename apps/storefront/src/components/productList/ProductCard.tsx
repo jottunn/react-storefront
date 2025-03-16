@@ -12,6 +12,7 @@ import { TagIcon } from "@heroicons/react/24/outline";
 import { useProductInfo } from "@/lib/hooks/useProductInfo";
 import { formatMoney } from "@/lib/utils/formatMoney";
 import clsx from "clsx";
+import { getProductCardMedia } from "@/lib/media";
 
 export interface ProductCardProps {
   product: GroupedProduct;
@@ -43,35 +44,13 @@ export function ProductCard({
   const colorName = variantAttr?.values[0]?.name || ""; // Fallback to an empty string if color is undefined
   // Construct the string, ensuring that undefined values are handled.
   const productDisplayName = `${productName}${colorName ? ` - ${colorName}` : ""}`;
-  // Find the first and second image, falling back to the thumbnail if only one exists
-  let thumbnailUrl = product.thumbnail?.url || "";
-  //console.log('productmedia', product.media, product.thumbnail);
-  let hoverImageUrl =
-    product.media?.[1]?.url && product.media?.[1]?.type === "IMAGE"
-      ? product.media?.[1]?.url
-      : thumbnailUrl; // Use the second image or fallback to the first
-  // If variant has images, use those instead
-  if (variant && variant.media && variant.media.length > 0) {
-    //sort media by sortOrder
-    const sortedMedia = variant.media
-      .filter((item) => item.type !== "VIDEO")
-      .sort((a, b) => {
-        if (typeof a.sortOrder === "number" && typeof b.sortOrder === "number") {
-          return a.sortOrder - b.sortOrder;
-        }
-        return 30;
-      });
-
-    if (sortedMedia && sortedMedia.length > 0) {
-      thumbnailUrl = sortedMedia[0].url;
-      hoverImageUrl = sortedMedia.length > 1 ? sortedMedia[1].url : thumbnailUrl; // Fallback to the first if only one exists
-    }
-  }
+  //get media
+  const { thumbnailUrl, hoverImageUrl, alt } = getProductCardMedia(product, variant);
   const blurPlaceholderPicMeta =
     variant && variant.metadata.find((meta) => meta.key === "blurPlaceholderPic");
   const blurPlaceholderPic = blurPlaceholderPicMeta ? blurPlaceholderPicMeta.value : null;
   let isPriceRange = false;
-  // let salesPercent = "";
+
   if (colorName === "") {
     isPriceRange =
       product.pricing?.priceRange?.start?.gross.amount !==
@@ -87,7 +66,7 @@ export function ProductCard({
       <Link href={`/p/${product.slug}?variant=${variant?.id}`} prefetch={false}>
         <div className="bg-white w-full aspect-1">
           <div className="border w-full h-full relative flex items-center justify-center">
-            {thumbnailUrl && (
+            {thumbnailUrl ? (
               <Image
                 alt={productDisplayName}
                 className="transition-opacity duration-400 ease-in-out p-3 max-h-[100%]"
@@ -105,10 +84,20 @@ export function ProductCard({
                   ? { placeholder: "blur", blurDataURL: blurPlaceholderPic }
                   : {})}
               />
+            ) : (
+              <Image
+                src="/nopic.png"
+                alt={product?.name || ""}
+                width={300}
+                height={200}
+                style={{ objectFit: "contain" }}
+                className="block mx-auto p-6 max-h-[100%] cursor-pointer"
+                priority={true}
+                loading={"eager"}
+              />
             )}
             {product.pricing?.onSale && (
               <div className="absolute right-2 top-2 py-1 px-2">
-                {/* {salesPercent}% */}
                 <TagIcon className="text-action-1 w-6 h-6" />
               </div>
             )}

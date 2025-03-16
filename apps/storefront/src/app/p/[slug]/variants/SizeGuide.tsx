@@ -69,12 +69,15 @@ export default function SizeGuide({ sizeGuide, messages }: { sizeGuide: any; mes
                 <div className="container m-auto relative text-left prose-2xl">
                   {sizeGuide.page.attributes &&
                     sizeGuide.page.attributes.map(
-                      (attr: {
-                        attribute: { name: React.Key | null | undefined };
-                        values: { name: any }[];
-                      }) => (
+                      (
+                        attr: {
+                          attribute: { name: React.Key | null | undefined };
+                          values: { name: any }[];
+                        },
+                        index: any,
+                      ) => (
                         <ZoomPanImage
-                          key={attr?.values?.[0]?.name}
+                          key={attr?.values?.[0]?.name || index}
                           src={`${UPLOAD_FOLDER ?? ""}/${attr?.values?.[0]?.name ?? ""}`}
                           alt={sizeGuide.page.title}
                           unoptimized={true}

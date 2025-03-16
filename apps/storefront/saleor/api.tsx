@@ -32941,6 +32941,7 @@ export type ProductCardFragment = {
     id: string;
     name: string;
     translation?: { __typename?: "CollectionTranslation"; id: string; name?: string | null } | null;
+    metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
   }> | null;
   media?: Array<{
     __typename?: "ProductMedia";
@@ -37253,6 +37254,7 @@ export type ProductCollectionQuery = {
             id: string;
             name?: string | null;
           } | null;
+          metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
         }> | null;
         media?: Array<{
           __typename?: "ProductMedia";
@@ -37609,6 +37611,7 @@ export type ProductsByAttributeQuery = {
             id: string;
             name?: string | null;
           } | null;
+          metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
         }> | null;
         media?: Array<{
           __typename?: "ProductMedia";
@@ -38424,6 +38427,10 @@ export const ProductCardFragmentDoc = gql`
       translation(languageCode: $locale) {
         id
         name
+      }
+      metadata {
+        key
+        value
       }
     }
     media {

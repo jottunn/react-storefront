@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ProductDetailsFragment } from "@/saleor/api";
 import Image from "next/image";
 import { ATTR_COLOR_COMMERCIAL_SLUG, ATTR_COLOR_SLUG } from "@/lib/const";
+import { getColorSelectorMedia } from "@/lib/media";
 
 export interface VariantSelectorProps {
   product: ProductDetailsFragment;
@@ -15,7 +16,7 @@ export function VariantColorSelector({
   commercialColorAttr,
 }: VariantSelectorProps) {
   const processedColors = new Set<string>();
-  const defaultMedia = product.thumbnail || { url: "", alt: product.name };
+  const defaultMedia = { url: "", alt: product.name };
 
   const getColorOptions = (attrSlug: string, currentColor?: string) =>
     product.variants?.flatMap((variant) => {
@@ -32,43 +33,25 @@ export function VariantColorSelector({
               processedColors.add(name); // Mark this color as processed
               return isNewColor; // Only proceed with new, unprocessed colors
             })
-            .map((value) => {
+            .map((value, index) => {
               const isSelectedColor = currentColor === value.name;
-              let variantMedia = defaultMedia;
-              if (variant.media && variant.media.length > 0) {
-                //sort media by sortOrder
-                const sortedMedia = variant.media.sort((a, b) => {
-                  if (a.type === "IMAGE" && b.type === "IMAGE") {
-                    if (typeof a.sortOrder === "number" && typeof b.sortOrder === "number") {
-                      return a.sortOrder - b.sortOrder;
-                    } else {
-                      return 30;
-                    }
-                  } else {
-                    return 30;
-                  }
-                });
-                if (sortedMedia && sortedMedia.length > 0) {
-                  variantMedia = {
-                    url: sortedMedia[0].url,
-                    alt: sortedMedia[0].alt || product.name,
-                  };
-                }
-              }
+              // Get media for this color - either from this variant or from another with same color
+              const variantMedia = getColorSelectorMedia(product, variant);
+
               const imgElement = (
                 <div
                   key={`thumb-${variant.id.toString()}-${value.name || ""}`}
                   className={`relative flex items-center justify-center border-2 ${isSelectedColor ? "border-black hover:border-black" : "border-neutral-400 hover:border-action-1"} p-1 h-[80px] w-[80px] overflow-hidden`}
                 >
                   <Image
-                    src={variantMedia.url}
+                    src={variantMedia.url ? variantMedia.url : "/nopic.png"}
                     alt={
                       variantMedia && variantMedia.alt
                         ? variantMedia.alt
                         : `${product.name} ${value.name ?? ""}`
                     }
-                    width="80"
-                    height="80"
+                    width={100}
+                    height={50}
                     style={{ objectFit: "contain", maxHeight: "100%" }}
                   />
                 </div>

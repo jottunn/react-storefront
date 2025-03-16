@@ -35,6 +35,10 @@ fragment ProductCardFragment on Product {
       id
       name
     }
+    metadata {
+      key
+      value
+    }
   }
   media {
     url
