@@ -368,7 +368,6 @@ export const ProductsImporterView = () => {
 
   const addProductAttributes = async (definedProdAttributes, row) => {
     let attributes = [];
-    //console.log("addProductAttributes", row);
     for (const attrKey of Object.keys(definedProdAttributes)) {
       if (row[attrKey]) {
         // Attribute slug exists in csv header, add it
@@ -388,6 +387,8 @@ export const ProductsImporterView = () => {
             }
           }
           prodAttr["references"] = [pageId];
+        } else if (attrKey === "gen") {
+          prodAttr[prodAttrKey] = { value: row[attrKey].trim().toLowerCase() };
         } else {
           prodAttr[prodAttrKey] = { value: row[attrKey].trim() };
         }
@@ -812,10 +813,9 @@ export const ProductsImporterView = () => {
   const handleProductUpdate = async () => {
     try {
       const input = inputRef?.current;
-      let files = input.files;
-      if (files.length === 0) {
-        return;
-      }
+      const files = Array.from(input.files);
+      if (files.length === 0) return;
+
       for (var i = 0; i < files.length; i++) {
         const parsedCSV = await parseCSV(files[i]);
         if (parsedCSV) {
@@ -831,11 +831,12 @@ export const ProductsImporterView = () => {
   const handleUpload = async (isCsv) => {
     //current represents the currently rendered DOM node (literally, the element as it's rendered in the browser).
     const input = inputRef?.current;
-    let files = Array.from(input.files);
-    if (files.length === 0) {
-      return;
-    }
+    const files = Array.from(input.files);
+
+    if (files.length === 0) return;
+
     setUploading(true);
+
     for (var i = 0; i < files.length; i++) {
       await handleFileUpload(files[i]);
     }
