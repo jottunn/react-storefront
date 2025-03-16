@@ -9,7 +9,7 @@ import {
 } from "@headlessui/react";
 import { CheckIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ProductVariant, ProductDetailsFragment } from "@/saleor/api";
 import { translate } from "@/lib/translations";
 import { useRouter } from "next/navigation";
@@ -33,7 +33,21 @@ const VariantSelectorClient: React.FC<VariantSelectorClientProps> = ({
   handleSizeLoading,
 }) => {
   const router = useRouter();
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  // Initialize selectedSize with the single size option if it exists
+  const [selectedSize, setSelectedSize] = useState<string | null>(
+    sizes.length === 1 && sizes[0]?.id ? sizes[0].id : null,
+  );
+
+  // Add useEffect to update selectedSize when sizes change
+  useEffect(() => {
+    if (sizes.length === 1 && sizes[0]?.id) {
+      setSelectedSize(sizes[0].id);
+      // Optionally notify parent that a size is selected
+      handleSizeSelect(true);
+    } else if (sizes.length === 0) {
+      setSelectedSize(null);
+    }
+  }, [sizes, handleSizeSelect]);
 
   const handleSelect = async (variantId: string) => {
     if (variantId !== selectedSize) {
@@ -73,14 +87,14 @@ const VariantSelectorClient: React.FC<VariantSelectorClientProps> = ({
           anchor="bottom"
           className="w-[var(--button-width)] border border-dark-900 p-1 [--anchor-gap:var(--spacing-1)] focus:outline-none bg-white"
         >
-          {sizes.map((variant) => {
+          {sizes.map((variant, index) => {
             return (
               <ListboxOption
-                key={variant.id}
+                key={variant.id || index}
                 value={variant.id}
                 className={({ selected }) =>
                   clsx(
-                    "text-[1.5rem] group flex cursor-pointer items-center gap-2 py-1.5 px-3 select-none data-[focus]:bg-dark/10 hover:bg-gray-100 hover:text-dark-500",
+                    "text-[1.5rem] group flex cursor-pointer items-center gap-2 py-1.5 px-1 select-none data-[focus]:bg-dark/10 hover:bg-gray-100 hover:text-dark-500",
                     selected ? "text-action-1" : "text-dark-900",
                   )
                 }

@@ -169,28 +169,23 @@ export function VariantSelector({
         >
           <div className="flex flex-col md:py-6 items-start">
             <p className="text-md font-semibold mb-2 text-left">
-              {sizes && sizes.length > 1 ? (
-                <span className="text-left">{messages["app.chooseSize"]}</span>
-              ) : (
-                <span>
-                  {sizes && sizes[0] && messages["app.size"]}
-                  <span className="text-md font-bold ml-2">
-                    {(sizes && sizes[0] && sizes[0].name) || ""}
-                  </span>
-                </span>
-              )}
+              <span className="text-left">
+                {sizes && sizes.length > 1
+                  ? messages["app.chooseSize"]
+                  : sizes && sizes[0]
+                    ? messages["app.size"]
+                    : ""}
+              </span>
             </p>
 
-            {sizes && sizes.length > 1 && (
-              <VariantSelectorClient
-                sizes={sizes as ProductVariant[]}
-                product={product}
-                hasSizeGuide={sizeGuide ? true : false}
-                messages={messages}
-                handleSizeSelect={handleSizeSelect}
-                handleSizeLoading={handleSizeLoading}
-              />
-            )}
+            <VariantSelectorClient
+              sizes={sizes as ProductVariant[]}
+              product={product}
+              hasSizeGuide={sizeGuide ? true : false}
+              messages={messages}
+              handleSizeSelect={handleSizeSelect}
+              handleSizeLoading={handleSizeLoading}
+            />
           </div>
 
           {sizeGuide && <SizeGuide sizeGuide={sizeGuide} messages={messages} />}
@@ -199,14 +194,14 @@ export function VariantSelector({
 
       {isAvailable && (
         <div className="flex items-start">
-          <div className="flex-1 pr-6">
+          <div className="flex-1 pr-6 relative">
             <AddButton
               disabled={isAddToCartButtonDisabled || !sizeSelected}
               loading={loadingSize}
               messages={messages}
               selectedVariantId={selectedVariant?.id}
             />
-            <p className="text-sm text-left font-semibold text-neutral-400 pt-2">
+            <p className="text-sm text-left font-semibold text-neutral-400 pt-2 absolute">
               {!sizeSelected && messages["app.chooseSizeCart"]}
             </p>
             {selectedVariant?.quantityAvailable === 0 && (
