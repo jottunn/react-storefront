@@ -86,7 +86,7 @@ export function FilteredProductList({
 
   const aggregateAttributesFromProducts = (products: ProductCountableEdge[]) => {
     const attributesMap = new Map<string, Attribute1>();
-    const categoriesMap = new Map<string, any>();
+    //const categoriesMap = new Map<string, any>();
 
     products?.forEach((product) => {
       // Aggregate attributes from the product
@@ -112,14 +112,14 @@ export function FilteredProductList({
       });
 
       // Aggregate categories from the product, only if in Collection pages
-      if (
-        collectionIDs &&
-        collectionIDs.length > 0 &&
-        product.node.category &&
-        !categoriesMap.has(product.node.category.id)
-      ) {
-        categoriesMap.set(product.node.category.id, product.node.category);
-      }
+      // if (
+      //   collectionIDs &&
+      //   collectionIDs.length > 0 &&
+      //   product.node.category &&
+      //   !categoriesMap.has(product.node.category.id)
+      // ) {
+      //   categoriesMap.set(product.node.category.id, product.node.category);
+      // }
     });
 
     // Define a function to get the sort order for size values
@@ -162,8 +162,8 @@ export function FilteredProductList({
       });
 
     // Convert Map values to array for categories
-    const categories = Array.from(categoriesMap.values());
-    return { attributes, categories };
+    //const categories = Array.from(categoriesMap.values());
+    return { attributes };
   };
 
   const addAttributeToMap = (
@@ -201,24 +201,24 @@ export function FilteredProductList({
         const avFilter = aggregateAttributesFromProducts(products.edges as ProductCountableEdge[]);
 
         if (avFilter["attributes"] && avFilter["attributes"].length > 0) {
+          // Find the brand attribute and update its values with all available brands
+          const brandAttributeIndex = avFilter["attributes"].findIndex(
+            (attr) => attr.slug === "brand",
+          );
+          if (brandAttributeIndex !== -1) {
+            avFilter["attributes"][brandAttributeIndex].values = products.availableBrands.map(
+              (brand) => ({
+                id: `Brand_${brand}`,
+                slug: brand,
+                name: brand.replace(/-/g, " "),
+              }),
+            );
+          }
           setAttributeFilters(avFilter["attributes"]);
         }
 
-        if (avFilter["categories"] && avFilter["categories"].length > 0) {
-          setCategoryFilters((prevCategories) => {
-            // Create a map of existing categories by ID
-            const existingCategoriesMap = new Map(
-              prevCategories.map((category) => [category.id, category]),
-            );
-
-            // Add new categories from the filter
-            avFilter["categories"].forEach((category) => {
-              existingCategoriesMap.set(category.id, category);
-            });
-
-            // Convert map back to array
-            return Array.from(existingCategoriesMap.values());
-          });
+        if (products.availableCategories) {
+          setCategoryFilters(products.availableCategories);
         }
       }
     } catch (err) {

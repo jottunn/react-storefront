@@ -379,83 +379,161 @@ export const getProductsData = async (): Promise<any | null> => {
   return cachedProductsData;
 };
 
+/**
+ * 1. Create a separate function to extract brands from products.
+   2. Modify the main filtering logic to always include all brands, regardless of other filters.
+   3. Add the extracted brands to the returned filter object.
+ */
+function extractBrands(products: ProductCountableEdge[]) {
+  const brands = new Set<string>();
+  products.forEach((edge) => {
+    const product = edge.node;
+    const brandAttribute = product.attributes.find((attr) => attr.attribute.slug === "brand");
+    if (brandAttribute && brandAttribute.values.length > 0) {
+      brandAttribute.values.forEach((value) => brands.add(value.slug || ""));
+    }
+  });
+  return Array.from(brands);
+}
+
+function extractCategories(products: ProductCountableEdge[]): any[] {
+  const categoriesMap = new Map<string, any>();
+
+  products.forEach((edge) => {
+    const product = edge.node;
+    let category: any | null = product.category;
+
+    while (category) {
+      if (!categoriesMap.has(category.id)) {
+        categoriesMap.set(category.id, {
+          id: category.id,
+          name: category.name,
+          slug: category.slug,
+          parent: category.parent ? { id: category.parent.id } : null,
+        });
+      }
+      category = category.parent;
+    }
+  });
+
+  return Array.from(categoriesMap.values());
+}
+
 export async function getAvailableFilters(productsFilter: ProductFilterInput) {
   try {
-    // console.log("productsFilter", productsFilter);
-    //const products = JSON.parse(await readFile(PRODUCTS_JSON_PATH, 'utf8'));
-    // const { products } = await executeGraphQL<
-    //   AvailableProductFiltersQuery,
-    //   { filter: ProductFilterInput; channel: string; locale: LanguageCodeEnum }
-    // >(AvailableProductFiltersDocument, {
-    //   variables: {
-    //     filter: productsFilter,
-    //     ...defaultRegionQuery(),
-    //   },
-    //   revalidate: 60 * 60,
-    // });
-
-    // Create a new filter object without the brand attribute
-    const filterWithoutBrand = {
-      ...productsFilter,
-      attributes: productsFilter.attributes?.filter((attr) => attr.slug !== "brand"),
-    };
-
     const productsData = await getProductsData();
 
-    const filteredEdges =
-      productsData &&
-      productsData.edges.filter((edge: any) => {
-        const product = edge.node;
+    // Step 1: Filter products by collections and categories
+    const filteredEdges = productsData.edges.filter((edge: any) => {
+      const product = edge.node;
 
-        // Filter by attributes (both product-level and variant-level), excluding brand
-        if (filterWithoutBrand.attributes && filterWithoutBrand.attributes.length > 0) {
-          const matchesAllAttributes = filterWithoutBrand.attributes.every((filterAttr) => {
+      // Filter by collections
+      if (productsFilter.collections && productsFilter.collections.length > 0) {
+        return productsFilter.collections.some((filterCollection) =>
+          product.collections?.includes(filterCollection),
+        );
+      } else {
+        // Filter by categories
+        if (productsFilter.categories && productsFilter.categories.length > 0) {
+          return isCategoryDescendant(product.category, productsFilter.categories);
+        }
+      }
+      return true; // Include product if it matches collections and categories
+    });
+
+    // Step 2: Filter variants for the remaining products
+    const finalFilteredEdges = filteredEdges
+      .map((edge: any) => {
+        const product = edge.node;
+        // Filter variants based on the attributes (excluding brand)
+        const filteredVariants = (product.variants || []).filter((variant: any) => {
+          const matchesAllAttributes = productsFilter.attributes?.every((filterAttr) => {
+            if (filterAttr.slug === "brand") return true; // Skip brand filtering for now
+
             // Check product-level attributes
-            const productAttr = product.attributes.find(
+            const productAttr = product.attributes?.find(
               (attr: { attribute: { slug: string } }) => attr.attribute.slug === filterAttr.slug,
             );
             if (productAttr) {
-              return filterAttr?.values?.some((value) =>
+              return filterAttr.values?.some((value) =>
                 productAttr.values.some((attrValue: { slug: string }) => attrValue.slug === value),
               );
             }
 
-            // If not found in product attributes, check variant attributes
-            return product?.variants?.some((variant: { attributes: any[] }) => {
-              const variantAttr = variant.attributes.find(
-                (attr) => attr.attribute.slug === filterAttr.slug,
-              );
-              if (!variantAttr) return false;
-              return filterAttr?.values?.some((value) =>
-                variantAttr.values.some((attrValue: { slug: string }) => attrValue.slug === value),
-              );
-            });
+            // Check variant-level attributes
+            const variantAttr = variant.attributes?.find(
+              (attr: any) => attr.attribute.slug === filterAttr.slug,
+            );
+            if (!variantAttr) return false;
+            return filterAttr.values?.some((value) =>
+              variantAttr.values.some((attrValue: { slug: string }) => attrValue.slug === value),
+            );
           });
-          if (!matchesAllAttributes) return false;
-        }
+          return matchesAllAttributes;
+        });
 
-        // Filter by categories (including parent categories)
-        if (productsFilter.categories && productsFilter.categories.length > 0) {
-          const categoryMatch = isCategoryDescendant(product.category, productsFilter.categories);
-          // console.log('Category match:', categoryMatch);
-          if (!categoryMatch) {
-            return false;
-          }
-        }
+        // Return the product with only the filtered variants
+        return {
+          ...edge,
+          node: {
+            ...product,
+            variants: filteredVariants,
+          },
+        };
+      })
+      .filter((edge: any) => edge.node.variants.length > 0); // Exclude products with no matching variants
 
-        // Filter by collections
-        if (productsFilter.collections && productsFilter.collections.length > 0) {
-          const collectionMatch = productsFilter.collections.some((filterCollection) =>
-            product?.collections?.includes(filterCollection),
-          );
-          if (!collectionMatch) return false;
-        }
+    // Extract all brands from the filtered products
+    let allBrands = extractBrands(finalFilteredEdges);
+    // Step 3: Apply brand filter if it exists
+    const brandFilter = productsFilter.attributes?.find((attr) => attr.slug === "brand");
+    const finalFilteredEdgesWithBrand =
+      brandFilter && brandFilter.values && brandFilter.values.length > 0
+        ? finalFilteredEdges.filter((edge: any) => {
+            const product = edge.node;
+            const productBrand = product.attributes?.find(
+              (attr: { attribute: { slug: string } }) => attr.attribute.slug === "brand",
+            );
+            return (
+              productBrand &&
+              brandFilter?.values?.some((value) =>
+                productBrand.values.some(
+                  (brandValue: { slug: string }) => brandValue.slug === value,
+                ),
+              )
+            );
+          })
+        : finalFilteredEdges;
 
-        return true;
-      });
+    let allCategories;
+    if (productsFilter.collections && productsFilter.collections.length > 0) {
+      allCategories = extractCategories(finalFilteredEdgesWithBrand);
+    }
+
+    const finalFilteredEdgesWithCateg =
+      productsFilter.collections &&
+      productsFilter.collections.length > 0 &&
+      productsFilter.categories &&
+      productsFilter.categories.length > 0
+        ? finalFilteredEdgesWithBrand.filter((edge: any) => {
+            const product = edge.node;
+            return isCategoryDescendant(product.category, productsFilter.categories || []);
+          })
+        : finalFilteredEdgesWithBrand;
+
+    if (
+      productsFilter.collections &&
+      productsFilter.collections.length > 0 &&
+      productsFilter.categories &&
+      productsFilter.categories.length > 0
+    ) {
+      allBrands = extractBrands(finalFilteredEdgesWithCateg);
+    }
 
     const filteredProducts = {
-      edges: filteredEdges,
+      edges: finalFilteredEdgesWithCateg,
+      availableBrands: allBrands,
+      availableCategories: allCategories,
     };
 
     return filteredProducts;
