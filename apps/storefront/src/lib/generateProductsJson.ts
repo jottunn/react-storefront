@@ -48,7 +48,7 @@ async function generateProductsJson() {
       first: 1000,
       ...defaultRegionQuery(),
     };
-    const products = await getProductCollection(queryVariables, "no-cache");
+    const products = await getProductCollection(queryVariables);
 
     if (!products) {
       console.log("No products found");

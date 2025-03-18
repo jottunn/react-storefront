@@ -543,13 +543,12 @@ export async function getAvailableFilters(productsFilter: ProductFilterInput) {
   }
 }
 
-export async function getProductCollection(queryVariables: any, cache?: RequestCache) {
+export async function getProductCollection(queryVariables: any) {
   try {
     const { products } = await executeGraphQL<ProductCollectionQuery, { variables: any }>(
       ProductCollectionDocument,
       {
         variables: queryVariables,
-        cache: cache ? cache : "default",
       },
     );
     return products;
