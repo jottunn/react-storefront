@@ -22,14 +22,6 @@ export function Pagination({ pageInfo, onLoadMore, itemsCount, messages }: Pagin
         >
           {messages["app.ui.loadMoreButton"]}
         </button>
-        {/* {itemsCount && totalCount && (
-          <div className="text-sm text-gray-500 mt-2">
-            {t.formatMessage(messages.paginationProductCounter, {
-              totalItemsCount: totalCount,
-              currentItemsCount: itemsCount,
-            })}
-          </div>
-        )} */}
       </div>
     </nav>
   );

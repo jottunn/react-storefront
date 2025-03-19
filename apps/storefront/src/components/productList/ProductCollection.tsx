@@ -53,16 +53,16 @@ export function ProductCollection({
         attributeId?: string;
       }
     | undefined;
+
+  if (!sortBy) {
+    sortBy = {
+      direction: "ASC",
+      attributeId: ATTR_GEN_ID,
+    };
+  }
   const fetchProductCollection = useCallback(
     async (afterCursor?: string) => {
       setIsLoading(true);
-      if (!sortBy) {
-        sortBy = {
-          direction: "ASC",
-          attributeId: ATTR_GEN_ID,
-        };
-      }
-
       const queryVariables = {
         filter,
         where,
@@ -106,15 +106,10 @@ export function ProductCollection({
         filter,
         first: perPage,
         ...defaultRegionQuery(),
-        ...(sortBy?.field &&
-          sortBy?.direction && {
-            sortBy: {
-              direction: sortBy.direction,
-              field: sortBy.field,
-            },
-          }),
+        sortBy,
         after: (productCollection as any).pageInfo.endCursor,
       });
+
       if (newProductsData) {
         // console.log("newProductsData", newProductsData);
         setProductCollection((prevState) => {
