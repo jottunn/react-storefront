@@ -2,6 +2,7 @@ import fs from "fs/promises";
 import path from "path";
 import { defaultRegionQuery } from "./regions";
 import { getProductCollection } from "src/app/actions";
+import { GRAPHQL_PAGINATION_LIMIT } from "./const";
 
 const processAttributes = (productAttributes: any) => {
   const attributesMap = new Map();
@@ -39,34 +40,45 @@ const processAttributes = (productAttributes: any) => {
 
 async function generateProductsJson() {
   try {
-    const queryVariables = {
-      filter: {
-        stockAvailability: "IN_STOCK",
-        isPublished: true,
-        isVisibleInListing: true,
-      },
-      first: 1000,
-      ...defaultRegionQuery(),
-    };
-    const products = await getProductCollection(queryVariables);
+    let hasNextPage = true;
+    let afterCursor: string | null = null;
+    const allProducts: any[] = [];
 
-    if (!products) {
+    while (hasNextPage) {
+      const queryVariables = {
+        filter: {
+          stockAvailability: "IN_STOCK",
+          isPublished: true,
+          isVisibleInListing: true,
+        },
+        first: GRAPHQL_PAGINATION_LIMIT,
+        after: afterCursor,
+        ...defaultRegionQuery(),
+      };
+
+      const products = await getProductCollection(queryVariables);
+
+      if (!products || !products.edges.length) {
+        console.log("No more products found");
+        break;
+      }
+
+      // Add the current page's products to the allProducts array
+      allProducts.push(...products.edges);
+
+      // Update pagination variables
+      hasNextPage = products.pageInfo.hasNextPage;
+      afterCursor = products.pageInfo.endCursor ?? null;
+    }
+
+    if (allProducts.length === 0) {
       console.log("No products found");
       return;
     }
 
-    // const productsData = products.edges.map(({ node }: any) => ({
-    //     name: node.name,
-    //     id: node.id,
-    //     attributes: processAttributes(node.attributes),
-    //     collections: node.collections?.map((collection: any) => collection.name) ?? [],
-    //     categories: node.category ? [node.category.name] : [],
-    //     inStock: node.variants?.some((variant: any) => variant.quantityAvailable && variant.quantityAvailable > 0),
-    //     //pricing:
-    // }));
-
+    // Transform the data into the desired format
     const productsData = {
-      edges: products.edges.map(({ node }: any) => ({
+      edges: allProducts.map(({ node }: any) => ({
         cursor: btoa(node.id), // Base64 encode the ID for the cursor
         node: {
           id: node.id,
@@ -118,6 +130,8 @@ async function generateProductsJson() {
         },
       })),
     };
+
+    // Write the JSON file
     const jsonContent = JSON.stringify(productsData, null, 2);
     await fs.writeFile(path.join(process.cwd(), "public", "products.json"), jsonContent);
 
@@ -126,7 +140,6 @@ async function generateProductsJson() {
     console.error("Failed to generate products JSON:", error);
   }
 }
-
 // Only run the function if this script is being run directly
 if (require.main === module) {
   generateProductsJson();

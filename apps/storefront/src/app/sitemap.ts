@@ -14,7 +14,7 @@ import {
   ProductFilterInput,
 } from "@/saleor/api";
 import { GroupedProduct, groupProductsByColor } from "@/lib/product";
-import { STOREFRONT_URL } from "@/lib/const";
+import { GRAPHQL_PAGINATION_LIMIT, STOREFRONT_URL } from "@/lib/const";
 import { defaultRegionQuery } from "@/lib/regions";
 
 export async function getSitemapCategories() {
@@ -78,7 +78,11 @@ export async function getSitemapCollections() {
   }
   return [];
 }
-
+type QueryVariables = {
+  filter: ProductFilterInput;
+  first: any;
+  after?: string | null;
+};
 export async function getSitemapProducts() {
   try {
     const filter: ProductFilterInput = {
@@ -86,36 +90,67 @@ export async function getSitemapProducts() {
       stockAvailability: "IN_STOCK",
       isVisibleInListing: true,
     };
-    const queryVariables = {
-      filter,
-      first: 700,
-      ...defaultRegionQuery(),
-    };
-    const { products } = await executeGraphQL<ProductCollectionQuery, { filter: any }>(
-      ProductCollectionDocument,
-      {
-        variables: queryVariables,
-        withAuth: false,
-        revalidate: 60 * 60 * 24,
-      },
-    );
-    if (products) {
-      let sitemapProducts = products ? mapEdgesToItems(products) : [];
-      sitemapProducts = groupProductsByColor(sitemapProducts as GroupedProduct[]);
-      const productUrls = sitemapProducts.map((product) => {
-        const checkProductVariant = product.variants?.filter(
-          (variant) => variant.quantityAvailable != null && variant.quantityAvailable > 0,
-        );
-        const variant = checkProductVariant?.[0];
-        return {
-          url: `${STOREFRONT_URL}/p/${product.slug}?variant=${variant?.id}`,
-          lastModified: variant?.updatedAt,
-        };
-      });
-      return [...productUrls];
+
+    let hasNextPage = true;
+    let afterCursor: string | null = null;
+    const allProducts: any[] = [];
+
+    while (hasNextPage) {
+      const queryVariables: QueryVariables = {
+        filter,
+        first: GRAPHQL_PAGINATION_LIMIT,
+        after: afterCursor,
+        ...defaultRegionQuery(),
+      };
+
+      const { products } = await executeGraphQL<ProductCollectionQuery, { filter: any }>(
+        ProductCollectionDocument,
+        {
+          variables: queryVariables,
+          withAuth: false,
+          revalidate: 60 * 60 * 24,
+        },
+      );
+      if (!products || !products.edges.length) {
+        console.log("No more products found");
+        break;
+      }
+
+      // Add the current page's products to the allProducts array
+      allProducts.push(...products.edges);
+
+      // Update pagination variables
+      hasNextPage = products.pageInfo.hasNextPage;
+      afterCursor = products.pageInfo.endCursor ?? null;
     }
+
+    if (allProducts.length === 0) {
+      console.log("No products found");
+      return [];
+    }
+
+    // Map edges to items and group products by color
+    let sitemapProducts = mapEdgesToItems({ edges: allProducts }) as any;
+    sitemapProducts = groupProductsByColor(sitemapProducts as GroupedProduct[]);
+
+    // Generate product URLs for the sitemap
+    const productUrls = [];
+    for (const product of sitemapProducts) {
+      const checkProductVariant = product.variants?.filter(
+        (variant: { quantityAvailable: number | null }) =>
+          variant.quantityAvailable != null && variant.quantityAvailable > 0,
+      );
+      const variant = checkProductVariant?.[0];
+      productUrls.push({
+        sku: variant?.sku,
+        url: `${STOREFRONT_URL}/p/${product.slug}?variant=${variant?.id}`,
+        lastModified: variant?.updatedAt,
+      });
+    }
+
+    return [...productUrls];
   } catch (err) {
-    //console.error("Error sitemap:", err);
+    console.error("Error in getSitemapProducts:", err);
   }
   return [];
 }

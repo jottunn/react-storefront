@@ -10,16 +10,12 @@ import {
   AddressDeleteDocument,
   AddressDeleteMutation,
   AddressInput,
-  AvailableProductFiltersDocument,
-  AvailableProductFiltersQuery,
-  Category,
   ChannelDocument,
   ChannelQuery,
   ConfirmAccountDocument,
   ConfirmAccountMutation,
   ConfirmEmailChangeDocument,
   ConfirmEmailChangeMutation,
-  LanguageCodeEnum,
   OrderDetailsByIdDocument,
   OrderDetailsByIdQuery,
   PasswordChangeDocument,
@@ -46,7 +42,7 @@ import { saleorAuthClient } from "src/app/config";
 import { LoginFormData } from "./login/LoginForm";
 import { RegisterFormData } from "./register/RegisterForm";
 import { STOREFRONT_URL } from "@/lib/const";
-import { DEFAULT_CHANNEL, defaultRegionQuery } from "@/lib/regions";
+import { DEFAULT_CHANNEL } from "@/lib/regions";
 import { ResetFormData } from "./reset/ForgotPassword";
 import { ResetPasswordFormData } from "./reset/ResetPasswordForm";
 import { ConfirmData } from "./confirm/ConfirmResult";
