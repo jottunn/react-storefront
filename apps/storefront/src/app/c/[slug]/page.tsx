@@ -65,7 +65,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
       { slug: string; locale: LanguageCodeEnum }
     >(CategoryBySlugDocument, {
       variables: { slug: params.slug, locale: DEFAULT_LOCALE },
-      revalidate: 60,
+      revalidate: 60 * 5,
     });
     category = response.category;
   } catch {
@@ -77,7 +77,12 @@ export default async function Page({ params }: { params: { slug: string } }) {
   const messages = getMessages(DEFAULT_LOCALE);
   const parentCategories = mapEdgesToItems(category?.ancestors);
   const subcategories = mapEdgesToItems(category?.children);
-  subcategories.sort((a, b) => getOrderValue(a.metadata) - getOrderValue(b.metadata));
+  //filter out categories with no products and sort
+  const filteredAndSortedSubcategories = subcategories
+    .filter(
+      (subcategory) => subcategory.products?.totalCount && subcategory.products?.totalCount > 0,
+    )
+    .sort((a, b) => getOrderValue(a.metadata) - getOrderValue(b.metadata));
 
   const parents = parentCategories.map((parentCategory) => ({
     label: translate(parentCategory, "name"),
@@ -120,7 +125,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
           <PageHero
             title={translate(category, "name")}
             description={translate(category, "description") || ""}
-            pills={subcategories.map((subcategory) => ({
+            pills={filteredAndSortedSubcategories.map((subcategory) => ({
               label: translate(subcategory, "name"),
               slug: subcategory.slug,
             }))}
