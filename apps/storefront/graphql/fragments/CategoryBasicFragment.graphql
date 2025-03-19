@@ -23,4 +23,7 @@ fragment CategoryBasicFragment on Category {
       }
     }
   }
+  products(channel: "default-channel"){
+    totalCount   
+  }  
 }

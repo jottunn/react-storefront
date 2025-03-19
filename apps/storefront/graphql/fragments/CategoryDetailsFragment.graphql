@@ -30,4 +30,5 @@ fragment CategoryDetailsFragment on Category {
     value
   }
   updatedAt
+  level
 }

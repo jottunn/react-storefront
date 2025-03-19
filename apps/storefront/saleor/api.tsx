@@ -32350,6 +32350,7 @@ export type CategoryBasicFragment = {
       };
     }>;
   } | null;
+  products?: { __typename?: "ProductCountableConnection"; totalCount?: number | null } | null;
 };
 
 export type CategoryDetailsFragment = {
@@ -32359,6 +32360,7 @@ export type CategoryDetailsFragment = {
   seoDescription?: string | null;
   description?: string | null;
   updatedAt: string;
+  level: number;
   name: string;
   slug: string;
   translation?: {
@@ -32400,6 +32402,7 @@ export type CategoryDetailsFragment = {
             };
           }>;
         } | null;
+        products?: { __typename?: "ProductCountableConnection"; totalCount?: number | null } | null;
       };
     }>;
   } | null;
@@ -32435,10 +32438,12 @@ export type CategoryDetailsFragment = {
             };
           }>;
         } | null;
+        products?: { __typename?: "ProductCountableConnection"; totalCount?: number | null } | null;
       };
     }>;
   } | null;
   metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
+  products?: { __typename?: "ProductCountableConnection"; totalCount?: number | null } | null;
 };
 
 export type CheckoutDetailsFragment = {
@@ -32932,6 +32937,10 @@ export type ProductCardFragment = {
               };
             }>;
           } | null;
+          products?: {
+            __typename?: "ProductCountableConnection";
+            totalCount?: number | null;
+          } | null;
         };
       }>;
     } | null;
@@ -33120,6 +33129,7 @@ export type ProductDetailsFragment = {
         };
       }>;
     } | null;
+    products?: { __typename?: "ProductCountableConnection"; totalCount?: number | null } | null;
   } | null;
   variants?: Array<{
     __typename?: "ProductVariant";
@@ -36070,6 +36080,7 @@ export type CategoriesSortedByQuery = {
         seoDescription?: string | null;
         description?: string | null;
         updatedAt: string;
+        level: number;
         name: string;
         slug: string;
         translation?: {
@@ -36111,6 +36122,10 @@ export type CategoriesSortedByQuery = {
                   };
                 }>;
               } | null;
+              products?: {
+                __typename?: "ProductCountableConnection";
+                totalCount?: number | null;
+              } | null;
             };
           }>;
         } | null;
@@ -36146,10 +36161,15 @@ export type CategoriesSortedByQuery = {
                   };
                 }>;
               } | null;
+              products?: {
+                __typename?: "ProductCountableConnection";
+                totalCount?: number | null;
+              } | null;
             };
           }>;
         } | null;
         metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
+        products?: { __typename?: "ProductCountableConnection"; totalCount?: number | null } | null;
       };
     }>;
   } | null;
@@ -36173,6 +36193,7 @@ export type CategoriesByFilterQuery = {
         seoDescription?: string | null;
         description?: string | null;
         updatedAt: string;
+        level: number;
         name: string;
         slug: string;
         translation?: {
@@ -36214,6 +36235,10 @@ export type CategoriesByFilterQuery = {
                   };
                 }>;
               } | null;
+              products?: {
+                __typename?: "ProductCountableConnection";
+                totalCount?: number | null;
+              } | null;
             };
           }>;
         } | null;
@@ -36249,10 +36274,15 @@ export type CategoriesByFilterQuery = {
                   };
                 }>;
               } | null;
+              products?: {
+                __typename?: "ProductCountableConnection";
+                totalCount?: number | null;
+              } | null;
             };
           }>;
         } | null;
         metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
+        products?: { __typename?: "ProductCountableConnection"; totalCount?: number | null } | null;
       };
     }>;
   } | null;
@@ -36272,6 +36302,7 @@ export type CategoryBySlugQuery = {
     seoDescription?: string | null;
     description?: string | null;
     updatedAt: string;
+    level: number;
     name: string;
     slug: string;
     translation?: {
@@ -36313,6 +36344,10 @@ export type CategoryBySlugQuery = {
               };
             }>;
           } | null;
+          products?: {
+            __typename?: "ProductCountableConnection";
+            totalCount?: number | null;
+          } | null;
         };
       }>;
     } | null;
@@ -36348,10 +36383,15 @@ export type CategoryBySlugQuery = {
               };
             }>;
           } | null;
+          products?: {
+            __typename?: "ProductCountableConnection";
+            totalCount?: number | null;
+          } | null;
         };
       }>;
     } | null;
     metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
+    products?: { __typename?: "ProductCountableConnection"; totalCount?: number | null } | null;
   } | null;
 };
 
@@ -37081,6 +37121,7 @@ export type ProductBySlugQuery = {
           };
         }>;
       } | null;
+      products?: { __typename?: "ProductCountableConnection"; totalCount?: number | null } | null;
     } | null;
     variants?: Array<{
       __typename?: "ProductVariant";
@@ -37240,6 +37281,10 @@ export type ProductCollectionQuery = {
                       } | null;
                     };
                   }>;
+                } | null;
+                products?: {
+                  __typename?: "ProductCountableConnection";
+                  totalCount?: number | null;
                 } | null;
               };
             }>;
@@ -37598,6 +37643,10 @@ export type ProductsByAttributeQuery = {
                     };
                   }>;
                 } | null;
+                products?: {
+                  __typename?: "ProductCountableConnection";
+                  totalCount?: number | null;
+                } | null;
               };
             }>;
           } | null;
@@ -37877,6 +37926,9 @@ export const CategoryBasicFragmentDoc = gql`
         }
       }
     }
+    products(channel: "default-channel") {
+      totalCount
+    }
   }
 `;
 export const ImageFragmentDoc = gql`
@@ -37918,6 +37970,7 @@ export const CategoryDetailsFragmentDoc = gql`
       value
     }
     updatedAt
+    level
   }
 `;
 export const AddressDetailsFragmentDoc = gql`
