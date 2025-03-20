@@ -11,20 +11,7 @@ services:
     networks:
       - saleor-backend-tier
     command: sh -c '(nginx &) && pnpm turbo run start --filter=storefront...'
-  products-importer:
-    container_name: products-importer
-    build:
-      context: .
-      dockerfile: Dockerfile.base
-      args:
-        - TARGET_APP=products-importer
-    ports:
-      - 3004:3004
-    networks:
-      - saleor-backend-tier
-    volumes:
-      - products-importer-auth-volume:/app/apps/products-importer/apl
-    command: sh -c '(nginx &) && pnpm turbo run start --filter=products-importer...'
+
   manage-promotions:
     container_name: manage-promotions
     build:
@@ -39,6 +26,7 @@ services:
     volumes:
       - manage-promotions-auth-volume:/app/apps/manage-promotions/apl
     command: sh -c '(nginx &) && pnpm turbo run start --filter=manage-promotions...'
+
   search:
     container_name: search
     build:
@@ -53,6 +41,7 @@ services:
     volumes:
       - search-auth-volume:/app/apps/search/apl
     command: sh -c '(nginx &) && pnpm turbo run start --filter=search...'
+
   manage-stock:
     container_name: manage-stock
     build:
@@ -68,6 +57,7 @@ services:
       - manage-stock-auth-volume:/app/apps/manage-stock/apl
       - manage-stock-logs-volume:/app/apps/manage-stock/logs
     command: sh -c '(nginx &) && pnpm turbo run start --filter=manage-stock...'
+
   smtp:
     container_name: smtp
     build:
@@ -82,6 +72,7 @@ services:
     volumes:
       - smtp-auth-volume:/app/apps/smtp/apl
     command: sh -c '(nginx &) && pnpm turbo run start --filter=smtp...'
+
   payment:
     container_name: payment
     build:
@@ -97,8 +88,8 @@ services:
       - payment-auth-volume:/app/apps/payment/apl
       - payment-logs-volume:/app/apps/payment/logs
     command: sh -c '(nginx &) && pnpm turbo run start --filter=payment...'
+
 volumes:
-  manage-promotions-auth-volume:
   smtp-auth-volume:
   search-auth-volume:
   products-importer-auth-volume:
