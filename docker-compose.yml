@@ -90,9 +90,9 @@ services:
     command: sh -c '(nginx &) && pnpm turbo run start --filter=payment...'
 
 volumes:
+  manage-promotions-auth-volume:
   smtp-auth-volume:
   search-auth-volume:
-  products-importer-auth-volume:
   manage-stock-auth-volume:
   manage-stock-logs-volume:
   payment-auth-volume:
