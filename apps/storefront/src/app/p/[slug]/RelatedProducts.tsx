@@ -39,7 +39,7 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({
   React.useEffect(() => {
     const fetchRelatedProducts = async () => {
       const categoryId = product?.category?.id ?? "";
-      const ancestorId = product?.category?.ancestors.edges?.[0]["node"]["id"];
+      const ancestorId = product?.category?.ancestors?.edges?.[0]?.node?.id;
       const attributeGender = product.attributes.find(
         (attr: { attribute: { slug: string } }) => attr.attribute.slug === "gen",
       );
