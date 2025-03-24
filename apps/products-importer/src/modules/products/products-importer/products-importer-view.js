@@ -375,7 +375,11 @@ export const ProductsImporterView = () => {
         const prodAttrKey = definedProdAttributes[attrKey][1].toLowerCase();
 
         if (definedProdAttributes[attrKey][1] === "MULTISELECT") {
-          prodAttr[prodAttrKey] = [{ value: row[attrKey].trim() }];
+          if (attrKey === "gen") {
+            prodAttr[prodAttrKey] = [{ value: row[attrKey].trim().toLowerCase() }];
+          } else {
+            prodAttr[prodAttrKey] = [{ value: row[attrKey].trim() }];
+          }
         } else if (definedProdAttributes[attrKey][1] === "REFERENCE") {
           //check if page with slug exists in cache, if not query and add it
           const pageSlug = row[attrKey].trim().replace(" ", "-").toLowerCase();
