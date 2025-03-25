@@ -35,7 +35,7 @@ const ZoomPanImage = ({ src, alt, unoptimized }: ZoomPanImageProps) => {
               width={0}
               height={0}
               sizes="100vw"
-              style={{ width: "100%", height: "auto" }}
+              style={{ width: "100%", height: "auto", maxHeight: "100vh" }}
               loading="lazy"
               {...(unoptimized !== true ? { unoptimized: true } : {})}
             />

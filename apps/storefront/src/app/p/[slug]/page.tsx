@@ -354,7 +354,7 @@ const ProductDetail = async ({
           __html: JSON.stringify(jsonLd),
         }}
       />
-      <div className="container text-left pt-2 pb-2 md:pb-8 space-x-2 pl-0">
+      <div className="container text-left pt-2 pb-2 md:pb-2 space-x-2 pl-0">
         <Breadcrumbs items={breadcrumbItems} />
       </div>
       <div

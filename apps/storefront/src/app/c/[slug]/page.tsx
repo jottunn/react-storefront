@@ -118,7 +118,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
         }}
       />
       <header className="border-b border-main-6">
-        <div className="bg-main-7 border-b md:mb-8">
+        <div className="bg-main-7 border-b md:mb-2">
           <Breadcrumbs items={breadcrumbItems} />
         </div>
         <div className="container px-8 p-4">

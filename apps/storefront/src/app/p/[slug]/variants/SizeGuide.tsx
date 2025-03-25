@@ -8,9 +8,8 @@ import { UPLOAD_FOLDER } from "@/lib/const";
 import edjsHTML from "editorjs-html";
 import { Messages } from "@/lib/util";
 import { translate } from "@/lib/translations";
-import ZoomPanImage from "../media/ZoomPanImage";
 const parser = edjsHTML();
-
+import Image from "next/image";
 export default function SizeGuide({ sizeGuide, messages }: { sizeGuide: any; messages: Messages }) {
   const [showSizeGuideModal, setShowSizeGuideModal] = useState(false);
   const content =
@@ -76,11 +75,14 @@ export default function SizeGuide({ sizeGuide, messages }: { sizeGuide: any; mes
                         },
                         index: any,
                       ) => (
-                        <ZoomPanImage
+                        <Image
                           key={attr?.values?.[0]?.name || index}
+                          className="m-auto"
                           src={`${UPLOAD_FOLDER ?? ""}/${attr?.values?.[0]?.name ?? ""}`}
-                          alt={sizeGuide.page.title}
-                          unoptimized={true}
+                          alt={""}
+                          width={800}
+                          height={600}
+                          loading="lazy"
                         />
                       ),
                     )}
