@@ -200,6 +200,7 @@ export default async function Home() {
     page && "metadata" in page ? getMetadataValue(page.metadata, "Banner1 Text Display") : "";
   const banner1TextStyle =
     page && "metadata" in page ? getMetadataValue(page.metadata, "Banner1 Text Style") : "";
+  const banner1Link = page && "metadata" in page ? getMetadataValue(page.metadata, "Link1") : "";
   const base64 =
     banner1Attribute?.values[0]?.name &&
     (await getBase64(`${UPLOAD_FOLDER ?? ""}/${banner1Attribute.values[0].name}`));
@@ -210,7 +211,7 @@ export default async function Home() {
       ? page.attributes.find((attr) => attr.attribute.name === "Homepage Banner2")
       : null;
   const hasBanner2 = banner2Attribute?.values.length ? banner2Attribute?.values.length > 0 : false;
-  let parsedBanner2RichText, displayTextBanner2, banner2TextStyle, placeholder_2;
+  let parsedBanner2RichText, displayTextBanner2, banner2TextStyle, placeholder_2, banner2Link;
   if (hasBanner2) {
     const banner2AttributeContent =
       page && "attributes" in page
@@ -231,6 +232,7 @@ export default async function Home() {
       banner2Attribute?.values[0]?.name &&
       (await getBase64(`${UPLOAD_FOLDER ?? ""}/${banner2Attribute.values[0].name}`));
     placeholder_2 = base64_2 || null;
+    banner2Link = page && "metadata" in page ? getMetadataValue(page.metadata, "Link2") : "";
   }
 
   const content = page && "content" in page ? translate(page, "content") : null;
@@ -272,6 +274,7 @@ export default async function Home() {
               bannerTextStyle={banner1TextStyle}
               placeholder={placeholder}
               hasBanner2={hasBanner2}
+              bannerLink={banner1Link}
             />
             {hasBanner2 && (
               <Banner
@@ -281,6 +284,7 @@ export default async function Home() {
                 bannerTextStyle={banner2TextStyle}
                 placeholder={placeholder_2}
                 hasBanner2={hasBanner2}
+                bannerLink={banner2Link}
               />
             )}
           </div>
