@@ -1,14 +1,12 @@
 import { Client } from "urql";
 import {
   AddProductsToCollectionDocument,
-  AssignCollectionToChannelDocument,
   CreateNewCollectionDocument,
   DeleteCollectionDocument,
   ProductCollectionDocument,
   RemoveProductsFromCollectionDocument,
   UpdateCollectionDocument,
 } from "../../../generated/graphql";
-import { getChannelId } from "../sync/get-channel-id";
 import { publishCollection } from "./collection-channels";
 
 export async function deleteCollection(client: Client, collectionId: string) {
@@ -43,6 +41,7 @@ export async function createCollection(
       })
       .toPromise();
 
+    console.log("collectionDatacreate response", collectionData);
     if (!collectionData || !collectionData.collectionCreate?.collection) {
       throw new Error("Failed to create collection");
     }
@@ -50,9 +49,39 @@ export async function createCollection(
     await publishCollection(client, collectionId, allChannels);
     return collectionId;
   } catch (error) {
-    console.error("Error handling sale deletion:", error);
+    console.error("Error handling sale creation:", error);
     return error;
   }
+}
+
+export async function fetchProducts(client: Client, filter: any) {
+  let hasNextPage = true;
+  let afterCursor: string | null = null;
+  const allProducts: any[] = [];
+  while (hasNextPage) {
+    const productsResponse: any = await client
+      .query(
+        ProductCollectionDocument,
+        {
+          filter: filter,
+          first: 5,
+          after: afterCursor,
+        },
+        { requestPolicy: "network-only" }
+      )
+      .toPromise();
+
+    const productIds = productsResponse?.data?.products?.edges?.map(
+      (e: { node: any }) => e.node.id
+    );
+
+    allProducts.push(...productIds);
+    //console.log(' products?.pageInfo?.endCursor ', productsResponse?.data?.products?.pageInfo?.endCursor);
+    hasNextPage = productsResponse?.data?.products?.pageInfo?.hasNextPage || false;
+    afterCursor = productsResponse?.data?.products?.pageInfo?.endCursor ?? null;
+  }
+
+  return allProducts;
 }
 
 export async function updateProductsCollection(
@@ -60,19 +89,15 @@ export async function updateProductsCollection(
   collectionId: string,
   saleProducts: string[]
 ) {
-  const { data: existingCollectionProducts, error: resultProductsErr } = await client.query(
-    ProductCollectionDocument,
-    { filter: { collections: [collectionId] } },
-    { requestPolicy: "network-only" }
-  );
-
-  const existingProductsInCollection = existingCollectionProducts?.products?.edges.map(
-    (e: { node: any }) => e.node.id
-  );
+  console.log("start updateProductsCollection");
+  const existingProductsInCollection = await fetchProducts(client, { collections: [collectionId] });
   // console.log('updateProductsCollection', existingCollectionProducts);
-
-  if (!existingCollectionProducts && saleProducts) {
-    // console.log("add", saleProducts);
+  if (
+    (!existingProductsInCollection ||
+      (existingProductsInCollection && existingProductsInCollection.length == 0)) &&
+    saleProducts
+  ) {
+    //console.log("add prods to collection", saleProducts);
     const { data: addProductsToCollection } = await client
       .mutation(AddProductsToCollectionDocument, {
         collectionId: collectionId,
@@ -92,6 +117,7 @@ export async function updateProductsCollection(
           products: notInNewUpdate,
         })
         .toPromise();
+      console.log("removeProductsFromCollection", removeProductsFromCollection);
     }
 
     //check which products were added, exists in productIdsArray, not exists in existingProductsInCollection
@@ -125,4 +151,19 @@ export async function updateSalesCollectionPrivateMetadata(
     .toPromise();
   return updatedCollection;
   //console.log("updatedCollection", updatedCollection);
+}
+
+export async function addProductsToCollection(
+  client: Client,
+  collectionId: string,
+  productsIds: any[]
+) {
+  const { data: addedProducts } = await client
+    .mutation(AddProductsToCollectionDocument, {
+      collectionId: collectionId,
+      products: productsIds,
+    })
+    .toPromise();
+  console.log("addedProducts", addedProducts);
+  return addedProducts;
 }

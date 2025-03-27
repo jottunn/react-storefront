@@ -1,9 +1,15 @@
-query ProductCollection($filter: ProductFilterInput) {
-  products(first: 600, channel: "default-channel", filter: $filter) {
+query ProductCollection($filter: ProductFilterInput, $first: Int = 100, $after: String) {
+  products(first: $first, after: $after, channel: "default-channel", filter: $filter) {
     edges {
       node {
         id
       }    
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
     }
   }
 }

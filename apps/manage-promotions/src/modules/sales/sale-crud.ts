@@ -1,19 +1,21 @@
 import { Client } from "urql";
 import { UpdateSaleDocument } from "../../../generated/graphql";
 
-export async function updateProductsSales(
+export async function updateSalesCollections(
   client: Client,
   saleId: string,
   // ruleId: string,
-  saleProducts: string[]
+  saleCollectionIds: string[]
 ) {
-  const { data: addProductsToSale } = await client
+  const { data: addCollectionsToSale } = await client
     .mutation(UpdateSaleDocument, {
       id: saleId,
-      input: { products: saleProducts },
+      input: { collections: saleCollectionIds },
     })
     .toPromise();
 
-  const errs = addProductsToSale?.saleUpdate?.errors;
+  console.log("addProductsToSale?.saleUpdate", addCollectionsToSale?.saleUpdate);
+
+  const errs = addCollectionsToSale?.saleUpdate?.errors;
   return errs;
 }

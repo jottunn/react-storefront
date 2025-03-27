@@ -9,6 +9,7 @@ import {
 import { saleorApp } from "../../../saleor-app";
 import { createClient } from "../../../lib/create-graphq-client";
 import { createCollection } from "../../../modules/collections/collection-crud";
+import { updateSalesCollections } from "../../../modules/sales/sale-crud";
 
 /**
  * Example payload of the webhook. It will be transformed with graphql-codegen to Typescript type: PromotionCreatedWebhookPayloadFragment
@@ -74,6 +75,7 @@ export default saleCreatedWebhook.createHandler(async (req, res, ctx) => {
   /**
    * Perform logic based on Saleor Event payload
    */
+
   console.log(`Sale was created: ${payload.sale?.id}`);
   const saleId = payload.sale?.id || "";
   const saleName = payload.sale?.name;
@@ -112,8 +114,14 @@ export default saleCreatedWebhook.createHandler(async (req, res, ctx) => {
       return res.status(404).send("Sale not found");
     }
 
-    await createCollection(client, saleName, saleId, uniqueChannels);
+    const saleCollectionId = await createCollection(client, saleName, saleId, uniqueChannels);
 
+    if (saleCollectionId) {
+      const err = await updateSalesCollections(client, saleId, [saleCollectionId as string]);
+      if (err && err.length > 0) {
+        console.log(err[0]);
+      }
+    }
     // console.log('channelAssignedData', channelAssignedData);
   } catch (error) {
     console.error("Error creating collection for sale:", error);

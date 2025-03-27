@@ -9,11 +9,13 @@ export async function fetchSaleCollections(
     CollectionsByMetaKeyDocument,
     {
       filter: collectionFilter,
-      published: ["PUBLISHED", "HIDDEN"],
+      // published: ["PUBLISHED", "HIDDEN"],
       channel: "default-channel",
+      first: 100,
     },
     { requestPolicy: "network-only" }
   );
 
+  //console.log('CollectionsByMetaKeyDocument', saleCollections);
   return saleCollections?.collections?.edges.map((e: { node: any }) => e.node) || [];
 }
