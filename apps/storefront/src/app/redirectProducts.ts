@@ -947,13 +947,11 @@ export const redirects: Redirect[] = [
   },
   {
     source: "/produse/Trek-Marlin-6-Gen-3-Rage-Red-to-Deep-Dark-Blue-Fade-3538-0",
-    destination:
-      "/p/bicicleta-mtb-hardtailcross-country-unisex-trek-marlin-6?variant=UHJvZHVjdFZhcmlhbnQ6MzE2Ng==",
+    destination: "/p/bicicleta-mtb-hardtail-roscoe-6?variant=UHJvZHVjdFZhcmlhbnQ6MzY4Ng==",
   },
   {
     source: "/produse/Trek-Stache-7-29-Test-Bike-Purple-LotusWaterloo-Blue-2650-0",
-    destination:
-      "/p/bicicleta-mtb-hardtailcross-country-unisex-trek-stache-7-29-test-bike?variant=UHJvZHVjdFZhcmlhbnQ6Mjk3MQ==",
+    destination: "/p/bicicleta-mtb-hardtail-stache-7?variant=UHJvZHVjdFZhcmlhbnQ6MzY4Nw==",
   },
   {
     source: "/produse/Ion-Scrub-Black-3523-0",
@@ -1168,11 +1166,6 @@ export const redirects: Redirect[] = [
   {
     source: "/produse/Ion-seek-pants-black-3006-0",
     destination: "/p/pantaloni-lungi-bicicleta-dama-ion-seek?variant=UHJvZHVjdFZhcmlhbnQ6MzA1MQ==",
-  },
-  {
-    source: "/produse/Trek-Roscoe-6--Lithium-grey-cobra-blood-4207-0",
-    destination:
-      "/p/bicicleta-mtb-hardtailcross-country-unisex-trek-roscoe-6?variant=UHJvZHVjdFZhcmlhbnQ6MzU5Mg==",
   },
   {
     source: "/produse/Ion-S-Pad-Amp-protectie-tibie-black-3050-0",
@@ -1492,7 +1485,7 @@ export const redirects: Redirect[] = [
   {
     source: "/produse/Trek-Wahoo-24-Red-Black-3815-0",
     destination:
-      "/p/bicicleta-mtb-hardtailcross-country-copii-trek-wahoo-24?variant=UHJvZHVjdFZhcmlhbnQ6MzMwNA==",
+      "/p/bicicleta-mtb-hardtailcross-country-copii-trek-wahoo-24?variant=UHJvZHVjdFZhcmlhbnQ6MzMwNQ==",
   },
   {
     source: "/produse/Bontrager-Suport-bidon-Elite-Recycled-Yellow-3821-0",
@@ -1580,11 +1573,6 @@ export const redirects: Redirect[] = [
     source: "/produse/Bontrager-Cric-Spate-Ajustabil-29er-black-3874-0",
     destination:
       "/p/cric-bicicleta-bontrager-spate-ajustabil-29er?variant=UHJvZHVjdFZhcmlhbnQ6MzMyOA==",
-  },
-  {
-    source: "/produse/Trek-Wahoo-24-Waterloo-BlueQuicksilver-3879-0",
-    destination:
-      "/p/bicicleta-mtb-hardtailcross-country-copii-trek-wahoo-24?variant=UHJvZHVjdFZhcmlhbnQ6MzMwNQ==",
   },
   {
     source: "/produse/Bontrager-Solstice-Mips-Black-3881-0",
@@ -1943,7 +1931,7 @@ export const redirects: Redirect[] = [
   {
     source: "/produse/Trek-Wahoo-20-Quicksilverroarange-4063-0",
     destination:
-      "/p/bicicleta-mtb-hardtailcross-country-copii-trek-wahoo-20?variant=UHJvZHVjdFZhcmlhbnQ6MzQwNA==",
+      "/p/bicicleta-mtb-hardtailcross-country-copii-trek-wahoo-20?variant=UHJvZHVjdFZhcmlhbnQ6MzE0NQ==",
   },
   {
     source: "/produse/Ion-Logo-Plus-Bikeshort-Sea-Grass-4113-0",
@@ -1963,11 +1951,6 @@ export const redirects: Redirect[] = [
     source: "/produse/Trek-Slash-8-GX-Lithium-grey--Dnister-Black-4066-0",
     destination:
       "/p/bicicleta-mtb-full-suspension-unisex-trek-slash-8-gx?variant=UHJvZHVjdFZhcmlhbnQ6MzQwNQ==",
-  },
-  {
-    source: "/produse/Trek-Roscoe-6--olive-grey--waterloo-blue-4070-0",
-    destination:
-      "/p/bicicleta-mtb-hardtailcross-country-unisex-trek-roscoe-6?variant=UHJvZHVjdFZhcmlhbnQ6MzUwOQ==",
   },
   {
     source: "/produse/Trek-Emonda-alr-5-Slate-to-Trek-Black-Fade-4071-0",
@@ -2097,8 +2080,7 @@ export const redirects: Redirect[] = [
   },
   {
     source: "/produse/Trek-Marlin-6-Gen-3-Miami-Green-to-Dark-Aquatic-Fade-4104-0",
-    destination:
-      "/p/bicicleta-mtb-hardtailcross-country-unisex-trek-marlin-6?variant=UHJvZHVjdFZhcmlhbnQ6MzQyMw==",
+    destination: "/p/bicicleta-mtb-hardtail-marlin-6?variant=UHJvZHVjdFZhcmlhbnQ6MzY4MQ==",
   },
   {
     source: "/produse/Trek-Slash-7-deorext-Black-Olive-4105-0",
@@ -2270,23 +2252,11 @@ export const redirects: Redirect[] = [
   },
   {
     source: "/produse/Trek-Marlin-5-Gen-3-Power-Surge-4202-0",
-    destination:
-      "/p/bicicleta-mtb-hardtailcross-country-unisex-trek-marlin-5?variant=UHJvZHVjdFZhcmlhbnQ6MzU4MQ==",
+    destination: "/p/bicicleta-mtb-hardtail-marlin-5?variant=UHJvZHVjdFZhcmlhbnQ6MzY3OA==",
   },
   {
     source: "/produse/Trek-Roscoe-6-Purple-Flip-4204-0",
-    destination:
-      "/p/bicicleta-mtb-hardtailcross-country-unisex-trek-roscoe-6?variant=UHJvZHVjdFZhcmlhbnQ6MzU5MA==",
-  },
-  {
-    source: "/produse/Trek-Marlin-4-Alpine-blue-4205-0",
-    destination:
-      "/p/bicicleta-mtb-hardtailcross-country-unisex-trek-marlin-4?variant=UHJvZHVjdFZhcmlhbnQ6MzYyMg==",
-  },
-  {
-    source: "/produse/Trek-Marlin-4-Voodoo-Aloha-Green-4206-0",
-    destination:
-      "/p/bicicleta-mtb-hardtailcross-country-unisex-trek-marlin-4?variant=UHJvZHVjdFZhcmlhbnQ6MzYyNA==",
+    destination: "/p/bicicleta-mtb-hardtail-roscoe-6?variant=UHJvZHVjdFZhcmlhbnQ6MzY4Ng==",
   },
   {
     source: "/produse/Ion-Scrub-AMP-BAT-bikeshort-Cloud-Blue-4002-0",
