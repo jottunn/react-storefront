@@ -46,17 +46,15 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({
       let filterAttributes = [];
       if (attributeGender) {
         const gender = attributeGender?.values?.[0]?.slug;
-        if (gender === "copii") {
-          filterAttributes.push({
-            slug: "gen",
-            values: [gender],
-          });
-        } else {
-          filterAttributes.push({
-            slug: "gen",
-            values: [gender, "unisex"],
-          });
-        }
+        const genderValues = gender
+          ? gender === "copii"
+            ? [gender]
+            : [gender, "unisex"]
+          : ["unisex"];
+        filterAttributes.push({
+          slug: "gen",
+          values: genderValues,
+        });
       }
 
       let relatedProductsResponse: ProductCountableConnection;
