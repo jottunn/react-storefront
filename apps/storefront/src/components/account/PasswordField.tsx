@@ -26,28 +26,30 @@ export default function PasswordField({
   };
 
   return (
-    <div className="relative mt-5">
-      <label htmlFor={id} className={labelClassName}>
-        {label}
-      </label>
-      <input
-        className="px-4 w-full border-2 py-2 rounded-md text-sm outline-none"
-        type={passwordVisible ? "text" : "password"}
-        id={id}
-        spellCheck={false}
-        {...register(id, validationRules)}
-      />
-      <span
-        onClick={togglePasswordVisibility}
-        className="absolute right-4 top-[70%] transform -translate-y-1/2 cursor-pointer"
-      >
-        {passwordVisible ? (
-          <EyeIcon className="h-6 w-6 text-black" />
-        ) : (
-          <EyeSlashIcon className="h-6 w-6 text-gray-500" />
-        )}
-      </span>
-      {!!error && <p className="text-sm text-red-700 pt-2 font-semibold">{error}</p>}
-    </div>
+    <>
+      <div className="relative mt-5">
+        <label htmlFor={id} className={labelClassName}>
+          {label}
+        </label>
+        <input
+          className="px-4 w-full border-2 py-2 rounded-md text-sm outline-none"
+          type={passwordVisible ? "text" : "password"}
+          id={id}
+          spellCheck={false}
+          {...register(id, validationRules)}
+        />
+        <span
+          onClick={togglePasswordVisibility}
+          className="absolute right-4 top-[70%] transform -translate-y-1/2 cursor-pointer"
+        >
+          {passwordVisible ? (
+            <EyeIcon className="h-6 w-6 text-black" />
+          ) : (
+            <EyeSlashIcon className="h-6 w-6 text-gray-500" />
+          )}
+        </span>
+      </div>
+      {!!error && <p className="text-sm text-red-700 font-semibold">{error}</p>}
+    </>
   );
 }

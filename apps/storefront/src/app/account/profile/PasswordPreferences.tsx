@@ -39,8 +39,8 @@ export function PasswordPreferences({ messages }: PasswordPreferencesProps) {
       const mutationErrors = result?.errors || [];
       if (mutationErrors.length > 0) {
         mutationErrors.forEach((e: { field: string; code: any }) =>
-          setError(e.field as keyof PasswordChangeFormData, {
-            message: e.code || "error",
+          setError("oldPassword", {
+            message: e.code || e,
           }),
         );
       } else if (result?.user) {

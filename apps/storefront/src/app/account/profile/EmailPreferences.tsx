@@ -61,8 +61,8 @@ function EmailPreferences({ user, messages }: EmailPreferencesProps) {
     const mutationErrors = result?.errors || [];
     if (mutationErrors.length > 0) {
       mutationErrors.forEach((e: { field: string; code: any }) =>
-        setError(e.field as keyof EmailChangeFormData, {
-          message: e.code || "",
+        setError((e.field || "password") as keyof EmailChangeFormData, {
+          message: e.code || e,
         }),
       );
     } else {
