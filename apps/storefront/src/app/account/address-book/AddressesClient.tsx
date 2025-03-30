@@ -35,6 +35,9 @@ function AddressesClient({ user, messages }: AddressesClientProps) {
             messages={messages}
           />
         ))}
+      {addresses && addresses.length === 0 && (
+        <p className="text-base">{messages["app.preferences.addressbook.noData"]}</p>
+      )}
     </div>
   );
 }

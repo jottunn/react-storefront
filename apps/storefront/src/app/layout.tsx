@@ -9,7 +9,7 @@ import Footer from "@/components/footer/Footer";
 import BackToTopButton from "@/components/BackToTopButton";
 import CookieConsentWrapper from "@/components/CookieConsentWrapper";
 import { STOREFRONT_URL } from "@/lib/const";
-import { GoogleTagManager } from "@next/third-parties/google";
+import ConditionalGTM from "@/components/ConditionalGTM";
 
 const openSans = localFont({
   src: "../../public/fonts/OpenSans-VariableFont_wdth,wght.ttf",
@@ -34,7 +34,21 @@ export default function RootLayout(props: { children: ReactNode }) {
 
   return (
     <html lang="ro" className={`${openSans.className} min-h-dvh`}>
-      {process.env.NEXT_PUBLIC_GTM && <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM} />}
+      {process.env.NEXT_PUBLIC_GTM && (
+        <>
+          {/* Noscript fallback - works without JavaScript */}
+          <noscript>
+            <iframe
+              src={`https://www.googletagmanager.com/ns.html?id=${process.env.NEXT_PUBLIC_GTM}`}
+              height="0"
+              width="0"
+              style={{ display: "none", visibility: "hidden" }}
+            />
+          </noscript>
+          {/* Client-side GTM with consent check */}
+          <ConditionalGTM gtmId={process.env.NEXT_PUBLIC_GTM} />
+        </>
+      )}
       <body className="min-h-dvh prose-h1:font-dark prose-h2:font-black">
         <CheckoutProvider>
           {/* @ts-expect-error Async Server Component */}

@@ -6,6 +6,7 @@
   "app.account.orderDetailShippingPrice": "Cost livrare",
   "app.account.orderNumber": "Comanda Nr.",
   "app.account.orderStatus": "Status",
+  "app.account.none": "Nu exista comenzi asociate acestui cont",
   "app.buttons.apply": "Aplica",
   "app.buttons.back": "Inapoi",
   "app.buttons.cancel": "Anuleaza",

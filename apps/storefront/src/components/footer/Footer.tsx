@@ -85,7 +85,11 @@ export default async function Footer({ className, ...rest }: FooterProps) {
                 <div className="" key={item?.id}>
                   <span className={styles["menu-heading"]}>{item?.name}</span>
                   <ul className={styles.menu}>
-                    {i === 0 && <UserMenu display="footer" messages={messages} />}
+                    {i === 0 && (
+                      <li>
+                        <UserMenu display="footer" messages={messages} />
+                      </li>
+                    )}
                     {item?.children?.map((sub) => (
                       <li key={sub?.id}>
                         {sub?.url ? (
@@ -108,7 +112,11 @@ export default async function Footer({ className, ...rest }: FooterProps) {
                         )}
                       </li>
                     ))}
-                    {i === 0 && <FooterCartButton messages={messages} />}
+                    {i === 0 && (
+                      <li>
+                        <FooterCartButton messages={messages} />
+                      </li>
+                    )}
                   </ul>
                 </div>
               ))}
@@ -130,6 +138,7 @@ export default async function Footer({ className, ...rest }: FooterProps) {
                     target="_blank"
                     rel="noreferrer"
                     className="hover:opacity-85"
+                    title="facebook"
                   >
                     <svg width="25" height="25">
                       <use xlinkHref="#facebook-icon" />
@@ -142,6 +151,7 @@ export default async function Footer({ className, ...rest }: FooterProps) {
                     target="_blank"
                     rel="noreferrer"
                     className="hover:opacity-85"
+                    title="instagram"
                   >
                     <svg width="25" height="25">
                       <use xlinkHref="#instagram-icon" />

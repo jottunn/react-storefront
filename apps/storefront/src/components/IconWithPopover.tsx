@@ -4,11 +4,13 @@ import popoverStyles from "./IconWithPopover.module.css";
 const IconWithPopover: React.FC = () => {
   return (
     <div className={popoverStyles.popoverContainer}>
-      <button className="mt-1">
+      <button className="mt-1" aria-label="Telefon">
         <PhoneIcon className={navbarStyles["nav-icon-button"]} />
       </button>
       <div className={popoverStyles.popover}>
-        <a href="tel:0728949494">0728 94 94 94</a>
+        <a href="tel:0728949494" title="Telefon no">
+          0728 94 94 94
+        </a>
       </div>
     </div>
   );

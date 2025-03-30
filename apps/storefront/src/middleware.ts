@@ -97,7 +97,7 @@ export async function middleware(req: NextRequest) {
   // Slug validation for common invalid requests
   const invalidPatterns = [
     /^\./, // No dot-prefixed files
-    /\.(env|example|json|js|jsp|ts|tsx|md|html|css|scss|png|php|php5|jpg|jpeg|gif|git|svg|ico|map|world|txt|yaml|bak|prod|production|log|backup|xml)$/, // Block specific file types
+    /\.(env|example|json|js|jsp|ts|tsx|md|html|css|scss|png|php|php5|jpg|jpeg|gif|git|svg|ico|map|world|yaml|bak|prod|production|log|backup|xml)$/, // Block specific file types
     /cgi-bin|luci|admin|cdn-cgi|phpsysinfo|php-cgi|actuator|health|git/, // Block common bot slugs
   ];
 
