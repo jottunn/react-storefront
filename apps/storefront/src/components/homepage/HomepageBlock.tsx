@@ -53,22 +53,19 @@ export default function HomepageBlock({ item, type }: HomepageBlockProps) {
               priority={false}
               loading={"lazy"}
             />
-            <h3 className="text-md uppercase mt-3 font-bold">{item.name}</h3>
+            {type !== "homepage" && (
+              <h3 className="text-md uppercase mt-3 font-bold">{item.name}</h3>
+            )}
+            {parsedContent && !isEmptyContent && (
+              <div
+                className="text-md uppercase mt-3 font-bold text-center"
+                dangerouslySetInnerHTML={{ __html: parsedContent }}
+              />
+            )}
           </Link>
         )}
       </div>
       {item.backgroundImage?.alt && <p className="text-sm pt-2">{item.backgroundImage?.alt}</p>}
-      {bannerImgSrc && (
-        <>
-          <h3 className="text-md uppercase mt-3 font-bold text-center">{item.title}</h3>
-          {parsedContent && !isEmptyContent && (
-            <div
-              className="text-sm pt-2 text-center"
-              dangerouslySetInnerHTML={{ __html: parsedContent }}
-            />
-          )}
-        </>
-      )}
     </div>
   );
 }

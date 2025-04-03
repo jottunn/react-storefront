@@ -17,7 +17,12 @@ import {
 } from "@/saleor/api";
 import { mapEdgesToItems } from "@/lib/maps";
 import { Metadata } from "next";
-import { PAGE_TYPE_HP_BANNERS_ID, STOREFRONT_NAME, UPLOAD_FOLDER } from "@/lib/const";
+import {
+  PAGE_TYPE_HP_BANNERS_ID,
+  PAGE_TYPE_HP_CAROUSEL_ID,
+  STOREFRONT_NAME,
+  UPLOAD_FOLDER,
+} from "@/lib/const";
 import { translate } from "@/lib/translations";
 import edjsHTML from "editorjs-html";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
@@ -27,6 +32,7 @@ import getBase64 from "@/lib/generateBlurPlaceholder";
 import Banner from "@/components/homepage/Banner";
 import Link from "next/link";
 import Image from "next/image";
+import Carousel from "@/components/homepage/Carousel";
 
 const parser = edjsHTML();
 const emptyTagsRegex = /^<[^>]+>\s*(<br\s*\/?>)?\s*<\/[^>]+>$/;
@@ -103,14 +109,20 @@ export default async function Home() {
       PageTypesQuery,
       { filter: any; locale: LanguageCodeEnum }
     >(PageTypesDocument, {
-      variables: { filter: { pageTypes: [PAGE_TYPE_HP_BANNERS_ID] }, locale: DEFAULT_LOCALE },
+      variables: {
+        filter: { pageTypes: [PAGE_TYPE_HP_BANNERS_ID, PAGE_TYPE_HP_CAROUSEL_ID] },
+        locale: DEFAULT_LOCALE,
+      },
       revalidate: 60,
     });
     homepageBanners = homepageBannersResponse.pages;
   } catch {
     //return null;
   }
-  const displayHomepageBanners = homepageBanners ? mapEdgesToItems(homepageBanners) : [];
+  const allHomepageBanners = homepageBanners ? mapEdgesToItems(homepageBanners) : [];
+  const displayHomepageBanners = allHomepageBanners.filter(
+    (banner) => banner.pageType.slug === "homepage-banners",
+  );
   displayHomepageBanners.sort((a, b) => {
     const orderA = Number(
       a.attributes.find((attr) => attr.attribute.slug === "order")?.values[0]?.name || 0,
@@ -123,6 +135,19 @@ export default async function Home() {
   });
   const numColumnsHPBanners = getNumColumns(displayHomepageBanners.length);
 
+  const displayHomepageCarousel = allHomepageBanners.filter(
+    (banner) => banner.pageType.slug === "homepage-carousel",
+  );
+  displayHomepageCarousel.sort((a, b) => {
+    const orderA = Number(
+      a.attributes.find((attr) => attr.attribute.slug === "order")?.values[0]?.name || 0,
+    );
+    const orderB = Number(
+      b.attributes.find((attr) => attr.attribute.slug === "order")?.values[0]?.name || 0,
+    );
+
+    return orderA - orderB;
+  });
   /** sales collections */
   let salesCollections;
   try {
@@ -174,66 +199,9 @@ export default async function Home() {
       displayedSalesProducts = salesProducts.slice(0, 12);
     }
   }
-  /** banner1 */
-  const banner1Attribute =
-    page && "attributes" in page
-      ? page.attributes.find((attr) => attr.attribute.name === "Homepage Banner1")
-      : null;
 
-  // console.log('page.attributes', page?.attributes);
-  const hasBanner1 = banner1Attribute?.values.length && banner1Attribute?.values.length > 0;
-  // console.log('hasBanner1', hasBanner1);
-  const banner1AttributeContent =
-    page && "attributes" in page
-      ? page.attributes.find(
-          (attr) =>
-            attr.attribute.inputType === "RICH_TEXT" &&
-            attr.attribute.name === "Homepage Banner1 Content",
-        )
-      : null;
-  const parsedBanner1RichText = banner1AttributeContent?.values[0].richText
-    ? parser.parse(JSON.parse(banner1AttributeContent?.values[0].richText)).join("")
-    : "";
   const bannerContainerSize =
     page && "metadata" in page ? getMetadataValue(page.metadata, "Display Banner FullScreen") : "";
-  const displayTextBanner1 =
-    page && "metadata" in page ? getMetadataValue(page.metadata, "Banner1 Text Display") : "";
-  const banner1TextStyle =
-    page && "metadata" in page ? getMetadataValue(page.metadata, "Banner1 Text Style") : "";
-  const banner1Link = page && "metadata" in page ? getMetadataValue(page.metadata, "Link1") : "";
-  const base64 =
-    banner1Attribute?.values[0]?.name &&
-    (await getBase64(`${UPLOAD_FOLDER ?? ""}/${banner1Attribute.values[0].name}`));
-  const placeholder = base64 || null;
-  /** banner2 */
-  const banner2Attribute =
-    page && "attributes" in page
-      ? page.attributes.find((attr) => attr.attribute.name === "Homepage Banner2")
-      : null;
-  const hasBanner2 = banner2Attribute?.values.length ? banner2Attribute?.values.length > 0 : false;
-  let parsedBanner2RichText, displayTextBanner2, banner2TextStyle, placeholder_2, banner2Link;
-  if (hasBanner2) {
-    const banner2AttributeContent =
-      page && "attributes" in page
-        ? page.attributes.find(
-            (attr) =>
-              attr.attribute.inputType === "RICH_TEXT" &&
-              attr.attribute.name === "Homepage Banner2 Content",
-          )
-        : null;
-    parsedBanner2RichText = banner2AttributeContent?.values[0].richText
-      ? parser.parse(JSON.parse(banner2AttributeContent?.values[0].richText)).join("")
-      : "";
-    displayTextBanner2 =
-      page && "metadata" in page ? getMetadataValue(page.metadata, "Banner2 Text Display") : "";
-    banner2TextStyle =
-      page && "metadata" in page ? getMetadataValue(page.metadata, "Banner2 Text Style") : "";
-    const base64_2 =
-      banner2Attribute?.values[0]?.name &&
-      (await getBase64(`${UPLOAD_FOLDER ?? ""}/${banner2Attribute.values[0].name}`));
-    placeholder_2 = base64_2 || null;
-    banner2Link = page && "metadata" in page ? getMetadataValue(page.metadata, "Link2") : "";
-  }
 
   const content = page && "content" in page ? translate(page, "content") : null;
   const parsedContent = content ? parser.parse(JSON.parse(content)).join("") : "";
@@ -260,47 +228,15 @@ export default async function Home() {
 
   return (
     <>
-      {hasBanner1 && (
-        <div
-          className={`flex overflow-hidden mb-1 md:mb-1 !px-0 ${bannerContainerSize && bannerContainerSize === "YES" ? "" : "max-w-[1920px] mx-auto"}`}
-        >
-          <div
-            className={`flex flex-col w-full md:max-h-[80vh] ${hasBanner1 && hasBanner2 ? "h-auto md:w-[98%] mx-auto md:flex-row gap-4 md:gap-4" : ""} ${hasBanner1 && !hasBanner2 ? "h-[125vw]" : ""}`}
-          >
-            <Banner
-              bannerAttribute={banner1Attribute}
-              parsedBannerRichText={parsedBanner1RichText}
-              displayTextBanner={displayTextBanner1}
-              bannerTextStyle={banner1TextStyle}
-              placeholder={placeholder}
-              hasBanner2={hasBanner2}
-              bannerLink={banner1Link}
-            />
-            {hasBanner2 && (
-              <Banner
-                bannerAttribute={banner2Attribute}
-                parsedBannerRichText={parsedBanner2RichText}
-                displayTextBanner={displayTextBanner2}
-                bannerTextStyle={banner2TextStyle}
-                placeholder={placeholder_2}
-                hasBanner2={hasBanner2}
-                bannerLink={banner2Link}
-              />
-            )}
-          </div>
-        </div>
-      )}
-
-      {parsedContent && !isEmptyContent && (
-        <div className="container my-4 md:my-8 mx-auto max-w-[800px] text-center prose-2xl">
-          <div dangerouslySetInnerHTML={{ __html: parsedContent }} />
-        </div>
-      )}
-
-      <div className="container block p-0">
+      <div
+        className={`flex overflow-hidden mb-1 md:mb-1 !px-0 ${bannerContainerSize && bannerContainerSize === "YES" ? "" : "max-w-[1920px] mx-auto"}`}
+      >
+        <Carousel slides={displayHomepageCarousel} />
+      </div>
+      <div className="block p-0">
         {displayHomepageBanners && displayHomepageBanners.length > 0 && (
           <div
-            className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-${numColumnsHPBanners} gap-4 my-6`}
+            className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-${numColumnsHPBanners} gap-4 my-4`}
           >
             {displayHomepageBanners.map((banner) => (
               <HomepageBlock key={banner.id} item={banner} type="homepage" />
@@ -308,6 +244,12 @@ export default async function Home() {
           </div>
         )}
       </div>
+
+      {parsedContent && !isEmptyContent && (
+        <div className="container my-4 md:my-8 mx-auto max-w-[800px] text-center prose-2xl">
+          <div dangerouslySetInnerHTML={{ __html: parsedContent }} />
+        </div>
+      )}
 
       {displayedSalesProducts && displayedSalesProducts.length > 0 && (
         <div className="container py-4 md:pt-10 md:pb-24">

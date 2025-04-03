@@ -10,5 +10,6 @@ export const ATTR_COLOR_COMMERCIAL_SLUG = "culoare-comerciala";
 export const ATTR_GHID_MARIMI = "ghid-marimi";
 export const ATTR_BRAND_REF = "brand-ref";
 export const PAGE_TYPE_HP_BANNERS_ID = process.env.PAGE_TYPE_HPBANNERS;
+export const PAGE_TYPE_HP_CAROUSEL_ID = process.env.PAGE_TYPE_CAROUSEL;
 export const ATTR_GEN_ID = process.env.NEXT_PUBLIC_ATTR_GEN_ID || "";
 export const GRAPHQL_PAGINATION_LIMIT = process.env.NEXT_PUBLIC_GRAPHQL_PAGINATION_LIMIT || 100;
