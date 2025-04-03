@@ -3,7 +3,7 @@
 }
 
 .inner {
-  @apply container h-18 flex-nowrap items-center hidden lg:flex pl-0 pr-0;
+  @apply container h-12 flex-nowrap items-center hidden lg:flex pl-0 pr-0;
 }
 
 .nav {
@@ -23,7 +23,7 @@
 }
 
 .dropdown-trigger {
-  @apply flex items-center text-center text-md font-bold hover:text-brand h-full px-4 uppercase;
+  @apply flex items-start text-center text-md font-bold hover:text-brand h-full px-4 uppercase;
 }
 
 .dropdown-menu {

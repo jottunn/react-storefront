@@ -4,7 +4,7 @@ import { useState, useMemo, useRef, useEffect, ChangeEvent, FormEvent } from "re
 import debounce from "lodash.debounce";
 import { SearchIndex } from "algoliasearch";
 import { Input } from "@headlessui/react";
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { algoliaClient } from "@/lib/searchClient";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -23,6 +23,7 @@ function CustomSearchBox() {
   const [results, setResults] = useState<SearchResult[]>([]);
   const [cache, setCache] = useState<{ [key: string]: SearchResult[] }>({});
   const [showResults, setShowResults] = useState<boolean>(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const searchBoxRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -55,106 +56,132 @@ function CustomSearchBox() {
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value;
     setInputValue(value);
-    if (value.length > 2) {
-      debouncedSearch(value);
-    } else {
-      setResults([]);
-      setShowResults(false);
-    }
-  };
-
-  const handleFocus = () => {
-    if (results.length > 0) {
-      setShowResults(true);
-    }
+    value.length > 2 ? debouncedSearch(value) : setResults([]);
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!inputValue.trim()) return;
+    setIsExpanded(false);
     setShowResults(false);
     router.push(`/search?query=${inputValue}`);
   };
 
-  const handleClickOutside = (event: MouseEvent) => {
-    if (
-      searchBoxRef.current &&
-      !searchBoxRef.current.contains(event.target as Node) &&
-      resultsRef.current &&
-      !resultsRef.current.contains(event.target as Node)
-    ) {
-      setShowResults(false);
-    }
-  };
-
-  const handleLinkClick = () => {
-    setShowResults(false);
+  const toggleSearch = () => {
+    setIsExpanded((prev) => {
+      const newExpandedState = !prev;
+      if (newExpandedState) {
+        setTimeout(() => document.getElementById("algolia_search")?.focus(), 10);
+      } else {
+        setInputValue("");
+        setResults([]);
+      }
+      return newExpandedState;
+    });
   };
 
   useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        searchBoxRef.current &&
+        !searchBoxRef.current.contains(event.target as Node) &&
+        resultsRef.current &&
+        !resultsRef.current.contains(event.target as Node)
+      ) {
+        setIsExpanded(false);
+        setShowResults(false);
+      }
     };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
-    <div className="relative w-full" ref={searchBoxRef}>
-      <form
-        onSubmit={handleSubmit}
-        role="search"
-        className="group relative my-2 flex w-full items-center justify-items-center text-sm lg:w-[32rem]"
+    <div className="relative" ref={searchBoxRef}>
+      {/* Search Toggle Button - Always visible */}
+      <button
+        onClick={toggleSearch}
+        className="py-2 text-black-500 hover:text-action-1"
+        aria-label={isExpanded ? "Close search" : "Open search"}
       >
-        <label className="w-full">
-          <span className="sr-only"></span>
-          <Input
-            id="algolia_search"
-            type="search"
-            placeholder="Cauta produse"
-            value={inputValue}
-            onChange={handleChange}
-            onFocus={handleFocus}
-            autoComplete="off"
-            className="h-10 w-full rounded-md border border-neutral-300 bg-transparent bg-white px-4 py-2 pr-10 text-sm text-black placeholder:text-neutral-500 focus:border-black focus:ring-black"
-          />
-        </label>
-        <div className="absolute inset-y-0 right-0">
-          <button
-            type="submit"
-            className="inline-flex aspect-square w-10 items-center justify-center text-neutral-500 hover:text-neutral-700 focus:text-neutral-700 group-invalid:pointer-events-none group-invalid:opacity-80 mt-1"
-          >
-            <span className="sr-only"></span>
-            <MagnifyingGlassIcon className="w-6 h-6 relative top-1" />
-          </button>
+        <MagnifyingGlassIcon className="w-6 h-6" />
+      </button>
+
+      {/* Full-width Search Overlay */}
+      <div
+        className={`fixed top-[130px] left-0 right-0 bg-white shadow-md transition-all duration-300 z-50 ${
+          isExpanded
+            ? "visible opacity-100 translate-y-0 border-t border-gray-300"
+            : "invisible opacity-0 -translate-y-2"
+        }`}
+      >
+        <div className="container mx-auto px-4 py-6">
+          <form onSubmit={handleSubmit} className="relative flex items-center w-[80%] m-auto">
+            <Input
+              id="algolia_search"
+              type="search"
+              placeholder="Cauta produse..."
+              value={inputValue}
+              onChange={handleChange}
+              onFocus={() => results.length > 0 && setShowResults(true)}
+              className="h-10 w-full rounded-md border border-neutral-300 bg-transparent bg-white px-4 py-2 pr-10 text-sm text-black placeholder:text-neutral-500 focus:border-black focus:ring-black [&::-webkit-search-cancel-button]:hidden"
+              autoComplete="off"
+            />
+            <div className="absolute right-0 flex items-center">
+              <button
+                type="submit"
+                disabled={!inputValue.trim()}
+                className="p-2 text-neutral-500 hover:text-neutral-700 disabled:opacity-50"
+              >
+                <MagnifyingGlassIcon className="w-5 h-5" />
+              </button>
+              <button
+                type="button"
+                onClick={toggleSearch}
+                className="p-2 text-neutral-500 hover:text-neutral-700"
+                aria-label="Close search"
+              >
+                <XMarkIcon className="w-5 h-5" />
+              </button>
+            </div>
+          </form>
+
+          {/* Search Results Dropdown */}
+          {isExpanded && showResults && results.length > 0 && (
+            <div
+              ref={resultsRef}
+              className="absolute mt-10 left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50"
+            >
+              <div className="container">
+                <ul className="w-[80%] m-auto max-h-96 overflow-auto">
+                  {results.map((result) => (
+                    <li key={result.objectID} className="border-b border-gray-100 last:border-0">
+                      <Link
+                        href={`/p/${result.slug}/?variant=${result.variantId}`}
+                        className="flex items-center p-3 hover:bg-gray-50"
+                        onClick={() => {
+                          setShowResults(false);
+                          setIsExpanded(false);
+                        }}
+                      >
+                        {result.media?.[0]?.url && (
+                          <img
+                            src={result.media[0].url}
+                            alt={result.name}
+                            className="w-12 h-12 object-cover mr-3 rounded"
+                          />
+                        )}
+                        <span className="font-medium">{result.productName}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
         </div>
-      </form>
-      {showResults && results && results.length > 0 && (
-        <div
-          className="absolute bg-white shadow-2xl overflow-y-scroll overflow-x-hidden z-50 w-[320px] max-h-[300px]"
-          style={{ top: (searchBoxRef?.current?.offsetHeight || 0) + 10 }}
-          ref={resultsRef}
-        >
-          <ul>
-            {results.map((result) => (
-              <li key={result.objectID} className="flex items-center p-2 hover:bg-gray-200">
-                <Link
-                  href={`/p/${result.slug}/?variant=${result.variantId}`}
-                  className="flex items-center w-full no-underline text-gray-900"
-                  onClick={handleLinkClick}
-                >
-                  {result.media && (
-                    <img
-                      src={result.media[0]?.url}
-                      alt={result.name}
-                      className="w-12 h-12 object-cover mr-4"
-                    />
-                  )}
-                  <p className="font-bold whitespace-normal break-words">{result.productName}</p>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      </div>
     </div>
   );
 }
