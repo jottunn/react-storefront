@@ -16,7 +16,7 @@ export default function FooterCartButton({ messages }: FooterCartButtonProps) {
   };
 
   return (
-    <button className="mt-2" onClick={handleClick}>
+    <button onClick={handleClick}>
       <span className="text-base cursor-pointer hover:underline">
         {messages["app.nwl.cartlink"]}
       </span>

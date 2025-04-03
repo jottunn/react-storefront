@@ -20,7 +20,7 @@ export default function UserMenu({ messages, display }: UserMenuProps) {
       title={messages["app.navigation.accountPreferences"]}
     >
       {display && display === "footer" ? (
-        <span className="text-base cursor-pointer hover:underline leading-[3.5rem]">Login</span>
+        <span className="text-base cursor-pointer hover:underline leading-[2rem]">Login</span>
       ) : (
         <UserIcon className={styles["nav-icon-button"]} />
       )}
