@@ -6,11 +6,18 @@ services:
       dockerfile: Dockerfile.base
       args:
         - TARGET_APP=storefront
-    ports:
-      - 3000:3000
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.storefront-app.rule=Host(`surmont.ro`)"
+      - "traefik.http.routers.storefront-app.entrypoints=websecure"
+      - "traefik.http.routers.storefront-app.tls=true"
+      - "traefik.http.routers.storefront-app.tls.certresolver=cloudflare"
+      - "traefik.http.services.storefront-app.loadbalancer.server.port=3000"
+      - "traefik.http.routers.storefront.middlewares=cloudflare-headers"
     networks:
       - saleor-backend-tier
     command: sh -c '(nginx &) && pnpm turbo run start --filter=storefront...'
+
   products-importer:
     container_name: products-importer
     build:
@@ -18,13 +25,20 @@ services:
       dockerfile: Dockerfile.base
       args:
         - TARGET_APP=products-importer
-    ports:
-      - 3004:3004
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.products-importer.rule=Host(`products-importer.surmont.ro`)"
+      - "traefik.http.routers.products-importer.entrypoints=websecure"
+      - "traefik.http.routers.products-importer.tls=true"
+      - "traefik.http.routers.products-importer.tls.certresolver=cloudflare"
+      - "traefik.http.services.products-importer.loadbalancer.server.port=3004"
+      - "traefik.http.routers.products-importer.middlewares=cloudflare-headers"
     networks:
       - saleor-backend-tier
     volumes:
       - products-importer-auth-volume:/app/apps/products-importer/apl
     command: sh -c '(nginx &) && pnpm turbo run start --filter=products-importer...'
+
   manage-promotions:
     container_name: manage-promotions
     build:
@@ -32,13 +46,20 @@ services:
       dockerfile: Dockerfile.base
       args:
         - TARGET_APP=manage-promotions
-    ports:
-      - 3005:3005
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.manage-promotions.rule=Host(`manage-promotions.surmont.ro`)"
+      - "traefik.http.routers.manage-promotions.entrypoints=websecure"
+      - "traefik.http.routers.manage-promotions.tls=true"
+      - "traefik.http.routers.manage-promotions.tls.certresolver=cloudflare"
+      - "traefik.http.services.manage-promotions.loadbalancer.server.port=3005"
+      - "traefik.http.routers.manage-promotion.middlewares=cloudflare-headers"
     networks:
       - saleor-backend-tier
     volumes:
       - manage-promotions-auth-volume:/app/apps/manage-promotions/apl
     command: sh -c '(nginx &) && pnpm turbo run start --filter=manage-promotions...'
+
   search:
     container_name: search
     build:
@@ -46,13 +67,26 @@ services:
       dockerfile: Dockerfile.base
       args:
         - TARGET_APP=search
-    ports:
-      - 3006:3006
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.search.rule=Host(`search.surmont.ro`)"
+      - "traefik.http.routers.search.entrypoints=websecure"
+      - "traefik.http.routers.search.tls=true"
+      - "traefik.http.routers.search.tls.certresolver=cloudflare"
+      - "traefik.http.services.search.loadbalancer.server.port=3006"
+      - "traefik.http.routers.search.middlewares=cloudflare-headers"
     networks:
       - saleor-backend-tier
     volumes:
       - search-auth-volume:/app/apps/search/apl
+    environment:
+      - APL=volume
+      - APP_IFRAME_BASE_URL=https://search.surmont.ro
+      - APP_API_BASE_URL=https://search.surmont.ro
+      - NEXT_PUBLIC_SALEOR_API_URL=https://surmont.ro/graphql/
+      - SALEOR_APP_TOKEN=${SALEOR_APP_TOKEN}
     command: sh -c '(nginx &) && pnpm turbo run start --filter=search...'
+
   manage-stock:
     container_name: manage-stock
     build:
@@ -60,14 +94,21 @@ services:
       dockerfile: Dockerfile.base
       args:
         - TARGET_APP=manage-stock
-    ports:
-      - 3007:3007
+      labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.manage-stock.rule=Host(`manage-stock.surmont.ro`)"
+      - "traefik.http.routers.manage-stock.entrypoints=websecure"
+      - "traefik.http.routers.manage-stock.tls=true"
+      - "traefik.http.routers.manage-stock.tls.certresolver=cloudflare"
+      - "traefik.http.services.manage-stock.loadbalancer.server.port=3007"
+      - "traefik.http.routers.manage-stock.middlewares=cloudflare-headers"
     networks:
       - saleor-backend-tier
     volumes:
       - manage-stock-auth-volume:/app/apps/manage-stock/apl
       - manage-stock-logs-volume:/app/apps/manage-stock/logs
     command: sh -c '(nginx &) && pnpm turbo run start --filter=manage-stock...'
+
   smtp:
     container_name: smtp
     build:
@@ -75,13 +116,20 @@ services:
       dockerfile: Dockerfile.base
       args:
         - TARGET_APP=smtp
-    ports:
-      - 3008:3008
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.smtp.rule=Host(`smtp.surmont.ro`)"
+      - "traefik.http.routers.smtp.entrypoints=websecure"
+      - "traefik.http.routers.smtp.tls=true"
+      - "traefik.http.routers.smtp.tls.certresolver=cloudflare"
+      - "traefik.http.services.smtp.loadbalancer.server.port=3008"
+      - "traefik.http.routers.smtp.middlewares=cloudflare-headers"
     networks:
       - saleor-backend-tier
     volumes:
       - smtp-auth-volume:/app/apps/smtp/apl
     command: sh -c '(nginx &) && pnpm turbo run start --filter=smtp...'
+
   payment:
     container_name: payment
     build:
@@ -89,14 +137,21 @@ services:
       dockerfile: Dockerfile.base
       args:
         - TARGET_APP=payment
-    ports:
-      - 3009:3009
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.payment.rule=Host(`payment.surmont.ro`)"
+      - "traefik.http.routers.payment.entrypoints=websecure"
+      - "traefik.http.routers.payment.tls=true"
+      - "traefik.http.routers.payment.tls.certresolver=cloudflare"
+      - "traefik.http.services.payment.loadbalancer.server.port=3009"
+      - "traefik.http.routers.payment.middlewares=cloudflare-headers"
     networks:
       - saleor-backend-tier
     volumes:
       - payment-auth-volume:/app/apps/payment/apl
       - payment-logs-volume:/app/apps/payment/logs
     command: sh -c '(nginx &) && pnpm turbo run start --filter=payment...'
+
 volumes:
   manage-promotions-auth-volume:
   smtp-auth-volume:
