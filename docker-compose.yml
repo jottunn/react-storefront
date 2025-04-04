@@ -83,12 +83,6 @@ services:
       - saleor-backend-tier
     volumes:
       - search-auth-volume:/app/apps/search/apl
-    environment:
-      - APL=volume
-      - APP_IFRAME_BASE_URL=https://search.surmont.ro
-      - APP_API_BASE_URL=https://search.surmont.ro
-      - NEXT_PUBLIC_SALEOR_API_URL=https://surmont.ro/graphql/
-      - SALEOR_APP_TOKEN=${SALEOR_APP_TOKEN}
     command: sh -c '(nginx &) && pnpm turbo run start --filter=search...'
 
   manage-stock:
