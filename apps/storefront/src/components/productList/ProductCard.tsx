@@ -13,6 +13,7 @@ import { useProductInfo } from "@/lib/hooks/useProductInfo";
 import { formatMoney } from "@/lib/utils/formatMoney";
 import clsx from "clsx";
 import { getProductCardMedia } from "@/lib/media";
+import { AddToWishlist } from "src/app/p/[slug]/AddToWishlist";
 
 export interface ProductCardProps {
   product: GroupedProduct;
@@ -20,6 +21,7 @@ export interface ProductCardProps {
   priority?: boolean;
   compliantVariant?: ProductVariant;
   isSwiper?: boolean;
+  messages?: any;
 }
 
 export function ProductCard({
@@ -28,6 +30,7 @@ export function ProductCard({
   priority,
   compliantVariant,
   isSwiper,
+  messages,
 }: ProductCardProps) {
   const { getProductBrand } = useProductInfo();
   const productBrand = getProductBrand(product);
@@ -105,7 +108,7 @@ export function ProductCard({
         </div>
         <p
           className={clsx(
-            "block mt-2 font-extrabold text-main text-center hover:text-gray-700 min-h-[75px]",
+            "block mt-2 font-normal text-main text-center hover:text-gray-700 min-h-[75px]",
             isSwiper ? "text-base md:min-h-[75px]" : "text-base md:text-md md:min-h-[50px]",
           )}
           data-testid={`productName${product.name}`}
@@ -114,8 +117,16 @@ export function ProductCard({
         </p>
       </Link>
       {productBrand && (
-        <p className="block text-sm font-normal text-main text-center pt-2 pb-2">{productBrand}</p>
+        <p className="block text-sm font-extrabold text-main text-center pt-2 pb-2">
+          {productBrand}
+        </p>
       )}
+      <AddToWishlist
+        disabled={false}
+        messages={messages}
+        selectedVariantId={variant?.id}
+        categDisplayed={true}
+      />
 
       <p className="block text-main text-center font-normal mb-6">
         <span className="text-md">

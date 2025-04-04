@@ -12,6 +12,7 @@ export interface SwiperComponentProps {
   nextButtonClass: string;
   type?: string;
   isLoop?: boolean;
+  messages?: any;
 }
 export default function SwiperComponent({
   products,
@@ -19,6 +20,7 @@ export default function SwiperComponent({
   nextButtonClass,
   type,
   isLoop,
+  messages,
 }: SwiperComponentProps) {
   return (
     <Swiper
@@ -56,6 +58,7 @@ export default function SwiperComponent({
             priority={false}
             loading="lazy"
             isSwiper={true}
+            messages={messages}
           />
         </SwiperSlide>
       ))}

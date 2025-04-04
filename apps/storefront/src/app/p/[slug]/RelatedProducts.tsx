@@ -161,6 +161,7 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({
               products={relatedProducts as any}
               prevButtonClass="swiper-button-prev-rel"
               nextButtonClass="swiper-button-next-rel"
+              messages={messages}
             />
           </div>
         </div>

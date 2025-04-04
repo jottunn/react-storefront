@@ -1,68 +1,60 @@
 "use client";
-import {
-  Description,
-  Dialog,
-  DialogPanel,
-  DialogTitle,
-  Transition,
-  TransitionChild,
-} from "@headlessui/react";
+import { Description, Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { Messages } from "@/lib/util";
 import { HeartIcon, TrashIcon } from "@heroicons/react/24/outline";
 import Spinner from "@/components/Spinner";
-import { Fragment, useEffect, useState } from "react";
+import { useState } from "react";
 import clsx from "clsx";
-import { getCurrentUser, updateWishlist } from "src/app/actions";
+import { updateWishlist } from "src/app/actions";
+import { useWishlist } from "@/components/WishlistProvider";
 export function AddToWishlist({
   disabled,
   messages,
   selectedVariantId,
   refresh,
+  categDisplayed,
 }: {
   disabled?: boolean;
   messages: Messages;
   selectedVariantId?: string;
   refresh?: boolean;
+  categDisplayed?: boolean;
 }) {
+  const { wishlistItems, refreshWishlist } = useWishlist();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
-  const [added, setAdded] = useState(false);
   const isButtonDisabled = disabled || pending;
   let [isOpen, setIsOpen] = useState(false);
-  // Use effect to check if the current variant is already in the wishlist
-  useEffect(() => {
-    const fetchWishlist = async () => {
-      const user = await getCurrentUser();
-      if (user && selectedVariantId && !isButtonDisabled) {
-        const wishlistMetadata = user.metadata.find((meta) => meta.key === "wishlist");
-        const currentWishlist = wishlistMetadata ? JSON.parse(wishlistMetadata.value) : [];
-        setAdded(currentWishlist.includes(selectedVariantId));
-      }
-    };
-    fetchWishlist();
-  }, [selectedVariantId, isButtonDisabled, added]);
 
-  //use effect get user
+  const isInWishlist = selectedVariantId ? wishlistItems.includes(selectedVariantId) : false;
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
     setPending(true);
+
     const formData = new FormData(event.currentTarget);
     const selectedVariantId = formData.get("selectedVariantId")?.toString();
+
     if (!selectedVariantId) {
       setError("No variant selected");
       setPending(false);
       return;
     }
+    try {
+      const result = await updateWishlist({ selectedVariantId });
 
-    const result = await updateWishlist({ selectedVariantId });
-
-    if (result?.error) {
-      setError(messages[result.message]);
+      if (result?.error) {
+        setError(messages[result.message]);
+        setIsOpen(true);
+      } else {
+        await refreshWishlist();
+      }
+    } catch (e) {
+      setError("An error occurred");
       setIsOpen(true);
-    } else {
-      setAdded(!added);
     }
+
     setPending(false);
     if (refresh) {
       location.href = "";
@@ -71,7 +63,12 @@ export function AddToWishlist({
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="m-auto text-left add-to-cart-frm mt-1">
+      <form
+        onSubmit={handleSubmit}
+        className={clsx("m-auto text-left add-to-cart-frm mt-1", {
+          "w-auto text-center mb-4": categDisplayed,
+        })}
+      >
         <input type="hidden" name="selectedVariantId" value={selectedVariantId} />
         <button
           aria-disabled={isButtonDisabled}
@@ -79,7 +76,7 @@ export function AddToWishlist({
           aria-label={
             refresh
               ? messages["app.product.removeWishlist"]
-              : added
+              : isInWishlist
                 ? messages["app.product.addedWishlist"]
                 : messages["app.product.addWishlist"]
           }
@@ -88,7 +85,7 @@ export function AddToWishlist({
           title={
             refresh
               ? messages["app.product.removeWishlist"]
-              : added
+              : isInWishlist
                 ? messages["app.product.addedWishlist"]
                 : messages["app.product.addWishlist"]
           }
@@ -101,10 +98,11 @@ export function AddToWishlist({
             <HeartIcon
               className={clsx(
                 "w-10 h-10 transition-colors duration-200",
-                { "fill-action-1 border-action-1 text-action-1": added },
-                { "text-gray-700": !added },
+                { "fill-action-1 border-action-1 text-action-1": isInWishlist },
+                { "text-gray-700": !isInWishlist && !categDisplayed },
                 { "hover:text-action-1 cursor-pointer": !isButtonDisabled },
                 { "cursor-not-allowed opacity-70": isButtonDisabled },
+                { "w-[22px] h-[22px] text-action-1 hover:text-action-3": categDisplayed },
               )}
             />
           )}

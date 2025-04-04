@@ -482,6 +482,7 @@ const ProductDetail = async ({
               products={recommendedProducts as any}
               prevButtonClass="swiper-button-prev-rec"
               nextButtonClass="swiper-button-next-rec"
+              messages={messages}
             />
           </div>
         </div>

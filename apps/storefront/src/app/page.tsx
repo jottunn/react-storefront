@@ -17,19 +17,12 @@ import {
 } from "@/saleor/api";
 import { mapEdgesToItems } from "@/lib/maps";
 import { Metadata } from "next";
-import {
-  PAGE_TYPE_HP_BANNERS_ID,
-  PAGE_TYPE_HP_CAROUSEL_ID,
-  STOREFRONT_NAME,
-  UPLOAD_FOLDER,
-} from "@/lib/const";
+import { PAGE_TYPE_HP_BANNERS_ID, PAGE_TYPE_HP_CAROUSEL_ID, STOREFRONT_NAME } from "@/lib/const";
 import { translate } from "@/lib/translations";
 import edjsHTML from "editorjs-html";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 import SwiperComponent from "@/components/SwiperComponent";
 import HomepageBlock from "@/components/homepage/HomepageBlock";
-import getBase64 from "@/lib/generateBlurPlaceholder";
-import Banner from "@/components/homepage/Banner";
 import Link from "next/link";
 import Image from "next/image";
 import Carousel from "@/components/homepage/Carousel";
@@ -272,6 +265,7 @@ export default async function Home() {
               products={displayedSalesProducts as Product[]}
               prevButtonClass="swiper-button-prev-sales"
               nextButtonClass="swiper-button-next-sales"
+              messages={messages}
             />
           </div>
         </div>
@@ -301,6 +295,7 @@ export default async function Home() {
                 products={newProducts as Product[]}
                 prevButtonClass="swiper-button-prev-new"
                 nextButtonClass="swiper-button-next-new"
+                messages={messages}
               />
             </div>
           </div>

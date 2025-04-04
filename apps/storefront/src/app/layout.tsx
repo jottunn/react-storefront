@@ -3,7 +3,7 @@ import "./globals.css";
 import { type ReactNode } from "react";
 import { type Metadata } from "next";
 import { Navbar } from "@/components/nav/Navbar";
-import Providers from "@/components/ProgressBarProvider";
+import Providers from "@/components/Providers";
 import { CheckoutProvider } from "@/lib/hooks/CheckoutContext";
 import Footer from "@/components/footer/Footer";
 import BackToTopButton from "@/components/BackToTopButton";
