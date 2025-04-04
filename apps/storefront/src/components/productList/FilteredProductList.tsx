@@ -347,10 +347,10 @@ export function FilteredProductList({
     <>
       <div
         ref={filtersSectionRef}
-        className="flex flex-wrap md:flex-nowrap items-center justify-start w-full mb-8 scroll-margin-top"
+        className="flex flex-wrap md:flex-nowrap md:items-center w-full mb-4 md:mb-8 scroll-margin-top"
       >
-        <div className="inline md:flex md:flex-none md:w-[250px] justify-between mb-8 md:mb-0 mr-8 order-1">
-          <div className="hidden md:flex flex-grow align-center md:align-start ">
+        <div className="inline md:flex md:flex-none md:w-[250px] justify-between md:mb-0 mr-8 order-1">
+          <div className="hidden md:flex flex-grow align-center md:align-start mt-3">
             <FilterIconLabel messages={messages} />
           </div>
           <button
@@ -361,8 +361,18 @@ export function FilteredProductList({
           >
             <FilterIconLabel messages={messages} />
           </button>
+          {pills.length > 0 && (
+            <button
+              onClick={() => clearFilters()}
+              className="md:border md:border-main-1 py-2 md:p-2 md:bg-main-1 text-main underline md:no-underline md:text-white hover:text-main-1 hover:bg-white text-[1.4rem] relative transform -translate-y-[4px] mt-2"
+              type="button"
+              data-testid="clearFilters"
+            >
+              {messages["app.clearAll"]}
+            </button>
+          )}
         </div>
-        <div className="ml-auto flex-none order-2 md:order-3 relative inline-block text-left float-right">
+        <div className="ml-auto md:ml-4 flex-none order-2 md:order-2 relative inline-block text-left float-right md:float-none">
           <SortingDropdown
             optionToggle={(field?: ProductOrderField, direction?: OrderDirection) => {
               return setSortBy(field && direction ? { field, direction } : null);
@@ -372,14 +382,14 @@ export function FilteredProductList({
           />
         </div>
 
-        {pills.length > 0 && (
+        {/* {pills.length > 0 && (
           <FilterPills
             pills={pills}
             onClearFilters={clearFilters}
             onRemoveAttribute={removeAttributeFilter}
             messages={messages}
           />
-        )}
+        )} */}
       </div>
 
       <div className="block md:grid md:grid-cols-listing md:gap-8">

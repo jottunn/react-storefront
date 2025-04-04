@@ -1,4 +1,3 @@
-import { ATTR_GEN_ID } from "@/lib/const";
 import { Messages } from "@/lib/util";
 import { OrderDirection, ProductOrderField } from "@/saleor/api";
 
@@ -20,8 +19,6 @@ export const getSortingOptions = (chosenSorting: UrlSorting | null, messages: Me
     {
       label: messages["app.sort.sortByDefault"],
       chosen: false,
-      attributeId: ATTR_GEN_ID,
-      direction: "ASC",
     },
     {
       label: messages["app.sort.sortByPriceAsc"],

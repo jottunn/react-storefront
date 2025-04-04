@@ -19,7 +19,6 @@ import { Messages } from "@/lib/util";
 import { ProductCard } from "./ProductCard";
 import { Pagination } from "./Pagination";
 import isEqual from "lodash.isequal";
-import { ATTR_GEN_ID } from "@/lib/const";
 
 export interface ProductCollectionProps {
   filter?: ProductFilterInput;
@@ -56,8 +55,8 @@ export function ProductCollection({
 
   if (!sortBy) {
     sortBy = {
-      direction: "ASC",
-      attributeId: ATTR_GEN_ID,
+      direction: "DESC",
+      field: "MINIMAL_PRICE",
     };
   }
   const fetchProductCollection = useCallback(
@@ -280,6 +279,7 @@ export function ProductCollection({
             product={product as GroupedProduct}
             priority={index < 9}
             loading={index < 9 ? "eager" : "lazy"}
+            messages={messages}
           />
         ))}
       </div>
