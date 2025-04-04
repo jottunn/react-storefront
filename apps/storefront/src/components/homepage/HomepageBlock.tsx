@@ -30,7 +30,7 @@ export default function HomepageBlock({ item, type }: HomepageBlockProps) {
   const parsedContent = content ? parser.parse(JSON.parse(content)).join("") : "";
   const isEmptyContent = emptyTagsRegex.test(parsedContent);
   return (
-    <div className="mb-6 md:mb-0">
+    <div>
       <div className="relative">
         {type && (
           <Link

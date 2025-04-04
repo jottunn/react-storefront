@@ -10,20 +10,32 @@ interface SliderProps {
   autoSlideDelay?: number;
 }
 
-const Carousel: React.FC<SliderProps> = ({ slides, autoSlideDelay = 5000 }) => {
+const Carousel: React.FC<SliderProps> = ({ slides, autoSlideDelay = 6000 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Handle resize
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768); // Adjust breakpoint as needed
+    };
+
+    // Initial check
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const nextSlide = useCallback(() => {
     if (isTransitioning) return;
-
     setIsTransitioning(true);
     setCurrentIndex((current) => (current === slides.length - 1 ? 0 : current + 1));
   }, [isTransitioning, slides.length]);
 
   const prevSlide = useCallback(() => {
     if (isTransitioning) return;
-
     setIsTransitioning(true);
     setCurrentIndex((current) => (current === 0 ? slides.length - 1 : current - 1));
   }, [isTransitioning, slides.length]);
@@ -38,43 +50,71 @@ const Carousel: React.FC<SliderProps> = ({ slides, autoSlideDelay = 5000 }) => {
     const timer = setTimeout(() => {
       setIsTransitioning(false);
     }, 500);
-
     return () => clearTimeout(timer);
   }, [currentIndex]);
 
   useEffect(() => {
     const autoSlideTimer = setInterval(nextSlide, autoSlideDelay);
-
     return () => clearInterval(autoSlideTimer);
   }, [nextSlide, autoSlideDelay]);
 
   return (
-    <div className="relative w-screen h-[30vh] md:h-[60vh] max-h-[615px] overflow-hidden">
+    <div className="relative w-full max-w-[1920px] mx-auto overflow-hidden">
       <div
-        className="flex h-full transition-transform duration-500 ease-in-out"
+        className="flex transition-transform duration-500 ease-in-out"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
       >
         {slides.map((slide, index) => {
-          let bannerLink =
+          const bannerLink =
             slide.attributes.find(
               (attr: { attribute: { slug: string } }) => attr.attribute.slug === "link",
             )?.values[0]?.name || "#";
-          let bannerImg = slide.attributes.find(
+
+          // Get desktop banner
+          const desktopBanner = slide.attributes.find(
             (attr: { attribute: { slug: string } }) => attr.attribute.slug === "banner",
           )?.values[0]?.name;
-          let bannerImgSrc = bannerImg ? `${UPLOAD_FOLDER ?? ""}/${bannerImg}` : "";
+
+          // Get mobile banner
+          const mobileBanner = slide.attributes.find(
+            (attr: { attribute: { slug: string } }) => attr.attribute.slug === "banner-mobile",
+          )?.values[0]?.name;
+
+          const desktopImgSrc = desktopBanner ? `${UPLOAD_FOLDER ?? ""}/${desktopBanner}` : "";
+          const mobileImgSrc = mobileBanner ? `${UPLOAD_FOLDER ?? ""}/${mobileBanner}` : "";
+
           return (
-            <div key={index} className="relative min-w-full h-full overflow-hidden group">
-              <Link href={bannerLink}>
-                <Image
-                  src={bannerImgSrc}
-                  alt={slide.title}
-                  fill
-                  priority={index === 0}
-                  quality={90}
-                  sizes="100vw"
-                  className="object-cover transition-transform duration-300"
-                />
+            <div key={index} className="relative min-w-full flex justify-center">
+              <Link href={bannerLink} className="w-full">
+                {/* Desktop Image */}
+                <div className="hidden md:block relative w-full">
+                  <div className="relative" style={{ paddingTop: "calc(550 / 1900 * 100%)" }}>
+                    <Image
+                      src={desktopImgSrc}
+                      alt={slide.title}
+                      fill
+                      priority={index === 0}
+                      quality={90}
+                      className="object-contain"
+                      sizes="(min-width: 768px) 100vw, 0vw"
+                    />
+                  </div>
+                </div>
+
+                {/* Mobile Image */}
+                <div className="block md:hidden relative w-full">
+                  <div className="relative" style={{ paddingTop: "calc(430 / 700 * 100%)" }}>
+                    <Image
+                      src={mobileImgSrc || desktopImgSrc} // Fallback to desktop if no mobile
+                      alt={slide.title}
+                      fill
+                      priority={index === 0}
+                      quality={90}
+                      className="object-contain"
+                      sizes="(max-width: 767px) 100vw, 0vw"
+                    />
+                  </div>
+                </div>
               </Link>
             </div>
           );
