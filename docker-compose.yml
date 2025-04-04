@@ -8,14 +8,15 @@ services:
         - TARGET_APP=storefront
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.storefront-app.rule=Host(`surmont.ro`)"
+      # Change this line to include both domains
+      - "traefik.http.routers.storefront-app.rule=Host(`surmont.ro`) || Host(`www.surmont.ro`)"
       - "traefik.http.routers.storefront-app.entrypoints=websecure"
       - "traefik.http.routers.storefront-app.tls=true"
       - "traefik.http.routers.storefront-app.tls.certresolver=cloudflare"
       - "traefik.http.services.storefront-app.loadbalancer.server.port=3000"
       # Add www to non-www redirect
-      - "traefik.http.middlewares.to-non-www.redirectregex.regex=^https://www\\.(.+)"
-      - "traefik.http.middlewares.to-non-www.redirectregex.replacement=https://$${1}"
+      - "traefik.http.middlewares.to-non-www.redirectregex.regex=^https://www\\.surmont\\.ro/(.*)"
+      - "traefik.http.middlewares.to-non-www.redirectregex.replacement=https://surmont.ro/$${1}"
       # Chain both middlewares
       - "traefik.http.routers.storefront-app.middlewares=to-non-www,cloudflare-headers"
     networks:
