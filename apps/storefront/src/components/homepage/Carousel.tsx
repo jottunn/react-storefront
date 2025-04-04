@@ -49,7 +49,7 @@ const Carousel: React.FC<SliderProps> = ({ slides, autoSlideDelay = 5000 }) => {
   }, [nextSlide, autoSlideDelay]);
 
   return (
-    <div className="relative w-screen h-[30vh] md:h-[60vh] overflow-hidden">
+    <div className="relative w-screen h-[30vh] md:h-[60vh] max-h-[615px] overflow-hidden">
       <div
         className="flex h-full transition-transform duration-500 ease-in-out"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
