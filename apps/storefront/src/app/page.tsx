@@ -17,7 +17,7 @@ import {
 } from "@/saleor/api";
 import { mapEdgesToItems } from "@/lib/maps";
 import { Metadata } from "next";
-import { PAGE_TYPE_HP_BANNERS_ID, PAGE_TYPE_HP_CAROUSEL_ID, STOREFRONT_NAME } from "@/lib/const";
+import { PAGE_TYPE_HP_BANNERS_ID, PAGE_TYPE_HP_CAROUSEL_ID, STOREFRONT_TITLE } from "@/lib/const";
 import { translate } from "@/lib/translations";
 import edjsHTML from "editorjs-html";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
@@ -45,7 +45,7 @@ export const generateMetadata = async (): Promise<Metadata | []> => {
   }
 
   return {
-    title: page && (page.seoTitle || STOREFRONT_NAME),
+    title: page && (page.seoTitle || STOREFRONT_TITLE),
     description: page && (page.seoDescription || "Premium bike store for Trek, Bontrager, ION"),
   };
 };

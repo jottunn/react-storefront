@@ -1,4 +1,6 @@
-export const STOREFRONT_NAME = "Biciclete, Accesorii & Echipament pentru bicicleta - Surmont.ro";
+export const STOREFRONT_TITLE = "Biciclete, Accesorii & Echipament pentru bicicleta - Surmont.ro";
+export const STOREFRONT_NAME =
+  process.env.NEXT_PUBLIC_STOREFRONT_NAME || "Surmont - The Bikes Store";
 export const CHECKOUT_TOKEN = "checkoutToken";
 export const API_URI = process.env.NEXT_PUBLIC_API_URI || "";
 export const BASE_URL = process.env.NEXT_PUBLIC_API_URI?.replace("/graphql/", "");
