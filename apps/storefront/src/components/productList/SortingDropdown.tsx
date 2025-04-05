@@ -32,7 +32,7 @@ export function SortingDropdown({ optionToggle, chosen, messages }: SortingDropd
           data-testid="sortBy"
         >
           {currentLabel}
-          <ChevronDownIcon className="ml-2 -mr-1 h-5 w-5 " aria-hidden="true" />
+          <ChevronDownIcon className="ml-2 -mr-1 h-5 w-5 relative top-[2px]" aria-hidden="true" />
         </MenuButton>
       </div>
       <Transition

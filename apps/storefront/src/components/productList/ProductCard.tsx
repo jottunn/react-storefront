@@ -108,8 +108,8 @@ export function ProductCard({
         </div>
         <p
           className={clsx(
-            "block mt-2 font-normal text-main text-center hover:text-gray-700 min-h-[75px]",
-            isSwiper ? "text-base md:min-h-[75px]" : "text-base md:text-md md:min-h-[50px]",
+            "block mt-2 font-normal text-main text-center hover:text-gray-700",
+            isSwiper ? "text-base md:min-h-[60px]" : "text-base md:text-md md:min-h-[50px]",
           )}
           data-testid={`productName${product.name}`}
         >

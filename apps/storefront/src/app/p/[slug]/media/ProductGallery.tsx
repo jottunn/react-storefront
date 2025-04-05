@@ -158,8 +158,8 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
             className="border"
             style={
               {
-                "--swiper-navigation-color": "#0b9446",
-                "--swiper-pagination-color": "#0b9446",
+                "--swiper-navigation-color": "#394052",
+                "--swiper-pagination-color": "#394052",
               } as any
             }
           >
