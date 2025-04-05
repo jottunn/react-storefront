@@ -60,7 +60,6 @@ export function FilteredProductList({
     defaultValue: [],
   });
 
-  // const [itemsCounter, setItemsCounter] = useState(0);
   const [sortByQuery, setSortByQuery] = useQueryState("sortBy", {});
   let sortBy = parseQuerySort(sortByQuery);
   if (!sortBy && sort !== undefined) {
@@ -68,14 +67,12 @@ export function FilteredProductList({
   }
   const setSortBy = (value: UrlSorting | undefined | null) =>
     setSortByQuery(serializeQuerySort(value));
-
   // New state for managing attribute filters
   const [attributeFilters, setAttributeFilters] = useState<Attribute1[]>([]);
   const [categoryFilters, setCategoryFilters] = useState<any[]>([]);
   const [productsFilter, setProductsFilter] = useState<ProductFilterInput>();
   const pills: FilterPill[] = getPillsData(queryFilters, attributeFilters);
 
-  // console.log('render filtered list', categoryIDs);
   const debouncedProductsFilter = useDebouncedValue(productsFilter, 500);
 
   const [filterModalOpen, setFilterModalOpen] = useState(false);
@@ -233,7 +230,6 @@ export function FilteredProductList({
   }, [debouncedProductsFilter, fetchAvailableFilters]);
 
   useEffect(() => {
-    // console.log("queryFilters", queryFilters);
     const attrS = queryFilters.filter(
       (filter) => filter.slug !== "categorie" && filter.values?.length,
     );
@@ -271,9 +267,6 @@ export function FilteredProductList({
     };
 
     // Only update productsFilter state if it's different from the current state
-    // if (JSON.stringify(newProductsFilter) !== JSON.stringify(productsFilter)) {
-    //   setProductsFilter(newProductsFilter);
-    // }
     if (!isEqual(newProductsFilter, productsFilter)) {
       setProductsFilter(newProductsFilter);
     }
@@ -350,7 +343,7 @@ export function FilteredProductList({
         className="flex flex-wrap md:flex-nowrap md:items-center w-full mb-4 md:mb-8 scroll-margin-top"
       >
         <div className="inline md:flex md:flex-none md:w-[250px] justify-between md:mb-0 mr-8 order-1">
-          <div className="hidden md:flex flex-grow align-center md:align-start mt-3">
+          <div className="hidden md:flex flex-grow align-center md:align-start items-center">
             <FilterIconLabel messages={messages} />
           </div>
           <button
@@ -364,7 +357,7 @@ export function FilteredProductList({
           {pills.length > 0 && (
             <button
               onClick={() => clearFilters()}
-              className="md:border md:border-main-1 py-2 md:p-2 md:bg-main-1 text-main underline md:no-underline md:text-white hover:text-main-1 hover:bg-white text-[1.4rem] relative transform -translate-y-[4px] mt-2"
+              className="md:border md:border-main-1 py-2 md:p-2 md:bg-black text-main underline md:no-underline md:text-white hover:text-main-1 hover:bg-white text-[1.4rem] relative transform -translate-y-[4px] mt-2"
               type="button"
               data-testid="clearFilters"
             >
