@@ -85,7 +85,7 @@ export default async function Page() {
           <PageHero title={messages["app.search.outletTitle"]} description="" />
           {outletCollectionsWithImage && outletCollectionsWithImage.length > 0 && (
             <div
-              className={`${numColumnsHPCollections === 1 ? "flex flex-col items-center" : `grid grid-cols-1 md:grid-cols-${numColumnsHPCollections}`} gap-4 mt-4 mb-20 md:mt-20 md:mb-40`}
+              className={`${numColumnsHPCollections === 1 ? "flex flex-col items-center" : `grid grid-cols-1 md:grid-cols-${numColumnsHPCollections}`} gap-4 mt-4 mb-20`}
             >
               {outletCollectionsWithImage.map((collection) => (
                 <HomepageBlock key={collection.id} item={collection} type="collection" />

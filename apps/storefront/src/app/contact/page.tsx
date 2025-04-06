@@ -21,7 +21,7 @@ export default async function Page() {
       { filter: any; locale: LanguageCodeEnum }
     >(PageTypesDocument, {
       variables: { filter: { slugs: ["get-in-touch"] }, locale: DEFAULT_LOCALE },
-      revalidate: 60,
+      revalidate: 60 * 60,
     });
   } catch {
     return null;
@@ -41,7 +41,10 @@ export default async function Page() {
     .trim()
     .split(/\s*\/\/\s*/) || ["", ""];
 
-  const breadcrumbItems = [{ name: "Home", href: "/" }, { name: "Conatct" }];
+  const breadcrumbItems = [
+    { name: "Home", href: "/" },
+    { name: contactContent?.node.title || "Contact" },
+  ];
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -70,7 +73,7 @@ export default async function Page() {
         <div className="md:container pt-12 pb-40 px-8">
           <div className="md:max-w-7xl mx-auto">
             <div className="text-center mb-6">
-              <h1 className="text-lg font-bold pb-6">Contact</h1>
+              <h1 className="text-lg font-bold pb-6">{contactContent?.node.title || "Contact"}</h1>
             </div>
 
             <div className="bg-white shadow-xl rounded-lg overflow-hidden">
