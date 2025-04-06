@@ -41,7 +41,7 @@ export const generateMetadata = async (): Promise<Metadata | []> => {
     const response = await executeGraphQL<PageQuery, { slug: String; locale: LanguageCodeEnum }>(
       PageDocument,
       {
-        variables: { slug: "home", locale: DEFAULT_LOCALE },
+        variables: { slug: "home-test", locale: DEFAULT_LOCALE },
         revalidate: 60 * 5,
       },
     );
@@ -56,7 +56,7 @@ export const generateMetadata = async (): Promise<Metadata | []> => {
   };
 };
 
-export default async function Home() {
+export default async function HomeTest() {
   "use server";
   const messages = getMessages(DEFAULT_LOCALE);
   //get page by slug home
@@ -65,8 +65,8 @@ export default async function Home() {
     const response = await executeGraphQL<PageQuery, { slug: String; locale: LanguageCodeEnum }>(
       PageDocument,
       {
-        variables: { slug: "home", locale: DEFAULT_LOCALE },
-        revalidate: 60 * 5,
+        variables: { slug: "home-test", locale: DEFAULT_LOCALE },
+        revalidate: 60,
       },
     );
     page = response.page;
@@ -205,8 +205,8 @@ export default async function Home() {
   const content = page && "content" in page ? translate(page, "content") : null;
   const parsedContent = content ? parser.parse(JSON.parse(content)).join("") : "";
   const isEmptyContent = emptyTagsRegex.test(parsedContent);
-
   let videoUrl, videoBannerPath, aspectRatio;
+
   const displayVideo = page?.metadata.find((m) => m.key === "DISPLAY VIDEO");
   if (displayVideo && displayVideo.value === "YES") {
     const videoFile =
