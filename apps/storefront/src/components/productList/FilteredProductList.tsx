@@ -1,6 +1,6 @@
 "use client";
 import { useQueryState } from "next-usequerystate";
-import { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   OrderDirection,
   ProductCountableEdge,
@@ -29,6 +29,8 @@ import FilterDropdowns from "./FilterDropdowns";
 import { getAvailableFilters } from "src/app/actions";
 import ProductCollection from "./ProductCollection";
 import isEqual from "lodash.isequal";
+import { getCategorySlugMap } from "@/lib/categoryMap";
+import Spinner from "../Spinner";
 
 export interface FilteredProductListProps {
   brand?: string;
@@ -72,6 +74,8 @@ export function FilteredProductList({
   const [categoryFilters, setCategoryFilters] = useState<any[]>([]);
   const [productsFilter, setProductsFilter] = useState<ProductFilterInput>();
   const pills: FilterPill[] = getPillsData(queryFilters, attributeFilters);
+  const [categoryMap, setCategoryMap] = useState<Map<string, string> | null>(null);
+  const memoizedCategoryMap = useMemo(() => categoryMap, [categoryMap]);
 
   const debouncedProductsFilter = useDebouncedValue(productsFilter, 500);
 
@@ -183,7 +187,6 @@ export function FilteredProductList({
       attribute.values.forEach((value) => {
         // Check if value is already in the array to mimic the behavior of a Set
         if (!attr.values.find((v) => v.id === value.id)) {
-          // console.log('value', value);
           attr.values.push(value);
         }
       });
@@ -230,22 +233,30 @@ export function FilteredProductList({
   }, [debouncedProductsFilter, fetchAvailableFilters]);
 
   useEffect(() => {
+    const fetchAndSetMappings = async () => {
+      const mappings = await getCategorySlugMap();
+      if (mappings) {
+        setCategoryMap(mappings);
+      }
+    };
+
+    fetchAndSetMappings();
+  }, []); // Fetch once on component mount
+
+  useEffect(() => {
     const attrS = queryFilters.filter(
       (filter) => filter.slug !== "categorie" && filter.values?.length,
     );
     const selectedCategories = queryFilters.filter(
       (filter) => filter.slug === "categorie" && filter.values?.length,
     );
-    if (selectedCategories && selectedCategories.length > 0) {
+
+    if (selectedCategories && selectedCategories.length > 0 && categoryMap) {
       const selectedCategoryNames = selectedCategories[0].values;
-      const selectedCategoryIDs = selectedCategoryNames
-        ? categoryFilters
-            .filter((category) => selectedCategoryNames.includes(category.slug))
-            .map((category) => category.id)
-        : [];
-      if ((categoryIDs && categoryIDs.length === 0) || !categoryIDs) {
-        categoryIDs = selectedCategoryIDs;
-      }
+      const slugBasedCategoryIDs = selectedCategoryNames
+        .map((slug) => categoryMap.get(slug))
+        .filter(Boolean) as string[];
+      categoryIDs = slugBasedCategoryIDs;
     }
 
     if (brand) {
@@ -282,7 +293,15 @@ export function FilteredProductList({
 
     // Eslint does not recognize stringified queryFilters, so we have to ignore it
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(queryFilters), categoryIDs, collectionIDs, brand, productsIDs, search]);
+  }, [
+    JSON.stringify(queryFilters),
+    categoryIDs,
+    collectionIDs,
+    brand,
+    productsIDs,
+    search,
+    memoizedCategoryMap,
+  ]);
 
   const removeAttributeFilter = (attributeSlug: string, choiceSlug: string) => {
     const newFilters = queryFilters.reduce((result: UrlFilter[], filter: UrlFilter) => {
@@ -331,6 +350,10 @@ export function FilteredProductList({
       shallow: false,
     });
   };
+
+  const hasCategoryFilters = queryFilters.filter(
+    (filter) => filter.slug === "categorie" && filter.values?.length,
+  );
 
   if (!productsFilter) {
     return null;
@@ -459,13 +482,16 @@ export function FilteredProductList({
           </Dialog>
         </Transition>
         <div>
-          <ProductCollection
-            filter={productsFilter}
-            sortBy={sortBy || undefined}
-            // setCounter={setItemsCounter}
-            perPage={30}
-            messages={messages}
-          />
+          {hasCategoryFilters.length > 0 && !productsFilter.categories ? (
+            <Spinner />
+          ) : (
+            <ProductCollection
+              filter={productsFilter}
+              sortBy={sortBy || undefined}
+              perPage={30}
+              messages={messages}
+            />
+          )}
         </div>
       </div>
     </>
