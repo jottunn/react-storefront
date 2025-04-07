@@ -73,32 +73,47 @@ export default async function Home() {
   } catch {
     //return [];
   }
-  const filter: ProductFilterInput = { isPublished: true, stockAvailability: "IN_STOCK" };
   const sortBy: ProductOrder = { direction: "DESC", field: "PUBLICATION_DATE" };
-  const queryVariables = {
-    filter,
-    first: 10,
-    ...defaultRegionQuery(),
-    sortBy,
-  };
   const displayNewProducts =
     page && "metadata" in page ? getMetadataValue(page.metadata, "Display Noutati") : "";
+
   let newProducts;
   if (displayNewProducts === "YES") {
     let newProductsH;
+    const newProductsCollectionId =
+      page && "metadata" in page ? getMetadataValue(page.metadata, "Noutati Collection Id") : "";
+    const filter: ProductFilterInput = {
+      isPublished: true,
+      stockAvailability: "IN_STOCK",
+      ...(newProductsCollectionId && {
+        collections: [newProductsCollectionId.replace(/%3D/g, "=").trim()],
+      }),
+    };
+    const queryVariables = {
+      filter,
+      first: 20,
+      ...defaultRegionQuery(),
+      sortBy,
+    };
     try {
       const response = await executeGraphQL<ProductCollectionQuery, { filter: any }>(
         ProductCollectionDocument,
         {
           variables: queryVariables,
-          revalidate: 60 * 60,
+          revalidate: 60 * 60 * 60,
         },
       );
       newProductsH = response.products;
     } catch {
       //return [];
     }
-    newProducts = newProductsH ? mapEdgesToItems(newProductsH) : [];
+    let newProductsResult = newProductsH ? mapEdgesToItems(newProductsH) : [];
+    if (newProductsResult && newProductsResult.length > 0) {
+      // Randomize the array using sort with a random comparator
+      newProductsResult.sort(() => Math.random() - 0.5);
+      // Select only the first 12 products
+      newProducts = newProductsResult.slice(0, 12);
+    }
   }
 
   /** get banners to be displayed on homepage - content-type = banner */
@@ -193,8 +208,7 @@ export default async function Home() {
     if (salesProducts && salesProducts.length > 0) {
       // Randomize the array using sort with a random comparator
       salesProducts.sort(() => Math.random() - 0.5);
-
-      // Select only the first 6 products
+      // Select only the first 12 products
       displayedSalesProducts = salesProducts.slice(0, 12);
     }
   }
@@ -207,7 +221,7 @@ export default async function Home() {
   const isEmptyContent = emptyTagsRegex.test(parsedContent);
 
   let videoUrl, videoBannerPath, aspectRatio;
-  const displayVideo = page?.metadata.find((m) => m.key === "DISPLAY VIDEO");
+  const displayVideo = page?.metadata.find((m) => m.key === "Display Video");
   if (displayVideo && displayVideo.value === "YES") {
     const videoFile =
       page?.attributes.find((attr) => attr.attribute.name === "Video")?.values[0].name || "";
@@ -215,9 +229,9 @@ export default async function Home() {
       page?.attributes.find((attr) => attr.attribute.name === "Banner")?.values[0].name || "";
     const videoFilePath = videoFile ? `${UPLOAD_FOLDER ?? ""}/${videoFile}` : "#";
     videoBannerPath = videoBannerFile ? `${UPLOAD_FOLDER ?? ""}/${videoBannerFile}` : "#";
-    const youtubeUrl = page?.metadata.find((m) => m.key === "youtube");
+    const youtubeUrl = page?.metadata.find((m) => m.key === "Youtube");
     videoUrl = youtubeUrl?.value ? youtubeUrl.value : videoFilePath;
-    aspectRatio = page?.metadata.find((m) => m.key === "aspectRatio")?.value;
+    aspectRatio = page?.metadata.find((m) => m.key === "AspectRatio")?.value;
   }
 
   let brandCollections;

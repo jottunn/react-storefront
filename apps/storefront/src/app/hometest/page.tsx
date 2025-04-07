@@ -207,7 +207,7 @@ export default async function HomeTest() {
   const isEmptyContent = emptyTagsRegex.test(parsedContent);
   let videoUrl, videoBannerPath, aspectRatio;
 
-  const displayVideo = page?.metadata.find((m) => m.key === "DISPLAY VIDEO");
+  const displayVideo = page?.metadata.find((m) => m.key === "Display Video");
   if (displayVideo && displayVideo.value === "YES") {
     const videoFile =
       page?.attributes.find((attr) => attr.attribute.name === "Video")?.values[0].name || "";
@@ -215,9 +215,9 @@ export default async function HomeTest() {
       page?.attributes.find((attr) => attr.attribute.name === "Banner")?.values[0].name || "";
     const videoFilePath = videoFile ? `${UPLOAD_FOLDER ?? ""}/${videoFile}` : "#";
     videoBannerPath = videoBannerFile ? `${UPLOAD_FOLDER ?? ""}/${videoBannerFile}` : "#";
-    const youtubeUrl = page?.metadata.find((m) => m.key === "youtube");
+    const youtubeUrl = page?.metadata.find((m) => m.key === "Youtube");
     videoUrl = youtubeUrl?.value ? youtubeUrl.value : videoFilePath;
-    aspectRatio = page?.metadata.find((m) => m.key === "aspectRatio")?.value;
+    aspectRatio = page?.metadata.find((m) => m.key === "AspectRatio")?.value;
   }
 
   let brandCollections;
