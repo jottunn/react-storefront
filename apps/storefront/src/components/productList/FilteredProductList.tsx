@@ -82,8 +82,6 @@ export function FilteredProductList({
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const openModal = () => setFilterModalOpen(true);
   const closeModal = () => setFilterModalOpen(false);
-  const filtersSectionRef = useRef<HTMLDivElement>(null);
-  const isDesktop = () => window.innerWidth >= 768;
 
   const aggregateAttributesFromProducts = (products: ProductCountableEdge[]) => {
     const attributesMap = new Map<string, Attribute1>();
@@ -111,16 +109,6 @@ export function FilteredProductList({
           });
         }
       });
-
-      // Aggregate categories from the product, only if in Collection pages
-      // if (
-      //   collectionIDs &&
-      //   collectionIDs.length > 0 &&
-      //   product.node.category &&
-      //   !categoriesMap.has(product.node.category.id)
-      // ) {
-      //   categoriesMap.set(product.node.category.id, product.node.category);
-      // }
     });
 
     // Define a function to get the sort order for size values
@@ -281,16 +269,6 @@ export function FilteredProductList({
     if (!isEqual(newProductsFilter, productsFilter)) {
       setProductsFilter(newProductsFilter);
     }
-
-    // Scroll to filters section when filters change
-    if (isDesktop() && filtersSectionRef.current) {
-      const filtersSectionTop = filtersSectionRef.current.offsetTop;
-      window.scrollTo({
-        top: filtersSectionTop - 150 - 50,
-        behavior: "smooth",
-      });
-    }
-
     // Eslint does not recognize stringified queryFilters, so we have to ignore it
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -361,10 +339,7 @@ export function FilteredProductList({
 
   return (
     <>
-      <div
-        ref={filtersSectionRef}
-        className="flex flex-wrap md:flex-nowrap md:items-center w-full mb-4 md:mb-8 scroll-margin-top"
-      >
+      <div className="flex flex-wrap md:flex-nowrap md:items-center w-full mb-4 md:mb-8 scroll-margin-top md:h-[47px]">
         <div className="inline md:flex md:flex-none md:w-[250px] justify-between md:mb-0 mr-8 order-1">
           <div className="hidden md:flex flex-grow align-center md:align-start items-center">
             <FilterIconLabel messages={messages} />
