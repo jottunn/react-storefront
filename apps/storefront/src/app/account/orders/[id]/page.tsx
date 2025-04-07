@@ -2,7 +2,7 @@ import Image from "next/image";
 import { formatMoney } from "@/lib/utils/formatMoney";
 import AddressDisplay from "@/components/account/AddressDisplay";
 import { getCurrentUser, orderDetails } from "src/app/actions";
-import { getMessages } from "@/lib/util";
+import { formatDate, getMessages } from "@/lib/util";
 import { DEFAULT_LOCALE } from "@/lib/regions";
 import LoginForm from "src/app/login/LoginForm";
 import { notFound } from "next/navigation";
@@ -30,7 +30,8 @@ export default async function Page({ params }: { params: { id: string } }) {
   return (
     <>
       <h1 className="text-2xl ml-2 md:ml-20 mt-5 font-bold text-gray-800 mb-2">
-        {messages["app.account.orderDetail"]} : {order?.number}
+        {messages["app.account.orderDetail"]} : {order?.number} |{" "}
+        {formatDate(new Date(order.created))}
       </h1>
       <p className="text-base ml-2 md:ml-20 font-semibold text-gray-600 mb-8">
         {messages["app.account.orderStatus"]} : {order?.status && messages[order?.status]}
@@ -56,7 +57,7 @@ export default async function Page({ params }: { params: { id: string } }) {
               {order?.lines.map((line) => (
                 <tr key={line?.id} className="h-16">
                   <td className="my-3">
-                    <div className="md:flex md:flex-row justify-center">
+                    <div className="md:flex md:flex-row">
                       {line?.thumbnail?.url && (
                         <Image
                           src={line?.thumbnail?.url}
@@ -65,7 +66,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                           height={70}
                         />
                       )}
-                      <div className="flex flex-col justify-center text-left ml-2">
+                      <div className="flex flex-col justify-center text-left md:ml-4 text-base">
                         <div>{line?.productName}</div>
                         <div className="text-xs text-left text-gray-600">{line?.variantName}</div>
                       </div>
@@ -119,7 +120,7 @@ export default async function Page({ params }: { params: { id: string } }) {
         {!!order?.shippingAddress && (
           <div className="col-span-2 mr-2 md:ml-2 my-8 p-4 shadow-xs rounded bg-white border md:w-1/2 md:col-start-3 md:col-span-2 md:w-full">
             <h2 className="font-semibold text-lg mb-2">
-              {messages["app.checkout.billingMethodCardHeader"]}
+              {messages["app.checkout.shippingAddressCardHeader"]}
             </h2>
             <AddressDisplay address={order.shippingAddress} />
           </div>
