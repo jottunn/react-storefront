@@ -68,6 +68,7 @@
   "app.payment.checkoutAlreadyProcessed": "Tranzactia a fost procesata. Ar trebui sa primesti un e-mail cu toate informatiile, altfel te rugam sa ne contactezi",
   "app.payment.errorTransactionProcessing": "A intervenit o eroare in procesarea tranzactiei",
   "app.payment.backCheckout": "Inapoi la checkout",
+  "app.backShopping": "Continua cumparaturile",
   "app.chooseSize": "Alege marimea",
   "app.chooseSizeCart": "Alege o marime pentru a continua",
   "app.clearAll": "Reseteaza filtrele",

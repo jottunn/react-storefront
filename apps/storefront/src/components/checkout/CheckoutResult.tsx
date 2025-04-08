@@ -39,7 +39,7 @@ export default function CheckoutResult({
               ? messages[statusResponse.errorString] || statusResponse.errorString
               : statusResponse.error}
           </p>
-          {statusResponse.errorString !== "app.payment.checkoutAlreadyProcessed" && (
+          {statusResponse.errorString !== "app.payment.checkoutAlreadyProcessed" && checkoutId && (
             <Link href={`/checkout?checkout=${checkoutId}`} className="button button-tertiary">
               {messages["app.payment.backCheckout"]}
             </Link>

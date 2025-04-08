@@ -7,6 +7,7 @@ import { getMessages } from "@/lib/util";
 import { executeGraphQL } from "@/lib/graphql";
 import { UserDocument, UserQuery } from "@/saleor/api";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 
 export const metadata = {
   title: "Checkout",
@@ -38,22 +39,28 @@ export default async function CheckoutPage({
     withAuth: true,
   });
 
-  if (!checkout) {
-    redirect("/payment-confirm");
-  }
-
   return (
     <main className="mt-6 flex-1 container pt-8 px-8">
-      <div className="grid min-h-screen grid-cols-1 gap-x-16 lg:grid-cols-2">
-        <div className="items-end order-1 md:order-0">
-          {checkout && checkout.lines.length > 0 && (
-            <CheckoutForm messages={messages} user={user} />
-          )}
+      {!checkout && (
+        <div className="text-center py-8">
+          <p className="text-base font-semibold mb-4">{messages["app.checkout.cartEmptyHeader"]}</p>
+          <Link href={`/`} className="button button-tertiary">
+            {messages["app.backShopping"]}
+          </Link>
         </div>
-        <div className="z-0 flex h-fit w-full flex-col before:absolute before:bottom-0 before:left-1/2 before:top-0 before:-z-10 before:w-1/2 before:border-l before:border-main-5 before:bg-main-7 before:content-none before:lg:content-[''] order-0 md:order-1">
-          <CheckoutSidebar messages={messages} />
+      )}
+      {checkout && (
+        <div className="grid min-h-screen grid-cols-1 gap-x-16 lg:grid-cols-2">
+          <div className="items-end order-1 md:order-0">
+            {checkout && checkout.lines.length > 0 && (
+              <CheckoutForm messages={messages} user={user} />
+            )}
+          </div>
+          <div className="z-0 flex h-fit w-full flex-col before:absolute before:bottom-0 before:left-1/2 before:top-0 before:-z-10 before:w-1/2 before:border-l before:border-main-5 before:bg-main-7 before:content-none before:lg:content-[''] order-0 md:order-1">
+            {<CheckoutSidebar messages={messages} />}
+          </div>
         </div>
-      </div>
+      )}
     </main>
   );
 }
