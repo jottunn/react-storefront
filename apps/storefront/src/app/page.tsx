@@ -233,6 +233,8 @@ export default async function Home() {
     videoUrl = youtubeUrl?.value ? youtubeUrl.value : videoFilePath;
     aspectRatio = page?.metadata.find((m) => m.key === "AspectRatio")?.value;
   }
+  const carouselW = page?.metadata.find((m) => m.key === "Carusel Width")?.value || "1900";
+  const carouselH = page?.metadata.find((m) => m.key === "Carusel Height")?.value || "550";
 
   let brandCollections;
   try {
@@ -268,7 +270,7 @@ export default async function Home() {
             objectFit="cover"
           />
         ) : (
-          <Carousel slides={displayHomepageCarousel} />
+          <Carousel slides={displayHomepageCarousel} carouselW={carouselW} carouselH={carouselH} />
         )}
       </div>
       <div className="block p-0">

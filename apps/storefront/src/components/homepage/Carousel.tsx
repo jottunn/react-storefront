@@ -8,12 +8,18 @@ import Link from "next/link";
 interface SliderProps {
   slides: any[];
   autoSlideDelay?: number;
+  carouselW?: any;
+  carouselH?: any;
 }
 
-const Carousel: React.FC<SliderProps> = ({ slides, autoSlideDelay = 6000 }) => {
+const Carousel: React.FC<SliderProps> = ({
+  slides,
+  autoSlideDelay = 6000,
+  carouselW = 1900,
+  carouselH = 550,
+}) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [imagesPreloaded, setImagesPreloaded] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
   // Set mounted state to enable client-side features after hydration
@@ -88,7 +94,10 @@ const Carousel: React.FC<SliderProps> = ({ slides, autoSlideDelay = 6000 }) => {
                   - Each image will only load when its container is visible
                 */}
                 <div className="hidden md:block relative w-full">
-                  <div className="relative" style={{ paddingTop: "calc(550 / 1900 * 100%)" }}>
+                  <div
+                    className="relative"
+                    style={{ paddingTop: `calc(${carouselH}  / ${carouselW} * 100%)` }}
+                  >
                     <Image
                       src={desktopImgSrc}
                       alt={slide.title}
