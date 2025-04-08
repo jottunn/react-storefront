@@ -66,12 +66,11 @@ function EmailSection({ messages, user }: EmailSectionProps) {
       const result = await registerUser(formData);
       if (result.errors) {
         const customError = result.errors[0] as any;
-        setError("email" || "password", { message: customError.code });
+        setError(customError.field || "email", { message: customError.code });
         return;
       }
     }
     const emailUpdateResult = await checkoutEmailUpdate({ id: checkout.id, email: formData.email });
-    console.log("emailUpdateResult", emailUpdateResult);
 
     if (emailUpdateResult?.success === false) {
       // Handle checkout email update errors
@@ -207,6 +206,17 @@ function EmailSection({ messages, user }: EmailSectionProps) {
             variant="secondary"
             label={messages["app.buttons.back"]}
           />
+          <div className="mt-8">
+            <p className="text-sm">
+              {messages["app.login.prevAccount"]}
+              <Link
+                href="/reset"
+                className="text-sm text-blue-700 underline cursor-pointer pt-2 pl-1 hover:text-main-1"
+              >
+                {messages["app.login.prevAccountLink"]}
+              </Link>
+            </p>
+          </div>
         </form>
       ) : (
         <>
