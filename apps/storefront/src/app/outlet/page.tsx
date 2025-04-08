@@ -14,7 +14,7 @@ import { STOREFRONT_NAME, STOREFRONT_URL } from "@/lib/const";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Script from "next/script";
 import HomepageBlock from "@/components/homepage/HomepageBlock";
-import { notFound } from "next/navigation";
+import AnchorScroller from "@/components/AnchorScroller";
 
 export const metadata = {
   title: `Reduceri | ${STOREFRONT_NAME}`,
@@ -70,6 +70,7 @@ export default async function Page() {
   };
   return (
     <>
+      <AnchorScroller />
       <Script
         type="application/ld+json"
         strategy="afterInteractive"
@@ -94,7 +95,10 @@ export default async function Page() {
           )}
         </div>
       </header>
-      <div className="container px-8 mt-4 mb-40">
+      <div
+        className="container px-8 mt-4 mb-40 scroll-mt-[100px] md:scroll-mt-[130px]"
+        id="products"
+      >
         {collectionsIds.length > 0 ? (
           <FilteredProductList collectionIDs={collectionsIds} messages={messages} />
         ) : (
