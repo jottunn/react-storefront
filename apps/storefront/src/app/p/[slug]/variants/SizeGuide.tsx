@@ -59,7 +59,7 @@ export default function SizeGuide({ sizeGuide, messages }: { sizeGuide: any; mes
               <DialogPanel className="max-w-10xl space-y-4 border-2 px-4 md:pt-12 relative md:py-8 shadow-2xl bg-white">
                 <button
                   type="button"
-                  className="absolute top-4 right-4 z-50"
+                  className="absolute -top-4 -right-4 md:top-4 md:right-4 z-50"
                   aria-label="Close"
                   onClick={() => setShowSizeGuideModal(false)}
                 >

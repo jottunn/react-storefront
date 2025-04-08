@@ -73,7 +73,7 @@ export default function CartModal({ messages }: CartModalProps) {
         </span>
       </button>
       <Transition show={cartModalOpen}>
-        <Dialog onClose={closeCart} className="relative z-50">
+        <Dialog onClose={closeCart} className="relative" style={{ zIndex: 55 }}>
           <TransitionChild
             as={Fragment}
             enter="transition-all ease-in-out duration-300"
