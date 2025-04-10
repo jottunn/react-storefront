@@ -20,7 +20,7 @@ const isValidSlug = (slug: string): boolean => {
   const invalidPatterns = [
     /^\./, // Prevents slugs starting with a dot
     /\.(env|example|json|js|ts|tsx|md|html|css|scss|png|php|php5|jpg|jpeg|gif|git|svg|ico|map|world|txt|yaml|bak|prod|production)$/, // Block specific file types
-    /cgi-bin|luci|admin|cdn-cgi|phpsysinfo|php-cgi/, // Block specific directory paths
+    /cgi-bin|luci|cdn-cgi|phpsysinfo|php-cgi/, // Block specific directory paths
   ];
   return !invalidPatterns.some((pattern) => pattern.test(slug));
 };

@@ -98,7 +98,7 @@ export async function middleware(req: NextRequest) {
   const invalidPatterns = [
     /^\./, // No dot-prefixed files
     /\.(env|example|json|js|jsp|ts|tsx|md|html|css|scss|png|php|php5|jpg|jpeg|gif|git|svg|ico|map|world|yaml|bak|prod|production|log|backup|xml)$/, // Block specific file types
-    /cgi-bin|luci|admin|cdn-cgi|phpsysinfo|php-cgi|actuator|health|git/, // Block common bot slugs
+    /cgi-bin|luci|cdn-cgi|phpsysinfo|php-cgi|actuator|health|git/, // Block common bot slugs
   ];
 
   const isInvalid = invalidPatterns.some((pattern) => pattern.test(url.pathname));
