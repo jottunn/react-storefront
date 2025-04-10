@@ -93,15 +93,15 @@ export default function LoginForm({ messages }: FormProps) {
             type="submit"
             label={messages["app.navigation.login"]}
             variant="tertiary"
-            className="!h-12"
+            className="!h-12 inline-block"
           />
         )}
-        {!!errorsForm.email && (
-          <p className="text-sm text-red-700 pt-2 font-semibold">
-            {errorsForm.email?.message && messages[errorsForm.email.message]}
-          </p>
-        )}
       </div>
+      {!!errorsForm.email && (
+        <p className="text-sm text-red-700 font-semibold inline-block">
+          {errorsForm.email?.message && messages[errorsForm.email.message]}
+        </p>
+      )}
     </form>
   );
 }

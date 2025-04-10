@@ -29,14 +29,14 @@ export default async function LoginPage() {
       <section className={clsx(styles["account-bkg"], "mx-auto max-w-10xl min-h-[400px] p-4")}>
         <div className="container pb-40 pt-20 md:pt-40 flex justify-center items-center">
           <div className="w-full md:w-[50%] bg-white bg-opacity-90 p-20">
-            <div>
+            <>
               <LoginForm messages={messages} />
-              <p className="mt-8 text-md underline underline-offset-4 hover:text-main-1">
+              <p className="mt-8 text-md underline underline-offset-4 hover:text-main-1 inline-block">
                 <Link href="/register" aria-label={messages["app.login.createAccount"]}>
                   {messages["app.login.createAccount"]}
                 </Link>
               </p>
-            </div>
+            </>
             <div className="mt-8">
               <p className="text-sm">
                 {messages["app.login.prevAccount"]}
