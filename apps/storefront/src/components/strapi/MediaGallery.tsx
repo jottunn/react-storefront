@@ -52,7 +52,7 @@ export default function MediaGallery({ data }: { data: any }) {
               <div
                 key={index}
                 onClick={() => handleImageClick(index)}
-                className="cursor-pointer m-auto hover:brightness-125 hover:contrast-115 transition-all duration-30"
+                className="cursor-pointer m-auto hover:brightness-125 hover:contrast-115 transition-all duration-30 w-full"
               >
                 <Image
                   src={imageUrlSmall || imageUrl}
@@ -60,7 +60,7 @@ export default function MediaGallery({ data }: { data: any }) {
                   priority={index <= 1 ? true : false}
                   loading={index <= 1 ? "eager" : "lazy"}
                   sizes="(max-width: 640px) 100vw, 100vw"
-                  className="w-full h-96 object-cover rounded-lg"
+                  className="w-full object-cover rounded-lg"
                   height={smallImage ? smallImage.height : fadeImageData.height}
                   width={smallImage ? smallImage.width : fadeImageData.width}
                 />
