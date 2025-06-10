@@ -1,8 +1,8 @@
 import { MenuItemWithChildrenFragment } from "@/saleor/api";
 import { NavigationAnchor } from "./components/MobileMenu/NavigationAnchor";
-import styles from "./Navbar.module.css";
 import { NavLink } from "./NavLink";
 import getLinkPath from "@/lib/menus";
+import React from "react";
 
 interface DropdownProps {
   menuItem: MenuItemWithChildrenFragment;
@@ -11,15 +11,20 @@ interface ColumnProps {
   items: MenuItemWithChildrenFragment[];
 }
 const Column: React.FC<ColumnProps> = ({ items }) => (
-  <div className={styles["column"]}>
+  <div className="border-r-2 border-gray-200">
     {items.map((item) => (
       <div key={item?.id}>
-        <NavLink href={item?.url || getLinkPath(item)}>{item?.name}</NavLink>
+        <NavLink key={item?.id} href={item?.url || getLinkPath(item)}>
+          {item?.name}
+        </NavLink>
         {!!item?.children?.length && (
-          <ul className={styles["dropdown-ul"]}>
+          <ul className="list-none mt-3" key={`ul-${item?.id}`}>
             {item?.children?.map((sub) => (
               <li key={sub?.id}>
-                <NavLink href={sub?.url || getLinkPath(sub)} className={styles["dropdown-sublink"]}>
+                <NavLink
+                  href={sub?.url || getLinkPath(sub)}
+                  className="text-sm text-main-1 cursor-pointer leading-[1rem] ml-2 hover:underline"
+                >
                   {sub?.name}
                 </NavLink>
               </li>
@@ -44,16 +49,17 @@ function Dropdown({ menuItem }: DropdownProps) {
   };
   const chunks = chunkArray(menuItem.children || [], 4);
   return (
-    <div className={styles.dropdown}>
-      <NavigationAnchor menuItem={menuItem} className={styles["dropdown-trigger"]} />
+    <div className="dropdown flex items-center h-full">
+      <NavigationAnchor
+        menuItem={menuItem}
+        className="flex items-start text-center text-md font-bold hover:text-brand h-full px-4 uppercase"
+      />
       {!!menuItem.children?.length && (
-        <div className={styles["dropdown-menu"]}>
-          <div className="container pl-7">
-            <div className="grid grid-cols-4 gap-[2rem] mx-2">
-              {chunks.map((chunk, index) => (
-                <Column key={index} items={chunk} />
-              ))}
-            </div>
+        <div className="dropdown-menu py-8 pl-4 absolute top-[12.9rem] left-0 bg-white w-full border-t border-b border-main-4 invisible shadow-xl">
+          <div className="container mx-auto grid grid-cols-4 gap-[2rem]">
+            {chunks.map((chunk, index) => (
+              <Column key={index} items={chunk} />
+            ))}
           </div>
         </div>
       )}

@@ -5,9 +5,11 @@ import { getMessages } from "@/lib/util";
 import { DEFAULT_LOCALE } from "@/lib/regions";
 import Link from "next/link";
 import { STOREFRONT_NAME, STOREFRONT_URL } from "@/lib/const";
+
+// export const dynamic = 'force-static';
+// export const revalidate = 60;
+
 const messages = getMessages(DEFAULT_LOCALE);
-import styles from "./Login.module.css";
-import clsx from "clsx";
 
 export const metadata = {
   title: `${messages["app.login.header"]} | ${STOREFRONT_NAME}`,
@@ -26,7 +28,7 @@ export default async function LoginPage() {
         </div>
       }
     >
-      <section className={clsx(styles["account-bkg"], "mx-auto max-w-10xl min-h-[400px] p-4")}>
+      <section className="bg-[url('/bkg_login.webp')] bg-cover bg-[70%_10%] mx-auto max-w-10xl min-h-[400px] p-4">
         <div className="container pb-40 pt-20 md:pt-40 flex justify-center items-center">
           <div className="w-full md:w-[50%] bg-white bg-opacity-90 p-20">
             <>

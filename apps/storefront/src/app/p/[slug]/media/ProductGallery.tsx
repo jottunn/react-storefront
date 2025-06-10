@@ -6,15 +6,18 @@ import Image from "next/image";
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { getGalleryMedia, getYouTubeIDFromURL } from "@/lib/media";
 import { ProductDetailsFragment, ProductVariantDetailsFragment } from "@/saleor/api";
-
 import { Swiper, SwiperSlide, SwiperRef } from "swiper/react";
 import { Keyboard, Navigation, Scrollbar } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/scrollbar";
 import "swiper/css/navigation";
 import "swiper/css/keyboard";
-import MediaModal from "./MediaModal";
 import Spinner from "@/components/Spinner";
+import dynamic from "next/dynamic";
+
+const MediaModal = dynamic(() => import("./MediaModal"), {
+  ssr: false,
+});
 
 export interface ProductGalleryProps {
   product: ProductDetailsFragment;
@@ -133,10 +136,16 @@ export function ProductGallery({ product, selectedVariant, placeholder }: Produc
             ))}
           </Swiper>
           <div className="swiper-navigation flex mt-4 mb-0 pb-0 float-right">
-            <button className="swiper-button-prev-mobile custom-prev inline-flex justify-center items-center w-10 h-10 border border-gray-600 hover:border-gray-700 disabled:border-gray-200 rounded-full transition-colors cursor-pointer">
+            <button
+              className="swiper-button-prev-mobile custom-prev inline-flex justify-center items-center w-10 h-10 border border-gray-600 hover:border-gray-700 disabled:border-gray-200 rounded-full transition-colors cursor-pointer"
+              aria-label="prev"
+            >
               <ChevronLeftIcon className="h-4 w-4 text-gray-500" />
             </button>
-            <button className="swiper-button-next-mobile custom-next inline-flex justify-center items-center w-10 h-10 border border-gray-600 hover:border-gray-700 disabled:border-gray-200 ml-2 rounded-full transition-colors cursor-pointer">
+            <button
+              className="swiper-button-next-mobile custom-next inline-flex justify-center items-center w-10 h-10 border border-gray-600 hover:border-gray-700 disabled:border-gray-200 ml-2 rounded-full transition-colors cursor-pointer"
+              aria-label="next"
+            >
               <ChevronRightIcon className="h-4 w-4 text-gray-500" />
             </button>
           </div>

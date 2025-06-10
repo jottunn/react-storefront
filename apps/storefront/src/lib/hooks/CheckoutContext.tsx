@@ -6,7 +6,8 @@ import { defaultRegionQuery } from "../regions";
 import { getCookie } from "../cookieUtils";
 import { Checkout } from "@/saleor/api";
 import { find } from "../checkout";
-import isEqual from "lodash.isequal";
+// @ts-ignore
+import deepEqual from "deep-eql";
 
 interface CheckoutContextType {
   checkout: Checkout | null;
@@ -61,7 +62,7 @@ const CheckoutProviderInternal = ({ children }: { children: ReactNode }) => {
     if (!checkoutId) return;
     try {
       const data = await find(checkoutId);
-      if (!isEqual(data, checkout)) {
+      if (!deepEqual(data, checkout)) {
         setCheckout(data as Checkout);
       }
     } catch (error) {

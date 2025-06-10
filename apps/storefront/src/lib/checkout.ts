@@ -13,7 +13,7 @@ import { getCurrentUser } from "src/app/actions";
 
 export async function getIdFromCookies(channel: string) {
   const cookieName = `checkoutId-${channel}`;
-  const checkoutId = cookies().get(cookieName)?.value || null;
+  const checkoutId = (await cookies()).get(cookieName)?.value || null;
   return checkoutId;
 }
 
@@ -21,7 +21,7 @@ export async function saveIdToCookie(channel: string, checkoutId: string) {
   const storefrontUrl = STOREFRONT_URL || "";
   const shouldUseHttps = storefrontUrl.startsWith("https");
   const cookieName = `checkoutId-${channel}`;
-  cookies().set(cookieName, checkoutId, {
+  (await cookies()).set(cookieName, checkoutId, {
     sameSite: "lax",
     secure: shouldUseHttps || false,
   });
@@ -85,9 +85,10 @@ export async function findOrCreate({
   }
 }
 
-export const create = ({ channel, user }: { channel: string; user: any }) =>
-  executeGraphQL<CreateCheckoutMutation, { channel: string }>(CreateCheckoutDocument, {
+export async function create({ channel, user }: { channel: string; user: any }) {
+  return executeGraphQL<CreateCheckoutMutation, { channel: string }>(CreateCheckoutDocument, {
     cache: "no-cache",
     variables: { channel },
     withAuth: user && user !== null,
   });
+}

@@ -156,13 +156,17 @@ const ManageCookies: React.FC<Props> = ({ messages }) => {
           <p className="text-gray-600 text-md">{messages["app.consent.analyticalCookiesText2"]}</p>
         </div>
         <div>
-          <label className="switch">
+          <label className="relative inline-flex items-center cursor-pointer">
             <input
               type="checkbox"
               checked={analyticalCookies}
               onChange={handleAnalyticalCookiesChange}
+              className="sr-only peer"
             />
-            <span className="slider round"></span>
+            <div
+              className="w-14 h-8 bg-gray-300 peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-1 after:left-[4px] after:bg-white after:h-6 after:w-6 after:rounded-full after:transition-all peer-checked:bg-[#0b9446] peer-disabled:bg-[#bdbdbd]"
+              style={{ borderRadius: "34px" }}
+            ></div>
           </label>
         </div>
       </div>
@@ -176,13 +180,17 @@ const ManageCookies: React.FC<Props> = ({ messages }) => {
           <p className="text-gray-600 text-md">{messages["app.consent.marketingCookiesText2"]}</p>
         </div>
         <div>
-          <label className="switch">
+          <label className="relative inline-flex items-center cursor-pointer">
             <input
               type="checkbox"
               checked={marketingCookies}
               onChange={handleMarketingCookiesChange}
+              className="sr-only peer"
             />
-            <span className="slider round"></span>
+            <div
+              className="w-14 h-8 bg-gray-300 peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-1 after:left-[4px] after:bg-white after:h-6 after:w-6 after:rounded-full after:transition-all peer-checked:bg-[#0b9446] peer-disabled:bg-[#bdbdbd]"
+              style={{ borderRadius: "34px" }}
+            ></div>
           </label>
         </div>
       </div>

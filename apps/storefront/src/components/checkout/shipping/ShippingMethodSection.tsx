@@ -34,7 +34,7 @@ export function ShippingMethodSection({ active, messages }: ShippingMethodSectio
 
   //console.log("checkout", checkout);
   if (!checkout) {
-    return;
+    return null;
   }
 
   useEffect(() => {

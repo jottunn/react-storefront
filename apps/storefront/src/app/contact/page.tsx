@@ -22,12 +22,18 @@ export default async function Page() {
     >(PageTypesDocument, {
       variables: { filter: { slugs: ["get-in-touch"] }, locale: DEFAULT_LOCALE },
       revalidate: 60 * 60,
+      withAuth: false,
     });
-  } catch {
+  } catch (error) {
+    console.error("Error fetching contact page:", error);
     return null;
   }
 
-  const contactContent = contactContentResponse.pages?.edges[0];
+  const contactContent = contactContentResponse?.pages?.edges[0];
+  if (!contactContent) {
+    return null;
+  }
+
   const contactFb = contactContent?.node?.metadata.find((m) => m.key === "facebook");
   const contactInsta = contactContent?.node?.metadata.find((m) => m.key === "instagram");
   const contactTel = contactContent?.node?.metadata.find((m) => m.key === "telefon");

@@ -1,6 +1,5 @@
 import { STOREFRONT_URL } from "@/lib/const";
 import Link from "next/link";
-import "../Button/Button.css";
 
 const ButtonLink = ({ data }: any) => {
   const url = data.buttonURL || `${STOREFRONT_URL}/${data?.page?.data?.attributes?.slug}`;

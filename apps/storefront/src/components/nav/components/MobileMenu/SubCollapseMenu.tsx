@@ -1,50 +1,36 @@
 "use client";
 
-import clsx from "clsx";
-import Link from "next/link";
 import { useState } from "react";
-import { getLinkPath } from "src/lib/menus";
 import { translate } from "src/lib/translations";
-import styles from "./BurgerMenu.module.css";
 import { CollapseMenuProps } from "./CollapseMenu";
 import NavigationAnchor from "./NavigationAnchor";
 
 function SubCollapseMenu({ menuItem }: CollapseMenuProps) {
   const [open, setOpen] = useState(false);
-  // console.log(menuItem);
-
   const shouldDisplayAnchor = !menuItem.children?.length;
 
   return (
     <div className="mt-4">
       {shouldDisplayAnchor ? (
-        <NavigationAnchor menuItem={menuItem} className={styles["collapse-sub"]} />
+        <NavigationAnchor
+          menuItem={menuItem}
+          className="text-main text-[1.5rem] font-bold leading-[1.2em] flex w-full"
+        />
       ) : (
         <>
           <button
             type="button"
-            className={clsx(styles["collapse-sub"], {
-              [styles["collapse-sub--active"]]: open,
-            })}
+            className="text-main text-[1.5rem] font-bold leading-[1.2em] flex w-full"
             onClick={() => setOpen(!open)}
           >
             {translate(menuItem, "name")}
-            {/* <ChevronDown /> */} ++
+            &nbsp;+
           </button>
           {open && (
             <div>
               {menuItem.children?.map((sub) => (
-                <li key={sub.id} className={styles["menu-link"]}>
+                <li key={sub.id} className="block mt-3 text-main-2 text-base">
                   {sub.name}
-                  {/* {sub.url ? (
-                    <a href={sub.url} target="_blank" rel="noreferrer">
-                      {sub.name}
-                    </a>
-                  ) : (
-                    <Link href={getLinkPath(sub)} passHref legacyBehavior>
-                      <a href="pass">{sub.name}</a>
-                    </Link>
-                  )} */}
                 </li>
               ))}
             </div>

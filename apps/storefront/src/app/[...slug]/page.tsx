@@ -9,17 +9,17 @@ import PageStrapi from "./PageStrapi";
 import { notFound } from "next/navigation";
 
 type Props = {
-  params: {
+  params: Promise<{
     lang: string;
     slug: string;
-  };
+  }>;
 };
 
 // Slug validation function to ensure it's a valid URL part
 const isValidSlug = (slug: string): boolean => {
   const invalidPatterns = [
     /^\./, // Prevents slugs starting with a dot
-    /\.(env|example|json|js|ts|tsx|md|html|css|scss|png|php|php5|jpg|jpeg|gif|git|svg|ico|map|world|txt|yaml|bak|prod|production)$/, // Block specific file types
+    /\.(env|example|js|ts|tsx|md|html|css|scss|png|php|php5|jpg|jpeg|gif|git|svg|ico|map|world|txt|yaml|bak|prod|production)$/, // Block specific file types
     /cgi-bin|luci|cdn-cgi|phpsysinfo|php-cgi/, // Block specific directory paths
   ];
   return !invalidPatterns.some((pattern) => pattern.test(slug));
@@ -63,7 +63,8 @@ async function fetchPageData(slug: string, lang: string) {
 }
 
 // Generate Metadata based on the fetched page data
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const currentSlug = params.slug[params.slug.length - 1];
   const lang = params.lang;
 
@@ -98,7 +99,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 // The main Page component that renders content from Saleor or Strapi
-export default async function Page({ params }: { params: { slug: string } }) {
+export default async function Page(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const currentSlug = params.slug[params.slug.length - 1];
   const lang = DEFAULT_LOCALE;
 

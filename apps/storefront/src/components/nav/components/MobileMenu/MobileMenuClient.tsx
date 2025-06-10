@@ -1,7 +1,6 @@
 "use client";
 
 import clsx from "clsx";
-import styles from "./BurgerMenu.module.css";
 import { CollapseMenu } from "./CollapseMenu";
 import { XMarkIcon, Bars3BottomLeftIcon, PowerIcon } from "@heroicons/react/24/solid";
 import { useMobileMenu } from "./useMobileMenu";
@@ -52,12 +51,20 @@ export default function MobileMenuClient({
         aria-label="Open Menu"
       />
       <div
-        className={clsx(styles.container, {
-          [styles["container--open"]]: isOpen,
-        })}
+        className={clsx(
+          "fixed top-0 right-0 w-full h-full z-50 flex justify-end transition-all duration-150",
+          {
+            "opacity-100": isOpen,
+            "opacity-0 pointer-events-none": !isOpen,
+          },
+        )}
       >
-        <div className={styles.backdrop} aria-hidden="true" onClick={closeMenu} />
-        <div className={styles.body}>
+        <div
+          className="absolute z-0 top-0 right-0 w-full h-full bg-[rgba(57,64,82,0.6)]"
+          aria-hidden="true"
+          onClick={closeMenu}
+        />
+        <div className="relative z-10 bg-white h-full overflow-y-scroll py-6 px-7 flex flex-col w-[93.846153846153846%] max-w-[366px]">
           <div className="flex justify-start w-full mb-5">
             <XMarkIcon onClick={closeMenu} className="w-8 h-8 cursor-pointer" />
           </div>

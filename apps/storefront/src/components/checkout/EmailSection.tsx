@@ -295,7 +295,7 @@ function EmailSection({ messages, user }: EmailSectionProps) {
                   <div className="col-span-full">
                     <Button
                       type="submit"
-                      className="btn-checkout-section md:w-[30%]"
+                      className="w-full bg-action-4 border border-action-3 rounded-md shadow-sm py-2 px-4 text-base font-medium hover:bg-action-2 md:w-[30%]"
                       label={messages["app.ui.saveButton"]}
                     />
                   </div>

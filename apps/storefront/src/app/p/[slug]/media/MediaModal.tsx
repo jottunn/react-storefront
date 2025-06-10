@@ -55,21 +55,7 @@ const MediaModal = ({ galleryMedia, closeModal, currentIndex, placeholder }: Ima
             <SwiperSlide key={index}>
               <div className="flex items-center justify-center h-full">
                 {media.type !== "VIDEO" ? (
-                  // <Image
-                  //   className="m-auto"
-                  //   src={media.url}
-                  //   alt={`Image ${index}`}
-                  //   fill
-                  //   sizes={'100vw'}
-                  //   style={{ objectFit: "contain" }}
-                  //   loading={index === 0 ? "eager" : "lazy"}
-                  //   {...(placeholder !== null
-                  //     ? { placeholder: "blur", blurDataURL: placeholder }
-                  //     : {})}
-                  //   unoptimized
-                  // />
-
-                  <ZoomPanImage src={media.url} alt={media.alt} />
+                  <ZoomPanImage src={media.url} alt={media.alt} unoptimized={false} />
                 ) : (
                   <div className="w-full h-full">
                     {!loaded && (

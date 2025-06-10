@@ -38,6 +38,7 @@ export const SearchBar = () => {
         <button
           type="submit"
           className="inline-flex aspect-square w-10 items-center justify-center text-neutral-500 hover:text-neutral-700 focus:text-neutral-700 group-invalid:pointer-events-none group-invalid:opacity-80 mt-1"
+          aria-label={messages["app.search.searchTitle"]}
         >
           <span className="sr-only">{messages["search"]}</span>
           <MagnifyingGlassIcon className="w-6 h-6 relative top-1" />

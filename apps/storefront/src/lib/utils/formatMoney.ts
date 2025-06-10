@@ -11,7 +11,7 @@ export const formatMoney = (price: PriceFragment) => {
       minimumFractionDigits: 0,
       maximumFractionDigits: 2,
     });
-    formatted = formatted.replace(/\./g, ""); // replace dots with spaces
+    formatted = formatted.replace(/\./g, "");
     return `${formatted} Lei`;
   } else {
     formatted = new Intl.NumberFormat("ro-RO", {
@@ -30,4 +30,26 @@ export const formatMoney = (price: PriceFragment) => {
   }
 
   return formatted;
+};
+
+export const formatMoneyRange = (
+  range: {
+    start?: { amount: number; currency: string } | null;
+    stop?: { amount: number; currency: string } | null;
+  } | null,
+) => {
+  const { start, stop } = range || {};
+  const startMoney = start ? formatMoney(start) : "";
+  const stopMoney = stop ? formatMoney(stop) : "";
+
+  if (!startMoney && !stopMoney) {
+    // Handle case where both start and stop are null/undefined
+    return "N/A";
+  }
+
+  if (startMoney === stopMoney || !stopMoney) {
+    return startMoney;
+  }
+  // Ensure that both startMoney and stopMoney are strings before concatenation
+  return `${startMoney || ""} - ${stopMoney || ""}`;
 };

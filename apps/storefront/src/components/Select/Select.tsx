@@ -7,12 +7,10 @@ import {
   useState,
 } from "react";
 import clsx from "clsx";
-
-import styles from "./Select.module.css";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
-import { ClassNames } from "../Chip/Chip";
 const PLACEHOLDER_KEY = "placeholder";
 
+type ClassNames<Keys extends string> = Partial<Record<Keys, string>>;
 export interface Option<TData extends string = string> {
   label: string | ReactNode;
   value: TData;
@@ -47,8 +45,13 @@ const SelectComponent = <TData extends string = string>(
   };
 
   return (
-    <div className={clsx(styles.container, classNames?.container)}>
-      <select {...rest} onChange={handleChange} ref={ref} className={clsx(styles.select)}>
+    <div className={clsx("relative inline-block min-w-[50px] w-full", classNames?.container)}>
+      <select
+        {...rest}
+        onChange={handleChange}
+        ref={ref}
+        className="h-10 border rounded border-gray-400 py-2 px-3 pr-12 w-full text-base appearance-none cursor-pointer disabled:pointer-events-none disabled:select-none disabled:text-gray-500 focus:border-gray-700 active:border-gray-700 focus:outline-none active:outline-none"
+      >
         {showPlaceholder && (
           <option disabled value="">
             {placeholder}
@@ -60,7 +63,7 @@ const SelectComponent = <TData extends string = string>(
           </option>
         ))}
       </select>
-      <div className={clsx(styles.icon)}>
+      <div className="absolute top-2 right-2 pl-2 border-l border-gray-500 pointer-events-none">
         <ChevronDownIcon />
       </div>
     </div>

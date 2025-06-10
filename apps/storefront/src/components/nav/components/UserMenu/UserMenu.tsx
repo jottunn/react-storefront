@@ -2,7 +2,6 @@
 import { useUser } from "@/lib/hooks/useUser";
 import { UserIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
-import styles from "../../Navbar.module.css";
 import { Messages } from "@/lib/util";
 
 interface UserMenuProps {
@@ -22,7 +21,7 @@ export default function UserMenu({ messages, display }: UserMenuProps) {
       {display && display === "footer" ? (
         <span className="text-base cursor-pointer hover:underline leading-[2rem]">Login</span>
       ) : (
-        <UserIcon className={styles["nav-icon-button"]} />
+        <UserIcon className="relative hover:text-brand w-6 h-6 flex justify-center items-center" />
       )}
     </Link>
   );

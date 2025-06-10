@@ -20,7 +20,7 @@ export function NavLink({
       href={href}
       className={clsx(
         isActive ? "border-neutral-200 text-action-1" : "border-transparent text-neutral-900",
-        "inline-flex items-center border-b pt-px text-[1.5rem] leading-[3.4rem] font-medium hover:text-action-1",
+        "inline-flex items-center border-b pt-px text-[1.5rem] leading-[3.4rem] font-semibold hover:text-action-1",
       )}
     >
       {children}

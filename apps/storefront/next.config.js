@@ -11,8 +11,7 @@ const fs = require("fs");
 const path = require("path");
 
 module.exports = withBundleAnalyzer({
-  reactStrictMode: false,
-  swcMinify: true,
+  reactStrictMode: true,
   images: {
     remotePatterns: [
       { hostname: apiURL.hostname },
@@ -27,20 +26,15 @@ module.exports = withBundleAnalyzer({
 
     formats: ["image/webp"],
     minimumCacheTTL: 31536000,
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
   },
   trailingSlash: false,
-  i18n: {
-    locales: ["en", "ro"],
-    defaultLocale: "ro",
-    localeDetection: false,
-  },
   webpack(config) {
     config.module.rules.push({
       test: /\.svg$/i,
       issuer: /\.[jt]sx?$/,
       use: ["@svgr/webpack"],
     });
-
     return config;
   },
 
@@ -78,6 +72,15 @@ module.exports = withBundleAnalyzer({
           { key: "Pragma", value: "no-cache" },
         ],
       },
+      {
+        source: "/(.*)\\.(json|csv)$",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=3600, s-maxage=3600",
+          },
+        ],
+      },
     ];
   },
   async redirects() {
@@ -99,5 +102,22 @@ module.exports = withBundleAnalyzer({
       },
     ];
   },
-  experimental: {},
+  output: "standalone",
+  outputFileTracingRoot: path.join(__dirname, "../../"),
+  experimental: {
+    optimizePackageImports: [
+      "algoliasearch",
+      "axios",
+      "bull",
+      "swiper",
+      "@bprogress/next",
+      "react-dom",
+      "@apollo/client",
+      "@headlessui/react",
+      "@heroicons/react",
+      "react-instantsearch",
+      "react-hook-form",
+      "react-zoom-pan-pinch",
+    ],
+  },
 });

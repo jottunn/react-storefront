@@ -1,5 +1,5 @@
 "use client";
-import { Description, Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
+
 import { Messages } from "@/lib/util";
 import { HeartIcon, TrashIcon } from "@heroicons/react/24/outline";
 import Spinner from "@/components/Spinner";
@@ -7,6 +7,24 @@ import { useState } from "react";
 import clsx from "clsx";
 import { updateWishlist } from "src/app/actions";
 import { useWishlist } from "@/components/WishlistProvider";
+import dynamic from "next/dynamic";
+
+const DynamicDialog = dynamic(() => import("@headlessui/react").then((mod) => mod.Dialog), {
+  ssr: false,
+});
+const DynamicDialogPanel = dynamic(
+  () => import("@headlessui/react").then((mod) => mod.DialogPanel),
+  { ssr: false },
+);
+const DynamicDialogTitle = dynamic(
+  () => import("@headlessui/react").then((mod) => mod.DialogTitle),
+  { ssr: false },
+);
+const DynamicDescription = dynamic(
+  () => import("@headlessui/react").then((mod) => mod.Description),
+  { ssr: false },
+);
+
 export function AddToWishlist({
   disabled,
   messages,
@@ -108,31 +126,33 @@ export function AddToWishlist({
           )}
         </button>
       </form>
-      <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-50">
-        <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
-          <DialogPanel className="max-w-lg space-y-4 border bg-gray-200 relative">
-            <a
-              href="#"
-              onClick={() => setIsOpen(false)}
-              className="absolute top-0 right-2 text-md font-bold hover:text-red-500"
-            >
-              X
-            </a>
-            <div className="p-12">
-              <DialogTitle className="font-bold text-md"></DialogTitle>
-              <Description className="text-md">{error}</Description>
-              <div className="flex gap-4 mt-4">
-                <button onClick={() => setIsOpen(false)} className="button button-secondary">
-                  {messages["app.ui.closeButton"]}
-                </button>
-                <a href="/login" className="button button-tertiary">
-                  Login
-                </a>
+      {isOpen && (
+        <DynamicDialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-50">
+          <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
+            <DynamicDialogPanel className="max-w-lg space-y-4 border bg-gray-200 relative">
+              <a
+                href="#"
+                onClick={() => setIsOpen(false)}
+                className="absolute top-0 right-2 text-md font-bold hover:text-red-500"
+              >
+                X
+              </a>
+              <div className="p-12">
+                <DynamicDialogTitle className="font-bold text-md"></DynamicDialogTitle>
+                <DynamicDescription className="text-md">{error}</DynamicDescription>
+                <div className="flex gap-4 mt-4">
+                  <button onClick={() => setIsOpen(false)} className="button button-secondary">
+                    {messages["app.ui.closeButton"]}
+                  </button>
+                  <a href="/login" className="button button-tertiary">
+                    Login
+                  </a>
+                </div>
               </div>
-            </div>
-          </DialogPanel>
-        </div>
-      </Dialog>
+            </DynamicDialogPanel>
+          </div>
+        </DynamicDialog>
+      )}
     </>
   );
 }

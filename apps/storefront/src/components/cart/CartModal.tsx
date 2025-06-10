@@ -5,7 +5,6 @@ import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { CheckoutLineDetailsFragment } from "@/saleor/api";
 import invariant from "ts-invariant";
 import { usePathname } from "next/navigation";
-import styles from "../nav/Navbar.module.css";
 import { CheckoutProductList } from "./CheckoutProductList";
 import { formatMoney } from "@/lib/utils/formatMoney";
 import CheckoutLink from "./CheckoutLink";
@@ -63,9 +62,12 @@ export default function CartModal({ messages }: CartModalProps) {
         id="navbar-cart-button"
       >
         {" "}
-        <span className={styles["nav-icon-button"]}>
+        <span className="relative hover:text-brand w-6 h-6 flex justify-center items-center">
           {!!counter && (
-            <span className={styles["nav-icon-counter"]} data-testid="cartCounter">
+            <span
+              className="absolute bottom-2 right-2 translate-x-[50%] translate-y-[50%] bg-brand text-white flex justify-center items-center rounded text-[1rem] leading-[1rem] h-[14px] px-1 min-w-4"
+              data-testid="cartCounter"
+            >
               {counter}
             </span>
           )}

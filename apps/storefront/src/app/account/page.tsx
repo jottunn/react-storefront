@@ -24,14 +24,14 @@ export default async function AccountPage() {
       <p className="text-lg mb-4 container">
         {user?.firstName}&nbsp;{user?.lastName}
       </p>
-      <div className="checkout-section-container mb-4">
+      <div className="bg-white rounded p-4 border mb-4">
         <EmailPreferences messages={messages} user={user as User} />
       </div>
-      <div className="checkout-section-container">
+      <div className="bg-white rounded p-4 border">
         <PasswordPreferences messages={messages} />
       </div>
 
-      <div className="checkout-section-container mt-6">
+      <div className="bg-white rounded p-4 border mt-6">
         <p className="text-md font-semibold">{messages["app.preferences.deleteAccountTitle"]}</p>
         <p className="text-sm">{messages["app.preferences.deleteAccountText"]}</p>
       </div>

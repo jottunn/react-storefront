@@ -9,7 +9,8 @@ import { notFound } from "next/navigation";
 export const dynamic = "force-dynamic";
 const messages = getMessages(DEFAULT_LOCALE);
 
-export default async function Page({ params }: { params: { id: string } }) {
+export default async function Page(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const user = await getCurrentUser();
   if (!user || user === null) {
     return (

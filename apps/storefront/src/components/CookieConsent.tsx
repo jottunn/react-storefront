@@ -78,12 +78,14 @@ const CookieConsent: React.FC<Props> = ({ messages }) => {
             onClick={handleAccept}
             variant="tertiary"
             label={messages["app.consent.acceptAll"]}
+            ariaLabel={messages["app.consent.acceptAll"]}
             className="!text-sm !normal-case"
           />
           <Button
             onClick={handleDecline}
             variant="secondary"
             label={messages["app.consent.declineAll"]}
+            ariaLabel={messages["app.consent.declineAll"]}
             className="md:ml-4 !text-sm !normal-case"
           />
         </div>

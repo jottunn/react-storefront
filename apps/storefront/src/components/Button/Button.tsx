@@ -1,6 +1,5 @@
 import { type FC, type ReactNode, type ButtonHTMLAttributes } from "react";
 import clsx from "clsx";
-import "./Button.css";
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   label: ReactNode;

@@ -26,7 +26,6 @@ export function FilterDropdown({
   optionToggle,
   options,
 }: FilterDropdownProps) {
-  // console.log('options', options);
   return (
     <Disclosure
       as="div"
@@ -101,8 +100,8 @@ export function FilterDropdown({
                     )}
                     {option.inputType === "SWATCH" &&
                       option.chosen &&
-                      option.label !== "multicolor" &&
-                      (option.label !== "alb" ? (
+                      option.label.toLowerCase() !== "multicolor" &&
+                      (option.label.toLowerCase() !== "alb" ? (
                         <svg
                           className="absolute inset-0 w-6 h-6 m-auto text-white"
                           xmlns="http://www.w3.org/2000/svg"
@@ -129,45 +128,46 @@ export function FilterDropdown({
                           />
                         </svg>
                       ))}
-                    {option.inputType === "SWATCH" && option.label === "multicolor" && (
-                      <svg
-                        className="absolute inset-0 w-full h-full rounded-full"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 100 100"
-                      >
-                        <defs>
-                          <linearGradient
-                            id={`multicolor-gradient-${option.id}`}
-                            gradientTransform="rotate(45)"
-                          >
-                            <stop offset="0%" stopColor="#4028e8" />
-                            <stop offset="30%" stopColor="#5393b3" />
-                            <stop offset="60%" stopColor="#00ff00" />
-                            <stop offset="80%" stopColor="#e6d54d" />
-                            <stop offset="100%" stopColor="#a6295e" />
-                          </linearGradient>
-                        </defs>
-                        <rect
-                          width="100"
-                          height="100"
-                          fill={`url(#multicolor-gradient-${option.id})`}
-                        />
-                        {option.chosen && (
-                          <svg
-                            className="absolute inset-0 w-6 h-6 m-auto text-white"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            fill="currentColor"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M10 18a1 1 0 01-.707-.293l-5-5a1 1 0 011.414-1.414L10 15.586l8.293-8.293a1 1 0 011.414 1.414l-9 9A1 1 0 0110 18z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                        )}
-                      </svg>
-                    )}
+                    {option.inputType === "SWATCH" &&
+                      option.label.toLowerCase() === "multicolor" && (
+                        <svg
+                          className="absolute inset-0 w-full h-full rounded-full"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 100 100"
+                        >
+                          <defs>
+                            <linearGradient
+                              id={`multicolor-gradient-${option.id}`}
+                              gradientTransform="rotate(45)"
+                            >
+                              <stop offset="0%" stopColor="#4028e8" />
+                              <stop offset="30%" stopColor="#5393b3" />
+                              <stop offset="60%" stopColor="#00ff00" />
+                              <stop offset="80%" stopColor="#e6d54d" />
+                              <stop offset="100%" stopColor="#a6295e" />
+                            </linearGradient>
+                          </defs>
+                          <rect
+                            width="100"
+                            height="100"
+                            fill={`url(#multicolor-gradient-${option.id})`}
+                          />
+                          {option.chosen && (
+                            <svg
+                              className="absolute inset-0 w-6 h-6 m-auto text-white"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
+                              fill="currentColor"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M10 18a1 1 0 01-.707-.293l-5-5a1 1 0 011.414-1.414L10 15.586l8.293-8.293a1 1 0 011.414 1.414l-9 9A1 1 0 0110 18z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          )}
+                        </svg>
+                      )}
                   </span>
                   <span className="capitalize text-left">{option.label}</span>
                 </button>

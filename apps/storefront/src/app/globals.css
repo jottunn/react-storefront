@@ -3,109 +3,85 @@
 @tailwind utilities;
 
 @layer components {
-  .checkout-section-container {
-    @apply bg-white rounded p-4 border;
-  }
-
   .checkout-section-header-active {
     @apply text-lg font-medium text-gray-900;
   }
   .checkout-section-header-disabled {
     @apply text-lg font-medium text-gray-400;
   }
+}
 
-  .btn-checkout-section {
-    @apply w-full bg-action-4 border border-action-3 rounded-md shadow-sm py-2 px-4 text-base font-medium hover:bg-action-2;
+@layer base {
+  :root {
+    --font-sans: var(--font-opensans);
+    --font-heading: var(--font-raleway);
+  }
+
+  * {
+    font-family: var(--font-sans);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  .title-font {
+    font-family: var(--font-heading);
   }
 }
 
-.dropdown:focus-within .dropdown-menu {
-  opacity: 1;
-  transform: translate(0) scale(1);
-  visibility: visible;
+.dropdown:hover .dropdown-menu {
+  @apply visible;
 }
 
 html {
   font-size: 62.5%;
   /* scroll-behavior: smooth; */
 }
-
 .country-select-container select {
   background-image: none !important;
   font-size: 1.2rem;
 }
-
 .no-margin-p p {
   margin: 0;
 }
-
-.swiper-wrapper {
-  align-items: start;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-.title-font {
-  font-family: "Raleway", sans-serif;
-}
-
-/* footer {
-    background: linear-gradient(to right, #fafbdf, #28796e);
-} */
-
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 60px;
-  height: 34px;
-}
-
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  transition: 0.4s;
-  border-radius: 34px;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 26px;
-  width: 26px;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  transition: 0.4s;
-  border-radius: 50%;
-}
-
-input:checked + .slider {
-  background-color: #0b9446;
-}
-
-input:checked + .slider:before {
-  transform: translateX(26px);
-}
-
-input:disabled + .slider {
-  background-color: #bdbdbd;
-}
-
 .prose-2xl:has(table) {
   overflow-x: auto;
+}
+
+.menu li + li {
+  @apply mt-2;
+}
+.collapsem + .collapsem {
+  @apply mt-6;
+}
+.saleor-text a,
+.prose-2xl p a {
+  @apply underline hover:text-action-1;
+}
+
+.button {
+  @apply inline-flex h-10 items-center justify-center whitespace-nowrap border active:outline-none text-sm uppercase transition duration-100;
+}
+
+.button-primary {
+  @apply border-action-1 bg-action-2 hover:bg-action-1 disabled:bg-neutral-700 text-white px-4;
+}
+
+.button-primary[aria-disabled="true"] {
+  @apply cursor-not-allowed opacity-70 hover:bg-neutral-700;
+}
+
+.button-secondary {
+  @apply border-neutral-600 hover:border-neutral-700 hover:bg-black hover:text-white active:bg-neutral-300 disabled:border-neutral-300 bg-transparent disabled:bg-transparent px-4;
+}
+
+.button-secondary[aria-disabled="true"] {
+  @apply border-neutral-300;
+}
+
+.button-tertiary {
+  @apply border-black bg-black text-white px-4 text-base hover:bg-main-1 transition-opacity;
 }

@@ -6,18 +6,16 @@ import { DEFAULT_LOCALE } from "@/lib/regions";
 import { getMessages } from "@/lib/util";
 import { executeGraphQL } from "@/lib/graphql";
 import { UserDocument, UserQuery } from "@/saleor/api";
-import { redirect } from "next/navigation";
 import Link from "next/link";
 
 export const metadata = {
   title: "Checkout",
 };
 
-export default async function CheckoutPage({
-  searchParams,
-}: {
-  searchParams: { checkout?: string; order?: string };
+export default async function CheckoutPage(props: {
+  searchParams: Promise<{ checkout?: string; order?: string }>;
 }) {
+  const searchParams = await props.searchParams;
   invariant(
     process.env.NEXT_PUBLIC_SALEOR_API_URL,
     "Missing NEXT_PUBLIC_SALEOR_API_URL env variable",

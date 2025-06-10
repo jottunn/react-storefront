@@ -4,14 +4,16 @@ const getSpacing = (base, unit, values) =>
 const spacing = getSpacing(
   0.4,
   "rem",
-  [
-    0, 0.5, 1, 1.5, 2, 2.5, 3, 4, 5, 6, 6.5, 7, 8, 10, 11, 12, 14, 16, 15, 18, 19, 21, 22, 28, 85,
-    256, 350,
-  ],
+  [0, 0.5, 1, 1.5, 2, 2.5, 3, 4, 5, 6, 6.5, 7, 8, 10, 11, 12, 14, 16, 18],
 );
 
 module.exports = {
-  content: ["./src/app/**/*.{js,ts,jsx,tsx}", "./src/components/**/*.{js,ts,jsx,tsx}"],
+  content: [
+    "./src/app/**/*.{js,ts,jsx,tsx}",
+    "./src/components/**/*.{js,ts,jsx,tsx}",
+    "./src/lib/**/*.{js,ts,jsx,tsx}",
+    "./src/**/*.module.css",
+  ],
   mode: "jit",
   theme: {
     extend: {
@@ -94,6 +96,5 @@ module.exports = {
     require("@tailwindcss/forms"),
     require("@tailwindcss/typography"),
     require("@tailwindcss/aspect-ratio"),
-    require("tailwind-scrollbar-hide"),
   ],
 };

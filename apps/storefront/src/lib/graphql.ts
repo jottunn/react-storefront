@@ -8,7 +8,7 @@ type GraphQLErrorResponse = {
   }[];
 };
 
-type GraphQLRespone<T> = { data: T } | GraphQLErrorResponse;
+type GraphQLResponse<T> = { data: T } | GraphQLErrorResponse;
 
 export async function executeGraphQL<Result, Variables>(
   operation: DocumentNode,
@@ -52,9 +52,18 @@ export async function executeGraphQL<Result, Variables>(
   };
 
   try {
-    const response = withAuth
-      ? await saleorAuthClient().fetchWithAuth(process.env.NEXT_PUBLIC_SALEOR_API_URL, input)
-      : await fetch(process.env.NEXT_PUBLIC_SALEOR_API_URL, input);
+    let response;
+    if (withAuth) {
+      const client = await saleorAuthClient();
+      response = await client.fetchWithAuth(process.env.NEXT_PUBLIC_SALEOR_API_URL, input);
+    } else {
+      response = await fetch(process.env.NEXT_PUBLIC_SALEOR_API_URL, {
+        ...input,
+        // Add these options for Next.js 15 compatibility
+        keepalive: true,
+        signal: AbortSignal.timeout(30000), // 30 second timeout
+      });
+    }
 
     if (!response.ok) {
       const body = await (async () => {
@@ -68,12 +77,12 @@ export async function executeGraphQL<Result, Variables>(
       throw new HTTPError(response, body);
     }
 
-    const body = await response.json();
+    const body = (await response.json()) as GraphQLResponse<Result>;
 
     if ("errors" in body) {
       const errorMessage = body.errors[0]?.message;
 
-      console.log("GraphQL Query:", queryString);
+      //console.log("GraphQL Query:", queryString);
       if (errorMessage === "Signature has expired" && withAuth) {
         console.log("body hh Signature has expired", body);
       } else {
@@ -81,7 +90,10 @@ export async function executeGraphQL<Result, Variables>(
         throw new GraphQLError(body);
       }
     }
-
+    // Type guard to ensure that body has data property
+    if (!("data" in body)) {
+      throw new Error("Response doesn't contain data property");
+    }
     return body.data;
   } catch (error) {
     if (error instanceof GraphQLError) {

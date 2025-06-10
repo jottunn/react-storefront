@@ -8,8 +8,14 @@ import {
   updateAddressMutation,
 } from "src/app/actions";
 import { useState } from "react";
-import { AddressForm, AddressFormData } from "@/components/account/AddressForm";
 import { Messages } from "@/lib/util";
+
+import dynamic from "next/dynamic";
+import { AddressFormData } from "@/components/account/AddressForm";
+const AddressForm = dynamic(
+  () => import("@/components/account/AddressForm").then((mod) => ({ default: mod.AddressForm })),
+  { ssr: false },
+);
 
 export interface AddressBookCardProps {
   address: AddressDetailsFragment;

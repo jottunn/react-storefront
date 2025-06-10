@@ -2,8 +2,6 @@ import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
 import { HTMLAttributes } from "react";
-import styles from "./Footer.module.css";
-import Box from "../Box";
 import {
   LanguageCodeEnum,
   MenuGetBySlugDocument,
@@ -20,7 +18,6 @@ import NewsletterSubscribe from "../Newsletter/NewsletterSubscribe";
 export type FooterProps = HTMLAttributes<HTMLElement>;
 import { getMessages } from "src/lib/util";
 import SvgSprite from "../SvgSprite";
-import CartNavItem from "../cart/CartNavItem";
 import UserMenu from "../nav/components/UserMenu/UserMenu";
 import FooterCartButton from "./FooterCartButton";
 
@@ -28,103 +25,95 @@ export default async function Footer({ className, ...rest }: FooterProps) {
   "use server";
   const messages = getMessages(DEFAULT_LOCALE, "app.nwl");
   let footerNavLinks, contactContentResponse, legalNavLinks;
-  try {
-    footerNavLinks = await executeGraphQL<
-      MenuGetBySlugQuery,
-      { slug: string; channel: string; locale: string }
-    >(MenuGetBySlugDocument, {
-      variables: { slug: "footer", ...defaultRegionQuery() },
-      revalidate: 60 * 60,
-    });
-  } catch {
-    return null;
-  }
 
   try {
-    legalNavLinks = await executeGraphQL<
-      MenuGetBySlugQuery,
-      { slug: string; channel: string; locale: string }
-    >(MenuGetBySlugDocument, {
-      variables: { slug: "legal", ...defaultRegionQuery() },
-      revalidate: 60 * 60,
-    });
-  } catch {
-    return null;
-  }
-
-  try {
-    contactContentResponse = await executeGraphQL<
-      PageTypesQuery,
-      { filter: any; locale: LanguageCodeEnum }
-    >(PageTypesDocument, {
-      variables: { filter: { slugs: ["get-in-touch"] }, locale: DEFAULT_LOCALE },
-      revalidate: 60,
-    });
-  } catch {
-    return null;
+    [footerNavLinks, legalNavLinks, contactContentResponse] = await Promise.all([
+      executeGraphQL<MenuGetBySlugQuery, { slug: string; channel: string; locale: string }>(
+        MenuGetBySlugDocument,
+        {
+          variables: { slug: "footer", ...defaultRegionQuery() },
+          revalidate: 60 * 60,
+        },
+      ),
+      executeGraphQL<MenuGetBySlugQuery, { slug: string; channel: string; locale: string }>(
+        MenuGetBySlugDocument,
+        {
+          variables: { slug: "legal", ...defaultRegionQuery() },
+          revalidate: 60 * 60,
+        },
+      ),
+      executeGraphQL<PageTypesQuery, { filter: any; locale: LanguageCodeEnum }>(PageTypesDocument, {
+        variables: { filter: { slugs: ["get-in-touch"] }, locale: DEFAULT_LOCALE },
+        revalidate: 60 * 60,
+      }),
+    ]);
+  } catch (error) {
+    // Don't return null, just continue with undefined values
+    console.error("Error fetching footer data:", error);
   }
 
   const parser = edjsHTML();
-  const contactContent = contactContentResponse.pages?.edges[0];
+  const contactContent = contactContentResponse?.pages?.edges[0];
   const contactParsedContent =
     contactContent?.node.content && parser.parse(JSON.parse(contactContent.node.content));
   const contactFb = contactContent?.node?.metadata.find((m) => m.key === "facebook");
   const contactInsta = contactContent?.node?.metadata.find((m) => m.key === "instagram");
 
   return (
-    <footer className={clsx(styles.footer, className)} {...rest}>
+    <footer className={clsx("pt-10 border-t-2", className)} {...rest}>
       <SvgSprite />
-      <Box className={styles["footer-inner"]}>
-        <div className={styles["footer-grid"]}>
+      <div className="sm:container px-6">
+        <div className="text-left md:max-w-full md:grid md:gap-4 md:grid-cols-[3fr_1fr]">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full mb-4">
-            {footerNavLinks &&
-              footerNavLinks.menu &&
-              footerNavLinks.menu.items &&
-              footerNavLinks.menu?.items.length > 0 &&
-              footerNavLinks.menu?.items?.map((item, i) => (
-                <div className="" key={item?.id}>
-                  <span className={styles["menu-heading"]}>{item?.name}</span>
-                  <ul className={styles.menu}>
-                    {i === 0 && (
-                      <li>
-                        <UserMenu display="footer" messages={messages} />
-                      </li>
-                    )}
-                    {item?.children?.map((sub) => (
-                      <li key={sub?.id}>
-                        {sub?.url ? (
-                          <Link
-                            href={sub.url}
-                            rel="noreferrer"
-                            className={styles["menu-link"]}
-                            data-testid={`footerExternalLinks${sub?.name}`}
-                          >
-                            {sub?.name}
-                          </Link>
-                        ) : (
-                          <Link
-                            href={getLinkPath(sub)}
-                            className={styles["menu-link"]}
-                            data-testid={`footerInternalLinks${sub?.name}`}
-                          >
-                            {sub?.name}
-                          </Link>
-                        )}
-                      </li>
-                    ))}
-                    {i === 0 && (
-                      <li>
-                        <FooterCartButton messages={messages} />
-                      </li>
-                    )}
-                  </ul>
-                </div>
-              ))}
+            {footerNavLinks?.menu?.items?.map((item, i) => (
+              <div key={item?.id}>
+                <span className="block text-[1.3rem] md:text-md font-bold mb-4 uppercase">
+                  {item?.name}
+                </span>
+                <ul className="list-none mb-8">
+                  {i === 0 && (
+                    <li className="mb-2">
+                      <UserMenu display="footer" messages={messages} />
+                    </li>
+                  )}
+                  {item?.children?.map((sub) => (
+                    <li key={sub?.id} className="mb-2">
+                      {sub?.url ? (
+                        <Link
+                          href={sub.url}
+                          rel="noreferrer"
+                          className="text-base cursor-pointer hover:underline"
+                          data-testid={`footerExternalLinks${sub?.name}`}
+                        >
+                          {sub?.name}
+                        </Link>
+                      ) : (
+                        <Link
+                          key={sub?.id}
+                          href={getLinkPath(sub)}
+                          className="text-base cursor-pointer hover:underline"
+                          data-testid={`footerInternalLinks${sub?.name}`}
+                        >
+                          {sub?.name}
+                        </Link>
+                      )}
+                    </li>
+                  ))}
+                  {i === 0 && (
+                    <li className="mb-2">
+                      <FooterCartButton messages={messages} />
+                    </li>
+                  )}
+                </ul>
+              </div>
+            ))}
 
-            <div className={clsx("no-margin-p mb-6 prose-2xl", styles["contact-footer"])}>
+            <div className="mb-6 prose-2xl">
               {contactContent && (
                 <>
-                  <p className={styles["menu-heading"]}>{contactContent.node.title}</p>
+                  <p className="block text-[1.3rem] md:text-md font-bold mb-4 uppercase">
+                    {contactContent.node.title}
+                  </p>
                   {contactParsedContent &&
                     contactParsedContent.map((content: any) => (
                       <div key={content} dangerouslySetInnerHTML={{ __html: xss(content) }} />
@@ -169,11 +158,12 @@ export default async function Footer({ className, ...rest }: FooterProps) {
         <div className="md:flex justify-center pt-8 pb-2 border-t border-main-6">
           <div className="flex space-x-4">
             <a href="#" className="mb-2 inline-block">
-              <img
+              <Image
                 src="/visa-master-card-logos.jpg"
                 alt="visa mastercard"
                 width="232"
                 height="54"
+                priority={false}
               />
             </a>
             <a
@@ -194,37 +184,35 @@ export default async function Footer({ className, ...rest }: FooterProps) {
             </a>
           </div>
         </div>
-      </Box>
+      </div>
       <div className="bg-gray-100 pt-8 pb-10">
         <div className="container text-center">
           <p className="text-sm md:text-base text-main-1 flex-grow text-left mb-4 block md:inline">
             © Copyright {new Date().getFullYear()} Surmont Shop. Toate drepturile rezervate.
             <span className="pl-6 hidden md:inline">|</span>
           </p>
-          {legalNavLinks &&
-            legalNavLinks.menu &&
-            legalNavLinks.menu.items &&
-            legalNavLinks.menu?.items.length > 0 &&
-            legalNavLinks.menu?.items?.map((item, i) =>
-              item?.url ? (
-                <Link
-                  href={item.url}
-                  rel="noreferrer"
-                  className="text-sm md:text-base px-4 hover:text-action-1 hover:underline inline-block pb-2"
-                  data-testid={`footerExternalLinks${item?.name}`}
-                >
-                  {item?.name}
-                </Link>
-              ) : (
-                <Link
-                  href={getLinkPath(item)}
-                  className="text-sm md:text-base px-4 hover:text-action-1 hover:underline inline-block pb-2"
-                  data-testid={`footerInternalLinks${item?.name}`}
-                >
-                  {item?.name}
-                </Link>
-              ),
-            )}
+          {legalNavLinks?.menu?.items?.map((item, i) =>
+            item?.url ? (
+              <Link
+                key={`legal${i}`}
+                href={item.url}
+                rel="noreferrer"
+                className="text-sm md:text-base px-4 hover:text-action-1 hover:underline inline-block pb-2"
+                data-testid={`footerExternalLinks${item?.name}`}
+              >
+                {item?.name}
+              </Link>
+            ) : (
+              <Link
+                key={`legal${i}`}
+                href={getLinkPath(item)}
+                className="text-sm md:text-base px-4 hover:text-action-1 hover:underline inline-block pb-2"
+                data-testid={`footerInternalLinks${item?.name}`}
+              >
+                {item?.name}
+              </Link>
+            ),
+          )}
         </div>
       </div>
     </footer>

@@ -6,8 +6,6 @@ import Script from "next/script";
 import xss from "xss";
 import { STOREFRONT_URL } from "@/lib/const";
 const edjsParser = edjsHTML();
-import styles from "./Page.module.css";
-import clsx from "clsx";
 import { getMessages, getMetadataValue } from "@/lib/util";
 import ReturnForm from "@/components/Return/ReturnForm";
 import { DEFAULT_LOCALE } from "@/lib/regions";
@@ -54,10 +52,7 @@ export default function PageSaleor({ page }: Props) {
         <h1 className="text-4xl font-bold pb-6" data-testid={`titleOf${page.title}`}>
           {page.title}
         </h1>
-        <div
-          dangerouslySetInnerHTML={{ __html: xss(parsedContent) }}
-          className={clsx(styles["saleor-text"])}
-        />
+        <div dangerouslySetInnerHTML={{ __html: xss(parsedContent) }} className="saleor-text" />
         {richTextAttributes && richTextAttributes.length > 0 && (
           <div className="container flex flex-col md:flex-row">
             {richTextAttributes.map((attr, index) =>

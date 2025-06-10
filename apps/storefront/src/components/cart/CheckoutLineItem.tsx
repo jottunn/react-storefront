@@ -121,30 +121,26 @@ export default function CheckoutLineItem({ line, messages }: CheckoutLineItemPro
         className="items-center mb-2 md:space-x-4 cursor-pointer grid grid-cols-[80px_auto_100px]"
         data-testid={`cartProductItem${line.variant.product.name}`}
       >
-        <Link href={getProductLink()} passHref legacyBehavior>
-          <a href="pass">
-            <div className="flex-shrink-0 w-16 h-16 sm:w-32 sm:h-32 border object-cover relative">
-              {primaryMedia && (
-                <Image
-                  src={primaryMedia.url || "#"}
-                  alt={primaryMedia.alt || ""}
-                  fill={true}
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  style={{ objectFit: "contain" }}
-                  className="hover:scale-110 ease-in duration-300"
-                />
-              )}
-            </div>
-          </a>
+        <Link href={getProductLink()}>
+          <div className="flex-shrink-0 w-16 h-16 sm:w-32 sm:h-32 border object-cover relative">
+            {primaryMedia && (
+              <Image
+                src={primaryMedia.url || "#"}
+                alt={primaryMedia.alt || ""}
+                fill={true}
+                sizes="(max-width: 768px) 100vw, 33vw"
+                style={{ objectFit: "contain" }}
+                className="hover:scale-110 ease-in duration-300"
+              />
+            )}
+          </div>
         </Link>
 
         <div className="pr-3">
-          <Link href={getProductLink()} passHref legacyBehavior>
-            <a href="pass">
-              <p className="text-md text-white-500 dark:text-white-400 hover:text-action-1 break-words">
-                {translate(line.variant.product, "name")}
-              </p>
-            </a>
+          <Link href={getProductLink()}>
+            <p className="text-md text-white-500 dark:text-white-400 hover:text-action-1 break-words">
+              {translate(line.variant.product, "name")}
+            </p>
           </Link>
           <p
             className="text-md text-neutral-800 dark:text-neutral-400 break-words"

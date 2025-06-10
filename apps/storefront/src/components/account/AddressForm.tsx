@@ -421,7 +421,7 @@ export function AddressForm({
           ) : (
             <Button
               label={messages["app.ui.saveButton"] || "Save"}
-              className="btn-checkout-section"
+              className="w-full bg-action-4 border border-action-3 rounded-md shadow-sm py-2 px-4 text-base font-medium hover:bg-action-2"
               type="submit"
             />
           )}

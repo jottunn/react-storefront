@@ -3,10 +3,23 @@ import React, { useState } from "react";
 import { CheckoutDetailsFragment } from "@/saleor/api";
 import EmailSection from "./EmailSection";
 import BillingAddressSection from "./address/BillingAddressSection";
-import ShippingAddressSection from "./shipping/ShippingAddressSection";
-import ShippingMethodSection from "./shipping/ShippingMethodSection";
-import PaymentSection from "./payments/PaymentSection";
 import { useCheckout } from "@/lib/hooks/CheckoutContext";
+import dynamic from "next/dynamic";
+import Spinner from "../Spinner";
+const ShippingAddressSection = dynamic(() => import("./shipping/ShippingAddressSection"), {
+  ssr: false,
+  loading: () => <Spinner />,
+});
+
+const ShippingMethodSection = dynamic(() => import("./shipping/ShippingMethodSection"), {
+  ssr: false,
+  loading: () => <Spinner />,
+});
+
+const PaymentSection = dynamic(() => import("./payments/PaymentSection"), {
+  ssr: false,
+  loading: () => <Spinner />,
+});
 
 interface CollapsedSections {
   billingAddress: boolean;
@@ -58,11 +71,11 @@ function CheckoutForm({ messages, user }: CheckoutFormProps) {
   const collapsedSections = sectionsManager(checkout);
   return (
     <section className="flex flex-auto flex-col overflow-y-auto px-4 pt-4 space-y-4 pb-4">
-      <div className="checkout-section-container">
+      <div className="bg-white rounded p-4 border">
         {/* @ts-expect-error Async Server Component   */}
         <EmailSection messages={messages} user={user} />
       </div>
-      <div className="checkout-section-container">
+      <div className="bg-white rounded p-4 border">
         {/* @ts-expect-error Async Server Component  */}
         <BillingAddressSection
           active={!collapsedSections.billingAddress}
@@ -86,8 +99,7 @@ function CheckoutForm({ messages, user }: CheckoutFormProps) {
       </div>
 
       {checkout.isShippingRequired && !sameAddress && (
-        <div className="checkout-section-container">
-          {/* @ts-expect-error Async Server Component  */}
+        <div className="bg-white rounded p-4 border">
           <ShippingAddressSection
             active={!collapsedSections.shippingAddress}
             messages={messages}
@@ -96,13 +108,12 @@ function CheckoutForm({ messages, user }: CheckoutFormProps) {
         </div>
       )}
       {checkout.isShippingRequired && (
-        <div className="checkout-section-container">
-          {/* @ts-expect-error Async Server Component  */}
+        <div className="bg-white rounded p-4 border">
           <ShippingMethodSection active={!collapsedSections.deliveryMethod} messages={messages} />
         </div>
       )}
 
-      <div className="checkout-section-container">
+      <div className="bg-white rounded p-4 border">
         <PaymentSection active={!collapsedSections.payment} messages={messages} />
       </div>
     </section>

@@ -37,7 +37,7 @@ const ZoomPanImage = ({ src, alt, unoptimized }: ZoomPanImageProps) => {
               sizes="100vw"
               style={{ width: "100%", height: "auto", maxHeight: "100vh" }}
               loading="lazy"
-              {...(unoptimized !== true ? { unoptimized: true } : {})}
+              {...(unoptimized !== true ? {} : { unoptimized: true })}
             />
           </TransformComponent>
         </>

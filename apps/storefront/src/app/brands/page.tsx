@@ -56,12 +56,12 @@ export default async function Page() {
           __html: JSON.stringify(jsonLd),
         }}
       />
-      <header className="mb-4 pb-6 border-b border-main-6">
-        <div className="bg-main-7 border-b md:mb-8">
+      <header className="mb-4 border-b border-main-6">
+        <div className="bg-main-7 border-b md:mb-2">
           <Breadcrumbs items={breadcrumbItems} />
         </div>
-        <div className="container px-8">
-          <PageHero title="Brands" description="" />
+        <div className="container p-6">
+          <PageHero title="Brands" />
         </div>
       </header>
 

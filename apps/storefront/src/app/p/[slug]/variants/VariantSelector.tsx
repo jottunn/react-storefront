@@ -9,11 +9,14 @@ import { ATTR_COLOR_COMMERCIAL_SLUG, ATTR_COLOR_SLUG } from "@/lib/const";
 import { Messages } from "@/lib/util";
 import { formatMoney } from "@/lib/utils/formatMoney";
 import VariantSelectorClient from "./VariantSelectorClient";
-import SizeGuide from "./SizeGuide";
 import { VariantColorSelector } from "./VariantColorSelector";
 import { AddButton } from "../AddButton";
 import { AddToWishlist } from "../AddToWishlist";
 import React from "react";
+import dynamic from "next/dynamic";
+
+const SizeGuide = dynamic(() => import("./SizeGuide"), { ssr: false });
+
 export interface VariantSelectorProps {
   product: ProductDetailsFragment;
   selectedVariant?: ProductVariantDetailsFragment | null;

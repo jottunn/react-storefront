@@ -17,7 +17,7 @@ export interface ShippingAddressSectionProps {
 function ShippingAddressSection({ active, user, messages }: ShippingAddressSectionProps) {
   const { checkout, refreshCheckout } = useCheckout();
   if (!checkout) {
-    return;
+    return null;
   }
   const [editing, setEditing] = useState(false);
   const [formErrors, setFormErrors] = useState<CheckoutError[]>([]);
