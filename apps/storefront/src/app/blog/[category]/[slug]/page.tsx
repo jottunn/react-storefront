@@ -56,7 +56,10 @@ async function fetchSinglePageData(
   return null;
 }
 
-export async function generateMetadata({ params }: { params: { category: string; slug: string } }) {
+export async function generateMetadata(props: {
+  params: Promise<{ category: string; slug: string }>;
+}) {
+  const params = await props.params;
   const { slug } = params;
   const blog = await fetchSinglePageData("blogs", DEFAULT_LOCALE, { slug }, slug);
 
@@ -85,7 +88,8 @@ export async function generateMetadata({ params }: { params: { category: string;
   };
 }
 
-export default async function Page({ params }: { params: { category: string; slug: string } }) {
+export default async function Page(props: { params: Promise<{ category: string; slug: string }> }) {
+  const params = await props.params;
   const slug = params.slug;
   const messages = getMessages(defaultRegionQuery().locale, "app.blog");
   // Fetch the page data from Saleor or Strapi
@@ -135,21 +139,18 @@ export default async function Page({ params }: { params: { category: string; slu
           <Breadcrumbs items={breadcrumbItems} />
         </div>
       </header>
-      <main className="pt-6 pb-12 text-base space-y-8 container m-auto">
-        <div className="px-8 md:max-w-[70%] m-auto space-y-6 pb-8 md:pb-24">
-          <div className="flex space-x-4">
-            <div className="p-2">
-              {categories &&
-                categories.map((category: any) => (
-                  <Link href={`/blog/${category.attributes.slug}`} className="hover:text-action-1">
-                    <span className="bg-gray-200 p-2 mr-4">{category.attributes.title}</span>
-                  </Link>
-                ))}
-            </div>
-            <div className="p-2">{authors.map((author: any) => author.attributes.name)}</div>
+      <main className="pt-6 pb-12 text-base space-y-6 container m-auto">
+        <div className="px-8 md:max-w-[70%] m-auto">
+          <h1 className="text-4xl leading-[3rem] md:text-[3rem] md:leading-[3.5rem] uppercase">
+            {article.title}
+          </h1>
+          <div className="text-main-2 pt-2">
+            de&nbsp;
+            <span className="uppercase">
+              {authors.map((author: any) => author.attributes.name)}
+            </span>
           </div>
-          <h1 className="text-xl pt-4">{article.title}</h1>
-          <p>{article.excerpt}</p>
+          <p className="pt-6">{article.excerpt}</p>
         </div>
         <div className="w-full">
           <Image
@@ -162,16 +163,20 @@ export default async function Page({ params }: { params: { category: string; slu
             className="w-full"
           />
         </div>
-        <div className="px-8 md:max-w-[70%] m-auto pt-8 md:pt-24">
+        <div className="px-8 md:max-w-[70%] m-auto">
           {postContent &&
             postContent.length > 0 &&
             postContent.map((section: any, index: number) => sectionRenderer(section, index))}
         </div>
         <div className="px-8 md:max-w-[70%] m-auto pb-12">
           {tags &&
-            tags.map((tag: any) => (
-              <Link href={`/blog/tags/${tag.attributes.slug}`} className="hover:text-action-1">
-                <span className="p-2 mr-4 font-bold">#{tag.attributes.title}</span>
+            tags.map((tag: any, index: any) => (
+              <Link
+                href={`/blog/tags/${tag.attributes.slug}`}
+                className="hover:text-action-1 uppercase inline-block"
+                key={`tag${index}`}
+              >
+                <span className="mr-4 font-bold">#{tag.attributes.title}</span>
               </Link>
             ))}
         </div>
@@ -190,30 +195,27 @@ export default async function Page({ params }: { params: { category: string; slu
                       );
                       const relatedCategory = related.attributes.categories.data[0];
                       return (
-                        <>
-                          <Link
-                            href={`/blog/${relatedCategory.attributes.slug || "bikes"}/${related.attributes.slug}`}
-                            key={`related${index}`}
-                          >
-                            <div className="space-y-4 mb-12 hover:text-gray-700">
-                              <Image
-                                src={relatedImgUrl || ""}
-                                alt={
-                                  related.attributes.coverImage.data.attributes.alternativeText ||
-                                  ""
-                                }
-                                priority={false}
-                                loading="lazy"
-                                className="hover:brightness-125 hover:contrast-115 transition-all duration-30"
-                                sizes="(max-width: 640px) 100vw, 100vw"
-                                width={500}
-                                height={400}
-                              />
-                              <h3 className="text-md font-bold">{related.attributes.title}</h3>
-                              <p className="text-base">{related.attributes.excerpt}</p>
-                            </div>
-                          </Link>
-                        </>
+                        <Link
+                          href={`/blog/${relatedCategory.attributes.slug || "bikes"}/${related.attributes.slug}`}
+                          key={`related${index}`}
+                        >
+                          <div className="space-y-4 mb-12 hover:text-gray-700">
+                            <Image
+                              src={relatedImgUrl || ""}
+                              alt={
+                                related.attributes.coverImage.data.attributes.alternativeText || ""
+                              }
+                              priority={false}
+                              loading="lazy"
+                              className="hover:brightness-110 hover:contrast-115 transition-all duration-30"
+                              sizes="(max-width: 640px) 100vw, 100vw"
+                              width={500}
+                              height={400}
+                            />
+                            <h3 className="text-md font-bold">{related.attributes.title}</h3>
+                            <p className="text-base">{related.attributes.excerpt}</p>
+                          </div>
+                        </Link>
                       );
                     }
                   })}

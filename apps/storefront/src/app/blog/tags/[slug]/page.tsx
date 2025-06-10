@@ -41,7 +41,8 @@ async function fetchPageData(collectionSlug: string, lang: string, page: number,
   return null;
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const displayBlogs = await fetchPageData("blogs", DEFAULT_LOCALE, 1, params.slug);
   if (!displayBlogs || displayBlogs.blogs.data.length === 0) return notFound();
 
@@ -61,7 +62,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default async function Page({ params }: { params: { slug: string; page: number } }) {
+export default async function Page(props: { params: Promise<{ slug: string; page: number }> }) {
+  const params = await props.params;
   const currentPage = Number(params.page) || 1;
   const displayBlogs = await fetchPageData("blogs", DEFAULT_LOCALE, currentPage, params.slug);
   if (!displayBlogs || displayBlogs.blogs.data.length === 0) return notFound();

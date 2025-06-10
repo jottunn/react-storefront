@@ -8,7 +8,7 @@ export async function getCollectionBySlug(
   queryFilters?: {} | undefined,
   populate?: {} | undefined,
 ) {
-  const token = process.env.NEXT_PUBLIC_STRAPI_API_TOKEN;
+  const token = process.env.STRAPI_API_TOKEN;
 
   const path = `/${collectionSlug}`;
   const urlParamsObject = {

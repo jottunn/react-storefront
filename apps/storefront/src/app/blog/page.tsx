@@ -44,15 +44,17 @@ export const metadata = {
   },
 };
 
-export default async function Page({ searchParams }: { searchParams: { page: string } }) {
+export default async function Page(props: { searchParams: Promise<{ page: string }> }) {
+  const searchParams = await props.searchParams;
   const lang = DEFAULT_LOCALE;
   const currentPage = Number(searchParams.page) || 1;
 
   const displayBlogs = await fetchPageData("blogs", lang, currentPage);
+
   if (!displayBlogs) return notFound();
 
   const { data, meta } = displayBlogs.blogs;
-  const totalPages = Math.ceil(meta.pagination.total / ITEMS_PER_PAGE);
+  const totalPages = meta ? Math.ceil(meta.pagination.total / ITEMS_PER_PAGE) : 20;
   const breadcrumbItems = [{ name: "Home", href: "/" }, { name: "Blog" }];
 
   const jsonLd = {

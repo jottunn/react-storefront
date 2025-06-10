@@ -13,7 +13,7 @@ export function BlogItem({ blog }: { blog: any }) {
     <Link href={`/blog/${category}/${blogData.slug}`}>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-[45%_55%] md:items-center md:border-t md:border-gray-200 mb-8 md:mb-2 hover:text-gray-700">
         <div>
-          <h2 className="text-lg">{blogData.title}</h2>
+          <h2 className="text-lg uppercase pt-2">{blogData.title}</h2>
           <p>{blogData.excerpt}</p>
         </div>
 
@@ -22,7 +22,7 @@ export function BlogItem({ blog }: { blog: any }) {
           alt={coverImage.alternativeText || ""}
           priority={false}
           loading="lazy"
-          className="hover:brightness-125 hover:contrast-115 transition-all duration-30"
+          className="hover:brightness-105 hover:contrast-115 transition-all duration-30"
           sizes="(max-width: 640px) 100vw, 100vw"
           width={700}
           height={600}
