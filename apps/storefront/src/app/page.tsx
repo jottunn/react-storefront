@@ -1,4 +1,4 @@
-import { getMessages, getMetadataValue, getNumColumns, getOrderValue } from "src/lib/util";
+import { getMessages, getMetadataValue, getNumColumns } from "src/lib/util";
 import { DEFAULT_LOCALE, defaultRegionQuery } from "src/lib/regions";
 import { executeGraphQL } from "@/lib/graphql";
 import {
@@ -30,8 +30,7 @@ import SwiperComponent from "@/components/SwiperComponent";
 import HomepageBlock from "@/components/homepage/HomepageBlock";
 import Link from "next/link";
 import Image from "next/image";
-import Carousel from "@/components/homepage/Carousel";
-import VideoBanner from "@/components/homepage/VideoBanner";
+import MainBanner from "@/components/homepage/MainBanner";
 
 const parser = edjsHTML();
 const emptyTagsRegex = /^<[^>]+>\s*(<br\s*\/?>)?\s*<\/[^>]+>$/;
@@ -257,29 +256,23 @@ export default async function Home() {
 
   return (
     <>
-      <div
-        className={`flex overflow-hidden mb-1 md:mb-1 !px-0 ${bannerContainerSize && bannerContainerSize === "YES" ? "" : "max-w-[1920px] mx-auto"}`}
-      >
-        {displayVideo && displayVideo.value === "YES" ? (
-          <VideoBanner
-            videoUrl={typeof videoUrl === "string" ? videoUrl : "#"}
-            thumbnailUrl={typeof videoBannerPath === "string" ? videoBannerPath : "#"}
-            title=""
-            aspectRatio={aspectRatio || "16/9"}
-            transitionDuration={1500}
-            objectFit="cover"
-          />
-        ) : (
-          <Carousel slides={displayHomepageCarousel} carouselW={carouselW} carouselH={carouselH} />
-        )}
-      </div>
-      <div className="block p-0">
+      <MainBanner
+        displayVideo={displayVideo}
+        videoUrl={videoUrl}
+        videoBannerPath={videoBannerPath}
+        aspectRatio={aspectRatio}
+        displayHomepageCarousel={displayHomepageCarousel}
+        carouselW={carouselW}
+        carouselH={carouselH}
+        bannerContainerSize={bannerContainerSize}
+      />
+      <div className="block p-0 max-w-[1920px] mx-auto">
         {displayHomepageBanners && displayHomepageBanners.length > 0 && (
           <div
             className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-${numColumnsHPBanners} gap-4 my-4`}
           >
-            {displayHomepageBanners.map((banner) => (
-              <HomepageBlock key={banner.id} item={banner} type="homepage" />
+            {displayHomepageBanners.map((banner, index) => (
+              <HomepageBlock key={banner.id} item={banner} type="homepage" index={index} />
             ))}
           </div>
         )}
@@ -298,10 +291,16 @@ export default async function Home() {
               {messages["app.search.outletTitle"]}
             </h2>
             <div className="swiper-navigation flex mb-8">
-              <button className="swiper-button-prev-sales custom-prev inline-flex justify-center items-center w-10 h-10 border border-gray-600 hover:border-gray-700 disabled:border-gray-200 rounded-full transition-colors cursor-pointer">
+              <button
+                className="swiper-button-prev-sales custom-prev inline-flex justify-center items-center w-10 h-10 border border-gray-600 hover:border-gray-700 disabled:border-gray-200 rounded-full transition-colors cursor-pointer"
+                aria-label="prev"
+              >
                 <ChevronLeftIcon className="h-6 w-6 text-gray-500" />
               </button>
-              <button className="swiper-button-next-sales ew custom-next inline-flex justify-center items-center w-10 h-10 border border-gray-600 hover:border-gray-700 disabled:border-gray-200 ml-2 rounded-full transition-colors cursor-pointer">
+              <button
+                className="swiper-button-next-sales ew custom-next inline-flex justify-center items-center w-10 h-10 border border-gray-600 hover:border-gray-700 disabled:border-gray-200 ml-2 rounded-full transition-colors cursor-pointer"
+                aria-label="next"
+              >
                 <ChevronRightIcon className="h-6 w-6 text-gray-500" />
               </button>
             </div>
@@ -328,10 +327,16 @@ export default async function Home() {
                 {messages["app.newProducts"]}
               </h2>
               <div className="swiper-navigation flex mb-8">
-                <button className="swiper-button-prev-new custom-prev inline-flex justify-center items-center w-10 h-10 border border-gray-600 hover:border-gray-700 disabled:border-gray-200 rounded-full transition-colors cursor-pointer">
+                <button
+                  className="swiper-button-prev-new custom-prev inline-flex justify-center items-center w-10 h-10 border border-gray-600 hover:border-gray-700 disabled:border-gray-200 rounded-full transition-colors cursor-pointer"
+                  aria-label="prev"
+                >
                   <ChevronLeftIcon className="h-6 w-6 text-gray-500" />
                 </button>
-                <button className="swiper-button-next-new custom-next inline-flex justify-center items-center w-10 h-10 border border-gray-600 hover:border-gray-700 disabled:border-gray-200 ml-2 rounded-full transition-colors cursor-pointer">
+                <button
+                  className="swiper-button-next-new custom-next inline-flex justify-center items-center w-10 h-10 border border-gray-600 hover:border-gray-700 disabled:border-gray-200 ml-2 rounded-full transition-colors cursor-pointer"
+                  aria-label="next"
+                >
                   <ChevronRightIcon className="h-6 w-6 text-gray-500" />
                 </button>
               </div>
