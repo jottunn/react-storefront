@@ -42,31 +42,33 @@ export const getSelectedVariantID = (product: ProductDetailsFragment, router?: N
   return undefined;
 };
 
-function groupVariantsByColor(variants: ProductVariantDetailsFragment[]) {
+function groupVariantsByColor(variants: ProductVariantDetailsFragment[], all = false) {
   const map = new Map<string, ProductVariantDetailsFragment[]>();
 
   variants.forEach((variant) => {
-    if (variant.quantityAvailable && variant.quantityAvailable > 0) {
-      let colorValue: string | undefined | null;
-      // Check for ATTR_COLOR_COMMERCIAL_SLUG first
-      const commercialColorAttr = variant.attributes.find(
-        (attr) => attr.attribute.slug === ATTR_COLOR_COMMERCIAL_SLUG,
-      );
-      if (commercialColorAttr) {
-        colorValue = commercialColorAttr.values[0]?.name;
-      }
-      // If no commercial color found, check for ATTR_COLOR_SLUG
-      if (!colorValue) {
-        const defaultColorAttr = variant.attributes.find(
-          (attr) => attr.attribute.slug === ATTR_COLOR_SLUG,
-        );
-        colorValue = defaultColorAttr?.values[0]?.name || "";
-      }
-      if (!map.has(colorValue)) {
-        map.set(colorValue, []);
-      }
-      map.get(colorValue)!.push(variant);
+    // Skip variants with no quantity if all=false
+    if (!all && (!variant.quantityAvailable || variant.quantityAvailable <= 0)) {
+      return;
     }
+    let colorValue: string | undefined | null;
+    // Check for ATTR_COLOR_COMMERCIAL_SLUG first
+    const commercialColorAttr = variant.attributes.find(
+      (attr) => attr.attribute.slug === ATTR_COLOR_COMMERCIAL_SLUG,
+    );
+    if (commercialColorAttr) {
+      colorValue = commercialColorAttr.values[0]?.name;
+    }
+    // If no commercial color found, check for ATTR_COLOR_SLUG
+    if (!colorValue) {
+      const defaultColorAttr = variant.attributes.find(
+        (attr) => attr.attribute.slug === ATTR_COLOR_SLUG,
+      );
+      colorValue = defaultColorAttr?.values[0]?.name || "";
+    }
+    if (!map.has(colorValue)) {
+      map.set(colorValue, []);
+    }
+    map.get(colorValue)!.push(variant);
   });
 
   return map;
@@ -76,13 +78,13 @@ export interface GroupedProduct extends Product {
   colorGroup?: string;
 }
 
-export const groupProductsByColor = (products: Product[]): GroupedProduct[] => {
+export const groupProductsByColor = (products: Product[], all = false): GroupedProduct[] => {
   const groupedProducts: GroupedProduct[] = [];
   products.forEach((product) => {
     // Check if the product has variants
     if (product.variants && product.variants.length > 0) {
       // Group variants by color
-      const colorGroups = groupVariantsByColor(product.variants);
+      const colorGroups = groupVariantsByColor(product.variants, all);
       // For each color group, create a new product entry
       colorGroups.forEach((variants, color) => {
         const newProduct = {

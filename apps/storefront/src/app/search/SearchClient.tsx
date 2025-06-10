@@ -2,13 +2,18 @@
 
 import React, { useEffect, useState } from "react";
 import { useDebounce } from "react-use";
-import { useSearchParams } from "next/navigation";
+import { useQueryState } from "nuqs";
 import { ProductFilterInput } from "@/saleor/api";
 import { algoliaClient } from "@/lib/searchClient";
-import FilteredProductList from "@/components/productList/FilteredProductList";
 import { SearchIndex } from "algoliasearch";
 import { Messages } from "@/lib/util";
-import CustomSearchBox from "@/components/nav/components/Search/SearchBox";
+import dynamic from "next/dynamic";
+import { getProductCollectionData } from "../actions";
+
+const CustomSearchBox = dynamic(() => import("@/components/nav/components/Search/SearchBox"), {
+  ssr: false,
+});
+const Products = dynamic(() => import("@/components/productList/products"), { ssr: false });
 
 interface Hit {
   objectID: string;
@@ -17,15 +22,18 @@ interface Hit {
 }
 
 interface SearchClientProps {
+  productCollection: any;
   messages: Messages;
 }
 
-const SearchClient = ({ messages }: SearchClientProps) => {
-  const searchParams = useSearchParams();
-  const searchQuery = searchParams.get("query");
+const SearchClient = ({
+  productCollection: productCollectionInitial,
+  messages,
+}: SearchClientProps) => {
   const [productsIds, setProductsIds] = useState<string[]>([]);
-  const [displayedSearchQuery, setDisplayedSearchQuery] = useState("");
+  const [productCollection, setProductCollection] = useState(productCollectionInitial);
   const [debouncedFilter, setDebouncedFilter] = useState<ProductFilterInput>({});
+  const [searchQuery, setSearchQuery] = useQueryState("query", { shallow: false });
 
   useDebounce(
     () => {
@@ -48,9 +56,18 @@ const SearchClient = ({ messages }: SearchClientProps) => {
           );
           const results = await index.search<Hit>(searchQuery);
           const hits = results.hits;
-          console.log(hits);
+          //console.log('hits', hits);
           const ids = hits.map((hit) => hit.productId);
-          setProductsIds(ids);
+          const newProductCollection = await getProductCollectionData({
+            filters: [],
+            ...(ids?.length && { productsIDs: ids }),
+            sortBy: "",
+            messages,
+          });
+          if (newProductCollection?.products?.length && newProductCollection.products.length > 0) {
+            setProductCollection(newProductCollection);
+            setProductsIds(ids);
+          }
         } catch (error) {
           console.error("Algolia search error: ", error);
           // Fallback logic here
@@ -59,28 +76,51 @@ const SearchClient = ({ messages }: SearchClientProps) => {
     };
 
     if (searchQuery !== null) {
-      setDisplayedSearchQuery(searchQuery);
       fetchProductIds();
+    } else {
+      setProductsIds([]);
+      setDebouncedFilter({});
     }
   }, [searchQuery]);
 
+  useEffect(() => {
+    if (JSON.stringify(productCollection) !== JSON.stringify(productCollectionInitial)) {
+      setProductCollection(productCollectionInitial);
+    }
+  }, [productCollectionInitial]);
+
   return (
     <>
-      {searchQuery !== null ? (
+      {searchQuery !== "" ? (
         <>
-          <p className="font-semibold text-xl mb-5">
-            {messages["app.search.searchHeader"]} &nbsp;
-            {displayedSearchQuery && <span className="text-action-1">{displayedSearchQuery}</span>}
-          </p>
-          {Object.keys(debouncedFilter).length > 0 &&
-            (productsIds.length > 0 ? (
-              <FilteredProductList productsIDs={productsIds} messages={messages} />
-            ) : (
-              <FilteredProductList search={debouncedFilter} messages={messages} />
-            ))}
+          <main>
+            <div className="container px-8 mt-4 mb-12 md:mb-40 min-h-[600px]">
+              {Object.keys(debouncedFilter).length > 0 &&
+                (productsIds.length > 0 ? (
+                  <Products
+                    productCollection={productCollection}
+                    productsIDs={productsIds}
+                    messages={messages}
+                  />
+                ) : (
+                  <Products
+                    productCollection={productCollection}
+                    search={debouncedFilter}
+                    messages={messages}
+                  />
+                ))}
+            </div>
+          </main>
         </>
       ) : (
-        <CustomSearchBox />
+        <main>
+          <div className="container px-8 mt-4 mb-40">
+            <CustomSearchBox
+              expanded={true}
+              onSearch={(value: string | null) => setSearchQuery(value)}
+            />
+          </div>
+        </main>
       )}
     </>
   );

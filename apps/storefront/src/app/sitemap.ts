@@ -14,7 +14,7 @@ import {
   ProductFilterInput,
 } from "@/saleor/api";
 import { GroupedProduct, groupProductsByColor } from "@/lib/product";
-import { GRAPHQL_PAGINATION_LIMIT, STOREFRONT_URL } from "@/lib/const";
+import { ATTR_COLOR_COMMERCIAL_SLUG, GRAPHQL_PAGINATION_LIMIT, STOREFRONT_URL } from "@/lib/const";
 import { defaultRegionQuery } from "@/lib/regions";
 
 export async function getSitemapCategories() {
@@ -38,7 +38,10 @@ export async function getSitemapCategories() {
       const sitemapCategories = categories ? mapEdgesToItems(categories) : [];
       const categoryUrls = sitemapCategories.map(({ slug, updatedAt }) => ({
         url: `${STOREFRONT_URL}/c/${slug}`,
-        lastModified: updatedAt,
+        lastModified: updatedAt
+          ? new Date(updatedAt).toISOString().replace(/\.\d+Z$/, "Z")
+          : new Date().toISOString().replace(/\.\d+Z$/, "Z"),
+        changeFrequency: "daily" as "daily",
       }));
       return [...categoryUrls];
     }
@@ -69,7 +72,8 @@ export async function getSitemapCollections() {
       const sitemapCollections = collections ? mapEdgesToItems(collections) : [];
       const collectionUrls = sitemapCollections.map(({ slug }) => ({
         url: `${STOREFRONT_URL}/collections/${slug}`,
-        lastModified: new Date().toISOString(),
+        lastModified: new Date().toISOString().replace(/\.\d+Z$/, "Z"),
+        changeFrequency: "daily" as "daily",
       }));
       return [...collectionUrls];
     }
@@ -141,10 +145,18 @@ export async function getSitemapProducts() {
           variant.quantityAvailable != null && variant.quantityAvailable > 0,
       );
       const variant = checkProductVariant?.[0];
+      const colorVariant = variant?.attributes.find(
+        (attr: { attribute: { slug: string } }) =>
+          attr.attribute.slug === ATTR_COLOR_COMMERCIAL_SLUG,
+      );
+      const colorValue = colorVariant?.values[0]?.["slug"] || "";
       productUrls.push({
         sku: variant?.sku,
-        url: `${STOREFRONT_URL}/p/${product.slug}?variant=${variant?.id}`,
-        lastModified: variant?.updatedAt,
+        url: `${STOREFRONT_URL}/p/${product.slug}${colorValue ? `--${colorValue}` : ""}`,
+        lastModified: variant?.updatedAt
+          ? new Date(variant.updatedAt).toISOString().replace(/\.\d+Z$/, "Z")
+          : new Date().toISOString().replace(/\.\d+Z$/, "Z"),
+        changeFrequency: "daily" as "daily",
       });
     }
 

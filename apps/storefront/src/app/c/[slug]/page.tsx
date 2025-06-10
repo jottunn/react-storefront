@@ -1,31 +1,44 @@
 import { notFound } from "next/navigation";
-import { type ResolvingMetadata, type Metadata } from "next";
 import { executeGraphQL } from "src/lib/graphql";
-import { CategoryBySlugDocument, CategoryBySlugQuery, LanguageCodeEnum } from "@/saleor/api";
-import { DEFAULT_LOCALE } from "@/lib/regions";
+import {
+  CategoryBySlugDocument,
+  CategoryBySlugQuery,
+  LanguageCodeEnum,
+  CategoriesSortedByDocument,
+  CategoriesSortedByQuery,
+  CategorySortingInput,
+  ProductBySlugDocument,
+} from "@/saleor/api";
+import { DEFAULT_CHANNEL, DEFAULT_LOCALE } from "@/lib/regions";
 import PageHero from "@/components/PageHero";
 import { translate } from "@/lib/translations";
 import { mapEdgesToItems } from "@/lib/maps";
-import FilteredProductList from "@/components/productList/FilteredProductList";
 import { getMessages, getOrderValue } from "@/lib/util";
 import { STOREFRONT_NAME, STOREFRONT_URL } from "@/lib/const";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Script from "next/script";
+import ToggleDescription from "@/components/ToggleDescription";
+import { processSearchParams } from "@/components/searchParams/SearchParamsProvider";
+import { getProductCollectionData } from "src/app/actions";
+import Products from "@/components/productList/products";
+import { type Metadata } from "next";
 
-export const generateMetadata = async ({
-  params,
-}: {
-  params: { slug: string };
+// Make the page explicitly dynamic to handle nuqs searchParams
+export const dynamic = "force-dynamic";
+
+export const generateMetadata = async (props: {
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata | []> => {
+  const params = "then" in props.params ? await props.params : props.params;
   let category;
   try {
-    const response = await executeGraphQL<any, { slug: string; locale: LanguageCodeEnum }>(
-      CategoryBySlugDocument,
-      {
-        variables: { slug: params.slug, locale: DEFAULT_LOCALE },
-        revalidate: 60 * 60 * 24,
-      },
-    );
+    const response = await executeGraphQL<
+      any,
+      { slug: string; locale: LanguageCodeEnum; channel: string }
+    >(CategoryBySlugDocument, {
+      variables: { slug: params.slug, locale: DEFAULT_LOCALE, channel: DEFAULT_CHANNEL.slug },
+      revalidate: 60 * 60 * 24,
+    });
     category = response.category;
   } catch {
     return [];
@@ -57,14 +70,62 @@ export const generateMetadata = async ({
   };
 };
 
-export default async function Page({ params }: { params: { slug: string } }) {
+export async function generateStaticParams() {
+  try {
+    const categorySortBy: CategorySortingInput = {
+      direction: "DESC",
+      field: "PRODUCT_COUNT",
+    };
+
+    const response = await executeGraphQL<
+      CategoriesSortedByQuery,
+      { sortBy: CategorySortingInput; locale: LanguageCodeEnum; channel: string }
+    >(CategoriesSortedByDocument, {
+      variables: {
+        sortBy: categorySortBy,
+        locale: DEFAULT_LOCALE,
+        channel: DEFAULT_CHANNEL.slug,
+      },
+      revalidate: 60 * 60 * 24,
+    });
+
+    // Check if categories exist before mapping
+    if (!response.categories) {
+      return [];
+    }
+
+    const categories = mapEdgesToItems(response.categories);
+
+    // Return top 10 categories with most products
+    return categories
+      .filter(
+        (category) =>
+          category.slug && category.products?.totalCount && category.products.totalCount > 0,
+      )
+      .slice(0, 10)
+      .map((category) => ({
+        slug: category.slug,
+      }));
+  } catch (error) {
+    console.error("Error generating static params for categories:", error);
+    return [];
+  }
+}
+
+export default async function Page(props: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const { slug } = await props.params;
+  const searchParams = await props.searchParams;
+
   let category;
   try {
     const response = await executeGraphQL<
       CategoryBySlugQuery,
-      { slug: string; locale: LanguageCodeEnum }
+      { slug: string; locale: LanguageCodeEnum; channel: string }
     >(CategoryBySlugDocument, {
-      variables: { slug: params.slug, locale: DEFAULT_LOCALE },
+      variables: { slug, locale: DEFAULT_LOCALE, channel: DEFAULT_CHANNEL.slug },
       revalidate: 60 * 5,
     });
     category = response.category;
@@ -74,6 +135,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
   if (!category) {
     notFound();
   }
+
   const messages = getMessages(DEFAULT_LOCALE);
   const parentCategories = mapEdgesToItems(category?.ancestors);
   const subcategories = mapEdgesToItems(category?.children);
@@ -108,6 +170,17 @@ export default async function Page({ params }: { params: { slug: string } }) {
     })),
   };
 
+  // Process search params using our reusable function
+  const { filtersString, sortBy, filters } = await processSearchParams(searchParams);
+
+  // Get product collection data
+  const productCollection = await getProductCollectionData({
+    filters,
+    sortBy,
+    categoryIDs: [category.id],
+    messages,
+  });
+
   return (
     <>
       <Script
@@ -121,22 +194,31 @@ export default async function Page({ params }: { params: { slug: string } }) {
         <div className="bg-main-7 border-b md:mb-2">
           <Breadcrumbs items={breadcrumbItems} />
         </div>
-        <div className="container px-8 p-4">
+        <div className="container p-6">
           <PageHero
             title={translate(category, "name")}
-            description={translate(category, "description") || ""}
             pills={filteredAndSortedSubcategories.map((subcategory) => ({
               label: translate(subcategory, "name"),
               slug: subcategory.slug,
             }))}
-            messages={messages}
           />
         </div>
       </header>
       <main>
-        <div className="container px-8 mt-4 mb-12 md:mb-40 min-h-[600px]">
-          <FilteredProductList categoryIDs={[category.id]} messages={messages} />
+        <div className="container px-6 mt-4 mb-12 md:mb-40 min-h-[600px]">
+          <Products
+            productCollection={productCollection}
+            messages={messages}
+            categoryIDs={[category.id]}
+            categorySlug={slug}
+          />
         </div>
+        {category.description && (
+          <ToggleDescription
+            description={translate(category, "description") || ""}
+            messages={messages}
+          />
+        )}
       </main>
     </>
   );

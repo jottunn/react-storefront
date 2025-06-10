@@ -3,7 +3,6 @@
 import { translate } from "@/lib/translations";
 import Link from "next/link";
 import Image from "next/image";
-
 import { useState } from "react";
 import { GroupedProduct } from "@/lib/product";
 import { ATTR_COLOR_COMMERCIAL_SLUG } from "@/lib/const";
@@ -59,52 +58,53 @@ export function ProductCard({
       product.pricing?.priceRange?.start?.gross.amount !==
       product.pricing?.priceRange?.stop?.gross.amount;
   }
-
+  const colorVariant = variant?.attributes.find(
+    (attr) => attr.attribute.slug === ATTR_COLOR_COMMERCIAL_SLUG,
+  );
+  const colorValue = colorVariant?.values[0]?.slug || "";
   return (
     <div
       className="w-full"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Link href={`/p/${product.slug}?variant=${variant?.id}`} prefetch={false}>
-        <div className="bg-white w-full aspect-1">
-          <div className="border w-full h-full relative flex items-center justify-center">
-            {thumbnailUrl ? (
-              <Image
-                alt={productDisplayName}
-                className="transition-opacity duration-400 ease-in-out p-3 max-h-[100%]"
-                src={isHovered ? hoverImageUrl : thumbnailUrl}
-                width={300}
-                height={300}
-                sizes="(max-width: 640px) 50vw, 33vw"
-                priority={priority}
-                loading={loading}
-                style={{
-                  objectFit: "contain",
-                  opacity: isHovered && hoverImageUrl === thumbnailUrl ? 0.9 : 1,
-                }}
-                {...(blurPlaceholderPic && blurPlaceholderPic !== null
-                  ? { placeholder: "blur", blurDataURL: blurPlaceholderPic }
-                  : {})}
-              />
-            ) : (
-              <Image
-                src="/nopic.png"
-                alt={product?.name || ""}
-                width={300}
-                height={200}
-                style={{ objectFit: "contain" }}
-                className="block mx-auto p-6 max-h-[100%] cursor-pointer"
-                priority={true}
-                loading={"eager"}
-              />
-            )}
-            {product.pricing?.onSale && (
-              <div className="absolute right-2 top-2 py-1 px-2">
-                <TagIcon className="text-action-1 w-6 h-6" />
-              </div>
-            )}
-          </div>
+      <Link href={`/p/${product.slug}${colorValue ? `--${colorValue}` : ""}`} key={product.id}>
+        <div className="border w-full relative flex items-center justify-center bg-white aspect-1">
+          {thumbnailUrl ? (
+            <Image
+              alt={`Imagine produs ${productDisplayName}`}
+              className="transition-opacity duration-400 ease-in-out p-3 max-h-[100%]"
+              src={isHovered ? hoverImageUrl : thumbnailUrl}
+              width={300}
+              height={300}
+              sizes="(max-width: 640px) 50vw, 33vw"
+              priority={priority}
+              loading={loading}
+              style={{
+                objectFit: "contain",
+                opacity: isHovered && hoverImageUrl === thumbnailUrl ? 0.9 : 1,
+              }}
+              {...(blurPlaceholderPic && blurPlaceholderPic !== null
+                ? { placeholder: "blur", blurDataURL: blurPlaceholderPic }
+                : {})}
+            />
+          ) : (
+            <Image
+              src="/nopic.png"
+              alt={product?.name || ""}
+              width={300}
+              height={200}
+              style={{ objectFit: "contain" }}
+              className="block mx-auto p-6 max-h-[100%] cursor-pointer"
+              priority={true}
+              loading={"eager"}
+            />
+          )}
+          {product.pricing?.onSale && (
+            <div className="absolute right-2 top-2 py-1 px-2">
+              <TagIcon className="text-action-1 w-6 h-6" />
+            </div>
+          )}
         </div>
         <p
           className={clsx(

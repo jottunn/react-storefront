@@ -24,6 +24,7 @@ import {
   ProductCollectionQuery,
   ProductCountableEdge,
   ProductFilterInput,
+  ProductVariant,
   RegisterDocument,
   RegisterMutation,
   RequestEmailChangeDocument,
@@ -42,7 +43,7 @@ import { saleorAuthClient } from "src/app/config";
 import { LoginFormData } from "./login/LoginForm";
 import { RegisterFormData } from "./register/RegisterForm";
 import { STOREFRONT_URL } from "@/lib/const";
-import { DEFAULT_CHANNEL } from "@/lib/regions";
+import { DEFAULT_CHANNEL, defaultRegionQuery } from "@/lib/regions";
 import { ResetFormData } from "./reset/ForgotPassword";
 import { ResetPasswordFormData } from "./reset/ResetPasswordForm";
 import { ConfirmData } from "./confirm/ConfirmResult";
@@ -52,15 +53,20 @@ import { readFile, stat } from "fs/promises";
 import path from "path";
 import { generateProductsJson } from "@/lib/generateProductsJson";
 import Bull from "bull";
+import { mapEdgesToItems } from "@/lib/maps";
+import { UrlFilter } from "@/lib/searchParamsCache";
+import { GroupedProduct, groupProductsByColor } from "@/lib/product";
+import { generateFilterIndex } from "@/lib/generateFilterIndexJson";
+import fs from "fs";
 
 export async function logout() {
   //if any checkout and attached customer  =>  detach
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const checkoutId = cookieStore.get("checkoutId-default-channel")?.value;
   if (checkoutId) {
     await customerDetach(checkoutId);
   }
-  saleorAuthClient().signOut();
+  (await saleorAuthClient()).signOut();
 }
 
 export async function login(formData: LoginFormData) {
@@ -71,7 +77,9 @@ export async function login(formData: LoginFormData) {
     return { success: false, errors: ["Email and password are required"] };
   }
 
-  const { data } = await saleorAuthClient().signIn({ email, password }, { cache: "no-store" });
+  const { data } = await (
+    await saleorAuthClient()
+  ).signIn({ email, password }, { cache: "no-store" });
 
   if (data.tokenCreate.errors.length > 0) {
     const customError = data?.tokenCreate?.errors as any;
@@ -127,25 +135,6 @@ export async function register(formData: RegisterFormData | any) {
     return { success: false };
   }
 }
-
-// export async function reset(formData: ResetPasswordFormData) {
-//   try {
-//     const response = await saleorAuthClient.resetPassword({
-//       email: formData.email,
-//       password: formData.password,
-//       token: formData.token,
-//     });
-
-//     if (response.data?.setPassword?.errors?.length) {
-//       const customError = response.data.setPassword.errors as any;
-//       return { success: false, errors: customError.map((error: { code: any }) => error.code) };
-//     }
-//     return { success: true };
-//   } catch (error) {
-//     console.error("Failed to resetPassword:", error);
-//     return { success: false };
-//   }
-// }
 
 export async function setPassword(formData: ResetPasswordFormData) {
   try {
@@ -261,7 +250,8 @@ function isCategoryDescendant(category: any | null, filterCategories: string[]):
 
 //generate products.json for faster product filtering
 //cache the file reading operation + Only sets up the Bull queue when the file needs to be generated initially
-const PRODUCTS_JSON_PATH = path.join(process.cwd(), "public", "products.json");
+const PRODUCTS_JSON_PATH = path.join(process.cwd(), "public/generated", "products.json");
+const FILTER_INDEX_PATH = path.join(process.cwd(), "public/generated", "filter-index.json");
 let cachedProductsData: any = null;
 let lastUpdated = 0;
 let lastModifiedTime: number | null = null;
@@ -280,28 +270,26 @@ const getProductsFromDisk = async () => {
   }
 };
 
-const checkAndScheduleJob = async (queue: Bull.Queue) => {
+export const checkAndScheduleJob = async (queue: Bull.Queue, frequency: string) => {
   try {
     // Get all repeat jobs
     const repeatableJobs = await queue.getRepeatableJobs();
     console.log("Existing repeatable jobs:", repeatableJobs);
 
-    // Check if our specific job already exists
-    const existingJob = repeatableJobs.find(
-      (job: { cron: string }) => job.cron === "0 5 * * *", // Same cron pattern
-    );
+    // Find and remove only the job with our specific cron pattern
+    const existingJob = repeatableJobs.find((job: { cron: string }) => job.cron === frequency);
 
     if (existingJob) {
-      console.log("Job already scheduled:", existingJob);
-      return;
+      await queue.removeRepeatableByKey(existingJob.key);
+      console.log(`Removed existing products generation job: ${existingJob.key}`);
     }
 
-    // Schedule new job only if none exists
+    // Schedule new job with latest processor
     const job = await queue.add(
       {},
       {
         repeat: {
-          cron: "0 5 * * *", // Run daily at 5 AM
+          cron: frequency, // Run daily at 5 AM
         },
         removeOnComplete: true,
       },
@@ -309,6 +297,20 @@ const checkAndScheduleJob = async (queue: Bull.Queue) => {
     console.log("New daily products generation scheduled, job ID:", job.id);
   } catch (error) {
     console.error("Error checking/scheduling job:", error);
+  }
+};
+
+export const getFilterIndex = async (): Promise<any | null> => {
+  try {
+    const filterIndex = await readFile(FILTER_INDEX_PATH, "utf8");
+    return JSON.parse(filterIndex);
+  } catch (error: unknown) {
+    if ((error as { code?: string }).code === "ENOENT") {
+      console.log("Index file not found, generating new file...");
+      await generateFilterIndex();
+      const filterIndex = await readFile(FILTER_INDEX_PATH, "utf8");
+      return JSON.parse(filterIndex);
+    }
   }
 };
 
@@ -353,6 +355,7 @@ export const getProductsData = async (): Promise<any | null> => {
         try {
           //console.log('Starting scheduled products generation');
           await generateProductsJson();
+          await generateFilterIndex();
           console.log("Scheduled products JSON created successfully");
           return { status: "success" };
         } catch (error) {
@@ -362,7 +365,7 @@ export const getProductsData = async (): Promise<any | null> => {
       });
 
       // Check and schedule job
-      await checkAndScheduleJob(generateProductsQueue);
+      await checkAndScheduleJob(generateProductsQueue, "0 5 * * *");
 
       return await getProductsFromDisk();
     } else {
@@ -415,131 +418,7 @@ function extractCategories(products: ProductCountableEdge[]): any[] {
   return Array.from(categoriesMap.values());
 }
 
-export async function getAvailableFilters(productsFilter: ProductFilterInput) {
-  try {
-    const productsData = await getProductsData();
-
-    // Step 1: Filter products by collections and categories
-    const filteredEdges = productsData.edges.filter((edge: any) => {
-      const product = edge.node;
-
-      // Filter by collections
-      if (productsFilter.collections && productsFilter.collections.length > 0) {
-        return productsFilter.collections.some((filterCollection) =>
-          product.collections?.includes(filterCollection),
-        );
-      } else {
-        // Filter by categories
-        if (productsFilter.categories && productsFilter.categories.length > 0) {
-          return isCategoryDescendant(product.category, productsFilter.categories);
-        }
-      }
-      return true; // Include product if it matches collections and categories
-    });
-
-    // Step 2: Filter variants for the remaining products
-    const finalFilteredEdges = filteredEdges
-      .map((edge: any) => {
-        const product = edge.node;
-        // Filter variants based on the attributes (excluding brand)
-        const filteredVariants = (product.variants || []).filter((variant: any) => {
-          const matchesAllAttributes = productsFilter.attributes?.every((filterAttr) => {
-            if (filterAttr.slug === "brand") return true; // Skip brand filtering for now
-
-            // Check product-level attributes
-            const productAttr = product.attributes?.find(
-              (attr: { attribute: { slug: string } }) => attr.attribute.slug === filterAttr.slug,
-            );
-            if (productAttr) {
-              return filterAttr.values?.some((value) =>
-                productAttr.values.some((attrValue: { slug: string }) => attrValue.slug === value),
-              );
-            }
-
-            // Check variant-level attributes
-            const variantAttr = variant.attributes?.find(
-              (attr: any) => attr.attribute.slug === filterAttr.slug,
-            );
-            if (!variantAttr) return false;
-            return filterAttr.values?.some((value) =>
-              variantAttr.values.some((attrValue: { slug: string }) => attrValue.slug === value),
-            );
-          });
-          return matchesAllAttributes;
-        });
-
-        // Return the product with only the filtered variants
-        return {
-          ...edge,
-          node: {
-            ...product,
-            variants: filteredVariants,
-          },
-        };
-      })
-      .filter((edge: any) => edge.node.variants.length > 0); // Exclude products with no matching variants
-
-    // Extract all brands from the filtered products
-    let allBrands = extractBrands(finalFilteredEdges);
-    // Step 3: Apply brand filter if it exists
-    const brandFilter = productsFilter.attributes?.find((attr) => attr.slug === "brand");
-    const finalFilteredEdgesWithBrand =
-      brandFilter && brandFilter.values && brandFilter.values.length > 0
-        ? finalFilteredEdges.filter((edge: any) => {
-            const product = edge.node;
-            const productBrand = product.attributes?.find(
-              (attr: { attribute: { slug: string } }) => attr.attribute.slug === "brand",
-            );
-            return (
-              productBrand &&
-              brandFilter?.values?.some((value) =>
-                productBrand.values.some(
-                  (brandValue: { slug: string }) => brandValue.slug === value,
-                ),
-              )
-            );
-          })
-        : finalFilteredEdges;
-
-    let allCategories;
-    if (productsFilter.collections && productsFilter.collections.length > 0) {
-      allCategories = extractCategories(finalFilteredEdgesWithBrand);
-    }
-
-    const finalFilteredEdgesWithCateg =
-      productsFilter.collections &&
-      productsFilter.collections.length > 0 &&
-      productsFilter.categories &&
-      productsFilter.categories.length > 0
-        ? finalFilteredEdgesWithBrand.filter((edge: any) => {
-            const product = edge.node;
-            return isCategoryDescendant(product.category, productsFilter.categories || []);
-          })
-        : finalFilteredEdgesWithBrand;
-
-    if (
-      productsFilter.collections &&
-      productsFilter.collections.length > 0 &&
-      productsFilter.categories &&
-      productsFilter.categories.length > 0
-    ) {
-      allBrands = extractBrands(finalFilteredEdgesWithCateg);
-    }
-
-    const filteredProducts = {
-      edges: finalFilteredEdgesWithCateg,
-      availableBrands: allBrands,
-      availableCategories: allCategories,
-    };
-
-    return filteredProducts;
-  } catch (error) {
-    console.error("Failed to execute AvailableProductFiltersQuery", error);
-    return null;
-  }
-}
-
-export async function getProductCollection(queryVariables: any) {
+export const getProductCollection = async (queryVariables: any) => {
   try {
     const { products } = await executeGraphQL<ProductCollectionQuery, { variables: any }>(
       ProductCollectionDocument,
@@ -552,6 +431,194 @@ export async function getProductCollection(queryVariables: any) {
     console.error("Failed to execute graphql for products query:", error);
     return null;
   }
+};
+
+// Helper functions for filtering products by variants
+function variantSatisfiesFilter(variant: ProductVariant, filter: any): boolean {
+  let isCompliant = true;
+  if (filter.attributes && filter.attributes.length > 0) {
+    for (const filterAttr of filter.attributes) {
+      // Check if the variant has the filter attribute
+      const variantAttribute = variant.attributes.find(
+        (variantAttr) => variantAttr.attribute.slug === filterAttr.slug,
+      );
+
+      // If the variant does not have the attribute at all, consider it compliant for this specific attribute
+      if (!variantAttribute) {
+        continue; // Skip to the next filter attribute
+      }
+
+      // If the variant has the attribute, check if any of its values match the filter's values
+      const hasMatchingValue = variantAttribute.values.some((value) =>
+        filterAttr.values?.includes(value.slug ?? ""),
+      );
+
+      if (!hasMatchingValue) {
+        isCompliant = false;
+        break; // Exit early if any filter criterion is not met
+      }
+    }
+  }
+
+  // Additionally, check stock availability if required by the filter
+  if (
+    filter.stockAvailability === "IN_STOCK" &&
+    (variant.quantityAvailable == null || variant.quantityAvailable <= 0)
+  ) {
+    isCompliant = false;
+  }
+
+  return isCompliant;
+}
+
+// Check if a product complies with the filter based on product-level attributes
+function doesProductComplyWithFilter(product: any, filter: any): boolean {
+  // If the filter specifies attributes, check compliance based on product-level attributes
+  if (filter.attributes && filter.attributes.length > 0) {
+    return filter.attributes.every((filterAttr: any) => {
+      // Check if the product has the filter attribute
+      const productAttribute = product.attributes.find(
+        (productAttr: any) => productAttr.attribute.slug === filterAttr.slug,
+      );
+
+      // If the product does not have the attribute at all, consider it compliant for this specific attribute
+      if (!productAttribute) {
+        return true; // Skip to the next filter attribute because the absence is considered compliant
+      }
+
+      // If the product has the attribute, check if any of its values match the filter's values
+      return productAttribute.values.some((value: any) =>
+        filterAttr.values?.includes(value.slug ?? ""),
+      );
+    });
+  }
+
+  // If filter.attributes is null, undefined, or empty, consider the product compliant by default
+  return true;
+}
+
+// Filter products based on the variants that satisfy the filter criteria
+function filterAndTransformProducts(products: any[], filter: any) {
+  return products.reduce((acc: any[], product) => {
+    // First, check if the product itself complies with the filter (based on product-level attributes)
+    const productComplies = doesProductComplyWithFilter(product, filter);
+
+    if (!productComplies) {
+      // If the product does not comply with the product-level attributes, do not include it in the result
+      return acc;
+    }
+
+    // Filter variants for this product based on compliance with the filter
+    const compliantVariants = product.variants?.filter((variant: ProductVariant) =>
+      variantSatisfiesFilter(variant, filter),
+    );
+
+    if (compliantVariants && compliantVariants.length > 0) {
+      // Construct a new product object with only compliant variants
+      const transformedProduct = {
+        ...product, // Spread the original product to copy its properties
+        variants: compliantVariants, // Assign the filtered, compliant variants
+      };
+      acc.push(transformedProduct); // Add the transformed product to the accumulator
+    }
+
+    return acc;
+  }, []);
+}
+interface ProductCollectionProps {
+  filters: UrlFilter[];
+  sortBy: string | null;
+  page?: number;
+  categoryIDs?: string[];
+  collectionIDs?: string[];
+  productsIDs?: string[];
+  search?: string | "";
+  messages: Record<string, string>;
+  after?: string;
+}
+
+function getCategoryIdsFromSlugs(slugs: string[]): string[] {
+  const categoryIds: string[] = [];
+  try {
+    const fileContents = fs.readFileSync(FILTER_INDEX_PATH, "utf-8");
+    const filterIndex = JSON.parse(fileContents);
+    // const filterIndex = require('../../public/filter-index.json');
+
+    slugs.forEach((slug) => {
+      const category = filterIndex.categoryStructure.find((cat: any) => cat.slug === slug);
+      if (category) {
+        categoryIds.push(category.id);
+      }
+    });
+  } catch {
+    console.log("no filter available");
+  }
+
+  return categoryIds;
+}
+
+export async function getProductCollectionData(props: ProductCollectionProps) {
+  const { filters, sortBy, categoryIDs, collectionIDs, productsIDs, search, after } = props;
+  // Handle special case for category filter
+  let finalCategoryIDs = categoryIDs || [];
+  const categoryFilter = filters.find((filter) => filter.slug === "categorie");
+
+  if (categoryFilter && categoryFilter.values) {
+    const categoryIdsFromSlugs = getCategoryIdsFromSlugs(categoryFilter.values);
+    finalCategoryIDs = [...new Set([...finalCategoryIDs, ...categoryIdsFromSlugs])];
+    // Remove the category filter from the filters array
+    filters.splice(filters.indexOf(categoryFilter), 1);
+  }
+  // Create query variables from the provided filters/params
+  const queryVariables = {
+    filter: {
+      attributes: filters.filter((filter) => filter.values?.length),
+      ...(finalCategoryIDs?.length ? { categories: finalCategoryIDs } : {}),
+      ...(collectionIDs?.length ? { collections: collectionIDs } : {}),
+      ...(productsIDs?.length && { ids: productsIDs }),
+      ...(search && { search: search }),
+      stockAvailability: "IN_STOCK",
+      isPublished: true,
+      isVisibleInListing: true,
+    },
+    // Add sorting if provided
+    ...(sortBy
+      ? {
+          sortBy: {
+            direction: sortBy.endsWith("_DESC") ? "DESC" : "ASC",
+            field: sortBy.split("_")[0].toUpperCase(),
+          },
+        }
+      : {
+          sortBy: {
+            direction: "DESC",
+            field: "MINIMAL_PRICE",
+          },
+        }),
+    ...defaultRegionQuery(),
+    ...(after ? { after } : {}),
+  };
+
+  //console.log('queryVariables', queryVariables);
+
+  // Fetch products
+  const prodCollection = await getProductCollection(queryVariables);
+  let products = mapEdgesToItems(prodCollection);
+
+  // Apply additional client-side filtering for variants
+  if (filters.length > 0) {
+    products = filterAndTransformProducts(products, {
+      attributes: filters.filter((filter) => filter.values?.length),
+      stockAvailability: "IN_STOCK",
+    });
+  }
+  // Group products by color to display color variants as separate cards
+  products = groupProductsByColor(products as GroupedProduct[]);
+  const pageInfo = (prodCollection as any)?.pageInfo;
+  return {
+    products,
+    pageInfo,
+  };
 }
 
 export const requestEmailChange = async (args: {

@@ -1,5 +1,4 @@
 import React from "react";
-import { FilteredProductList } from "@/components/productList/FilteredProductList";
 import { DEFAULT_LOCALE, defaultRegionQuery } from "@/lib/regions";
 import {
   ProductCollectionDocument,
@@ -11,10 +10,12 @@ import { getMessages } from "@/lib/util";
 import { executeGraphQL } from "@/lib/graphql";
 import { mapEdgesToItems } from "@/lib/maps";
 import PageHero from "@/components/PageHero";
-import { UrlSorting } from "@/components/productList/sorting";
 import { STOREFRONT_NAME, STOREFRONT_URL } from "@/lib/const";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Script from "next/script";
+import { processSearchParams } from "@/components/searchParams/SearchParamsProvider";
+import { getProductCollectionData } from "../actions";
+import Products from "@/components/productList/products";
 
 export const metadata = {
   title: `Noutăți | ${STOREFRONT_NAME}`,
@@ -24,14 +25,17 @@ export const metadata = {
   },
 };
 
-export default async function Page() {
+export default async function Page(props: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const searchParams = await props.searchParams;
   const filter: ProductFilterInput = { isPublished: true, stockAvailability: "IN_STOCK" };
-  const sortBy: ProductOrder = { direction: "DESC", field: "PUBLICATION_DATE" };
+  const sort: ProductOrder = { direction: "DESC", field: "PUBLICATION_DATE" };
   const queryVariables = {
     filter,
     first: 100,
     ...defaultRegionQuery(),
-    sortBy,
+    sort,
   };
   let newProductsH;
   try {
@@ -70,6 +74,17 @@ export default async function Page() {
       item: item.href ? `${STOREFRONT_URL}${item.href}` : undefined,
     })),
   };
+
+  const { sortBy, filters } = await processSearchParams(searchParams);
+
+  // Get product collection data
+  const productCollection = await getProductCollectionData({
+    filters,
+    sortBy,
+    productsIDs: newProductsIds,
+    messages,
+  });
+
   return (
     <>
       <Script
@@ -80,19 +95,19 @@ export default async function Page() {
         }}
       />
       <header className="mb-4 border-b border-main-6">
-        <div className="bg-main-7 border-b md:mb-8">
+        <div className="bg-main-7 border-b md:mb-2">
           <Breadcrumbs items={breadcrumbItems} />
         </div>
-        <div className="container px-8">
-          <PageHero title={messages["app.newProducts"]} description="" />
+        <div className="container p-6">
+          <PageHero title={messages["app.newProducts"]} />
         </div>
       </header>
-      <div className="container px-8 mt-4 mb-40">
-        {newProductsIds.length > 0 ? (
-          <FilteredProductList productsIDs={newProductsIds} messages={messages} />
-        ) : (
-          <FilteredProductList sort={sortBy as UrlSorting} messages={messages} />
-        )}
+      <div className="container px-6 mt-4 mb-40">
+        <Products
+          productCollection={productCollection}
+          messages={messages}
+          productsIDs={newProductsIds}
+        />
       </div>
     </>
   );

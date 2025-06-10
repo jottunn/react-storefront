@@ -1,8 +1,11 @@
-import { redirect } from "next/navigation";
 import { DEFAULT_LOCALE } from "@/lib/regions";
 import { getMessages } from "@/lib/util";
 import { STOREFRONT_NAME, STOREFRONT_URL } from "@/lib/const";
 import SearchClient from "./SearchClient";
+import { processSearchParams } from "@/components/searchParams/SearchParamsProvider";
+import { getProductCollectionData } from "../actions";
+import PageHero from "@/components/PageHero";
+export const dynamic = "force-dynamic";
 
 const messages = getMessages(DEFAULT_LOCALE);
 export const metadata = {
@@ -13,32 +16,35 @@ export const metadata = {
   },
 };
 
-export default async function Page({
-  searchParams,
-  params,
-}: {
-  searchParams: Record<"query" | "cursor", string | string[] | undefined>;
-  params: { channel: string };
+export default async function Page(props: {
+  searchParams: Promise<{ [key: string]: string | undefined }>;
 }) {
-  const cursor = typeof searchParams.cursor === "string" ? searchParams.cursor : null;
-  const searchValue = searchParams.query;
-  if (!searchValue) {
-    redirect("/");
-  }
-
-  if (Array.isArray(searchValue)) {
-    const firstValidSearchValue = searchValue.find((v) => v.length > 0);
-    if (!firstValidSearchValue) {
-      redirect("/");
-    }
-    redirect(`/search?${new URLSearchParams({ query: firstValidSearchValue }).toString()}`);
-  }
+  const searchParams = await props.searchParams;
+  const search = searchParams.query;
+  const { sortBy, filters } = await processSearchParams(searchParams);
+  const displayedTitle = search ? (
+    <>
+      {messages["app.search.searchHeader"]} <span className="text-action-1">{search}</span>
+    </>
+  ) : (
+    messages["app.search.searchHeader"]
+  );
+  // Get product collection data
+  const productCollection = await getProductCollectionData({
+    filters,
+    sortBy,
+    messages,
+    search,
+  });
 
   return (
-    <main>
-      <div className="container px-8 mt-4 mb-40">
-        <SearchClient messages={messages} />
-      </div>
-    </main>
+    <>
+      <header className="border-b border-main-6">
+        <div className="container p-6">
+          <PageHero title={displayedTitle} />
+        </div>
+      </header>
+      <SearchClient productCollection={productCollection} messages={messages} />
+    </>
   );
 }

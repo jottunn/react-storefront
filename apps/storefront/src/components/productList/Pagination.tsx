@@ -1,28 +1,21 @@
 import { Messages } from "@/lib/util";
-import { PageInfo } from "@/saleor/api";
 
 export interface PaginationProps {
-  pageInfo?: PageInfo;
-  onLoadMore: () => void;
-  itemsCount?: number;
+  onLoadMore?: () => void;
   messages: Messages;
+  pageInfo?: any;
 }
 
-export function Pagination({ pageInfo, onLoadMore, itemsCount, messages }: PaginationProps) {
-  if (!pageInfo || !pageInfo?.hasNextPage) {
-    return null;
-  }
+export function Pagination({ onLoadMore, messages }: PaginationProps) {
   return (
-    <nav className="mt-8 p-4 ">
-      <div className="flex justify-center flex-col items-center">
-        <button
-          type="button"
-          onClick={onLoadMore}
-          className="relative inline-flex  items-center px-4 py-2 border text-base font-medium rounded-md text-gray-700 bg-gray-50 hover:border-gray-300 cursor-pointer"
-        >
-          {messages["app.ui.loadMoreButton"]}
-        </button>
-      </div>
-    </nav>
+    <div className="flex justify-center flex-col items-center">
+      <button
+        type="button"
+        onClick={onLoadMore}
+        className="relative inline-flex  items-center px-4 py-2 border text-base font-medium rounded-md text-gray-700 bg-gray-50 hover:border-gray-300 cursor-pointer"
+      >
+        {messages["app.ui.loadMoreButton"]}
+      </button>
+    </div>
   );
 }

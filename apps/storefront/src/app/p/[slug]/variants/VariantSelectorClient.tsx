@@ -14,6 +14,7 @@ import { ProductVariant, ProductDetailsFragment } from "@/saleor/api";
 import { translate } from "@/lib/translations";
 import { useRouter } from "next/navigation";
 import { Messages } from "@/lib/util";
+import { ATTR_COLOR_COMMERCIAL_SLUG } from "@/lib/const";
 
 interface VariantSelectorClientProps {
   sizes: ProductVariant[];
@@ -54,8 +55,15 @@ const VariantSelectorClient: React.FC<VariantSelectorClientProps> = ({
       setSelectedSize(variantId);
       handleSizeLoading(true);
       const selectedVariant = sizes.find((variant) => variant.id === variantId);
+      const colorVariant = selectedVariant?.attributes.find(
+        (attr) => attr.attribute.slug === ATTR_COLOR_COMMERCIAL_SLUG,
+      );
+      const colorValue = colorVariant?.values[0]["slug"] || "";
+
       if (selectedVariant) {
-        await router.push(`/p/${product.slug}?variant=${selectedVariant.id}`);
+        await router.push(
+          `/p/${product.slug}${colorValue ? `--${colorValue}` : ""}?variant=${selectedVariant.id}`,
+        );
         setTimeout(() => {
           handleSizeSelect(variantId ? true : false);
         }, 500);

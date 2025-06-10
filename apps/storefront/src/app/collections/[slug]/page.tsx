@@ -1,21 +1,23 @@
 import { notFound } from "next/navigation";
 import { type Metadata } from "next";
+import Script from "next/script";
 import { executeGraphQL } from "src/lib/graphql";
 import { CollectionBySlugDocument, CollectionBySlugQuery, LanguageCodeEnum } from "@/saleor/api";
 import { DEFAULT_LOCALE, defaultRegionQuery } from "@/lib/regions";
 import PageHero from "@/components/PageHero";
 import { translate } from "@/lib/translations";
-import FilteredProductList from "@/components/productList/FilteredProductList";
 import { getMessages } from "@/lib/util";
 import { STOREFRONT_NAME, STOREFRONT_URL } from "@/lib/const";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import Script from "next/script";
+import ToggleDescription from "@/components/ToggleDescription";
+import { processSearchParams } from "@/components/searchParams/SearchParamsProvider";
+import { getProductCollectionData } from "src/app/actions";
+import Products from "@/components/productList/products";
 
-export const generateMetadata = async ({
-  params,
-}: {
-  params: { slug: string };
+export const generateMetadata = async (props: {
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata | []> => {
+  const params = await props.params;
   let collection;
   try {
     const response = await executeGraphQL<
@@ -58,14 +60,20 @@ export const generateMetadata = async ({
   };
 };
 
-export default async function Page({ params }: { params: { slug: string } }) {
+export default async function Page(props: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const { slug } = await props.params;
+  const searchParams = await props.searchParams;
+
   let collection;
   try {
     const response = await executeGraphQL<
       CollectionBySlugQuery,
       { slug: string; locale: LanguageCodeEnum; channel: string }
     >(CollectionBySlugDocument, {
-      variables: { slug: params.slug, ...defaultRegionQuery() },
+      variables: { slug, ...defaultRegionQuery() },
       revalidate: 60,
     });
     collection = response.collection;
@@ -90,6 +98,16 @@ export default async function Page({ params }: { params: { slug: string } }) {
     })),
   };
 
+  const { sortBy, filters } = await processSearchParams(searchParams);
+
+  // Get product collection data
+  const productCollection = await getProductCollectionData({
+    filters,
+    sortBy,
+    collectionIDs: [collection.id],
+    messages,
+  });
+
   return (
     <>
       <Script
@@ -103,17 +121,24 @@ export default async function Page({ params }: { params: { slug: string } }) {
         <div className="bg-main-7 border-b md:mb-2">
           <Breadcrumbs items={breadcrumbItems} />
         </div>
-        <div className="container px-8 p-4">
-          <PageHero
-            title={translate(collection, "name")}
-            description={translate(collection, "description") || ""}
-          />
+        <div className="container p-6">
+          <PageHero title={translate(collection, "name")} />
         </div>
       </header>
       <main>
-        <div className="container px-8 mt-4 mb-40 min-h-[600px]">
-          <FilteredProductList collectionIDs={[collection.id]} messages={messages} />
+        <div className="container px-6 mt-4 mb-40 min-h-[600px]">
+          <Products
+            productCollection={productCollection}
+            messages={messages}
+            collectionIDs={[collection.id]}
+          />
         </div>
+        {collection.description && (
+          <ToggleDescription
+            description={translate(collection, "description") || ""}
+            messages={messages}
+          />
+        )}
       </main>
     </>
   );

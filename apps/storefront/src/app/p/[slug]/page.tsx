@@ -18,15 +18,14 @@ import { executeGraphQL } from "@/lib/graphql";
 import { notFound } from "next/navigation";
 import edjsHTML from "editorjs-html";
 import xss from "xss";
-import { formatMoney } from "@/lib/utils/formatMoney";
-import { formatMoneyRange } from "@/lib/utils/formatMoneyRange";
+import { formatMoney, formatMoneyRange } from "@/lib/utils/formatMoney";
 import { type WithContext, type Product } from "schema-dts";
 import { ProductGallery } from "./media/ProductGallery";
 import getBase64 from "@/lib/generateBlurPlaceholder";
 import clsx from "clsx";
 import { ChevronLeftIcon, ChevronRightIcon, TagIcon } from "@heroicons/react/24/outline";
 import { mapEdgesToItems } from "@/lib/maps";
-import { ATTR_GHID_MARIMI, STOREFRONT_URL } from "@/lib/const";
+import { ATTR_COLOR_COMMERCIAL_SLUG, ATTR_GHID_MARIMI, STOREFRONT_URL } from "@/lib/const";
 import Link from "next/link";
 import VariantSelector from "./variants/VariantSelector";
 import { getMessages, getMetadataValue } from "@/lib/util";
@@ -39,15 +38,16 @@ import RelatedProducts from "./RelatedProducts";
 const edjsParser = edjsHTML();
 
 export async function generateMetadata(
-  {
-    params,
-    searchParams,
-  }: {
-    params: { slug: string; channel: string };
-    searchParams: { variant?: string };
+  props: {
+    params: Promise<{ slug: string; channel: string }>;
+    searchParams: Promise<{ variant?: string }>;
   },
   parent: ResolvingMetadata,
 ): Promise<Metadata | []> {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
+  const productSlugs = decodeURIComponent(params.slug).split("--");
+  const productSlug = productSlugs[0];
   let product;
   try {
     const response = await executeGraphQL<
@@ -55,7 +55,7 @@ export async function generateMetadata(
       { slug: string; channel: string; locale: string }
     >(ProductBySlugDocument, {
       variables: {
-        slug: decodeURIComponent(params.slug),
+        slug: productSlug,
         ...defaultRegionQuery(),
       },
       revalidate: 60,
@@ -133,13 +133,12 @@ export async function generateMetadata(
 
 // }
 
-const Page = ({
-  params,
-  searchParams,
-}: {
-  params: { slug: string; channel: string };
-  searchParams: { variant?: string };
+const Page = (props: {
+  params: Promise<{ slug: string; channel: string }>;
+  searchParams: Promise<{ variant?: string }>;
 }) => {
+  const searchParams = use(props.searchParams);
+  const params = use(props.params);
   const productDetailPromise = ProductDetail({ params, searchParams });
 
   return (
@@ -163,13 +162,15 @@ const ProductDetail = async ({
   searchParams: { variant?: string };
 }) => {
   let product;
+  const productSlugs = decodeURIComponent(params.slug).split("--");
+  const productSlug = productSlugs[0];
   try {
     const response = await executeGraphQL<
       ProductBySlugQuery,
       { slug: string; channel: string; locale: string }
     >(ProductBySlugDocument, {
       variables: {
-        slug: decodeURIComponent(params.slug),
+        slug: productSlug,
         ...defaultRegionQuery(),
       },
       revalidate: 60,
@@ -185,7 +186,19 @@ const ProductDetail = async ({
 
   const messages = getMessages(defaultRegionQuery().locale);
   const variants = product.variants;
-  const selectedVariantID = searchParams.variant;
+
+  // Filter variants by color attribute and productSlug[1]
+  const colorVariants = variants?.filter((variant) => {
+    const colorAttribute = variant.attributes.find(
+      (attr) => attr.attribute.slug === ATTR_COLOR_COMMERCIAL_SLUG,
+    );
+    return colorAttribute?.values.some((value) => value.slug === productSlugs[1]);
+  });
+
+  // Select variant based on priority: URL param > color variant > first variant
+  const selectedVariantID =
+    searchParams.variant || colorVariants?.[0]?.id || variants?.[0]?.id || null;
+
   const selectedVariant =
     product.variants && product.variants.length > 1
       ? product?.variants?.find((v: { id: string | undefined }) => v?.id === selectedVariantID)

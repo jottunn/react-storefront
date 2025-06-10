@@ -22,6 +22,21 @@ fragment ProductDetailsFragment on Product {
     ...ProductVariantDetailsFragment
   }
   pricing {
+    onSale
+    priceRangeUndiscounted {
+      start {
+        gross {
+          amount
+          currency
+        }
+      }
+      stop {
+        gross {
+          amount
+          currency
+        }
+      }
+    }
     priceRange {
       start {
         gross {

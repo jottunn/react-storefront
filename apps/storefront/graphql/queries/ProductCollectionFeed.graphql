@@ -1,7 +1,7 @@
-query ProductCollection(
+query ProductCollectionFeed(
   $before: String
   $after: String
-  $first: Int = 30
+  $first: Int = 90
   $filter: ProductFilterInput
   $sortBy: ProductOrder
   $channel: String!
@@ -18,7 +18,7 @@ query ProductCollection(
     edges {
       cursor
       node {
-        ...ProductCardFragment
+        ...ProductDetailsFragment
       }
     }
     pageInfo {

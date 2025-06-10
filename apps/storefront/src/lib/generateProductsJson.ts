@@ -24,17 +24,20 @@ const processAttributes = (productAttributes: any) => {
       });
     });
   });
+
+  function fromEntries<K extends string, V>(entries: Iterable<[K, V]>): Record<K, V> {
+    return Object.fromEntries(entries) as Record<K, V>;
+  }
   // Convert Map to object for easier JSON serialization
-  const attributesObject = Object.fromEntries(
+  const attributesObject = fromEntries(
     Array.from(attributesMap, ([slug, attr]) => [
       slug,
       {
         ...attr,
-        values: Object.fromEntries(attr.values),
+        values: fromEntries(attr.values),
       },
     ]),
   );
-
   return attributesObject;
 };
 
@@ -133,7 +136,7 @@ async function generateProductsJson() {
 
     // Write the JSON file
     const jsonContent = JSON.stringify(productsData, null, 2);
-    await fs.writeFile(path.join(process.cwd(), "public", "products.json"), jsonContent);
+    await fs.writeFile(path.join(process.cwd(), "public/generated", "products.json"), jsonContent);
 
     console.log("Products JSON generated successfully");
   } catch (error) {

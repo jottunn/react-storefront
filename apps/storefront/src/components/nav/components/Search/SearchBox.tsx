@@ -18,15 +18,27 @@ type SearchResult = {
   media?: { url: string }[];
 };
 
-function CustomSearchBox() {
+interface CustomSearchBoxProps {
+  expanded?: boolean;
+  onSearch?: (value: string | null) => void;
+}
+
+function CustomSearchBox({ expanded = false, onSearch }: CustomSearchBoxProps) {
   const [inputValue, setInputValue] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [cache, setCache] = useState<{ [key: string]: SearchResult[] }>({});
   const [showResults, setShowResults] = useState<boolean>(false);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(expanded);
   const searchBoxRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    setIsExpanded(expanded);
+    if (expanded) {
+      setTimeout(() => document.getElementById("algolia_search")?.focus(), 10);
+    }
+  }, [expanded]);
 
   const searchIndex: SearchIndex | null = useMemo(() => {
     return (
@@ -37,18 +49,25 @@ function CustomSearchBox() {
   const debouncedSearch = useMemo(
     () =>
       debounce(async (query: string) => {
-        if (cache[query]) {
-          setResults(cache[query]);
-        } else if (searchIndex) {
-          try {
-            const { hits } = await searchIndex.search<SearchResult>(query);
-            setCache((prevCache) => ({ ...prevCache, [query]: hits }));
-            setResults(hits);
-          } catch (error) {
-            console.error("Algolia search error: ", error);
+        if (query.length > 2) {
+          // Only search if query is long enough
+          if (cache[query]) {
+            setResults(cache[query]);
+          } else if (searchIndex) {
+            try {
+              const { hits } = await searchIndex.search<SearchResult>(query);
+              setCache((prevCache) => ({ ...prevCache, [query]: hits }));
+              //console.log('hits', hits);
+              setResults(hits);
+            } catch (error) {
+              console.error("Algolia search error: ", error);
+            }
           }
+          setShowResults(true);
+        } else {
+          setResults([]); // Clear results if query is too short
+          setShowResults(false);
         }
-        setShowResults(true);
       }, 300),
     [cache, searchIndex],
   );
@@ -56,15 +75,22 @@ function CustomSearchBox() {
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value;
     setInputValue(value);
-    value.length > 2 ? debouncedSearch(value) : setResults([]);
+    debouncedSearch(value);
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!inputValue.trim()) return;
+    const trimmedValue = inputValue.trim();
+    if (onSearch) {
+      // If onSearch prop is provided (controlled mode, for SearchClient)
+      onSearch(trimmedValue || null); // Use nuqs to update/clear
+    } else {
+      // If onSearch prop is NOT provided (uncontrolled mode, for Navbar)
+      if (!trimmedValue) return; // Don't navigate if input is empty
+      router.push(`/search?query=${trimmedValue}`); // Use router.push directly
+    }
     setIsExpanded(false);
     setShowResults(false);
-    router.push(`/search?query=${inputValue}`);
   };
 
   const toggleSearch = () => {
@@ -75,6 +101,10 @@ function CustomSearchBox() {
       } else {
         setInputValue("");
         setResults([]);
+        // When closing, if onSearch is provided AND input was empty, also clear the URL param via nuqs
+        if (onSearch && inputValue === "") {
+          onSearch(null);
+        }
       }
       return newExpandedState;
     });
@@ -151,7 +181,7 @@ function CustomSearchBox() {
           {isExpanded && showResults && results.length > 0 && (
             <div
               ref={resultsRef}
-              className="absolute mt-10 left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50"
+              className="absolute left-0 right-0 mt-4 bg-white border border-gray-200 rounded-lg shadow-lg z-50"
             >
               <div className="container">
                 <ul className="w-[80%] m-auto max-h-96 overflow-auto">

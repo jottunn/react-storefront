@@ -1,5 +1,4 @@
 import React from "react";
-import { FilteredProductList } from "@/components/productList/FilteredProductList";
 import { DEFAULT_LOCALE, defaultRegionQuery } from "@/lib/regions";
 import {
   CollectionsByMetaKeyDocument,
@@ -15,6 +14,9 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import Script from "next/script";
 import HomepageBlock from "@/components/homepage/HomepageBlock";
 import AnchorScroller from "@/components/AnchorScroller";
+import Products from "@/components/productList/products";
+import { processSearchParams } from "@/components/searchParams/SearchParamsProvider";
+import { getProductCollectionData } from "../actions";
 
 export const metadata = {
   title: `Reduceri | ${STOREFRONT_NAME}`,
@@ -24,7 +26,10 @@ export const metadata = {
   },
 };
 
-export default async function Page() {
+export default async function Page(props: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const searchParams = await props.searchParams;
   let collections;
   try {
     const result = await executeGraphQL<
@@ -68,6 +73,17 @@ export default async function Page() {
       item: item.href ? `${STOREFRONT_URL}${item.href}` : undefined,
     })),
   };
+
+  const { sortBy, filters } = await processSearchParams(searchParams);
+
+  // Get product collection data
+  const productCollection = await getProductCollectionData({
+    filters,
+    sortBy,
+    collectionIDs: collectionsIds,
+    messages,
+  });
+
   return (
     <>
       <AnchorScroller />
@@ -82,8 +98,8 @@ export default async function Page() {
         <div className="bg-main-7 border-b md:mb-2">
           <Breadcrumbs items={breadcrumbItems} />
         </div>
-        <div className="container px-8 pt-4">
-          <PageHero title={messages["app.search.outletTitle"]} description="" />
+        <div className="container p-6">
+          <PageHero title={messages["app.search.outletTitle"]} />
           {outletCollectionsWithImage && outletCollectionsWithImage.length > 0 && (
             <div
               className={`${numColumnsHPCollections === 1 ? "flex flex-col items-center" : `grid grid-cols-1 md:grid-cols-${numColumnsHPCollections}`} gap-4 mt-4 mb-20`}
@@ -100,7 +116,11 @@ export default async function Page() {
         id="products"
       >
         {collectionsIds.length > 0 ? (
-          <FilteredProductList collectionIDs={collectionsIds} messages={messages} />
+          <Products
+            productCollection={productCollection}
+            messages={messages}
+            collectionIDs={collectionsIds}
+          />
         ) : (
           <p className="text-md text-center">No sales at the moment</p>
         )}

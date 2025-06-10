@@ -80,6 +80,7 @@ const WishlistPage = async () => {
                 attr.attribute.slug === ATTR_COLOR_COMMERCIAL_SLUG,
             );
             const colorName = variantAttr?.values[0]?.name || ""; // Fallback to an empty string if color is undefined
+            const colorValue = variantAttr?.values[0]?.slug || "";
             // Construct the string, ensuring that undefined values are handled.
             const productDisplayName = `${variant.product.name}${colorName ? ` - ${colorName}` : ""}`;
             const brandAttribute = variant.product.attributes.find(
@@ -93,7 +94,10 @@ const WishlistPage = async () => {
                 className="grid grid-cols-2 md:grid-cols-wishlist gap-6 items-center pb-8 border-b-1 border-black-100"
                 data-testid="wishlistProductsList"
               >
-                <Link href={`/p/${variant.product.slug}?variant=${variant?.id}`} prefetch={false}>
+                <Link
+                  href={`/p/${variant.product.slug}${colorValue ? `--${colorValue}` : ""}?variant=${variant?.id}`}
+                  prefetch={false}
+                >
                   <div className="bg-white w-full aspect-1">
                     <div className="border w-full h-full relative content-center">
                       {thumbnailUrl && (

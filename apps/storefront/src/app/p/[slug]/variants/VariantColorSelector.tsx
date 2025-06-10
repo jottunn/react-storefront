@@ -61,7 +61,7 @@ export function VariantColorSelector({
               ) : (
                 <Link
                   key={`link-${variant.id.toString()}-${value.name || ""}`}
-                  href={`/p/${product.slug}?variant=${variant.id}`}
+                  href={`/p/${product.slug}${value.slug ? `--${value.slug}` : ""}`}
                   title={`${value.name ?? ""}`}
                 >
                   {imgElement}

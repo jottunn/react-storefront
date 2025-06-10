@@ -33193,6 +33193,18 @@ export type ProductDetailsFragment = {
   }> | null;
   pricing?: {
     __typename?: "ProductPricingInfo";
+    onSale?: boolean | null;
+    priceRangeUndiscounted?: {
+      __typename?: "TaxedMoneyRange";
+      start?: {
+        __typename?: "TaxedMoney";
+        gross: { __typename?: "Money"; amount: number; currency: string };
+      } | null;
+      stop?: {
+        __typename?: "TaxedMoney";
+        gross: { __typename?: "Money"; amount: number; currency: string };
+      } | null;
+    } | null;
     priceRange?: {
       __typename?: "TaxedMoneyRange";
       start?: {
@@ -35954,90 +35966,6 @@ export type TransactionProcessMutation = {
   } | null;
 };
 
-export type AvailableProductFiltersQueryVariables = Exact<{
-  filter?: InputMaybe<ProductFilterInput>;
-  channel?: InputMaybe<Scalars["String"]["input"]>;
-  locale: LanguageCodeEnum;
-}>;
-
-export type AvailableProductFiltersQuery = {
-  __typename?: "Query";
-  products?: {
-    __typename?: "ProductCountableConnection";
-    edges: Array<{
-      __typename?: "ProductCountableEdge";
-      cursor: string;
-      node: {
-        __typename?: "Product";
-        attributes: Array<{
-          __typename?: "SelectedAttribute";
-          attribute: {
-            __typename?: "Attribute";
-            id: string;
-            slug?: string | null;
-            name?: string | null;
-            inputType?: AttributeInputTypeEnum | null;
-          };
-          values: Array<{
-            __typename?: "AttributeValue";
-            id: string;
-            name?: string | null;
-            slug?: string | null;
-          }>;
-        }>;
-        variants?: Array<{
-          __typename?: "ProductVariant";
-          quantityAvailable?: number | null;
-          attributes: Array<{
-            __typename?: "SelectedAttribute";
-            attribute: {
-              __typename?: "Attribute";
-              id: string;
-              slug?: string | null;
-              name?: string | null;
-              inputType?: AttributeInputTypeEnum | null;
-              type?: AttributeTypeEnum | null;
-              unit?: MeasurementUnitsEnum | null;
-              translation?: {
-                __typename?: "AttributeTranslation";
-                id: string;
-                name: string;
-              } | null;
-            };
-            values: Array<{
-              __typename?: "AttributeValue";
-              id: string;
-              name?: string | null;
-              slug?: string | null;
-              value?: string | null;
-              reference?: string | null;
-              translation?: {
-                __typename?: "AttributeValueTranslation";
-                id: string;
-                name: string;
-                richText?: string | null;
-              } | null;
-            }>;
-          }>;
-        }> | null;
-        category?: {
-          __typename?: "Category";
-          id: string;
-          slug: string;
-          name: string;
-          ancestors?: {
-            __typename?: "CategoryCountableConnection";
-            edges: Array<{
-              __typename?: "CategoryCountableEdge";
-              node: { __typename?: "Category"; id: string; slug: string };
-            }>;
-          } | null;
-        } | null;
-      };
-    }>;
-  } | null;
-};
-
 export type AvailableShippingMethodsQueryVariables = Exact<{
   channel: Scalars["String"]["input"];
   locale: LanguageCodeEnum;
@@ -37185,6 +37113,18 @@ export type ProductBySlugQuery = {
     }> | null;
     pricing?: {
       __typename?: "ProductPricingInfo";
+      onSale?: boolean | null;
+      priceRangeUndiscounted?: {
+        __typename?: "TaxedMoneyRange";
+        start?: {
+          __typename?: "TaxedMoney";
+          gross: { __typename?: "Money"; amount: number; currency: string };
+        } | null;
+        stop?: {
+          __typename?: "TaxedMoney";
+          gross: { __typename?: "Money"; amount: number; currency: string };
+        } | null;
+      } | null;
       priceRange?: {
         __typename?: "TaxedMoneyRange";
         start?: {
@@ -37429,6 +37369,214 @@ export type ProductCollectionQuery = {
             } | null;
           } | null;
         }> | null;
+      };
+    }>;
+    pageInfo: {
+      __typename?: "PageInfo";
+      hasNextPage: boolean;
+      hasPreviousPage: boolean;
+      startCursor?: string | null;
+      endCursor?: string | null;
+    };
+  } | null;
+};
+
+export type ProductCollectionFeedQueryVariables = Exact<{
+  before?: InputMaybe<Scalars["String"]["input"]>;
+  after?: InputMaybe<Scalars["String"]["input"]>;
+  first?: InputMaybe<Scalars["Int"]["input"]>;
+  filter?: InputMaybe<ProductFilterInput>;
+  sortBy?: InputMaybe<ProductOrder>;
+  channel: Scalars["String"]["input"];
+  locale: LanguageCodeEnum;
+}>;
+
+export type ProductCollectionFeedQuery = {
+  __typename?: "Query";
+  products?: {
+    __typename?: "ProductCountableConnection";
+    edges: Array<{
+      __typename?: "ProductCountableEdge";
+      cursor: string;
+      node: {
+        __typename?: "Product";
+        id: string;
+        name: string;
+        slug: string;
+        description?: string | null;
+        seoDescription?: string | null;
+        seoTitle?: string | null;
+        isAvailable?: boolean | null;
+        isAvailableForPurchase?: boolean | null;
+        translation?: {
+          __typename?: "ProductTranslation";
+          id: string;
+          description?: string | null;
+          name?: string | null;
+        } | null;
+        attributes: Array<{
+          __typename?: "SelectedAttribute";
+          attribute: {
+            __typename?: "Attribute";
+            id: string;
+            slug?: string | null;
+            name?: string | null;
+            inputType?: AttributeInputTypeEnum | null;
+            type?: AttributeTypeEnum | null;
+            unit?: MeasurementUnitsEnum | null;
+            translation?: { __typename?: "AttributeTranslation"; id: string; name: string } | null;
+          };
+          values: Array<{
+            __typename?: "AttributeValue";
+            id: string;
+            name?: string | null;
+            slug?: string | null;
+            value?: string | null;
+            reference?: string | null;
+            translation?: {
+              __typename?: "AttributeValueTranslation";
+              id: string;
+              name: string;
+              richText?: string | null;
+            } | null;
+          }>;
+        }>;
+        category?: {
+          __typename?: "Category";
+          id: string;
+          name: string;
+          slug: string;
+          translation?: {
+            __typename?: "CategoryTranslation";
+            id: string;
+            name?: string | null;
+          } | null;
+          metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
+          ancestors?: {
+            __typename?: "CategoryCountableConnection";
+            edges: Array<{
+              __typename?: "CategoryCountableEdge";
+              node: {
+                __typename?: "Category";
+                id: string;
+                name: string;
+                slug: string;
+                translation?: {
+                  __typename?: "CategoryTranslation";
+                  id: string;
+                  name?: string | null;
+                } | null;
+              };
+            }>;
+          } | null;
+          products?: {
+            __typename?: "ProductCountableConnection";
+            totalCount?: number | null;
+          } | null;
+        } | null;
+        variants?: Array<{
+          __typename?: "ProductVariant";
+          id: string;
+          name: string;
+          quantityAvailable?: number | null;
+          updatedAt: string;
+          sku?: string | null;
+          translation?: {
+            __typename?: "ProductVariantTranslation";
+            id: string;
+            name: string;
+          } | null;
+          metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
+          attributes: Array<{
+            __typename?: "SelectedAttribute";
+            attribute: {
+              __typename?: "Attribute";
+              id: string;
+              slug?: string | null;
+              name?: string | null;
+              inputType?: AttributeInputTypeEnum | null;
+              type?: AttributeTypeEnum | null;
+              unit?: MeasurementUnitsEnum | null;
+              translation?: {
+                __typename?: "AttributeTranslation";
+                id: string;
+                name: string;
+              } | null;
+            };
+            values: Array<{
+              __typename?: "AttributeValue";
+              id: string;
+              name?: string | null;
+              slug?: string | null;
+              value?: string | null;
+              reference?: string | null;
+              translation?: {
+                __typename?: "AttributeValueTranslation";
+                id: string;
+                name: string;
+                richText?: string | null;
+              } | null;
+            }>;
+          }>;
+          media?: Array<{
+            __typename?: "ProductMedia";
+            alt: string;
+            type: ProductMediaType;
+            url: string;
+            sortOrder?: number | null;
+          }> | null;
+          pricing?: {
+            __typename?: "VariantPricingInfo";
+            onSale?: boolean | null;
+            priceUndiscounted?: {
+              __typename?: "TaxedMoney";
+              gross: { __typename?: "Money"; currency: string; amount: number };
+            } | null;
+            discount?: {
+              __typename?: "TaxedMoney";
+              gross: { __typename?: "Money"; currency: string; amount: number };
+            } | null;
+            price?: {
+              __typename?: "TaxedMoney";
+              gross: { __typename?: "Money"; currency: string; amount: number };
+            } | null;
+          } | null;
+        }> | null;
+        pricing?: {
+          __typename?: "ProductPricingInfo";
+          onSale?: boolean | null;
+          priceRangeUndiscounted?: {
+            __typename?: "TaxedMoneyRange";
+            start?: {
+              __typename?: "TaxedMoney";
+              gross: { __typename?: "Money"; amount: number; currency: string };
+            } | null;
+            stop?: {
+              __typename?: "TaxedMoney";
+              gross: { __typename?: "Money"; amount: number; currency: string };
+            } | null;
+          } | null;
+          priceRange?: {
+            __typename?: "TaxedMoneyRange";
+            start?: {
+              __typename?: "TaxedMoney";
+              gross: { __typename?: "Money"; amount: number; currency: string };
+            } | null;
+            stop?: {
+              __typename?: "TaxedMoney";
+              gross: { __typename?: "Money"; amount: number; currency: string };
+            } | null;
+          } | null;
+        } | null;
+        media?: Array<{
+          __typename?: "ProductMedia";
+          url: string;
+          alt: string;
+          type: ProductMediaType;
+          sortOrder?: number | null;
+        }> | null;
+        thumbnail?: { __typename?: "Image"; url: string; alt?: string | null } | null;
+        metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
       };
     }>;
     pageInfo: {
@@ -38575,6 +38723,21 @@ export const ProductDetailsFragmentDoc = gql`
       ...ProductVariantDetailsFragment
     }
     pricing {
+      onSale
+      priceRangeUndiscounted {
+        start {
+          gross {
+            amount
+            currency
+          }
+        }
+        stop {
+          gross {
+            amount
+            currency
+          }
+        }
+      }
       priceRange {
         start {
           gross {
@@ -40386,123 +40549,6 @@ export type TransactionProcessMutationOptions = Apollo.BaseMutationOptions<
   TransactionProcessMutation,
   TransactionProcessMutationVariables
 >;
-export const AvailableProductFiltersDocument = gql`
-  query AvailableProductFilters(
-    $filter: ProductFilterInput
-    $channel: String
-    $locale: LanguageCodeEnum!
-  ) {
-    products(filter: $filter, channel: $channel, first: 400) {
-      edges {
-        cursor
-        node {
-          attributes {
-            attribute {
-              id
-              slug
-              name
-              inputType
-            }
-            values {
-              id
-              name
-              slug
-            }
-          }
-          variants {
-            quantityAvailable
-            attributes {
-              ...SelectedAttributeDetailsFragment
-            }
-          }
-          category {
-            id
-            slug
-            name
-            ancestors(first: 5) {
-              edges {
-                node {
-                  id
-                  slug
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-  ${SelectedAttributeDetailsFragmentDoc}
-`;
-
-/**
- * __useAvailableProductFiltersQuery__
- *
- * To run a query within a React component, call `useAvailableProductFiltersQuery` and pass it any options that fit your needs.
- * When your component renders, `useAvailableProductFiltersQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useAvailableProductFiltersQuery({
- *   variables: {
- *      filter: // value for 'filter'
- *      channel: // value for 'channel'
- *      locale: // value for 'locale'
- *   },
- * });
- */
-export function useAvailableProductFiltersQuery(
-  baseOptions: Apollo.QueryHookOptions<
-    AvailableProductFiltersQuery,
-    AvailableProductFiltersQueryVariables
-  > &
-    ({ variables: AvailableProductFiltersQueryVariables; skip?: boolean } | { skip: boolean }),
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<AvailableProductFiltersQuery, AvailableProductFiltersQueryVariables>(
-    AvailableProductFiltersDocument,
-    options,
-  );
-}
-export function useAvailableProductFiltersLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    AvailableProductFiltersQuery,
-    AvailableProductFiltersQueryVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<AvailableProductFiltersQuery, AvailableProductFiltersQueryVariables>(
-    AvailableProductFiltersDocument,
-    options,
-  );
-}
-export function useAvailableProductFiltersSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    AvailableProductFiltersQuery,
-    AvailableProductFiltersQueryVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    AvailableProductFiltersQuery,
-    AvailableProductFiltersQueryVariables
-  >(AvailableProductFiltersDocument, options);
-}
-export type AvailableProductFiltersQueryHookResult = ReturnType<
-  typeof useAvailableProductFiltersQuery
->;
-export type AvailableProductFiltersLazyQueryHookResult = ReturnType<
-  typeof useAvailableProductFiltersLazyQuery
->;
-export type AvailableProductFiltersSuspenseQueryHookResult = ReturnType<
-  typeof useAvailableProductFiltersSuspenseQuery
->;
-export type AvailableProductFiltersQueryResult = Apollo.QueryResult<
-  AvailableProductFiltersQuery,
-  AvailableProductFiltersQueryVariables
->;
 export const AvailableShippingMethodsDocument = gql`
   query AvailableShippingMethods($channel: String!, $locale: LanguageCodeEnum!) {
     shop {
@@ -41802,7 +41848,7 @@ export const ProductCollectionDocument = gql`
   query ProductCollection(
     $before: String
     $after: String
-    $first: Int = 4
+    $first: Int = 30
     $filter: ProductFilterInput
     $sortBy: ProductOrder
     $channel: String!
@@ -41900,6 +41946,116 @@ export type ProductCollectionSuspenseQueryHookResult = ReturnType<
 export type ProductCollectionQueryResult = Apollo.QueryResult<
   ProductCollectionQuery,
   ProductCollectionQueryVariables
+>;
+export const ProductCollectionFeedDocument = gql`
+  query ProductCollectionFeed(
+    $before: String
+    $after: String
+    $first: Int = 90
+    $filter: ProductFilterInput
+    $sortBy: ProductOrder
+    $channel: String!
+    $locale: LanguageCodeEnum!
+  ) {
+    products(
+      first: $first
+      channel: $channel
+      after: $after
+      before: $before
+      filter: $filter
+      sortBy: $sortBy
+    ) {
+      edges {
+        cursor
+        node {
+          ...ProductDetailsFragment
+        }
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+    }
+  }
+  ${ProductDetailsFragmentDoc}
+  ${SelectedAttributeDetailsFragmentDoc}
+  ${CategoryBasicFragmentDoc}
+  ${ProductVariantDetailsFragmentDoc}
+  ${ProductMediaFragmentDoc}
+  ${ImageFragmentDoc}
+`;
+
+/**
+ * __useProductCollectionFeedQuery__
+ *
+ * To run a query within a React component, call `useProductCollectionFeedQuery` and pass it any options that fit your needs.
+ * When your component renders, `useProductCollectionFeedQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useProductCollectionFeedQuery({
+ *   variables: {
+ *      before: // value for 'before'
+ *      after: // value for 'after'
+ *      first: // value for 'first'
+ *      filter: // value for 'filter'
+ *      sortBy: // value for 'sortBy'
+ *      channel: // value for 'channel'
+ *      locale: // value for 'locale'
+ *   },
+ * });
+ */
+export function useProductCollectionFeedQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    ProductCollectionFeedQuery,
+    ProductCollectionFeedQueryVariables
+  > &
+    ({ variables: ProductCollectionFeedQueryVariables; skip?: boolean } | { skip: boolean }),
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<ProductCollectionFeedQuery, ProductCollectionFeedQueryVariables>(
+    ProductCollectionFeedDocument,
+    options,
+  );
+}
+export function useProductCollectionFeedLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    ProductCollectionFeedQuery,
+    ProductCollectionFeedQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<ProductCollectionFeedQuery, ProductCollectionFeedQueryVariables>(
+    ProductCollectionFeedDocument,
+    options,
+  );
+}
+export function useProductCollectionFeedSuspenseQuery(
+  baseOptions?: Apollo.SuspenseQueryHookOptions<
+    ProductCollectionFeedQuery,
+    ProductCollectionFeedQueryVariables
+  >,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useSuspenseQuery<ProductCollectionFeedQuery, ProductCollectionFeedQueryVariables>(
+    ProductCollectionFeedDocument,
+    options,
+  );
+}
+export type ProductCollectionFeedQueryHookResult = ReturnType<typeof useProductCollectionFeedQuery>;
+export type ProductCollectionFeedLazyQueryHookResult = ReturnType<
+  typeof useProductCollectionFeedLazyQuery
+>;
+export type ProductCollectionFeedSuspenseQueryHookResult = ReturnType<
+  typeof useProductCollectionFeedSuspenseQuery
+>;
+export type ProductCollectionFeedQueryResult = Apollo.QueryResult<
+  ProductCollectionFeedQuery,
+  ProductCollectionFeedQueryVariables
 >;
 export const ProductListDocument = gql`
   query ProductList($first: Int = 9, $channel: String!, $filter: ProductFilterInput) {
