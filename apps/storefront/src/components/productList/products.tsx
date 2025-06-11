@@ -99,6 +99,10 @@ export default function Products({
       setProducts(cached.products);
       setPageInfo(cached.pageInfo);
       setLoadedPages(cached.loadedPages);
+      // Restore scroll position after a small delay to allow rendering
+      setTimeout(() => {
+        window.scrollTo(0, cached.scrollPosition);
+      }, 50);
     }
     hasInitialized.current = true;
   }, []);
