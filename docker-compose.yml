@@ -3,7 +3,7 @@ services:
     container_name: storefront
     build:
       context: .
-      dockerfile: Dockerfile.base
+      dockerfile: Dockerfile.storefront
       args:
         - TARGET_APP=storefront
     labels:
@@ -21,7 +21,8 @@ services:
       - "traefik.http.routers.storefront-app.middlewares=to-non-www,cloudflare-headers"
     networks:
       - saleor-backend-tier
-    command: sh -c '(nginx &) && pnpm turbo run start --filter=storefront...'
+    volumes:
+      - storefront-public-volume:/app/apps/storefront/public/generated
 
   products-importer:
     container_name: products-importer
@@ -94,13 +95,13 @@ services:
       args:
         - TARGET_APP=manage-stock
       labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.manage-stock.rule=Host(`manage-stock.surmont.ro`)"
-      - "traefik.http.routers.manage-stock.entrypoints=websecure"
-      - "traefik.http.routers.manage-stock.tls=true"
-      - "traefik.http.routers.manage-stock.tls.certresolver=cloudflare"
-      - "traefik.http.services.manage-stock.loadbalancer.server.port=3007"
-      - "traefik.http.routers.manage-stock.middlewares=cloudflare-headers"
+        - "traefik.enable=true"
+        - "traefik.http.routers.manage-stock.rule=Host(`manage-stock.surmont.ro`)"
+        - "traefik.http.routers.manage-stock.entrypoints=websecure"
+        - "traefik.http.routers.manage-stock.tls=true"
+        - "traefik.http.routers.manage-stock.tls.certresolver=cloudflare"
+        - "traefik.http.services.manage-stock.loadbalancer.server.port=3007"
+        - "traefik.http.routers.manage-stock.middlewares=cloudflare-headers"
     networks:
       - saleor-backend-tier
     volumes:
@@ -160,6 +161,7 @@ volumes:
   manage-stock-logs-volume:
   payment-auth-volume:
   payment-logs-volume:
+  storefront-public-volume:
 
 networks:
   saleor-backend-tier:
