@@ -9,14 +9,14 @@ services:
     labels:
       - "traefik.enable=true"
       # Change this line to include both domains
-      - "traefik.http.routers.storefront-app.rule=Host(`surmont.ro`) || Host(`www.surmont.ro`)"
+      - "traefik.http.routers.storefront-app.rule=Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)"
       - "traefik.http.routers.storefront-app.entrypoints=websecure"
       - "traefik.http.routers.storefront-app.tls=true"
       - "traefik.http.routers.storefront-app.tls.certresolver=cloudflare"
       - "traefik.http.services.storefront-app.loadbalancer.server.port=3000"
       # Add www to non-www redirect
-      - "traefik.http.middlewares.to-non-www.redirectregex.regex=^https://www\\.surmont\\.ro/(.*)"
-      - "traefik.http.middlewares.to-non-www.redirectregex.replacement=https://surmont.ro/$${1}"
+      - "traefik.http.middlewares.to-non-www.redirectregex.regex=^https://www\\.`${DOMAIN}`/(.*)"
+      - "traefik.http.middlewares.to-non-www.redirectregex.replacement=https://`${DOMAIN}`/$${1}"
       # Chain both middlewares
       - "traefik.http.routers.storefront-app.middlewares=to-non-www,cloudflare-headers"
     networks:
@@ -33,7 +33,7 @@ services:
         - TARGET_APP=products-importer
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.products-importer.rule=Host(`products-importer.surmont.ro`)"
+      - "traefik.http.routers.products-importer.rule=Host(`products-importer.${DOMAIN}`)"
       - "traefik.http.routers.products-importer.entrypoints=websecure"
       - "traefik.http.routers.products-importer.tls=true"
       - "traefik.http.routers.products-importer.tls.certresolver=cloudflare"
@@ -54,7 +54,7 @@ services:
         - TARGET_APP=manage-promotions
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.manage-promotions.rule=Host(`manage-promotions.surmont.ro`)"
+      - "traefik.http.routers.manage-promotions.rule=Host(`manage-promotions.${DOMAIN}`)"
       - "traefik.http.routers.manage-promotions.entrypoints=websecure"
       - "traefik.http.routers.manage-promotions.tls=true"
       - "traefik.http.routers.manage-promotions.tls.certresolver=cloudflare"
@@ -75,7 +75,7 @@ services:
         - TARGET_APP=search
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.search.rule=Host(`search.surmont.ro`)"
+      - "traefik.http.routers.search.rule=Host(`search.${DOMAIN}`)"
       - "traefik.http.routers.search.entrypoints=websecure"
       - "traefik.http.routers.search.tls=true"
       - "traefik.http.routers.search.tls.certresolver=cloudflare"
@@ -96,7 +96,7 @@ services:
         - TARGET_APP=manage-stock
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.manage-stock.rule=Host(`manage-stock.surmont.ro`)"
+        - "traefik.http.routers.manage-stock.rule=Host(`manage-stock.${DOMAIN}`)"
         - "traefik.http.routers.manage-stock.entrypoints=websecure"
         - "traefik.http.routers.manage-stock.tls=true"
         - "traefik.http.routers.manage-stock.tls.certresolver=cloudflare"
@@ -118,7 +118,7 @@ services:
         - TARGET_APP=smtp
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.smtp.rule=Host(`smtp.surmont.ro`)"
+      - "traefik.http.routers.smtp.rule=Host(`smtp.${DOMAIN}`)"
       - "traefik.http.routers.smtp.entrypoints=websecure"
       - "traefik.http.routers.smtp.tls=true"
       - "traefik.http.routers.smtp.tls.certresolver=cloudflare"
@@ -139,7 +139,7 @@ services:
         - TARGET_APP=payment
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.payment.rule=Host(`payment.surmont.ro`)"
+      - "traefik.http.routers.payment.rule=Host(`payment.${DOMAIN}`)"
       - "traefik.http.routers.payment.entrypoints=websecure"
       - "traefik.http.routers.payment.tls=true"
       - "traefik.http.routers.payment.tls.certresolver=cloudflare"
