@@ -2,7 +2,7 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
   enabled: process.env.ANALYZE === "false",
 });
 
-const apiURL = new URL(process.env.NEXT_PUBLIC_API_URI);
+const apiURL = new URL(process.env.NEXT_PUBLIC_SALEOR_API_URL);
 const strapiURL = new URL(process.env.NEXT_PUBLIC_STRAPI_URL);
 const allowedImageDomains = process.env.NEXT_PUBLIC_ALLOWED_IMAGE_DOMAINS
   ? process.env.NEXT_PUBLIC_ALLOWED_IMAGE_DOMAINS.split(",")
