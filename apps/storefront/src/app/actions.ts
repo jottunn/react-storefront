@@ -599,7 +599,7 @@ export async function getProductCollectionData(props: ProductCollectionProps) {
     ...(after ? { after } : {}),
   };
 
-  //console.log('queryVariables', queryVariables);
+  console.log("queryVariables", queryVariables, queryVariables.filter.attributes);
 
   // Fetch products
   const prodCollection = await getProductCollection(queryVariables);
