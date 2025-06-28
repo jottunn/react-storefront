@@ -99,30 +99,28 @@ async function generateProductsJson() {
               slug: value.slug,
             })),
           })),
-          variants: node.variants
-            .filter((variant: any) => variant.quantityAvailable > 0)
-            .map((variant: any) => ({
-              quantityAvailable: variant.quantityAvailable,
-              attributes: variant.attributes.map((attr: any) => ({
-                attribute: {
-                  id: attr.attribute.id,
-                  slug: attr.attribute.slug,
-                  name: attr.attribute.name,
-                  translation: attr.attribute.translation,
-                  inputType: attr.attribute.inputType,
-                  type: attr.attribute.type,
-                  unit: attr.attribute.unit,
-                },
-                values: attr.values.map((value: any) => ({
-                  id: value.id,
-                  name: value.name,
-                  translation: value.translation,
-                  slug: value.slug,
-                  value: value.value,
-                  reference: value.reference,
-                })),
+          variants: node.variants.map((variant: any) => ({
+            quantityAvailable: variant.quantityAvailable,
+            attributes: variant.attributes.map((attr: any) => ({
+              attribute: {
+                id: attr.attribute.id,
+                slug: attr.attribute.slug,
+                name: attr.attribute.name,
+                translation: attr.attribute.translation,
+                inputType: attr.attribute.inputType,
+                type: attr.attribute.type,
+                unit: attr.attribute.unit,
+              },
+              values: attr.values.map((value: any) => ({
+                id: value.id,
+                name: value.name,
+                translation: value.translation,
+                slug: value.slug,
+                value: value.value,
+                reference: value.reference,
               })),
             })),
+          })),
           category: node.category
             ? {
                 id: node.category.id,

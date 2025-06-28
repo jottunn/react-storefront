@@ -289,9 +289,18 @@ async function generateFilterIndex() {
       console.log("No products data available");
       return;
     }
-
+    const filteredProductsData = {
+      ...productsData,
+      edges: productsData.edges.map((edge: { node: { variants: any[] } }) => ({
+        ...edge,
+        node: {
+          ...edge.node,
+          variants: edge.node.variants.filter((variant) => variant.quantityAvailable > 0),
+        },
+      })),
+    };
     // Process products and build index
-    for (const edge of productsData.edges) {
+    for (const edge of filteredProductsData.edges) {
       const product = edge.node;
       const category = product.category?.slug || "";
       const collections = product.collections || [];
