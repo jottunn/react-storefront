@@ -12,10 +12,13 @@ WORKDIR /app
 # Dependencies stage
 FROM base AS deps
 # Copy only package files needed for installation
-COPY package.json pnpm-workspace.yaml turbo.json ./
 ARG TARGET_APP
+COPY pnpm-workspace.yaml ./
 COPY apps/${TARGET_APP}/package.json ./apps/${TARGET_APP}/
+# Create minimal root package.json 
+RUN echo '{"private": true, "workspaces": ["apps/*"], "devDependencies": {}}' > package.json
 # Install dependencies
+WORKDIR /app
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm install --prefer-offline
 
@@ -26,9 +29,9 @@ ENV NODE_ENV=production
 ARG TARGET_APP
 COPY apps/${TARGET_APP} ./apps/${TARGET_APP}
 # Build the target app
-WORKDIR /app/apps/${TARGET_APP}
+WORKDIR /app
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
-    NODE_ENV=production pnpm turbo run build --filter=${TARGET_APP}...
+    pnpm --filter ${TARGET_APP} run build
 
 # Production stage
 FROM node:20-slim AS runner
@@ -39,8 +42,6 @@ ARG TARGET_APP
 COPY --from=builder /app/apps/${TARGET_APP}/.next/standalone/ ./
 COPY --from=builder /app/apps/${TARGET_APP}/.next/static/ ./apps/${TARGET_APP}/.next/static/
 COPY --from=builder /app/apps/${TARGET_APP}/public/ ./apps/${TARGET_APP}/public/
-# Copy workspace configuration
-#12COPY --from=builder /app/package.json /app/pnpm-workspace.yaml ./
 COPY --from=builder /app/apps/${TARGET_APP}/package.json ./apps/${TARGET_APP}/package.json
 
 # Install nginx and clean up in the same layer

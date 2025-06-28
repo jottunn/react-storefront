@@ -6,7 +6,6 @@
     "debug": "NODE_OPTIONS='--inspect' next dev --port 3000",
     "dev": "next dev --port 3000",
     "build": "NODE_ENV=production next build",
-    "translations": "formatjs extract './{components,pages}/**/*.{ts,tsx}' --out-file temp.json --flatten --id-interpolation-pattern '[sha512:contenthash:base64:6]' && formatjs compile 'temp.json' --out-file locale/en-US.json && rm ./temp.json",
     "analyze-build": "ANALYZE=true NODE_ENV=production next build",
     "start": "next start",
     "lint": "next lint --dir .",
@@ -49,7 +48,6 @@
     "ts-invariant": "0.10.3"
   },
   "devDependencies": {
-    "@formatjs/cli": "6.2.10",
     "@graphql-codegen/add": "5.0.2",
     "@graphql-codegen/typescript-react-apollo": "4.3.0",
     "@graphql-codegen/typescript-apollo-client-helpers": "3.0.0",
