@@ -292,15 +292,13 @@ export default async function HomeTest() {
               </button>
             </div>
           </div>
-          <div>
-            <SwiperComponent
-              isLoop={true}
-              products={displayedSalesProducts as Product[]}
-              prevButtonClass="swiper-button-prev-sales"
-              nextButtonClass="swiper-button-next-sales"
-              messages={messages}
-            />
-          </div>
+          <SwiperComponent
+            isLoop={true}
+            products={displayedSalesProducts as Product[]}
+            prevButtonClass="swiper-button-prev-sales"
+            nextButtonClass="swiper-button-next-sales"
+            messages={messages}
+          />
         </div>
       )}
 
@@ -322,15 +320,13 @@ export default async function HomeTest() {
                 </button>
               </div>
             </div>
-            <div>
-              <SwiperComponent
-                isLoop={true}
-                products={newProducts as Product[]}
-                prevButtonClass="swiper-button-prev-new"
-                nextButtonClass="swiper-button-next-new"
-                messages={messages}
-              />
-            </div>
+            <SwiperComponent
+              isLoop={true}
+              products={newProducts as Product[]}
+              prevButtonClass="swiper-button-prev-new"
+              nextButtonClass="swiper-button-next-new"
+              messages={messages}
+            />
           </div>
         )}
       <div className="py-12 md:py-20 mb-10 items-center justify-items-center w-full border-t border-dark-300 md:min-h-[90px]">

@@ -30,7 +30,7 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items }) => {
                 <meta itemProp="position" content={(i + 1).toString()} />
               </Link>
             ) : (
-              <span className="text-xs md:text-sm mt-2 font-medium text-gray-400">
+              <span className="text-xs md:text-sm mt-2 font-medium text-gray-500">
                 <span itemProp="name">{item.name}</span>
                 <meta itemProp="position" content={(i + 1).toString()} />
               </span>

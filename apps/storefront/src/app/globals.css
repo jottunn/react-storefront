@@ -7,7 +7,7 @@
     @apply text-lg font-medium text-gray-900;
   }
   .checkout-section-header-disabled {
-    @apply text-lg font-medium text-gray-400;
+    @apply text-lg font-medium text-gray-500;
   }
 }
 
@@ -84,4 +84,8 @@ html {
 
 .button-tertiary {
   @apply border-black bg-black text-white px-4 text-base hover:bg-main-1 transition-opacity;
+}
+
+.nowrap p {
+  white-space: nowrap;
 }

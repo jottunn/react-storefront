@@ -257,7 +257,7 @@ export default async function Page() {
                   <div className="absolute inset-0 flex items-center justify-center bg-gray-200">
                     <div className="animate-pulse flex flex-col items-center">
                       <svg
-                        className="h-12 w-12 text-gray-400"
+                        className="h-12 w-12 text-gray-500"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -287,6 +287,7 @@ export default async function Page() {
                     allowFullScreen
                     aria-hidden="false"
                     tabIndex={0}
+                    title="Location on Map"
                   ></iframe>
                 </div>
               </div>

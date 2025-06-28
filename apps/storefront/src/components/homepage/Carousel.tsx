@@ -94,43 +94,32 @@ const Carousel: React.FC<SliderProps> = ({
             ? `${UPLOAD_FOLDER ?? ""}/${mobileBanner}`
             : desktopImgSrc;
           const isCurrentPriority = isMounted && index === 0;
+
+          const isMobile = isMobileView;
+          const imgSrc = isMobile ? mobileImgSrc : desktopImgSrc;
+          const sizes = isMobile
+            ? "(max-width: 768px) 100vw, 0vw"
+            : "(min-width: 768px) 100vw, 0vw";
+          const paddingTop = isMobile
+            ? "calc(430 / 700 * 100%)"
+            : `calc(${carouselH}  / ${carouselW} * 100%)`;
+          const loading: "eager" | "lazy" = isCurrentPriority ? "eager" : "lazy";
+
           return (
             <div key={index} className="relative min-w-full flex justify-center">
               <Link href={bannerLink} className="w-full">
-                {isMobileView ? (
-                  <div className="relative w-full">
-                    <div className="relative" style={{ paddingTop: "calc(430 / 700 * 100%)" }}>
-                      <Image
-                        src={mobileImgSrc}
-                        alt={slide.title}
-                        fill
-                        priority={isCurrentPriority}
-                        loading={isCurrentPriority ? "eager" : "lazy"}
-                        quality={60}
-                        className="object-contain"
-                        sizes="(max-width: 767px) 100vw, 0vw"
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <div className="relative w-full">
-                    <div
-                      className="relative"
-                      style={{ paddingTop: `calc(${carouselH}  / ${carouselW} * 100%)` }}
-                    >
-                      <Image
-                        src={desktopImgSrc}
-                        alt={slide.title}
-                        fill
-                        priority={isCurrentPriority}
-                        loading={isCurrentPriority ? "eager" : "lazy"}
-                        quality={60}
-                        className="object-contain"
-                        sizes="(min-width: 768px) 100vw, 0vw"
-                      />
-                    </div>
-                  </div>
-                )}
+                <div className="relative w-full" style={{ paddingTop }}>
+                  <Image
+                    src={imgSrc}
+                    sizes={sizes}
+                    alt={slide.title}
+                    fill
+                    priority={isCurrentPriority}
+                    loading={loading}
+                    quality={60}
+                    className="object-contain"
+                  />
+                </div>
               </Link>
             </div>
           );

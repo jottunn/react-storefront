@@ -13,7 +13,7 @@ interface ColumnProps {
 const Column: React.FC<ColumnProps> = ({ items }) => (
   <div className="border-r-2 border-gray-200">
     {items.map((item) => (
-      <div key={item?.id}>
+      <React.Fragment key={item?.id}>
         <NavLink key={item?.id} href={item?.url || getLinkPath(item)}>
           {item?.name}
         </NavLink>
@@ -31,7 +31,7 @@ const Column: React.FC<ColumnProps> = ({ items }) => (
             ))}
           </ul>
         )}
-      </div>
+      </React.Fragment>
     ))}
   </div>
 );

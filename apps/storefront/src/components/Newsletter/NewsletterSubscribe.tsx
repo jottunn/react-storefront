@@ -49,7 +49,7 @@ const NewsletterSubscribe = ({ messages }: NewsletterSubscribeProps) => {
   };
 
   return (
-    <div>
+    <>
       <h2 className="text-2xl font-bold mb-4 text-left">{messages["app.nwl.title"]}</h2>
       <form onSubmit={handleSubmit} className="flex items-center space-x-2">
         <input
@@ -103,7 +103,7 @@ const NewsletterSubscribe = ({ messages }: NewsletterSubscribeProps) => {
           {message.text}
         </p>
       )}
-    </div>
+    </>
   );
 };
 

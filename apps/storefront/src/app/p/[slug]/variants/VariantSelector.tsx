@@ -204,7 +204,7 @@ export function VariantSelector({
               messages={messages}
               selectedVariantId={selectedVariant?.id}
             />
-            <p className="text-sm text-left font-semibold text-neutral-400 pt-2 absolute">
+            <p className="text-sm text-left font-semibold text-neutral-500 pt-2 absolute">
               {!sizeSelected && messages["app.chooseSizeCart"]}
             </p>
             {selectedVariant?.quantityAvailable === 0 && (

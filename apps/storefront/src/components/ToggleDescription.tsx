@@ -14,9 +14,11 @@ const edjsParser = edjsHTML();
 
 function ToggleDescription({ description, messages }: ToggleDescriptionProps) {
   const cleanedDescriptionT = description && JSON.parse(description);
-  const excerpt = cleanedDescriptionT && edjsParser.parseBlock(cleanedDescriptionT.blocks[0]);
+  const excerptBlocks = cleanedDescriptionT && cleanedDescriptionT.blocks.slice(0, 2);
+  const excerpt = excerptBlocks && edjsParser.parse({ blocks: excerptBlocks });
+
   const parsedDescription = cleanedDescriptionT ? edjsParser.parse(cleanedDescriptionT) : null;
-  const remainingBlocks = parsedDescription ? parsedDescription.slice(1) : null;
+  const remainingBlocks = parsedDescription ? parsedDescription.slice(2) : null;
 
   return (
     <div className="container">

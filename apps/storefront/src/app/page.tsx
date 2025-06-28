@@ -126,7 +126,7 @@ export default async function Home() {
         filter: { pageTypes: [PAGE_TYPE_HP_BANNERS_ID, PAGE_TYPE_HP_CAROUSEL_ID] },
         locale: DEFAULT_LOCALE,
       },
-      revalidate: 60,
+      revalidate: 60 * 5,
     });
     homepageBanners = homepageBannersResponse.pages;
   } catch {
@@ -175,7 +175,7 @@ export default async function Home() {
         },
         ...defaultRegionQuery(),
       },
-      revalidate: 60 * 60 * 60,
+      revalidate: 60 * 60 * 24,
     });
     salesCollections = result.collections;
   } catch {
@@ -201,7 +201,7 @@ export default async function Home() {
         ...defaultRegionQuery(),
         sortBy,
       },
-      revalidate: 60 * 60 * 60,
+      revalidate: 60 * 60 * 24,
     });
     salesProducts = salesProductsH ? mapEdgesToItems(salesProductsH) : [];
     if (salesProducts && salesProducts.length > 0) {
@@ -223,9 +223,9 @@ export default async function Home() {
   const displayVideo = page?.metadata.find((m) => m.key === "Display Video");
   if (displayVideo && displayVideo.value === "YES") {
     const videoFile =
-      page?.attributes.find((attr) => attr.attribute.name === "Video")?.values[0].name || "";
+      page?.attributes.find((attr) => attr.attribute.name === "Video")?.values?.[0]?.name || "";
     const videoBannerFile =
-      page?.attributes.find((attr) => attr.attribute.name === "Banner")?.values[0].name || "";
+      page?.attributes.find((attr) => attr.attribute.name === "Banner")?.values?.[0]?.name || "";
     const videoFilePath = videoFile ? `${UPLOAD_FOLDER ?? ""}/${videoFile}` : "#";
     videoBannerPath = videoBannerFile ? `${UPLOAD_FOLDER ?? ""}/${videoBannerFile}` : "#";
     const youtubeUrl = page?.metadata.find((m) => m.key === "Youtube");
@@ -305,15 +305,13 @@ export default async function Home() {
               </button>
             </div>
           </div>
-          <div>
-            <SwiperComponent
-              isLoop={true}
-              products={displayedSalesProducts as Product[]}
-              prevButtonClass="swiper-button-prev-sales"
-              nextButtonClass="swiper-button-next-sales"
-              messages={messages}
-            />
-          </div>
+          <SwiperComponent
+            isLoop={true}
+            products={displayedSalesProducts as Product[]}
+            prevButtonClass="swiper-button-prev-sales"
+            nextButtonClass="swiper-button-next-sales"
+            messages={messages}
+          />
         </div>
       )}
 
@@ -341,15 +339,13 @@ export default async function Home() {
                 </button>
               </div>
             </div>
-            <div>
-              <SwiperComponent
-                isLoop={true}
-                products={newProducts as Product[]}
-                prevButtonClass="swiper-button-prev-new"
-                nextButtonClass="swiper-button-next-new"
-                messages={messages}
-              />
-            </div>
+            <SwiperComponent
+              isLoop={true}
+              products={newProducts as Product[]}
+              prevButtonClass="swiper-button-prev-new"
+              nextButtonClass="swiper-button-next-new"
+              messages={messages}
+            />
           </div>
         )}
       <div className="py-12 md:py-20 mb-10 items-center justify-items-center w-full border-t border-dark-300 md:min-h-[90px]">
