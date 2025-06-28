@@ -152,7 +152,7 @@ function generateFacebookFeedCSV(products: any) {
     const genderAttr = product.attributes.find(
       (attribute: { attribute: { slug: string } }) => attribute.attribute.slug === "gen",
     );
-    const gender = genderAttr?.values?.[0]?.["name"] || "unisex";
+    const gender = genderAttr?.values?.[0]?.["slug"] || "unisex";
 
     let imageUrl;
     if (variant && variant.media && variant.media.length > 0) {
