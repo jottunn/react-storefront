@@ -15,8 +15,18 @@ export interface Attribute1 {
 }
 
 export const parseQueryAttributeFilters = (query: string): UrlFilter[] => {
+  if (!query || query.trim() === "") {
+    return [];
+  }
+
   const filters = query.split("_").flatMap((attributeWithValues) => {
     const splitted = attributeWithValues.split("--");
+
+    // Check if we have both slug and values parts
+    if (splitted.length < 2 || !splitted[0] || !splitted[1]) {
+      return [];
+    }
+
     const splittedValues = splitted[1].split(",");
     const attributeFilter: UrlFilter = { slug: splitted[0], values: splittedValues };
     if (attributeFilter.values.length > 0) {
