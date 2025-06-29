@@ -16,11 +16,12 @@ export interface UrlFilter {
   values: string[];
 }
 
-// Function to parse query attribute filters (shared across pages)
+// Function to parse query attribute filters (shared across pages) ?filters=culoare--rosu,albastru,dark-gray_gen--copii
 export function parseQueryAttributeFilters(query: string): UrlFilter[] {
-  const filters = query.split(";").flatMap((attributeWithValues) => {
-    const splitted = attributeWithValues.split(".");
-    const attributeFilter: UrlFilter = { slug: splitted[0], values: splitted.slice(1) };
+  const filters = query.split("_").flatMap((attributeWithValues) => {
+    const splitted = attributeWithValues.split("--");
+    const splittedValues = splitted[1].split(",");
+    const attributeFilter: UrlFilter = { slug: splitted[0], values: splittedValues };
     if (attributeFilter.values.length > 0) {
       return [attributeFilter];
     }

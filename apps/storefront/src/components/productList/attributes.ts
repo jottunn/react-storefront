@@ -15,9 +15,10 @@ export interface Attribute1 {
 }
 
 export const parseQueryAttributeFilters = (query: string): UrlFilter[] => {
-  const filters = query.split(";").flatMap((attributeWithValues) => {
-    const splitted = attributeWithValues.split(".");
-    const attributeFilter: UrlFilter = { slug: splitted[0], values: splitted.slice(1) };
+  const filters = query.split("_").flatMap((attributeWithValues) => {
+    const splitted = attributeWithValues.split("--");
+    const splittedValues = splitted[1].split(",");
+    const attributeFilter: UrlFilter = { slug: splitted[0], values: splittedValues };
     if (attributeFilter.values.length > 0) {
       return [attributeFilter];
     }
@@ -26,5 +27,22 @@ export const parseQueryAttributeFilters = (query: string): UrlFilter[] => {
   return filters;
 };
 
-export const serializeQueryAttributeFilters = (values: UrlFilter[]): string =>
-  values.map((value) => [value.slug, ...value.values].join(".")).join(";");
+export const serializeQueryAttributeFilters = (values: UrlFilter[]): string => {
+  if (values.length === 0) {
+    return "";
+  }
+
+  const serializedGroups = values.map((filterGroup) => {
+    // 1. Get the slug (e.g., "culoare")
+    const slug = filterGroup.slug;
+
+    // 2. Join the sorted values with a comma
+    const joinedValues = filterGroup.values.join(",");
+
+    // 3. Combine slug and joined values with '--' (e.g., "culoare--rosu,albastru,dark-gray")
+    return `${slug}--${joinedValues}`;
+  });
+
+  // 4. Join all the filter groups with '_' (e.g., "culoare--..._gen--...")
+  return serializedGroups.join("_");
+};
