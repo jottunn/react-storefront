@@ -16,6 +16,7 @@ type MainFilter = {
 // Helper function to get size sort order
 function getSizeSortOrder(size: string): number {
   const sizeOrder: Record<string, number> = {
+    // Letter sizes
     xxs: 0,
     xs: 1,
     s: 2,
@@ -29,9 +30,38 @@ function getSizeSortOrder(size: string): number {
     "2xl": 10,
     "3xl": 11,
     "4xl": 12,
+    // Special values
+    os: 100, // one size - goes at the end
   };
 
-  return sizeOrder[size] !== undefined ? sizeOrder[size] : 999; // Unknown sizes go to the end
+  // If it's a predefined letter size, use that order
+  if (sizeOrder[size] !== undefined) {
+    return sizeOrder[size];
+  }
+
+  // If it's a numeric size, convert to number and add offset to place after letter sizes
+  const numericValue = parseInt(size, 10);
+  if (!isNaN(numericValue)) {
+    return 50 + numericValue; // Offset by 50 to place after letter sizes but before special values
+  }
+
+  // Unknown sizes go to the very end
+  return 999;
+}
+
+// Generic sorting function for attribute values
+function sortAttributeValues(attrSlug: string, values: string[]): string[] {
+  if (attrSlug === "marime") {
+    const sorted = values.sort((a, b) => {
+      const orderA = getSizeSortOrder(a);
+      const orderB = getSizeSortOrder(b);
+      return orderA - orderB;
+    });
+    return sorted;
+  } else {
+    // Default alphabetical sorting for all other attributes (including colors)
+    return values.sort();
+  }
 }
 
 // Helper function to check if a product matches all current selections
@@ -137,6 +167,13 @@ function filterValuesByMainFilter(
   });
 }
 
+// Helper to get all descendant categories for a given ancestor slug
+function getDescendantCategories(categoryStructure: any[], ancestorSlug: string): string[] {
+  return categoryStructure
+    .filter((cat) => cat.ancestors?.some((ancestor: any) => ancestor.slug === ancestorSlug))
+    .map((cat) => cat.slug);
+}
+
 // Helper function to get available values for an attribute
 function getAvailableValuesForSelection(
   index: any,
@@ -153,7 +190,24 @@ function getAvailableValuesForSelection(
   const allValues = new Set(getAvailableValues(index, attrSlug));
   const validValues = new Set<string>();
 
-  // For each product in the collections
+  // --- CATEGORY FILTERING LOGIC REWRITE ---
+  // If filtering by category, build allowed categories set
+  let allowedCategories: Set<string> | null = null;
+  if ((mainFilter.categorie?.length ?? 0) === 1) {
+    const selectedCat = mainFilter.categorie![0];
+    const descendantCategories = getDescendantCategories(index.categoryStructure, selectedCat);
+    allowedCategories = new Set([selectedCat, ...descendantCategories]);
+  } else if ((mainFilter.categorie?.length ?? 0) > 1) {
+    // If multiple categories selected, union all their descendants
+    allowedCategories = new Set();
+    for (const selectedCat of mainFilter.categorie!) {
+      allowedCategories.add(selectedCat);
+      getDescendantCategories(index.categoryStructure, selectedCat).forEach((slug) =>
+        allowedCategories!.add(slug),
+      );
+    }
+  }
+
   Object.entries(index.products).forEach(([productId, product]: [string, any]) => {
     // Skip if product is not in any of the specified collections
     if (
@@ -161,6 +215,13 @@ function getAvailableValuesForSelection(
       !product.collections?.some((col: string) => mainFilter.collections!.includes(col))
     ) {
       return;
+    }
+
+    // --- CATEGORY FILTERING ---
+    if (allowedCategories) {
+      if (!allowedCategories.has(product.category)) {
+        return;
+      }
     }
 
     // Skip if product doesn't match current selections (except for the attribute we're checking)
@@ -181,7 +242,8 @@ function getAvailableValuesForSelection(
 
   // If we found any valid values, return them
   // Otherwise, return all values (this happens when there are no relationships found)
-  return Array.from(validValues.size > 0 ? validValues : allValues).sort();
+  const resultValues = Array.from(validValues.size > 0 ? validValues : allValues);
+  return sortAttributeValues(attrSlug, resultValues);
 }
 
 // Helper function to get all available filters
@@ -252,14 +314,11 @@ export async function getAllAvailableFilters(
         }
       });
       // Remove duplicates and sort
-      values = [...new Set(values)].sort();
+      values = [...new Set(values)];
     }
 
-    if (attrSlug === "marime") {
-      values = values.sort((a, b) => {
-        return getSizeSortOrder(a ?? "") - getSizeSortOrder(b ?? "");
-      });
-    }
+    // Apply proper sorting for this attribute
+    values = sortAttributeValues(attrSlug, values);
 
     // availableFilters[attrSlug] = values;
     // Add the values and config to availableFilters

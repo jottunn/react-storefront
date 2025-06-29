@@ -117,7 +117,24 @@ export default function ProductFilters({
   // It's memoized to prevent re-creation unless its dependencies change.
   const transformToFilterOptions = useCallback(
     (filterData: FilterData, filterKey: string): FilterDropdownOption[] => {
-      return filterData.config.options.map((option) => {
+      // Use the sorted values from filterData.values to determine the order
+      // but get the full option data from config.options
+      const optionsMap = new Map(filterData.config.options.map((option) => [option.slug, option]));
+
+      return filterData.values.map((valueSlug) => {
+        const option = optionsMap.get(valueSlug);
+        if (!option) {
+          // Fallback if option not found in config
+          return {
+            id: valueSlug,
+            label: valueSlug,
+            slug: valueSlug,
+            chosen: false,
+            value: valueSlug,
+            inputType: filterData.config.inputType,
+          };
+        }
+
         const isChosen =
           filterKey === "categorie"
             ? mainFilter.categorie?.includes(option.slug)
