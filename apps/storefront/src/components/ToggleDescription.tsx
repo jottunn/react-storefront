@@ -16,7 +16,6 @@ function ToggleDescription({ description, messages }: ToggleDescriptionProps) {
   const cleanedDescriptionT = description && JSON.parse(description);
   const excerptBlocks = cleanedDescriptionT && cleanedDescriptionT.blocks.slice(0, 2);
   const excerpt = excerptBlocks && edjsParser.parse({ blocks: excerptBlocks });
-
   const parsedDescription = cleanedDescriptionT ? edjsParser.parse(cleanedDescriptionT) : null;
   const remainingBlocks = parsedDescription ? parsedDescription.slice(2) : null;
 
@@ -25,8 +24,8 @@ function ToggleDescription({ description, messages }: ToggleDescriptionProps) {
       <div className="px-8 my-8 min-h-[200px] md:ml-[300px] border-t">
         {excerpt && (
           <div
-            className="text-md inline-block my-6 text-main "
-            dangerouslySetInnerHTML={{ __html: xss(excerpt) }}
+            className="text-md inline-block my-6 text-main space-y-2"
+            dangerouslySetInnerHTML={{ __html: xss(excerpt.join("")) }}
           />
         )}
         {cleanedDescriptionT && cleanedDescriptionT.blocks.length > 1 && parsedDescription && (
@@ -57,11 +56,13 @@ function ToggleDescription({ description, messages }: ToggleDescriptionProps) {
                   leaveFrom="transform scale-100 opacity-100"
                   leaveTo="transform scale-95 opacity-0"
                 >
-                  <DisclosurePanel static className="text-md block mt-4 mb-8 py-0 text-main-1">
-                    {remainingBlocks &&
-                      remainingBlocks.map((content) => (
-                        <div key={content} dangerouslySetInnerHTML={{ __html: xss(content) }} />
-                      ))}
+                  <DisclosurePanel static>
+                    {remainingBlocks && (
+                      <div
+                        dangerouslySetInnerHTML={{ __html: xss(remainingBlocks.join("")) }}
+                        className="text-md block mt-4 mb-8 py-0 text-main space-y-2"
+                      />
+                    )}
                   </DisclosurePanel>
                 </Transition>
               </div>
