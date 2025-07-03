@@ -140,7 +140,7 @@ function generateFacebookFeedCSV(products: any) {
     }
 
     const price = product.pricing.onSale
-      ? product.pricing.priceRangeUndiscounted.start.gross.amount
+      ? product.pricing.priceRangeUndiscounted.start.gross.amount + " RON"
       : product.pricing.priceRange.start.gross.amount + " RON";
     const sale_price = product.pricing.onSale
       ? product.pricing.priceRange.start.gross.amount + " RON"
