@@ -105,7 +105,7 @@ const SearchClient = ({
                 ) : (
                   <Products
                     productCollection={productCollection}
-                    search={debouncedFilter}
+                    search={debouncedFilter.search || ""}
                     messages={messages}
                   />
                 ))}

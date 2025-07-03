@@ -47,7 +47,7 @@ export interface ProductsProps {
   categorySlug?: string;
   productsIDs?: string[];
   sort?: UrlSorting;
-  search?: ProductFilterInput;
+  search?: string;
   messages: Messages;
 }
 
@@ -184,7 +184,7 @@ export default function Products({
         ...(categoryIDs?.length && { categoryIDs: categoryIDs }),
         ...(collectionIDs?.length && { collectionIDs: collectionIDs }),
         ...(productsIDs?.length && { productsIDs: productsIDs }),
-        ...(search?.search && { search: search.search }),
+        ...(search && { search: search }),
         sortBy: sort ? serializeQuerySort(sort) : serializeQuerySort(sortBy),
         after: pageInfo.endCursor,
         messages,
