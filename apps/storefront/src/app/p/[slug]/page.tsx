@@ -185,7 +185,9 @@ const ProductDetail = async ({
   }
 
   const messages = getMessages(defaultRegionQuery().locale);
-  const variants = product.variants;
+  const variants = product.variants?.filter(
+    (variant) => variant.quantityAvailable && variant.quantityAvailable > 0,
+  );
 
   // Filter variants by color attribute and productSlug[1]
   const colorVariants = variants?.filter((variant) => {
@@ -200,9 +202,9 @@ const ProductDetail = async ({
     searchParams.variant || colorVariants?.[0]?.id || variants?.[0]?.id || null;
 
   const selectedVariant =
-    product.variants && product.variants.length > 1
-      ? product?.variants?.find((v: { id: string | undefined }) => v?.id === selectedVariantID)
-      : product.variants?.[0];
+    variants && variants.length > 1
+      ? variants?.find((v: { id: string | undefined }) => v?.id === selectedVariantID)
+      : variants?.[0];
 
   const firstImage = product.thumbnail;
   const hasPlaceholderMeta =
@@ -217,7 +219,7 @@ const ProductDetail = async ({
   const isAddToCartButtonDisabled =
     !product.isAvailable ||
     !product.isAvailableForPurchase ||
-    (product.variants && product.variants.length > 1 && !selectedVariantID) ||
+    (variants && variants.length > 1 && !selectedVariantID) ||
     selectedVariant?.quantityAvailable === 0;
 
   const descriptionT = translate(product, "description");
@@ -376,7 +378,7 @@ const ProductDetail = async ({
         )}
       >
         <div className="h-full relative md:col-span-2 md:flex md:items-center md:justify-center md:gap-4">
-          {product.variants?.[0]?.pricing?.onSale && (
+          {variants?.[0]?.pricing?.onSale && (
             <TagIcon className="text-action-1 w-8 h-8 md:w-12 md:h-12 absolute right-4 top-4 z-30" />
           )}
           <ProductGallery
@@ -421,13 +423,13 @@ const ProductDetail = async ({
             {translate(product, "name")}
           </h1>
 
-          {product.variants?.length === 0 && (
+          {variants?.length === 0 && (
             <p className="text-lg md:text-xl font-bold tracking-tight text-gray-800 text-center">
               <span>{price}</span>
-              {product.variants?.[0]?.pricing?.onSale && (
+              {variants?.[0]?.pricing?.onSale && (
                 <span className="text-md ml-2 opacity-75">
-                  {product.variants[0].pricing.priceUndiscounted && (
-                    <s>{formatMoney(product.variants[0].pricing.priceUndiscounted.gross)}</s>
+                  {variants[0].pricing.priceUndiscounted && (
+                    <s>{formatMoney(variants[0].pricing.priceUndiscounted.gross)}</s>
                   )}
                 </span>
               )}

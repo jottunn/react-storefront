@@ -75,7 +75,7 @@ const VariantSelectorClient: React.FC<VariantSelectorClientProps> = ({
     <Listbox value={selectedSize} onChange={handleSelect}>
       <ListboxButton
         className={clsx(
-          "relative block h-[40px] min-w-[120px] border border-1 border-dark-900 py-2 pr-8 pl-3 text-left text-[1.5rem] text-dark-700",
+          "relative block h-[40px] min-w-[150px] border border-1 border-dark-900 py-2 pr-8 pl-3 text-left text-[1.5rem] text-dark-700",
           "focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-dark-700",
           { "m-auto": !hasSizeGuide },
         )}
