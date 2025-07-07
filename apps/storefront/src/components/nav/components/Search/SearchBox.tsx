@@ -6,8 +6,9 @@ import { SearchIndex } from "algoliasearch";
 import { Input } from "@headlessui/react";
 import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { algoliaClient } from "@/lib/searchClient";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import Spinner from "@/components/Spinner";
 
 type SearchResult = {
   productName: string;
@@ -32,6 +33,8 @@ function CustomSearchBox({ expanded = false, onSearch }: CustomSearchBoxProps) {
   const searchBoxRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const pathname = usePathname();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setIsExpanded(expanded);
@@ -39,6 +42,14 @@ function CustomSearchBox({ expanded = false, onSearch }: CustomSearchBoxProps) {
       setTimeout(() => document.getElementById("algolia_search")?.focus(), 10);
     }
   }, [expanded]);
+
+  useEffect(() => {
+    if (isLoading && pathname.startsWith("/search")) {
+      setIsExpanded(false);
+      setShowResults(false);
+      setIsLoading(false);
+    }
+  }, [pathname, isLoading]);
 
   const searchIndex: SearchIndex | null = useMemo(() => {
     return (
@@ -82,15 +93,12 @@ function CustomSearchBox({ expanded = false, onSearch }: CustomSearchBoxProps) {
     event.preventDefault();
     const trimmedValue = inputValue.trim();
     if (onSearch) {
-      // If onSearch prop is provided (controlled mode, for SearchClient)
-      onSearch(trimmedValue || null); // Use nuqs to update/clear
+      onSearch(trimmedValue || null);
     } else {
-      // If onSearch prop is NOT provided (uncontrolled mode, for Navbar)
-      if (!trimmedValue) return; // Don't navigate if input is empty
-      router.push(`/search?query=${trimmedValue}`); // Use router.push directly
+      if (!trimmedValue) return;
+      setIsLoading(true);
+      router.push(`/search?query=${trimmedValue}`);
     }
-    setIsExpanded(false);
-    setShowResults(false);
   };
 
   const toggleSearch = () => {
@@ -178,7 +186,13 @@ function CustomSearchBox({ expanded = false, onSearch }: CustomSearchBoxProps) {
           </form>
 
           {/* Search Results Dropdown */}
-          {isExpanded && showResults && results.length > 0 && (
+          {isLoading && (
+            <div className="flex justify-center items-center py-4">
+              <Spinner />
+              <span className="ml-2 text-sm text-gray-500">Loading results...</span>
+            </div>
+          )}
+          {isExpanded && showResults && results.length > 0 && !isLoading && (
             <div
               ref={resultsRef}
               className="absolute left-0 right-0 mt-4 bg-white border border-gray-200 rounded-lg shadow-lg z-50"
