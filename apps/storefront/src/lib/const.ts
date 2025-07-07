@@ -3,10 +3,6 @@ export const STOREFRONT_NAME =
   process.env.NEXT_PUBLIC_STOREFRONT_NAME || "Surmont - The Bikes Store";
 export const CHECKOUT_TOKEN = "checkoutToken";
 export const API_URI = process.env.NEXT_PUBLIC_SALEOR_API_URL || "";
-export const BASE_URL = process.env.NEXT_PUBLIC_SALEOR_API_URL?.replace("/graphql/", "").replace(
-  "api.",
-  "",
-);
 export const STOREFRONT_URL = API_URI.match(/^(https?:\/\/[^/?#]+)/i)?.[0].replace("api.", "");
 export const GOOGLE_STORAGE_URL = "https://storage.googleapis.com/";
 export const UPLOAD_FOLDER = `${GOOGLE_STORAGE_URL}${process.env.NEXT_PUBLIC_GS_MEDIA_BUCKET_NAME}/file_upload`;
