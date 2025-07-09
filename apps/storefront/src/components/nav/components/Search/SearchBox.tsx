@@ -154,7 +154,7 @@ function CustomSearchBox({ expanded = false, onSearch }: CustomSearchBoxProps) {
             : "invisible opacity-0 -translate-y-2"
         }`}
       >
-        <div className="container mx-auto px-4 py-6">
+        <div className="container mx-auto px-4 py-6 relative">
           <form onSubmit={handleSubmit} className="relative flex items-center w-[80%] m-auto">
             <Input
               id="algolia_search"
@@ -187,9 +187,8 @@ function CustomSearchBox({ expanded = false, onSearch }: CustomSearchBoxProps) {
 
           {/* Search Results Dropdown */}
           {isLoading && (
-            <div className="flex justify-center items-center py-4">
+            <div className="absolute right-0 top-[50%] translate-y-[-50%]">
               <Spinner />
-              <span className="ml-2 text-sm text-gray-500">Loading results...</span>
             </div>
           )}
           {isExpanded && showResults && results.length > 0 && !isLoading && (
