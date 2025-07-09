@@ -181,11 +181,6 @@ function getAvailableValuesForSelection(
   currentSelection: FilterSelection,
   mainFilter: MainFilter,
 ): FilterValue[] {
-  // If no selection, return all values
-  if (Object.keys(currentSelection).length === 0) {
-    return getAvailableValues(index, attrSlug);
-  }
-
   // Get all possible values for this attribute
   const allValues = new Set(getAvailableValues(index, attrSlug));
   const validValues = new Set<string>();
