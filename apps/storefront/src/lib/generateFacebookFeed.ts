@@ -116,10 +116,11 @@ function generateFacebookFeedCSV(products: any) {
     const colorVariant = variant?.attributes.find(
       (attr: { attribute: { slug: string } }) => attr.attribute.slug === ATTR_COLOR_COMMERCIAL_SLUG,
     );
-    const colorValue = colorVariant?.values[0]?.["name"] || "";
+    const colorName = colorVariant?.values[0]?.["name"] || "";
+    const colorSlug = colorVariant?.values[0]?.["slug"] || "";
     const sku = variant?.sku;
-    const link = `${STOREFRONT_URL}/p/${product.slug}${colorValue ? `--${colorValue}` : ""}`;
-    let title = `${product.name}${colorValue ? ` - ${colorValue}` : ""}`;
+    const link = `${STOREFRONT_URL}/p/${product.slug}${colorSlug ? `--${colorSlug}` : ""}`;
+    let title = `${product.name}${colorName ? ` - ${colorName}` : ""}`;
 
     // Ensure title is under 200 characters
     if (title.length > 200) {
