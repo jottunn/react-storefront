@@ -185,9 +185,7 @@ const ProductDetail = async ({
   }
 
   const messages = getMessages(defaultRegionQuery().locale);
-  const variants = product.variants?.filter(
-    (variant) => variant.quantityAvailable && variant.quantityAvailable > 0,
-  );
+  const variants = product.variants;
 
   // Filter variants by color attribute and productSlug[1]
   const colorVariants = variants?.filter((variant) => {
@@ -197,9 +195,13 @@ const ProductDetail = async ({
     return colorAttribute?.values.some((value) => value.slug === productSlugs[1]);
   });
 
-  // Select variant based on priority: URL param > color variant > first variant
   const selectedVariantID =
-    searchParams.variant || colorVariants?.[0]?.id || variants?.[0]?.id || null;
+    searchParams.variant ||
+    (colorVariants && colorVariants.length > 0
+      ? colorVariants.find((v) => v.quantityAvailable && v.quantityAvailable > 0)?.id ||
+        colorVariants?.[0]?.id
+      : variants?.[0]?.id) ||
+    null;
 
   const selectedVariant =
     variants && variants.length > 1

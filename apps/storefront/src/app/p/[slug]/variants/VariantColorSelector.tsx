@@ -20,8 +20,14 @@ export function VariantColorSelector({
 
   const getColorOptions = (attrSlug: string, currentColor?: string) =>
     product.variants?.flatMap((variant) => {
-      if (!variant.quantityAvailable) {
-        // only if variant is inStock
+      if (
+        !variant.quantityAvailable /** if variant of current color, is out of stock, still display it for consistency */ &&
+        !variant.attributes.some(
+          (attribute) =>
+            attribute.attribute.slug === attrSlug &&
+            attribute.values.some((value) => value.name === currentColor),
+        )
+      ) {
         return [];
       }
       return variant.attributes.flatMap((attribute) => {

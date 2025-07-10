@@ -85,8 +85,8 @@ export function VariantSelector({
   const { variants } = product;
   const availableVariants =
     variants &&
-    variants.filter((variant) => variant.quantityAvailable || variant.id === selectedVariant?.id);
-  // console.log('availableVariants', availableVariants);
+    variants.filter((variant) => variant.quantityAvailable && variant.quantityAvailable > 0);
+
   const currentColor = selectedVariant ? getColorOfVariant(selectedVariant, ATTR_COLOR_SLUG) : "";
   const currentCommercialColor = selectedVariant
     ? getColorOfVariant(selectedVariant, ATTR_COLOR_COMMERCIAL_SLUG)
@@ -108,6 +108,7 @@ export function VariantSelector({
   if (!availableVariants || availableVariants.length === 0) {
     return null;
   }
+
   const [sizeSelected, setSizeSelected] = React.useState(sizes?.length === 1);
   const [loadingSize, setLoadingSize] = React.useState(false);
   React.useEffect(() => {
@@ -204,14 +205,14 @@ export function VariantSelector({
               messages={messages}
               selectedVariantId={selectedVariant?.id}
             />
-            <p className="text-sm text-left font-semibold text-neutral-500 pt-2 absolute">
-              {!sizeSelected && messages["app.chooseSizeCart"]}
-            </p>
             {selectedVariant?.quantityAvailable === 0 && (
-              <p className="text-base text-left font-semibold text-red-500 pt-2">
+              <p className="text-base text-left font-semibold text-red-500 pt-2 block">
                 {messages["app.product.soldOutVariant"]}
               </p>
             )}
+            <p className="text-sm text-left font-semibold text-neutral-500 pt-2 absolute block">
+              {!sizeSelected && sizes && sizes.length > 0 && messages["app.chooseSizeCart"]}
+            </p>
           </div>
           <div className="flex justify-end w-12">
             <AddToWishlist
