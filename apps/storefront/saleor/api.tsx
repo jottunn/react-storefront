@@ -36612,6 +36612,7 @@ export type CollectionsByMetaKeyQueryVariables = Exact<{
   filter?: InputMaybe<CollectionFilterInput>;
   locale: LanguageCodeEnum;
   channel: Scalars["String"]["input"];
+  productFilter?: InputMaybe<ProductFilterInput>;
 }>;
 
 export type CollectionsByMetaKeyQuery = {
@@ -36636,6 +36637,7 @@ export type CollectionsByMetaKeyQuery = {
         } | null;
         backgroundImage?: { __typename?: "Image"; url: string; alt?: string | null } | null;
         metadata: Array<{ __typename?: "MetadataItem"; key: string; value: string }>;
+        products?: { __typename?: "ProductCountableConnection"; totalCount?: number | null } | null;
       };
     }>;
   } | null;
@@ -41205,16 +41207,34 @@ export const CollectionsByMetaKeyDocument = gql`
     $filter: CollectionFilterInput
     $locale: LanguageCodeEnum!
     $channel: String!
+    $productFilter: ProductFilterInput
   ) {
     collections(first: 90, filter: $filter, channel: $channel) {
       edges {
         node {
-          ...CollectionDetailsFragment
+          id
+          ...CollectionBasicFragment
+          seoTitle
+          seoDescription
+          description
+          translation(languageCode: $locale) {
+            id
+            description
+          }
+          backgroundImage {
+            ...ImageFragment
+          }
+          metadata {
+            key
+            value
+          }
+          products(filter: $productFilter) {
+            totalCount
+          }
         }
       }
     }
   }
-  ${CollectionDetailsFragmentDoc}
   ${CollectionBasicFragmentDoc}
   ${ImageFragmentDoc}
 `;
@@ -41234,6 +41254,7 @@ export const CollectionsByMetaKeyDocument = gql`
  *      filter: // value for 'filter'
  *      locale: // value for 'locale'
  *      channel: // value for 'channel'
+ *      productFilter: // value for 'productFilter'
  *   },
  * });
  */

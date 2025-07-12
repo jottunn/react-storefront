@@ -239,12 +239,16 @@ export default async function Home() {
   try {
     brandCollections = await executeGraphQL<
       CollectionsByMetaKeyQuery,
-      { filter: any; channel: string; locale: string }
+      { filter: any; channel: string; locale: string; productFilter: any }
     >(CollectionsByMetaKeyDocument, {
       variables: {
         filter: {
           metadata: [{ key: "isBrand", value: "YES" }],
           published: "PUBLISHED",
+        },
+        productFilter: {
+          stockAvailability: "IN_STOCK",
+          isVisibleInListing: true,
         },
         ...defaultRegionQuery(),
       },
@@ -352,7 +356,12 @@ export default async function Home() {
         <div className="container md:flex flex-col gap-6 md:gap-12 lg:gap-20">
           {brandCollections &&
             (() => {
-              const totalBrands = brandCollections.collections?.edges.length || 0;
+              const filteredCollections =
+                brandCollections.collections?.edges.filter(
+                  (edge) => edge.node?.products?.totalCount !== 0,
+                ) || [];
+
+              const totalBrands = filteredCollections.length;
               const remainder = totalBrands % 8;
 
               const numColumns = !totalBrands
@@ -365,10 +374,8 @@ export default async function Home() {
                       ? 7 // Remainder 3-5: 7 columns
                       : 8; // Otherwise: 8 columns
               const brandCollectionsRows = [];
-              const brandCollectionsEdges = brandCollections.collections?.edges || [];
-
-              for (let i = 0; i < brandCollectionsEdges.length; i += numColumns) {
-                brandCollectionsRows.push(brandCollectionsEdges.slice(i, i + numColumns));
+              for (let i = 0; i < filteredCollections.length; i += numColumns) {
+                brandCollectionsRows.push(filteredCollections.slice(i, i + numColumns));
               }
 
               return brandCollectionsRows.map((row, rowIndex) => (

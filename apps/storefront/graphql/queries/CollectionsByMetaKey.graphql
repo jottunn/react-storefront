@@ -1,8 +1,26 @@
-query CollectionsByMetaKey($filter: CollectionFilterInput, $locale: LanguageCodeEnum!, $channel: String!) {
+query CollectionsByMetaKey($filter: CollectionFilterInput, $locale: LanguageCodeEnum!, $channel: String!, $productFilter: ProductFilterInput) {
   collections(first:90, filter: $filter, channel: $channel) {
     edges {
         node {
-            ...CollectionDetailsFragment
+           id
+            ...CollectionBasicFragment
+            seoTitle
+            seoDescription
+            description
+            translation(languageCode: $locale) {
+              id
+              description
+            }
+            backgroundImage {
+              ...ImageFragment
+            }
+            metadata {
+              key
+              value
+            }
+            products(filter: $productFilter) {    
+              totalCount   
+            }  
         }
     }
   }
