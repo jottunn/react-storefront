@@ -20,6 +20,10 @@ export interface UrlFilter {
 export function parseQueryAttributeFilters(query: string): UrlFilter[] {
   const filters = query.split("_").flatMap((attributeWithValues) => {
     const splitted = attributeWithValues.split("--");
+    if (!splitted[1]) {
+      // If there are no values after '--', skip this filter
+      return [];
+    }
     const splittedValues = splitted[1].split(",");
     const attributeFilter: UrlFilter = { slug: splitted[0], values: splittedValues };
     if (attributeFilter.values.length > 0) {
