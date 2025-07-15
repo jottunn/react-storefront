@@ -289,9 +289,8 @@ export const checkAndScheduleJob = async (queue: Bull.Queue, frequency: string) 
       {},
       {
         repeat: {
-          cron: frequency, // Run daily at 5 AM
+          cron: frequency,
         },
-        removeOnComplete: true,
       },
     );
     console.log("New daily products generation scheduled, job ID:", job.id);
