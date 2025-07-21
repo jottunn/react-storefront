@@ -395,7 +395,7 @@ export default async function Home() {
                           alt={brand.node.name}
                           width={200}
                           height={200}
-                          className="hover:brightness-125 hover:contrast-115 transition-all duration-30"
+                          className="hover:brightness-125 hover:contrast-115 transition-all duration-30 max-w-[160px]"
                         />
                       ) : (
                         brand.node.name
