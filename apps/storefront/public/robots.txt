@@ -8,5 +8,4 @@ Disallow: /cart
 Disallow: /checkout
 Disallow: /account/*
 
-# Host
-Host: http://localhost:3000
+Sitemap: https://surmont.ro/sitemap.xml

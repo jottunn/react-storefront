@@ -176,6 +176,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/magazin",
     "/faq",
     "/ghid-marimi",
+    "/brands",
+    "/blog",
   ].map((route) => ({
     url: `${STOREFRONT_URL}${route}`,
     lastModified: new Date().toISOString(),
