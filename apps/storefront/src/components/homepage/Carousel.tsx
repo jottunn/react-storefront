@@ -157,11 +157,16 @@ const Carousel: React.FC<SliderProps> = ({
               <button
                 key={index}
                 onClick={() => goToSlide(index)}
-                className={`w-[24px] h-[24px] mx-2 rounded-full transition-all duration-300 
-                         hover:bg-action-1/80 hover:scale-125 focus:outline-none
-                         ${currentIndex === index ? "bg-white scale-125" : "bg-white/50"}`}
+                className="w-[24px] h-[24px] mx-1 rounded-full transition-all duration-300 focus:outline-none
+                         bg-none relative"
                 aria-label={`Go to slide ${index + 1}`}
-              />
+              >
+                <span
+                  className={`w-[18px] h-[18px] mx-2 rounded-full transition-all duration-300 
+                         hover:bg-action-1/80 hover:scale-120 focus:outline-none bg-white absolute top-0 left-0 m-0
+                         ${currentIndex === index ? "bg-white scale-125" : "bg-white/50"}`}
+                ></span>
+              </button>
             ))}
           </div>
         </>
