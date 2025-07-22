@@ -301,7 +301,11 @@ export const checkAndScheduleJob = async (queue: Bull.Queue, frequency: string) 
 
 export const getFilterIndex = async (): Promise<any | null> => {
   try {
-    const filterIndex = await readFile(FILTER_INDEX_PATH, "utf8");
+    let filterIndex = await readFile(FILTER_INDEX_PATH, "utf8");
+    if (filterIndex.length === 0) {
+      await generateFilterIndex();
+      filterIndex = await readFile(FILTER_INDEX_PATH, "utf8");
+    }
     return JSON.parse(filterIndex);
   } catch (error: unknown) {
     if ((error as { code?: string }).code === "ENOENT") {
@@ -311,6 +315,30 @@ export const getFilterIndex = async (): Promise<any | null> => {
       return JSON.parse(filterIndex);
     }
   }
+};
+
+export const setupAndScheduleProductsQueue = async (): Promise<any | null> => {
+  const Bull = require("bull");
+  const generateProductsQueue = new Bull("generateProductsQueue", {
+    redis: {
+      host: process.env.REDIS_HOST || "localhost",
+      port: Number(process.env.REDIS_PORT) || 6379,
+      maxRetriesPerRequest: 1,
+      connectTimeout: 2000,
+    },
+  });
+  generateProductsQueue.process(async () => {
+    try {
+      await generateProductsJson();
+      await generateFilterIndex();
+      console.log("Scheduled products JSON created successfully");
+      return { status: "success" };
+    } catch (error) {
+      console.error("Error in scheduled products generation:", error);
+      throw error;
+    }
+  });
+  return generateProductsQueue;
 };
 
 export const getProductsData = async (): Promise<any | null> => {
@@ -324,6 +352,13 @@ export const getProductsData = async (): Promise<any | null> => {
   try {
     fileStats = await stat(PRODUCTS_JSON_PATH);
     const currentModifiedTime = fileStats.mtimeMs;
+    console.log("fileStats.size", fileStats.size);
+    // If file is empty, set up queue and schedule job
+    if (fileStats.size === 0) {
+      await generateProductsJson();
+      const generateProductsQueue = await setupAndScheduleProductsQueue();
+      await checkAndScheduleJob(generateProductsQueue, "0 5 * * *");
+    }
 
     if (
       !cachedProductsData ||
@@ -339,31 +374,8 @@ export const getProductsData = async (): Promise<any | null> => {
       await generateProductsJson();
       fileStats = await stat(PRODUCTS_JSON_PATH);
 
-      // Set up Bull queue for daily updates
-      const Bull = require("bull");
-      const generateProductsQueue = new Bull("generateProductsQueue", {
-        redis: {
-          host: process.env.REDIS_HOST || "localhost",
-          port: Number(process.env.REDIS_PORT) || 6379,
-          maxRetriesPerRequest: 1,
-          connectTimeout: 2000,
-        },
-      });
-      // Define the processor
-      generateProductsQueue.process(async () => {
-        try {
-          //console.log('Starting scheduled products generation');
-          await generateProductsJson();
-          await generateFilterIndex();
-          console.log("Scheduled products JSON created successfully");
-          return { status: "success" };
-        } catch (error) {
-          console.error("Error in scheduled products generation:", error);
-          throw error;
-        }
-      });
-
-      // Check and schedule job
+      // Set up queue and schedule job
+      const generateProductsQueue = await setupAndScheduleProductsQueue();
       await checkAndScheduleJob(generateProductsQueue, "0 5 * * *");
 
       return await getProductsFromDisk();
